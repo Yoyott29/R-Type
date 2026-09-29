@@ -1,7 +1,7 @@
 name: Deploy docs
 on:
   push:
-    branches: [main, Create_Doc_Website]
+    branches: [main]
     paths:
       - 'Documentation/R-Type/**'
 
