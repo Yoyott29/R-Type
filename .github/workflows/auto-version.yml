@@ -1,0 +1,122 @@
+name: auto-version
+
+on:
+  # push:
+  #   branches:
+  #     - main
+  #     - dev
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+env:
+  PROJECT_NAME: "R-Type"
+
+# Évite que deux runs calculent le même numéro de version en parallèle
+concurrency:
+  group: auto-version
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Compute version and release notes
+        id: version
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --tags --force
+
+          BRANCH="${GITHUB_REF_NAME}"
+          REPO_URL="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}"
+          PROJECT="${PROJECT_NAME:-${GITHUB_REPOSITORY#*/}}"
+
+          # Tous les tags de version vX.Y, triés du plus récent au plus ancien
+          ALL_TAGS="$(git tag -l 'v*' --sort=-version:refname | grep -E '^v[0-9]+\.[0-9]+$' || true)"
+          LAST_TAG="$(echo "$ALL_TAGS" | head -n 1)"
+
+          if [[ -n "$LAST_TAG" ]]; then
+            LAST_MAJOR="${LAST_TAG#v}"; LAST_MAJOR="${LAST_MAJOR%%.*}"
+            LAST_MINOR="${LAST_TAG#*.}"
+          else
+            LAST_MAJOR=0
+            LAST_MINOR=0
+          fi
+
+          if [[ "$BRANCH" == "main" ]]; then
+            # ---------- VERSION MAJEURE (1.0, 2.0, 3.0...) ----------
+            NEW_TAG="v$((LAST_MAJOR + 1)).0"
+            PRERELEASE="false"
+            NEW_TITLE="${PROJECT} ${NEW_TAG}"
+
+            # Sous-versions publiées depuis la dernière version majeure
+            SUBS="$(echo "$ALL_TAGS" | grep -E "^v${LAST_MAJOR}\.[1-9][0-9]*$" | sort -V || true)"
+
+            {
+              echo "## ${NEW_TITLE}"
+              echo
+              echo "### Sous-versions incluses"
+              if [[ -n "$SUBS" ]]; then
+                while read -r t; do
+                  echo "- [${PROJECT} ${t}](${REPO_URL}/releases/tag/${t})"
+                done <<< "$SUBS"
+              else
+                echo "- Aucune sous-version depuis la dernière version majeure."
+              fi
+            } > release_notes.md
+
+          else
+            # ---------- SOUS-VERSION (X.1, X.2, X.3...) ----------
+            NEW_TAG="v${LAST_MAJOR}.$((LAST_MINOR + 1))"
+            PRERELEASE="true"
+            NEW_TITLE="${PROJECT} ${NEW_TAG}"
+
+            if [[ -n "$LAST_TAG" ]]; then
+              CHANGE_HEADER="### Modifications depuis ${PROJECT} ${LAST_TAG}"
+              CHANGE_LOG="$(git log "${LAST_TAG}..HEAD" --no-merges --pretty=format:'- %s (%h)' | head -n 50 || true)"
+            else
+              CHANGE_HEADER="### Modifications (version initiale)"
+              CHANGE_LOG="$(git log --no-merges --pretty=format:'- %s (%h)' | head -n 50 || true)"
+            fi
+
+            [[ -z "$CHANGE_LOG" ]] && CHANGE_LOG="- Aucun changement détecté."
+
+            {
+              echo "## ${NEW_TITLE}"
+              echo
+              echo "${CHANGE_HEADER}"
+              echo "${CHANGE_LOG}"
+            } > release_notes.md
+          fi
+
+          echo "tag=${NEW_TAG}" >> "$GITHUB_OUTPUT"
+          echo "title=${NEW_TITLE}" >> "$GITHUB_OUTPUT"
+          echo "prerelease=${PRERELEASE}" >> "$GITHUB_OUTPUT"
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_TAG: ${{ steps.version.outputs.tag }}
+          RELEASE_TITLE: ${{ steps.version.outputs.title }}
+          IS_PRERELEASE: ${{ steps.version.outputs.prerelease }}
+        run: |
+          FLAGS=()
+          if [[ "$IS_PRERELEASE" == "true" ]]; then
+            FLAGS+=(--prerelease --latest=false)
+          else
+            FLAGS+=(--latest)
+          fi
+
+          gh release create "$RELEASE_TAG" \
+            --target "$GITHUB_SHA" \
+            --title "$RELEASE_TITLE" \
+            --notes-file release_notes.md \
+            "${FLAGS[@]}"
