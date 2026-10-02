@@ -4,13 +4,12 @@ on:
   push:
     branches: ['**']
     tags: ['**']
-  delete:               # a branch or tag deleted on the mirror
+  delete:
   workflow_dispatch:
 
 permissions:
   contents: read
 
-# One sync at a time. Each run syncs the full state, so a queued run is enough.
 concurrency:
   group: mirror
   cancel-in-progress: false
@@ -27,12 +26,19 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Sync all branches and tags
+      - name: Set up SSH key
         env:
-          MIRROR_TOKEN: ${{ secrets.MIRROR_TOKEN }}
+          SSH_KEY: ${{ secrets.GIT_SSH_PRIVATE_KEY }}
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$SSH_KEY" > ~/.ssh/id_mirror
+          chmod 600 ~/.ssh/id_mirror
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
+
+      - name: Sync all branches and tags
         run: |
           set -euo pipefail
-          TARGET="https://x-access-token:${MIRROR_TOKEN}@github.com/${TARGET_REPO}.git"
+          TARGET="git@github.com:${TARGET_REPO}.git"
 
           # Get every branch and tag of the mirror, and drop the ones deleted there
           git fetch origin '+refs/heads/*:refs/remotes/origin/*' --prune --tags --force
@@ -46,6 +52,7 @@ jobs:
 
           # --force: same history rewrites as the mirror
           # --prune: delete on the target what no longer exists on the mirror
+          GIT_SSH_COMMAND="ssh -i ~/.ssh/id_mirror -o IdentitiesOnly=yes" \
           git push "$TARGET" --force --prune \
             'refs/remotes/origin/*:refs/heads/*' \
             'refs/tags/*:refs/tags/*'
