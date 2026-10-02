@@ -7,7 +7,8 @@ on:
 
 jobs:
   deploy:
-    runs-on: self-hosted
+    if: github.repository != 'EpitechPGE3-2026/G-ING-500-LIL-5-1-rtype-4'
+    runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: Documentation/R-Type
