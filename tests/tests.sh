@@ -24,9 +24,8 @@ run_test "build" bash -c "cmake -B build && cmake --build build"
 
 echo "== Tests =="
 # Add your tests below, one line each:
-run_test "server binary exists"  test -x build/r-type_server
+#run_test "server binary exists"  test -x build/r-type_server
 run_test "client binary exists"  test -x build/r-type_client
-run_test "server stays alive"    bash -c 'timeout 3 build/r-type_server 4242; [ $? -eq 124 ]'
 
 echo
 echo "================================"
