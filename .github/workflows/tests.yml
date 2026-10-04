@@ -1,0 +1,22 @@
+name: tests
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    if: >
+      github.repository != 'EpitechPGE3-2026/G-ING-500-LIL-5-1-rtype-4' &&
+      github.head_ref == 'dev'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # install dependencies later if needed
+
+      - name: Run tests
+        run: ./tests/tests.sh
