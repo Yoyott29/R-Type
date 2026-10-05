@@ -5,7 +5,7 @@
 <h1 class="text-3xl font-semibold">Getting started</h1>
 <p class="mt-1 mb-8 text-[15px] text-[#7f9189]">Build and run the R-Type project</p>
 
-<p class="max-w-[68ch] leading-7">
+<p class="max-w-[100ch] leading-7">
 	R-Type is a reimplementation of the classic shoot 'em up, built around an ECS engine and a
 	client / server model. This page covers everything you need to get it running.
 </p>
@@ -25,7 +25,7 @@ cmake -B build
 cmake --build build</code></pre>
 
 <h2 class="mt-9 text-lg font-semibold">Run</h2>
-<p class="mt-3 max-w-[68ch] leading-7">
+<p class="mt-3 max-w-[100ch] leading-7">
 	Start the server first, then one or more clients:
 </p>
 <pre
