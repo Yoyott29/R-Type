@@ -33,7 +33,7 @@
 
 <p class="max-w-[100ch] leading-7">
 	This is the developer documentation for R-Type. It explains how the repository is organized, how
-	code moves from one branch to another, and which parts are automated. If you want to play the
+	code moves from one branch to another and which parts are automated. If you want to play the
 	game or install it, see the user documentation instead.
 </p>
 
