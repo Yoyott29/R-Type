@@ -44,7 +44,7 @@
 		{ title: 'How tests.sh works', path: '/developer/tests-sh', section: 2 },
 		
 		{ title: 'Auto Versioning', path: '/developer/auto-versioning', section: 3 },
-		{ title: 'Documentation Deployment', path: '/developer/documentation-deployment', section: 3 },
+		{ title: 'Deploy Documentation', path: '/developer/documentation-deployment', section: 3 },
 		{ title: 'Mirror Repository', path: '/developer/mirror-repository', section: 3 },
 		{ title: 'Running Tests', path: '/developer/running-tests', section: 3 },
 
