@@ -10,7 +10,7 @@ case "$first_line" in
     Merge\ *|Revert\ *|fixup!\ *|squash!\ *) exit 0 ;;
 esac
 
-pattern='^\[[A-Za-z0-9._-]+\] \[[^]]+\] (Feat|Fix|Refactor|Docs|Style|Chore): .+'
+pattern='^\[[A-Z]\.[A-Z]{2}\] \[[^]]+\] (Feat|Fix|Refactor|Docs|Style|Chore): .+'
 
 if ! printf '%s\n' "$first_line" | grep -Eq "$pattern"; then
     echo "Invalid commit message:"

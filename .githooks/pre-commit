@@ -18,4 +18,4 @@ for test_script in tests/*.sh; do
     bash "$test_script"
 done
 
-echo "Build and tests passed. Commit allowed."
+echo "Build and tests passed."
