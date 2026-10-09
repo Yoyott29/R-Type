@@ -1,0 +1,21 @@
+#!/bin/sh
+set -eu
+
+echo "[1/2] Configuring and building..."
+
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug
+cmake --build build --parallel
+
+echo "[2/2] Running test scripts..."
+
+found_tests=0
+
+for test_script in tests/*.sh; do
+    [ -f "$test_script" ] || continue
+    found_tests=1
+
+    echo "Running $test_script..."
+    bash "$test_script"
+done
+
+echo "Build and tests passed. Commit allowed."

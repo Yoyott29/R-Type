@@ -59,12 +59,31 @@ target_include_directories(r-type_client SYSTEM PRIVATE
     "${raylib_SOURCE_DIR}/src"
 )
 
+# ============================================================
+# clang-tidy (runs on every compile of the client)
+# ============================================================
+
+option(ENABLE_CLANG_TIDY "Run clang-tidy during the build" ON)
+
+if(ENABLE_CLANG_TIDY)
+    find_program(CLANG_TIDY_EXE NAMES clang-tidy)
+
+    if(CLANG_TIDY_EXE)
+        message(STATUS "clang-tidy enabled: ${CLANG_TIDY_EXE}")
+        set_target_properties(${PROJECT_NAME} PROPERTIES
+            CXX_CLANG_TIDY
+                "${CLANG_TIDY_EXE};--config-file=${CMAKE_SOURCE_DIR}/Norms/.clang-tidy"
+        )
+    else()
+        message(WARNING "clang-tidy not found: static analysis skipped")
+    endif()
+endif()
 
 # ============================================================
 # Git hooks
 # ============================================================
 
-if(EXISTS "${CMAKE_SOURCE_DIR}/.githooks/pre-push")
+if(EXISTS "${CMAKE_SOURCE_DIR}/.githooks/pre-commit")
     execute_process(
         COMMAND git config core.hooksPath .githooks
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
