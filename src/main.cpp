@@ -5,19 +5,16 @@
 ** main
 */
 
-#include <raylib.h>
+#include "Application.hpp"
 
 int main()
 {
-    InitWindow(800, 600, "R-Type");
-    SetTargetFPS(60);
-
-    while (!WindowShouldClose()) {
-        BeginDrawing();
-        ClearBackground(BLACK);
-        EndDrawing();
+    try {
+        Application application;
+        application.run();
+    } catch (std::exception const &error) {
+        std::cerr << "Fatal error: " << error.what() << std::endl;
+        return 84;
     }
-
-    CloseWindow();
     return 0;
 }

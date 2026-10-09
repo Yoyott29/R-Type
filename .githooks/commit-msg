@@ -10,7 +10,7 @@ case "$first_line" in
     Merge\ *|Revert\ *|fixup!\ *|squash!\ *) exit 0 ;;
 esac
 
-pattern='^\[[A-Z]\.[A-Z]{2}\] \[[^]]+\] (Feat|Fix|Refactor|Docs|Style|Chore): .+'
+pattern='^\[[A-Z]\.[A-Z]{2}\] \[[^]]+\] (Feat|Fix|Refactor|Docs|Style|Chore|Merge): .+'
 
 if ! printf '%s\n' "$first_line" | grep -Eq "$pattern"; then
     echo "Invalid commit message:"
@@ -18,7 +18,7 @@ if ! printf '%s\n' "$first_line" | grep -Eq "$pattern"; then
     echo
     echo "Expected: [name] [branch] Type: message"
     echo "Example:  [E.DU] [Test_Branch] Feat: added a test"
-    echo "Types:    Feat, Fix, Refactor, Docs, Style, Chore"
+    echo "Types:    Feat, Fix, Refactor, Docs, Style, Chore, Merge"
     exit 1
 fi
 
