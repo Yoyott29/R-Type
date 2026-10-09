@@ -39,6 +39,18 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 add_executable(${PROJECT_NAME}
     src/main.cpp
+    src/game-rtype/Application.cpp
+    src/game-rtype/RaylibRenderer.cpp
+)
+
+target_include_directories(rtype_demo PRIVATE
+    src/game-rtype
+)
+
+target_link_libraries(rtype_demo PRIVATE
+    rtype_engine
+    rtype_systems
+    raylib
 )
 
 target_link_libraries(${PROJECT_NAME}
