@@ -10,6 +10,7 @@
 #include "Entity.hpp"
 #include "IComponentPool.hpp"
 #include <array>
+#include <iostream>
 #include <vector>
 
 template <typename Component> class ComponentPool : public IComponentPool
@@ -20,7 +21,7 @@ template <typename Component> class ComponentPool : public IComponentPool
     void insertComponent(Entity entity, Component component)
     {
         if (has(entity)) {
-            std::cout << "Tried to add a component on the same entity twice" << std::endl;
+            std::cout << "Tried to add a component on the same entity twice" << "\n";
             return;
         }
 
@@ -33,7 +34,7 @@ template <typename Component> class ComponentPool : public IComponentPool
     {
         if (!has(entity)) {
             std::cout << "Tried to remove a component from an entity that didn't have it"
-                      << std::endl;
+                      << "\n";
             return;
         }
 

@@ -52,7 +52,7 @@ fi`;
 </p>
 
 <p class="max-w-[68ch] leading-7">
-	The workflow {@render c('.github/workflows/mirror-to-epitech.yml')} keeps the Epitech repository
+	The workflow {@render c('.github/workflows/mirror-repo.yml')} keeps the Epitech repository
 	identical to this one. After each change, it copies all branches and tags to the target
 	repository, including deletions.
 </p>

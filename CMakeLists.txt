@@ -16,7 +16,7 @@ set(CPM_SOURCE_CACHE
     CACHE PATH "CPM download cache"
 )
 
-include(cmake/CPM.cmake)
+include(CPM.cmake)
 
 CPMAddPackage(
     NAME raylib

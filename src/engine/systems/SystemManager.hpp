@@ -20,7 +20,7 @@ class SystemManager
         const std::type_index key(typeid(SystemType));
 
         if (_systems.find(key) != _systems.end()) {
-            std::cout << "System registered more than once." << std::endl;
+            std::cout << "System registered more than once." << "\n";
             return nullptr;
         }
 
@@ -34,7 +34,7 @@ class SystemManager
         const std::type_index key(typeid(SystemType));
 
         if (_systems.find(key) == _systems.end()) {
-            std::cout << "System used before registered." << std::endl;
+            std::cout << "System used before registered." << "\n";
             return;
         }
 

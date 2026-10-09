@@ -13,7 +13,7 @@ int main()
         Application application;
         application.run();
     } catch (std::exception const &error) {
-        std::cerr << "Fatal error: " << error.what() << std::endl;
+        std::cerr << "Fatal error: " << error.what() << "\n";
         return 84;
     }
     return 0;

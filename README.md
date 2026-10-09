@@ -48,7 +48,7 @@ The executable is generated at the repository root because of the current CMake 
 
 ## Documentation
 
-Read the full project documentation on the [R-Type documentation website](https://r-type-project-documentation.vercel.app/). (Espacially if you are a collaborator)
+Read the full project documentation on the [R-Type documentation website](https://r-type-project-documentation.vercel.app/), especially if you are a collaborator.
 
 ## Authors
 

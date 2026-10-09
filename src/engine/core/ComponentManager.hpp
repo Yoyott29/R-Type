@@ -8,6 +8,7 @@
 #pragma once
 #include "ComponentPool.hpp"
 #include "EngineError.hpp"
+#include <iostream>
 #include <memory>
 #include <typeindex>
 #include <unordered_map>
@@ -20,7 +21,7 @@ class ComponentManager
         const std::type_index key(typeid(Component));
 
         if (_componentTypes.find(key) != _componentTypes.end()) {
-            std::cout << "Component type registered more than once" << std::endl;
+            std::cout << "Component type registered more than once" << "\n";
             return;
         }
 
