@@ -78,14 +78,3 @@ if(ENABLE_CLANG_TIDY)
         message(WARNING "clang-tidy not found: static analysis skipped")
     endif()
 endif()
-
-# ============================================================
-# Git hooks
-# ============================================================
-
-if(EXISTS "${CMAKE_SOURCE_DIR}/.githooks/pre-commit")
-    execute_process(
-        COMMAND git config core.hooksPath .githooks
-        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-    )
-endif()
