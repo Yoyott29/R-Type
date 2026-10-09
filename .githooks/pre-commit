@@ -18,4 +18,9 @@ for test_script in tests/*.sh; do
     bash "$test_script"
 done
 
+if [ $found_tests -eq 0 ]; then
+    echo "No test scripts found."
+    exit 1
+fi
+
 echo "Build and tests passed."
