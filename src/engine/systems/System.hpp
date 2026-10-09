@@ -6,11 +6,12 @@
 */
 
 #pragma once
-#include <set>
 #include "Entity.hpp"
+#include <set>
 
-class System {
-    public:
-        virtual ~System() = default;
-        std::set<Entity> _entities;
+class System
+{
+  public:
+    virtual ~System() = default;
+    std::set<Entity> _entities;
 };

@@ -6,8 +6,8 @@
 */
 
 #pragma once
-#include <cstdint>
 #include <bitset>
+#include <cstdint>
 
 #define MAX_ENTITIES 4096
 #define MAX_COMPONENTS 32

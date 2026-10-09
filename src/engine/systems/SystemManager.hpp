@@ -6,46 +6,45 @@
 */
 
 #pragma once
-#include <unordered_map>
+#include "System.hpp"
+#include <iostream>
 #include <memory>
 #include <typeindex>
-#include <iostream>
-#include "System.hpp"
+#include <unordered_map>
 
-class SystemManager {
-    public:
-        template <typename SystemType>
-        std::shared_ptr<SystemType> registerSystem()
-        {
-            const std::type_index key(typeid(SystemType));
+class SystemManager
+{
+  public:
+    template <typename SystemType> std::shared_ptr<SystemType> registerSystem()
+    {
+        const std::type_index key(typeid(SystemType));
 
-            if (_systems.find(key) != _systems.end()) {
-                std::cout << "System registered more than once." << std::endl;
-                return nullptr;
-            }
-
-            auto system = std::make_shared<SystemType>();
-            _systems.insert({key, system});
-            return system;
+        if (_systems.find(key) != _systems.end()) {
+            std::cout << "System registered more than once." << std::endl;
+            return nullptr;
         }
 
-        template <typename SystemType>
-        void setComponentSet(ComponentSet componentSet)
-        {
-            const std::type_index key(typeid(SystemType));
+        auto system = std::make_shared<SystemType>();
+        _systems.insert({key, system});
+        return system;
+    }
 
-            if (_systems.find(key) == _systems.end()) {
-                std::cout << "System used before registered." << std::endl;
-                return;
-            }
+    template <typename SystemType> void setComponentSet(ComponentSet componentSet)
+    {
+        const std::type_index key(typeid(SystemType));
 
-            _componentSets.insert_or_assign(key, componentSet);
+        if (_systems.find(key) == _systems.end()) {
+            std::cout << "System used before registered." << std::endl;
+            return;
         }
 
-        void entityDestroyed(Entity entity);
-        void entityComponentSetChanged(Entity entity, ComponentSet entityComponentSet);
+        _componentSets.insert_or_assign(key, componentSet);
+    }
 
-    private:
-        std::unordered_map<std::type_index, ComponentSet> _componentSets = {};
-        std::unordered_map<std::type_index, std::shared_ptr<System>> _systems{};
+    void entityDestroyed(Entity entity);
+    void entityComponentSetChanged(Entity entity, ComponentSet entityComponentSet);
+
+  private:
+    std::unordered_map<std::type_index, ComponentSet> _componentSets = {};
+    std::unordered_map<std::type_index, std::shared_ptr<System>> _systems{};
 };

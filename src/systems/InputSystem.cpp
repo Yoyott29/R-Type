@@ -16,13 +16,13 @@ void InputSystem::update(Scene &scene)
 
         velocity.dx = 0.0f;
         velocity.dy = 0.0f;
-        if (IsKeyDown(KEY_RIGHT)) 
+        if (IsKeyDown(KEY_RIGHT))
             velocity.dx = PLAYER_SPEED;
-        if (IsKeyDown(KEY_LEFT)) 
+        if (IsKeyDown(KEY_LEFT))
             velocity.dx = -PLAYER_SPEED;
-        if (IsKeyDown(KEY_UP)) 
+        if (IsKeyDown(KEY_UP))
             velocity.dy = -PLAYER_SPEED;
-        if (IsKeyDown(KEY_DOWN)) 
+        if (IsKeyDown(KEY_DOWN))
             velocity.dy = PLAYER_SPEED;
     }
 }

@@ -6,11 +6,12 @@
 */
 
 #pragma once
-#include "System.hpp"
 #include "Scene.hpp"
+#include "System.hpp"
 #include "Time.hpp"
 
-class MovementSystem : public System {
-    public:
-        void update(Scene &scene);
+class MovementSystem : public System
+{
+  public:
+    void update(Scene &scene);
 };

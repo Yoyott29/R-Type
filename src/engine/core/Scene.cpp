@@ -9,15 +9,12 @@
 
 Scene::Scene()
     : _entityManager(std::make_unique<EntityManager>()),
-    _componentManager(std::make_unique<ComponentManager>()),
-    _systemManager(std::make_unique<SystemManager>())
+      _componentManager(std::make_unique<ComponentManager>()),
+      _systemManager(std::make_unique<SystemManager>())
 {
 }
 
-Entity Scene::createEntity()
-{
-    return _entityManager->createEntity();
-}
+Entity Scene::createEntity() { return _entityManager->createEntity(); }
 
 void Scene::destroyEntity(Entity entity)
 {

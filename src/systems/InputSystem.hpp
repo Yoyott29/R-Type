@@ -6,11 +6,12 @@
 */
 
 #pragma once
-#include "System.hpp"
 #include "Scene.hpp"
+#include "System.hpp"
 #define PLAYER_SPEED 150.0f
 
-class InputSystem : public System {
-    public:
-        void update(Scene &scene);
+class InputSystem : public System
+{
+  public:
+    void update(Scene &scene);
 };

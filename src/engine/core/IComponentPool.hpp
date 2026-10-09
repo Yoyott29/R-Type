@@ -8,8 +8,9 @@
 #pragma once
 #include "Entity.hpp"
 
-class IComponentPool {
-    public:
-        virtual ~IComponentPool() = default;
-        virtual void destroyEntity(Entity entity) = 0;
+class IComponentPool
+{
+  public:
+    virtual ~IComponentPool() = default;
+    virtual void destroyEntity(Entity entity) = 0;
 };

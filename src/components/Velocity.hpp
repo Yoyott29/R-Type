@@ -7,8 +7,7 @@
 
 #pragma once
 
-struct Velocity
-{
+struct Velocity {
     float dx;
     float dy;
 };

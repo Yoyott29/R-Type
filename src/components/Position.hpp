@@ -7,8 +7,7 @@
 
 #pragma once
 
-struct Position
-{
+struct Position {
     float x;
     float y;
 };

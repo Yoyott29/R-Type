@@ -6,11 +6,12 @@
 */
 
 #pragma once
-#include "System.hpp"
-#include "Scene.hpp"
 #include "IRenderer.hpp"
+#include "Scene.hpp"
+#include "System.hpp"
 
-class RenderSystem : public System {
-    public:
-        void update(Scene &scene, IRenderer &renderer);
+class RenderSystem : public System
+{
+  public:
+    void update(Scene &scene, IRenderer &renderer);
 };

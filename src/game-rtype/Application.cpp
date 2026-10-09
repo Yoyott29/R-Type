@@ -6,12 +6,12 @@
 */
 
 #include "Application.hpp"
-#include "RaylibRenderer.hpp"
-#include "Time.hpp"
-#include "Position.hpp"
-#include "Velocity.hpp"
-#include "Sprite.hpp"
 #include "PlayerControlled.hpp"
+#include "Position.hpp"
+#include "RaylibRenderer.hpp"
+#include "Sprite.hpp"
+#include "Time.hpp"
+#include "Velocity.hpp"
 
 #define WINDOW_WIDTH 1200
 #define WINDOW_HEIGHT 800

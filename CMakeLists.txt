@@ -41,21 +41,29 @@ add_executable(${PROJECT_NAME}
     src/main.cpp
     src/game-rtype/Application.cpp
     src/game-rtype/RaylibRenderer.cpp
+    src/engine/core/Scene.cpp
+    src/engine/core/EntityManager.cpp
+    src/engine/systems/SystemManager.cpp
+    src/systems/InputSystem.cpp
+    src/systems/RenderSystem.cpp
+    src/systems/MovementSystem.cpp
 )
 
-target_include_directories(rtype_demo PRIVATE
+target_include_directories(${PROJECT_NAME} PRIVATE
     src/game-rtype
+    src/engine/core
+    src/engine/errors
+    src/engine/renderer
+    src/engine/systems
+    src/systems
+    src/components
 )
 
-target_link_libraries(rtype_demo PRIVATE
-    rtype_engine
-    rtype_systems
-    raylib
+target_include_directories(${PROJECT_NAME} SYSTEM PRIVATE
+    "${raylib_SOURCE_DIR}/src"
 )
 
-target_link_libraries(${PROJECT_NAME}
-    PRIVATE raylib
-)
+target_link_libraries(${PROJECT_NAME} PRIVATE raylib)
 
 # ============================================================
 # Compiler warnings

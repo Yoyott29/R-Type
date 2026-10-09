@@ -6,24 +6,25 @@
 */
 
 #pragma once
-#include <queue>
+#include "Entity.hpp"
 #include <array>
 #include <iostream>
-#include "Entity.hpp"
+#include <queue>
 
-class EntityManager {
-    public:
-        EntityManager();
+class EntityManager
+{
+  public:
+    EntityManager();
 
-        Entity createEntity();
-        void destroyEntity(Entity entity);
-        void setupComponentSet(Entity entity, ComponentSet componentSet);
-        ComponentSet getComponentSet(Entity entity) const;
-        bool isAlive(Entity entity) const;
+    Entity createEntity();
+    void destroyEntity(Entity entity);
+    void setupComponentSet(Entity entity, ComponentSet componentSet);
+    ComponentSet getComponentSet(Entity entity) const;
+    bool isAlive(Entity entity) const;
 
-    private:
-        std::queue<Entity> _availableEntities = {};
-        std::array<ComponentSet, MAX_ENTITIES> _componentSets = {};
-        std::uint32_t _livingEntityCount = {};
-        std::bitset<MAX_ENTITIES> _alive = {};
+  private:
+    std::queue<Entity> _availableEntities = {};
+    std::array<ComponentSet, MAX_ENTITIES> _componentSets = {};
+    std::uint32_t _livingEntityCount = {};
+    std::bitset<MAX_ENTITIES> _alive = {};
 };

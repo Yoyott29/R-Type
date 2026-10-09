@@ -13,26 +13,18 @@ RaylibRenderer::~RaylibRenderer()
         CloseWindow();
 }
 
-void RaylibRenderer::init(int width, int height, std::string const &windowTitle) {
+void RaylibRenderer::init(int width, int height, std::string const &windowTitle)
+{
     SetTraceLogLevel(LOG_NONE);
     InitWindow(width, height, windowTitle.c_str());
     SetTargetFPS(60);
 }
 
-bool RaylibRenderer::shouldClose()
-{
-    return WindowShouldClose();
-}
+bool RaylibRenderer::shouldClose() { return WindowShouldClose(); }
 
-void RaylibRenderer::beginFrame()
-{
-    BeginDrawing();
-}
+void RaylibRenderer::beginFrame() { BeginDrawing(); }
 
-void RaylibRenderer::endFrame()
-{
-    EndDrawing();
-}
+void RaylibRenderer::endFrame() { EndDrawing(); }
 
 void RaylibRenderer::clear(ColorRGBA color)
 {
@@ -41,17 +33,11 @@ void RaylibRenderer::clear(ColorRGBA color)
 
 void RaylibRenderer::drawRectangle(float x, float y, float width, float height, ColorRGBA color)
 {
-    DrawRectangle(
-        static_cast<int>(x), static_cast<int>(y),
-        static_cast<int>(width), static_cast<int>(height),
-        getRaylibColor(color)
-    );
+    DrawRectangle(static_cast<int>(x), static_cast<int>(y), static_cast<int>(width),
+                  static_cast<int>(height), getRaylibColor(color));
 }
 
-float RaylibRenderer::getFrameTime()
-{
-    return GetFrameTime();
-}
+float RaylibRenderer::getFrameTime() { return GetFrameTime(); }
 
 Color RaylibRenderer::getRaylibColor(ColorRGBA color)
 {

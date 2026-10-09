@@ -8,11 +8,10 @@
 #pragma once
 #include "ColorRGBA.hpp"
 
-struct Sprite
-{
+struct Sprite {
     float width;
     float height;
-    //int layer;
-    //Sprite sprite;
+    // int layer;
+    // Sprite sprite;
     ColorRGBA color;
 };
