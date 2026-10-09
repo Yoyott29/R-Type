@@ -5,10 +5,19 @@
 ** main
 */
 
-#include <iostream>
-#include <sstream>
+#include <raylib.h>
 
-int main(int argc, char **argv)
+int main()
 {
-    std::cout << "Hello, World!" << std::endl;
+    InitWindow(800, 600, "R-Type");
+    SetTargetFPS(60);
+
+    while (!WindowShouldClose()) {
+        BeginDrawing();
+        ClearBackground(BLACK);
+        EndDrawing();
+    }
+
+    CloseWindow();
+    return 0;
 }
