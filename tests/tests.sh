@@ -25,7 +25,7 @@ run_test "build" bash -c "cmake -B build && cmake --build build"
 echo "== Tests =="
 # Add your tests below, one line each:
 #run_test "server binary exists"  test -x build/r-type_server
-run_test "client binary exists"  test -x build/r-type_client
+run_test "client binary exists"  test -x ./r-type_client
 
 echo
 echo "================================"

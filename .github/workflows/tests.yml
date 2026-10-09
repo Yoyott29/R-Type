@@ -2,21 +2,66 @@ name: tests
 
 on:
   pull_request:
-    branches: [main, dev]
+    branches: [main]
 
 permissions:
   contents: read
 
+# Cancel outdated runs on the same PR/branch to save CI quota
+concurrency:
+  group: tests-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CPM_SOURCE_CACHE: ${{ github.workspace }}/.cpm-cache
+
 jobs:
-  tests:
-    if: >
-      github.repository != 'EpitechPGE3-2026/G-ING-500-LIL-5-1-rtype-4' &&
-      github.head_ref == 'dev'
+  lint:
+    if: github.repository != 'EpitechPGE3-2026/G-ING-500-LIL-5-1-rtype-4'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      # install dependencies later if needed
+      - name: Install clang tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends clang-format clang-tidy cmake
+
+      - name: Check formatting
+        run: |
+          shopt -s globstar nullglob
+          files=(src/**/*.cpp src/**/*.hpp)
+          if (( ${#files[@]} )); then
+            clang-format --style=file:Norms/.clang-format --dry-run -Werror "${files[@]}"
+          fi
+
+  tests:
+    if: github.repository != 'EpitechPGE3-2026/G-ING-500-LIL-5-1-rtype-4'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install system libraries (OpenGL / X11 for raylib)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            libgl1-mesa-dev libx11-dev libxrandr-dev libxi-dev \
+            libxcursor-dev libxinerama-dev libwayland-dev libxkbcommon-dev \
+            clang-tidy
+
+      # CPM sources are cached: re-downloaded only when a dependency changes
+      - name: Restore CPM cache
+        uses: actions/cache@v4
+        with:
+          path: .cpm-cache
+          key: cpm-${{ runner.os }}-${{ hashFiles('CMakeLists.txt', 'cmake/CPM.cmake') }}
+          restore-keys: |
+            cpm-${{ runner.os }}-
 
       - name: Run tests
         run: ./tests/tests.sh
+
+      - name: clang-tidy (build with analysis)
+        run: |
+          cmake -B build-tidy -DENABLE_CLANG_TIDY=ON
+          cmake --build build-tidy --parallel
