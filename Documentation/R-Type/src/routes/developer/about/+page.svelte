@@ -1,11 +1,14 @@
 <script>
 	const treeExample = `R-Type/
-├── .github/workflows/     # automation
-├── Documentation/R-Type/  # this documentation site
-├── src/                   # source code
-├── tests/                 # tests (tests/tests.sh)
-├── CMakeLists.txt         # build configuration
-└── Readme.md`;
+├── .github/workflows/       # GitHub Actions
+├── .githooks/               # local git hooks
+├── Documentation/R-Type/    # this documentation site
+├── Developer Setup/         # developer setup script
+├── Norms/                   # clang-format and clang-tidy rules
+├── src/                     # C++ source code
+├── tests/                   # tests/tests.sh
+├── CMakeLists.txt           # build configuration
+└── README.md`;
 </script>
 
 <svelte:head>
@@ -40,7 +43,9 @@
 <h2 class="mt-9 text-lg font-semibold">Repository layout</h2>
 <p class="mt-3 max-w-[100ch] leading-7">
 	The project lives in one repository, with the code, the tests, the automation and this
-	documentation side by side:
+	documentation side by side. The C++ code is organized around an ECS architecture: the engine
+	contains the reusable core, while the R-Type application connects the renderer and gameplay
+	systems:
 </p>
 {@render code(treeExample)}
 
@@ -81,6 +86,16 @@
 		site to Vercel when the docs change on main.
 	</li>
 </ul>
+
+<h2 class="mt-9 text-lg font-semibold">Developer documentation</h2>
+<p class="mt-3 max-w-[100ch] leading-7">
+	The developer section also documents the local workflow: {@render a('/developer/developer-setup',
+	'Developer Setup')} prepares formatting tools and git hooks, while the {@render a('/developer/githooks',
+	'.githooks')}, {@render a('/developer/clang-format', 'clang-format')} and
+	{@render a('/developer/clang-tidy', 'clang-tidy')} pages explain the quality checks. The build and
+	test internals are covered by {@render a('/developer/cmakelists', 'CMakeLists')},
+	{@render a('/developer/cpm', 'CPM')}, and {@render a('/developer/tests-sh', 'tests.sh')}.
+</p>
 
 <h2 class="mt-9 text-lg font-semibold">Contributing to the docs</h2>
 <p class="mt-3 max-w-[100ch] leading-7">
