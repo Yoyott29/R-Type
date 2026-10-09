@@ -22,13 +22,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install clang tools
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y --no-install-recommends clang-format clang-tidy cmake
+      - name: Install clang-format
+        run: pip install clang-format==21.1.8
 
       - name: Check formatting
         run: |
+          clang-format --version
           shopt -s globstar nullglob
           files=(src/**/*.cpp src/**/*.hpp)
           if (( ${#files[@]} )); then
