@@ -5,10 +5,16 @@
 ** main
 */
 
-#include <iostream>
-#include <sstream>
+#include "Application.hpp"
 
-int main(int argc, char **argv)
+int main()
 {
-    std::cout << "Hello, World!" << std::endl;
+    try {
+        Application application;
+        application.run();
+    } catch (std::exception const &error) {
+        std::cerr << "Fatal error: " << error.what() << std::endl;
+        return 84;
+    }
+    return 0;
 }
