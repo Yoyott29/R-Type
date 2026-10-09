@@ -51,12 +51,12 @@
 		major release (v1.0, v2.0...) is created from it.
 	</li>
 	<li>
-		<strong class="font-semibold">dev</strong> is where work is integrated. Changes reach main
-		through a pull request from dev, and the tests run on that pull request.
+		<strong class="font-semibold">dev</strong> is where work is integrated. Pull requests targeting
+		main run the test workflow.
 	</li>
 	<li>
-		Any other branch can create a pre-release (v1.1, v1.2...) when the versioning workflow is run on
-		it.
+		The versioning workflow can be run manually on a selected branch. It creates a major release from
+		main and a pre-release from other branches.
 	</li>
 </ul>
 
@@ -70,8 +70,7 @@
 		releases.
 	</li>
 	<li>
-		{@render a('/developer/running-tests', 'Running Tests')}: runs the test script on pull requests
-		from dev to main.
+		{@render a('/developer/running-tests', 'Running Tests')}: checks pull requests targeting main.
 	</li>
 	<li>
 		{@render a('/developer/mirror-repository', 'Mirror Repository')}: copies every branch and tag

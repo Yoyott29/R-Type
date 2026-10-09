@@ -1,0 +1,5 @@
+BasedOnStyle: LLVM # Use LLVM style as the base
+IndentWidth: 4 # Set indentation width to 4 spaces
+ColumnLimit: 100 # Set column limit to 100 characters
+BreakBeforeBraces: Linux # Break braces before opening braces
+InsertNewlineAtEOF: true # Insert a newline at the end of the file
