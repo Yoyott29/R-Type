@@ -1,10 +1,4 @@
 #!/usr/bin/env bash
-# Usage: ./collaborators/setup.sh
-# Supported: Linux, and Windows (run from Git Bash).
-# - installs clang-format (pinned version, same as CI) via pip/pipx
-# - installs clang-tidy via the system package manager
-# - creates .vscode/settings.json (format on save)
-# - enables the repository git hooks
 
 set -euo pipefail
 
