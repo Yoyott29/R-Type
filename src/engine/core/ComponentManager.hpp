@@ -45,9 +45,9 @@ class ComponentManager
         getComponentPool<Component>().insertComponent(entity, component);
     }
 
-    template <typename Component> void removeComponent(Entity entity, Component component)
+    template <typename Component> void removeComponent(Entity entity)
     {
-        getComponentPool<Component>()->removeComponent(entity);
+        getComponentPool<Component>().removeComponent(entity);
     }
 
     template <typename Component> Component &getComponent(Entity entity)
