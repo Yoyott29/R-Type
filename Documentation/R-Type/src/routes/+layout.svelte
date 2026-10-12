@@ -21,8 +21,8 @@
 		{ title: 'Developer Environment'},
 		{ title: 'Build and Tests'},
 		{ title: 'Github Workflows'},
-		{ title: 'Documentation'},
 		{ title: 'Network'},
+		{ title: 'Documentation'},
 	];
 
 	const userPages = [
@@ -49,9 +49,9 @@
 		{ title: 'Mirror Repository', path: '/developer/mirror-repository', section: 3 },
 		{ title: 'Running Tests', path: '/developer/running-tests', section: 3 },
 
-		{ title: 'How to add a page', path: '/developer/add-a-page', type: 'Developer', section: 4 },
+		{ title: 'How the server works', path: '/developer/udp-server', section: 4 },
 
-		{ title: 'UDP Server', path: '/developer/udp-server', section: 5 },
+		{ title: 'How to add a page', path: '/developer/add-a-page', type: 'Developer', section: 5 },
 	];
 
 
