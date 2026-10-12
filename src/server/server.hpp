@@ -6,23 +6,26 @@
 */
 
 #pragma once
-    #include <cstdint>
-    #include <atomic>
-    #include "input/input_queue.hpp"
-    #include "network/network.hpp"
-    #include "game/game_loop.hpp"
+#include "game/game_loop.hpp"
+#include "input/input_queue.hpp"
+#include "network/network.hpp"
+#include <atomic>
+#include <cstdint>
 
-namespace rtype_server {
-    class Server {
-        public:
-            Server();
-            void run();
-        private:
-            static constexpr uint16_t DEFAULT_PORT = 1234;
+namespace rtype_server
+{
+class Server
+{
+  public:
+    Server();
+    void run();
 
-            std::atomic<bool> _running{false};
-            InputQueue _inputs;
-            Network _network;
-            GameLoop _gameLoop;
-    };
-}
+  private:
+    static constexpr uint16_t DEFAULT_PORT = 1234;
+
+    std::atomic<bool> _running{false};
+    InputQueue _inputs;
+    Network _network;
+    GameLoop _gameLoop;
+};
+} // namespace rtype_server

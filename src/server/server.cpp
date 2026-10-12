@@ -8,15 +8,15 @@
 #include "server.hpp"
 #include <thread>
 
-namespace rtype_server {
-    Server::Server()
-        : _network(DEFAULT_PORT, _inputs, _running), _gameLoop(_inputs, _running) {
-    }
+namespace rtype_server
+{
+Server::Server() : _network(DEFAULT_PORT, _inputs, _running), _gameLoop(_inputs, _running) {}
 
-    void Server::run() {
-        _running = true;
-        std::thread networkThread(&Network::receiveLoop, &_network);
-        _gameLoop.run();
-        networkThread.join();
-    }
+void Server::run()
+{
+    _running = true;
+    std::thread networkThread(&Network::receiveLoop, &_network);
+    _gameLoop.run();
+    networkThread.join();
 }
+} // namespace rtype_server

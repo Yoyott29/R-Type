@@ -6,19 +6,22 @@
 */
 
 #pragma once
-    #include <cstdint>
-    #include <atomic>
-    #include "input/input_queue.hpp"
+#include "input/input_queue.hpp"
+#include <atomic>
+#include <cstdint>
 
-namespace rtype_server {
-    class Network {
-        public:
-            Network(uint16_t port, InputQueue &inputs, std::atomic<bool> &running);
-            ~Network();
-            void receiveLoop();
-        private:
-            int _socket = -1;
-            InputQueue &_inputs;
-            std::atomic<bool> &_running;
-    };
-}
+namespace rtype_server
+{
+class Network
+{
+  public:
+    Network(uint16_t port, InputQueue &inputs, std::atomic<bool> &running);
+    ~Network();
+    void receiveLoop();
+
+  private:
+    int _socket = -1;
+    InputQueue &_inputs;
+    std::atomic<bool> &_running;
+};
+} // namespace rtype_server
