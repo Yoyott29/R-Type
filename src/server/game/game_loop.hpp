@@ -21,7 +21,7 @@ class GameLoop
 
   private:
     void executeInput(uint8_t input);
-    void debugPrintInput(uint8_t input); // TEST: a supprimer
+    void debugPrintInput(uint8_t input); // DEBUG
 
     static constexpr std::chrono::milliseconds TICK_DURATION{1000};
 
