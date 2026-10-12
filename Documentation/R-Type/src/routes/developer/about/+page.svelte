@@ -1,11 +1,14 @@
 <script>
 	const treeExample = `R-Type/
-├── .github/workflows/     # automation
-├── Documentation/R-Type/  # this documentation site
-├── src/                   # source code
-├── tests/                 # tests (tests/tests.sh)
-├── CMakeLists.txt         # build configuration
-└── Readme.md`;
+├── .github/workflows/       # GitHub Actions
+├── .githooks/               # local git hooks
+├── Documentation/R-Type/    # this documentation site
+├── Developer Setup/         # developer setup script
+├── Norms/                   # clang-format and clang-tidy rules
+├── src/                     # C++ source code
+├── tests/                   # tests/tests.sh
+├── CMakeLists.txt           # build configuration
+└── README.md`;
 </script>
 
 <svelte:head>
@@ -40,7 +43,9 @@
 <h2 class="mt-9 text-lg font-semibold">Repository layout</h2>
 <p class="mt-3 max-w-[100ch] leading-7">
 	The project lives in one repository, with the code, the tests, the automation and this
-	documentation side by side:
+	documentation side by side. The C++ code is organized around an ECS architecture: the engine
+	contains the reusable core, while the R-Type application connects the renderer and gameplay
+	systems:
 </p>
 {@render code(treeExample)}
 
@@ -51,12 +56,12 @@
 		major release (v1.0, v2.0...) is created from it.
 	</li>
 	<li>
-		<strong class="font-semibold">dev</strong> is where work is integrated. Changes reach main
-		through a pull request from dev, and the tests run on that pull request.
+		<strong class="font-semibold">dev</strong> is where work is integrated. Pull requests targeting
+		main run the test workflow.
 	</li>
 	<li>
-		Any other branch can create a pre-release (v1.1, v1.2...) when the versioning workflow is run on
-		it.
+		The versioning workflow can be run manually on a selected branch. It creates a major release from
+		main and a pre-release from other branches.
 	</li>
 </ul>
 
@@ -70,8 +75,7 @@
 		releases.
 	</li>
 	<li>
-		{@render a('/developer/running-tests', 'Running Tests')}: runs the test script on pull requests
-		from dev to main.
+		{@render a('/developer/running-tests', 'Running Tests')}: checks pull requests targeting main.
 	</li>
 	<li>
 		{@render a('/developer/mirror-repository', 'Mirror Repository')}: copies every branch and tag
@@ -82,6 +86,16 @@
 		site to Vercel when the docs change on main.
 	</li>
 </ul>
+
+<h2 class="mt-9 text-lg font-semibold">Developer documentation</h2>
+<p class="mt-3 max-w-[100ch] leading-7">
+	The developer section also documents the local workflow: {@render a('/developer/developer-setup',
+	'Developer Setup')} prepares formatting tools and git hooks, while the {@render a('/developer/githooks',
+	'.githooks')}, {@render a('/developer/clang-format', 'clang-format')} and
+	{@render a('/developer/clang-tidy', 'clang-tidy')} pages explain the quality checks. The build and
+	test internals are covered by {@render a('/developer/cmakelists', 'CMakeLists')},
+	{@render a('/developer/cpm', 'CPM')}, and {@render a('/developer/tests-sh', 'tests.sh')}.
+</p>
 
 <h2 class="mt-9 text-lg font-semibold">Contributing to the docs</h2>
 <p class="mt-3 max-w-[100ch] leading-7">

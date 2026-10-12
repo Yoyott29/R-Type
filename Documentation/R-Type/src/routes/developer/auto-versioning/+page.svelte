@@ -27,7 +27,6 @@ fi`;
   push:
     branches:
       - main
-      - dev
   workflow_dispatch:`;
 </script>
 
@@ -69,8 +68,9 @@ fi`;
 
 <h2 class="mt-9 text-lg font-semibold">When it runs</h2>
 <p class="mt-3 max-w-[100ch] leading-7">
-	To release automatically, push either to the {@render c('main')} or {@render c('dev')} branch. Every push to those branches then creates a new
-	release.
+	The workflow is currently started manually with {@render c('workflow_dispatch')} from the
+	<strong class="font-semibold">Actions</strong> tab. Select the branch or commit to release, then
+	run the workflow.
 </p>
 {@render code(enableExample)}
 
@@ -78,10 +78,7 @@ fi`;
 <ul class="mt-3 max-w-[100ch] list-disc space-y-1.5 pl-5 leading-7">
 	<li>{@render c('contents: write')} lets the workflow create tags and releases.</li>
 	<li>{@render c('PROJECT_NAME')} is used in release titles, for example "R-Type v1.0".</li>
-	<li>
-		{@render c('concurrency')} makes runs wait for each other, so two runs never compute the same
-		version.
-	</li>
+	<li>{@render c('concurrency')} makes runs wait for each other, so two runs never compute the same version.</li>
 	<li>
 		{@render c('runs-on: self-hosted')} runs the job on our own runner. If it is offline, the run
 		waits.

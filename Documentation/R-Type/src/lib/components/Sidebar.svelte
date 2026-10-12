@@ -2,6 +2,7 @@
 	import { untrack } from 'svelte';
 	import { page as current } from '$app/state';
 	import { goto } from '$app/navigation';
+	import { docMode } from '$lib/mode.svelte.js';
 
 	let {
 		userSections = [],
@@ -19,6 +20,10 @@
 	}
 
 	let mode = $state(modeFor(current.url.pathname));
+
+	$effect(() => {
+		docMode.current = mode;
+	});
 
 	$effect(() => {
 		const path = current.url.pathname;

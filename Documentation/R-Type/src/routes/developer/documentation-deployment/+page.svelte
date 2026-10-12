@@ -45,7 +45,7 @@
 </p>
 
 <p class="max-w-[68ch] leading-7">
-	The workflow {@render c('.github/workflows/deploy-docs.yml')} builds the site in
+	The workflow {@render c('.github/workflows/deploy.yml')} builds the site in
 	{@render c('Documentation/R-Type')} and deploys it to production on Vercel. It runs on its own
 	whenever the documentation changes.
 </p>
@@ -86,7 +86,7 @@
 
 <h2 class="mt-9 text-lg font-semibold">Steps</h2>
 <p class="mt-3 max-w-[68ch] leading-7">
-	After checking out the code and installing Node 20, the workflow runs four commands:
+	After checking out the code and installing Node 22, the workflow runs four commands:
 </p>
 <ul class="mt-3 max-w-[68ch] list-disc space-y-1.5 pl-5 leading-7">
 	<li>{@render c('npm i -g vercel')} installs the Vercel CLI.</li>
