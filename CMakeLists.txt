@@ -98,3 +98,30 @@ if(ENABLE_CLANG_TIDY)
         message(WARNING "clang-tidy not found: static analysis skipped")
     endif()
 endif()
+
+# ============================================================
+# Server
+# ============================================================
+
+find_package(Threads REQUIRED)
+
+add_executable(r-type_server
+    src/server/main.cpp
+    src/server/server.cpp
+    src/server/network/network.cpp
+    src/server/game/game_loop.cpp
+    src/server/input/input_queue.cpp
+)
+
+target_include_directories(r-type_server PRIVATE
+    src
+    src/server
+)
+
+target_link_libraries(r-type_server PRIVATE Threads::Threads)
+
+if(MSVC)
+    target_compile_options(r-type_server PRIVATE /W4)
+else()
+    target_compile_options(r-type_server PRIVATE -Wall -Wextra)
+endif()

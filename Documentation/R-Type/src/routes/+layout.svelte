@@ -22,6 +22,7 @@
 		{ title: 'Build and Tests'},
 		{ title: 'Github Workflows'},
 		{ title: 'ECS'},
+		{ title: 'Network'},
 		{ title: 'Documentation'},
 	];
 
@@ -55,7 +56,9 @@
 		{ title: 'How systems work', path: '/developer/ecs-systems', section: 4 },
 		{ title: 'How the game loop works', path: '/developer/game-loop', section: 4 },
 
-		{ title: 'How to add a page', path: '/developer/add-a-page', type: 'Developer', section: 5 },
+		{ title: 'How the server works', path: '/developer/udp-server', section: 5 },
+
+		{ title: 'How to add a page', path: '/developer/add-a-page', type: 'Developer', section: 6 },
 	];
 
 
