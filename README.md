@@ -13,7 +13,7 @@ cmake -B build
 cmake --build build
 ```
 
-Start the server in one terminal:
+Start the server in one terminal. It listens for UDP packets on port 1234:
 
 ```sh
 ./r-type_server
@@ -25,7 +25,7 @@ Then start one client per player in separate terminals:
 ./r-type_client
 ```
 
-On Windows, run:
+On Windows, the build does not work yet: the server still uses Linux sockets. Once it does, run:
 
 ```powershell
 cmake -B build
