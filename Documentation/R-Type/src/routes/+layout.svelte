@@ -22,6 +22,7 @@
 		{ title: 'Build and Tests'},
 		{ title: 'Github Workflows'},
 		{ title: 'Documentation'},
+		{ title: 'Network'},
 	];
 
 	const userPages = [
@@ -49,6 +50,8 @@
 		{ title: 'Running Tests', path: '/developer/running-tests', section: 3 },
 
 		{ title: 'How to add a page', path: '/developer/add-a-page', type: 'Developer', section: 4 },
+
+		{ title: 'UDP Server', path: '/developer/udp-server', section: 5 },
 	];
 
 
