@@ -7,5 +7,4 @@
 
 #pragma once
 
-struct PlayerControlled {
-};
+struct PlayerControlled {};

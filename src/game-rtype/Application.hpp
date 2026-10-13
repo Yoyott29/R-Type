@@ -6,6 +6,7 @@
 */
 
 #pragma once
+#include "Collider2DSystem.hpp"
 #include "IRenderer.hpp"
 #include "InputSystem.hpp"
 #include "MovementSystem.hpp"
@@ -29,4 +30,5 @@ class Application
     std::shared_ptr<InputSystem> _inputSystem;
     std::shared_ptr<MovementSystem> _movementSystem;
     std::shared_ptr<RenderSystem> _renderSystem;
+    std::shared_ptr<Collider2DSystem> _Collider2DSystem;
 };

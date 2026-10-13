@@ -19,6 +19,7 @@ class RaylibRenderer : public IRenderer
     void endFrame() override;
     void clear(ColorRGBA color) override;
     void drawRectangle(float x, float y, float width, float height, ColorRGBA color) override;
+    void drawCircle(float x, float y, float radius, ColorRGBA color) override;
     float getFrameTime() override;
 
   private:

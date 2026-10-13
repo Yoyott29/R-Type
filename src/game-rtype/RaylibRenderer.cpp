@@ -37,6 +37,11 @@ void RaylibRenderer::drawRectangle(float x, float y, float width, float height, 
                   static_cast<int>(height), getRaylibColor(color));
 }
 
+void RaylibRenderer::drawCircle(float x, float y, float radius, ColorRGBA color)
+{
+    DrawCircle(static_cast<int>(x), static_cast<int>(y), radius, getRaylibColor(color));
+}
+
 float RaylibRenderer::getFrameTime() { return GetFrameTime(); }
 
 Color RaylibRenderer::getRaylibColor(ColorRGBA color)
