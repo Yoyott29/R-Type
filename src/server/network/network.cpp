@@ -52,7 +52,7 @@ void Network::receiveLoop()
             _inputs.push(static_cast<uint8_t>(buffer[1]));
             continue;
         }
-        std::cout << "Received a packet from a client : " << message;
+        // std::cout << "Received a packet from a client : " << message;
     }
     _running = false;
 }
