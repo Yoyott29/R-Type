@@ -2,10 +2,11 @@
 ** EPITECH PROJECT, 2026
 ** R-Type
 ** File description:
-** PlayerControlled
+** AppAlive
 */
 
 #pragma once
 
-struct PlayerControlled {
+struct AppAlive {
+    bool alive = true;
 };

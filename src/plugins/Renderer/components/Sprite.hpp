@@ -6,12 +6,12 @@
 */
 
 #pragma once
-#include "ColorRGBA.hpp"
+#include <raylib.h>
 
 struct Sprite {
     float width;
     float height;
     // int layer;
     // Sprite sprite;
-    ColorRGBA color;
+    Color color;
 };
