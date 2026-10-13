@@ -18,3 +18,6 @@
 # VsCode settings
 .vscode/
 *.txt
+
+# Local test scripts
+/tests/send_inputs.sh
