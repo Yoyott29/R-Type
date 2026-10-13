@@ -55,8 +55,8 @@ void GameLoop::debugPrintInput(uint8_t input)
         std::cout << " LEFT";
     if (input & rtype_protocol::RIGHT)
         std::cout << " RIGHT";
-    if (input & rtype_protocol::SHOOT)
-        std::cout << " SHOOT";
+    if (input & rtype_protocol::CHARGE)
+        std::cout << " CHARGE";
     std::cout << " (" << static_cast<int>(input) << ")" << std::endl;
 }
 } // namespace rtype_server
