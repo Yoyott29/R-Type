@@ -42,6 +42,7 @@ add_executable(${PROJECT_NAME}
     src/game-rtype/Application.cpp
     src/game-rtype/RaylibRenderer.cpp
     src/engine/core/Scene.cpp
+    src/engine/core/TickTimeManager.cpp
     src/engine/core/EntityManager.cpp
     src/engine/systems/SystemManager.cpp
     src/systems/InputSystem.cpp
@@ -111,11 +112,21 @@ add_executable(r-type_server
     src/server/network/network.cpp
     src/server/game/game_loop.cpp
     src/server/input/input_queue.cpp
+    src/engine/core/Scene.cpp
+    src/engine/core/TickTimeManager.cpp
+    src/engine/core/EntityManager.cpp
+    src/engine/systems/SystemManager.cpp
+    src/systems/MovementSystem.cpp
 )
 
 target_include_directories(r-type_server PRIVATE
     src
     src/server
+    src/engine/core
+    src/engine/errors
+    src/engine/systems
+    src/systems
+    src/components
 )
 
 target_link_libraries(r-type_server PRIVATE Threads::Threads)
