@@ -27,3 +27,13 @@ void SystemManager::entityComponentSetChanged(Entity entity, ComponentSet compon
             pair.second->_entities.erase(entity);
     }
 }
+
+void SystemManager::runSchedule(ScheduleLabel label, Scene &scene)
+{
+    auto it = _systemsByLabel.find(label);
+    if (it != _systemsByLabel.end()) {
+        for (auto const &system : it->second) {
+            system->update(scene);
+        }
+    }
+}
