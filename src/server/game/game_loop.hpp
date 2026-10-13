@@ -6,9 +6,9 @@
 */
 
 #pragma once
+#include "TickTimeManager.hpp"
 #include "input/input_queue.hpp"
 #include <atomic>
-#include <chrono>
 #include <cstdint>
 
 namespace rtype_server
@@ -20,12 +20,11 @@ class GameLoop
     void run();
 
   private:
-    void executeInput(uint8_t input);
+    void executeInput(uint8_t input, std::uint64_t tick);
     void debugPrintInput(uint8_t input); // DEBUG
 
-    static constexpr std::chrono::milliseconds TICK_DURATION{1000};
-
     InputQueue &_inputs;
+    TickTimeManager _ticks;
     std::atomic<bool> &_running;
 };
 } // namespace rtype_server

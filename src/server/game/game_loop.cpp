@@ -18,27 +18,29 @@ GameLoop::GameLoop(InputQueue &inputs, std::atomic<bool> &running)
 {
 }
 
-// Thread jeu : a chaque tick, execute le plus ancien input en attente, ou rien si la queue est vide
+// Thread jeu : attend le prochain tick, puis execute le plus ancien input en attente (ou rien)
 void GameLoop::run()
 {
-    auto nextTick = std::chrono::steady_clock::now();
+    _ticks.start();
 
     while (_running) {
-        nextTick += TICK_DURATION;
-        std::this_thread::sleep_until(nextTick);
+        _ticks.advance();
+        std::this_thread::sleep_until(_ticks.getNextTickTime());
         std::optional<uint8_t> input = _inputs.pop();
         if (!input) {
-            std::cout << "[tick] ----- nothing received" << std::endl;
+            if (_ticks.getCurrentTick() % 60 == 0)
+                std::cout << "[tick " << _ticks.getCurrentTick() << "] nothing received"
+                          << std::endl;
             continue;
         }
-        executeInput(*input);
+        executeInput(*input, _ticks.getCurrentTick());
     }
 }
 
 // Pour l'instant on affiche juste les touches, plus tard -> l'ECS ici
-void GameLoop::executeInput(uint8_t input)
+void GameLoop::executeInput(uint8_t input, std::uint64_t tick)
 {
-    std::cout << "[tick] executed :";
+    std::cout << "[tick " << tick << "] executed :";
     debugPrintInput(input);
 }
 
