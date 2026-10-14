@@ -6,7 +6,7 @@
 */
 
 #include "game/game_loop.hpp"
-#include "common/protocol.hpp"
+#include "rtype_protocol.hpp"
 #include <iostream>
 #include <optional>
 #include <thread>

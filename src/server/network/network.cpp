@@ -6,7 +6,7 @@
 */
 
 #include "network/network.hpp"
-#include "common/protocol.hpp"
+#include "rtype_protocol.hpp"
 #include <asio.hpp>
 #include <iostream>
 #include <netinet/in.h>
