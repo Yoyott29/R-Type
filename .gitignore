@@ -17,4 +17,7 @@
 
 # VsCode settings
 .vscode/
+
+#Other
 *.txt
+*.zip
