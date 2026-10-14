@@ -26,9 +26,9 @@ void Collider2DSystem::update(Scene &scene)
 
             if (isColliding) {
                 if (collider.onCollision)
-                    collider.onCollision(otherEntity);
+                    collider.onCollision(entity, otherEntity);
                 if (otherCollider.onCollision)
-                    otherCollider.onCollision(entity);
+                    otherCollider.onCollision(otherEntity, entity);
             }
         }
 

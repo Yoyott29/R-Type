@@ -16,6 +16,7 @@ RaylibRenderer::~RaylibRenderer()
 void RaylibRenderer::init(int width, int height, std::string const &windowTitle)
 {
     SetTraceLogLevel(LOG_NONE);
+    SetConfigFlags(FLAG_FULLSCREEN_MODE);
     InitWindow(width, height, windowTitle.c_str());
     SetTargetFPS(60);
 }

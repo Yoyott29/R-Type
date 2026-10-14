@@ -8,6 +8,7 @@
 #ifndef SCRIPTSYSTEM_HPP_
 #define SCRIPTSYSTEM_HPP_
 
+#include "IRenderer.hpp"
 #include "Scene.hpp"
 #include "Script.hpp"
 

@@ -9,6 +9,7 @@
 #define SCRIPT_HPP_
 
 #include "Entity.hpp"
+#include "IRenderer.hpp"
 #include "Scene.hpp"
 #include <functional>
 

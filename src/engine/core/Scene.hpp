@@ -64,9 +64,12 @@ class Scene
     {
         return _componentManager->getComponentType<Component>();
     }
+    void queueDestroy(Entity entity) { _destroyQueue.push_back(entity); }
+    void flushDestroyQueue();
 
   private:
     std::unique_ptr<EntityManager> _entityManager;
     std::unique_ptr<ComponentManager> _componentManager;
     std::unique_ptr<SystemManager> _systemManager;
+    std::vector<Entity> _destroyQueue;
 };

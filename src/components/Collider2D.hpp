@@ -13,5 +13,5 @@
 
 struct Collider2D {
     std::variant<BoxShape, CircleShape> shape;
-    std::function<void(Entity)> onCollision;
+    std::function<void(Entity, Entity)> onCollision;
 };
