@@ -7,6 +7,7 @@
 
 #pragma once
 #include "Collider2DSystem.hpp"
+#include "Game.hpp"
 #include "IRenderer.hpp"
 #include "InputSystem.hpp"
 #include "MovementSystem.hpp"
@@ -26,6 +27,7 @@ class Application
     void setupSystems();
 
     Scene _scene;
+    Game _game;
     std::unique_ptr<IRenderer> _renderer;
     std::shared_ptr<InputSystem> _inputSystem;
     std::shared_ptr<MovementSystem> _movementSystem;

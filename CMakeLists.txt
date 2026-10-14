@@ -41,6 +41,7 @@ add_executable(${PROJECT_NAME}
     src/main.cpp
     src/game-rtype/Application.cpp
     src/game-rtype/RaylibRenderer.cpp
+    src/game-rtype/Game.cpp
     src/engine/core/Scene.cpp
     src/engine/core/EntityManager.cpp
     src/engine/systems/SystemManager.cpp

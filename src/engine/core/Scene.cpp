@@ -25,3 +25,10 @@ void Scene::destroyEntity(Entity entity)
     _componentManager->entityDestroyed(entity);
     _systemManager->entityDestroyed(entity);
 }
+
+void Scene::flushDestroyQueue()
+{
+    for (Entity entity : _destroyQueue)
+        destroyEntity(entity);
+    _destroyQueue.clear();
+}

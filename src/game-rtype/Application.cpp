@@ -13,8 +13,8 @@
 #include "Time.hpp"
 #include "Velocity.hpp"
 
-#define WINDOW_WIDTH 1200
-#define WINDOW_HEIGHT 800
+#define WINDOW_WIDTH 1920
+#define WINDOW_HEIGHT 1080
 #define WINDOW_TITLE "R-Type"
 #define MAX_FRAME_TIME 0.25f
 
@@ -24,6 +24,7 @@ Application::Application() : _renderer(std::make_unique<RaylibRenderer>())
     setupComponents();
     setupSystems();
     setupEntities();
+    _game = Game();
 }
 
 void Application::setupComponents()
@@ -70,13 +71,9 @@ void Application::setupEntities()
     _scene.addComponent(playerOne, Velocity{0.0f, 0.0f});
     _scene.addComponent(playerOne, Sprite{BoxShape{50.0f, 35.0f}, ColorRGBA{0, 228, 48, 255}});
     _scene.addComponent(playerOne, PlayerControlled{});
-    _scene.addComponent(playerOne, Collider2D{BoxShape{50.0f, 35.0f}, nullptr});
-
-    Entity decoration = _scene.createEntity();
-    _scene.addComponent(decoration, Position{400.0f, 100.0f});
-    _scene.addComponent(decoration, Sprite{CircleShape{32.0f}, ColorRGBA{0, 121, 241, 255}});
-    // _scene.addComponent(decoration, Velocity{100.0f, 20.0f});
-    _scene.addComponent(decoration, Collider2D{CircleShape{32.0f}, nullptr});
+    _scene.addComponent(
+        playerOne, Collider2D{BoxShape{50.0f, 35.0f},
+                              [&](Entity player, Entity enemy) { _scene.queueDestroy(player); }});
 }
 
 void Application::run()
@@ -93,6 +90,8 @@ void Application::run()
             _inputSystem->update(_scene);
             _movementSystem->update(_scene);
             _Collider2DSystem->update(_scene);
+            _scene.flushDestroyQueue();
+            _game.runGameLoop(_scene, *_renderer);
             accumulator -= FIXED_DELTA_TIME;
         }
 
