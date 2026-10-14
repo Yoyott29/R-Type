@@ -1,5 +1,9 @@
 cmake_minimum_required(VERSION 3.28)
 
+if(NOT CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE Release)
+endif()
+
 project(r-type_client LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
@@ -21,7 +25,7 @@ include(CPM.cmake)
 CPMAddPackage(
     NAME raylib
     GITHUB_REPOSITORY raysan5/raylib
-    GIT_TAG 5.5
+    GIT_TAG 6.0
     OPTIONS
         "BUILD_EXAMPLES OFF"
         "BUILD_SHARED_LIBS OFF"
@@ -49,6 +53,7 @@ add_executable(${PROJECT_NAME}
     src/systems/RenderSystem.cpp
     src/systems/MovementSystem.cpp
     src/systems/Collider2DSystem.cpp
+    src/systems/ScriptSystem.cpp
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE
@@ -59,10 +64,6 @@ target_include_directories(${PROJECT_NAME} PRIVATE
     src/engine/systems
     src/systems
     src/components
-)
-
-target_include_directories(${PROJECT_NAME} SYSTEM PRIVATE
-    "${raylib_SOURCE_DIR}/src"
 )
 
 target_link_libraries(${PROJECT_NAME} PRIVATE raylib)
@@ -76,10 +77,6 @@ if(MSVC)
 else()
     target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra)
 endif()
-
-target_include_directories(r-type_client SYSTEM PRIVATE
-    "${raylib_SOURCE_DIR}/src"
-)
 
 # ============================================================
 # clang-tidy (runs on every compile of the client)

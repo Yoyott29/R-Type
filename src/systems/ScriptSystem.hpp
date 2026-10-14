@@ -1,0 +1,21 @@
+/*
+** EPITECH PROJECT, 2026
+** R-Type-Mirror
+** File description:
+** ScriptSystem
+*/
+
+#ifndef SCRIPTSYSTEM_HPP_
+#define SCRIPTSYSTEM_HPP_
+
+#include "IRenderer.hpp"
+#include "Scene.hpp"
+#include "Script.hpp"
+
+class ScriptSystem : public System
+{
+  public:
+    void update(Scene &scene);
+};
+
+#endif /* !SCRIPTSYSTEM_HPP_ */

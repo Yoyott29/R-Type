@@ -34,6 +34,7 @@ void Application::setupComponents()
     _scene.registerComponent<Sprite>();
     _scene.registerComponent<PlayerControlled>();
     _scene.registerComponent<Collider2D>();
+    _scene.registerComponent<Script>();
 }
 
 void Application::setupSystems()
@@ -62,6 +63,11 @@ void Application::setupSystems()
     colliderRequirements.set(_scene.getComponentType<Position>());
     colliderRequirements.set(_scene.getComponentType<Collider2D>());
     _scene.setSystemComponentSet<Collider2DSystem>(colliderRequirements);
+
+    _scriptSystem = _scene.registerSystem<ScriptSystem>();
+    ComponentSet scriptRequirements;
+    scriptRequirements.set(_scene.getComponentType<Script>());
+    _scene.setSystemComponentSet<ScriptSystem>(scriptRequirements);
 }
 
 void Application::setupEntities()
@@ -71,9 +77,13 @@ void Application::setupEntities()
     _scene.addComponent(playerOne, Velocity{0.0f, 0.0f});
     _scene.addComponent(playerOne, Sprite{BoxShape{50.0f, 35.0f}, ColorRGBA{0, 228, 48, 255}});
     _scene.addComponent(playerOne, PlayerControlled{});
-    _scene.addComponent(
-        playerOne, Collider2D{BoxShape{50.0f, 35.0f},
-                              [&](Entity player, Entity enemy) { _scene.queueDestroy(player); }});
+    _scene.addComponent(playerOne, Collider2D{BoxShape{50.0f, 35.0f}, [&](Entity player, Entity) {
+                                                  _scene.queueDestroy(player);
+                                              }});
+
+    Entity spawner = _scene.createEntity();
+    _scene.addComponent(spawner,
+                        Script{[this](Scene &scene, Entity &) { _game.SpawnEnemy(scene); }});
 }
 
 void Application::run()
@@ -91,10 +101,9 @@ void Application::run()
             _movementSystem->update(_scene);
             _Collider2DSystem->update(_scene);
             _scene.flushDestroyQueue();
-            _game.runGameLoop(_scene, *_renderer);
+            _scriptSystem->update(_scene);
             accumulator -= FIXED_DELTA_TIME;
         }
-
         _renderer->beginFrame();
         _renderer->clear(ColorRGBA{0, 0, 0, 255});
         _renderSystem->update(_scene, *_renderer);

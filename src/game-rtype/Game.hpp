@@ -22,7 +22,7 @@ class Game
     Game();
     ~Game() = default;
 
-    void runGameLoop(Scene &scene, IRenderer &renderer);
+    void SpawnEnemy(Scene &scene);
 
   protected:
   private:

@@ -6,12 +6,13 @@
 */
 
 #include "Game.hpp"
+#include "Time.hpp"
 #include <chrono>
 #include <random>
 
 Game::Game() : _spawnTimer(0.0f) {}
 
-void Game::runGameLoop(Scene &scene, IRenderer &renderer)
+void Game::SpawnEnemy(Scene &scene)
 {
     if (_spawnTimer >= 1.0f) {
         Entity newEnemy = scene.createEntity();
@@ -22,5 +23,5 @@ void Game::runGameLoop(Scene &scene, IRenderer &renderer)
         scene.addComponent(newEnemy, Collider2D{BoxShape{50.0f, 35.0f}, nullptr});
         _spawnTimer = 0.0f;
     }
-    _spawnTimer += renderer.getFrameTime();
+    _spawnTimer += FIXED_DELTA_TIME;
 }
