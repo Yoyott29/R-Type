@@ -11,6 +11,7 @@
 #include "IRenderer.hpp"
 #include "InputSystem.hpp"
 #include "MovementSystem.hpp"
+#include "PrefabsManager.hpp"
 #include "RenderSystem.hpp"
 #include "Scene.hpp"
 #include "ScriptSystem.hpp"
@@ -26,6 +27,7 @@ class Application
     void setupComponents();
     void setupEntities();
     void setupSystems();
+    void setupPrefabs();
 
     Scene _scene;
     Game _game;
@@ -35,4 +37,5 @@ class Application
     std::shared_ptr<RenderSystem> _renderSystem;
     std::shared_ptr<Collider2DSystem> _Collider2DSystem;
     std::shared_ptr<ScriptSystem> _scriptSystem;
+    PrefabsManager _prefabs;
 };

@@ -11,6 +11,7 @@
 #include "Entity.hpp"
 #include "IRenderer.hpp"
 #include "Position.hpp"
+#include "PrefabsManager.hpp"
 #include "RaylibRenderer.hpp"
 #include "Scene.hpp"
 #include "Sprite.hpp"
@@ -19,14 +20,16 @@
 class Game
 {
   public:
-    Game();
+    Game(PrefabsManager &prefabs);
     ~Game() = default;
 
     void SpawnEnemy(Scene &scene);
+    void InitializeEnemyPosition(Scene &scene, Entity enemy);
 
   protected:
   private:
     float _spawnTimer;
+    PrefabsManager &_prefabs;
 };
 
 #endif /* !GAME_HPP_ */

@@ -10,18 +10,19 @@
 #include <chrono>
 #include <random>
 
-Game::Game() : _spawnTimer(0.0f) {}
+Game::Game(PrefabsManager &prefabs) : _spawnTimer(0.0f), _prefabs(prefabs) {}
 
 void Game::SpawnEnemy(Scene &scene)
 {
     if (_spawnTimer >= 1.0f) {
-        Entity newEnemy = scene.createEntity();
-        float randomY = static_cast<float>(rand() % 1080);
-        scene.addComponent(newEnemy, Position{2000.0f, randomY});
-        scene.addComponent(newEnemy, Velocity{-150.0f, 0.0f});
-        scene.addComponent(newEnemy, Sprite{BoxShape{50.0f, 35.0f}, ColorRGBA{228, 48, 0, 255}});
-        scene.addComponent(newEnemy, Collider2D{BoxShape{50.0f, 35.0f}, nullptr});
+        _prefabs.InstantiatePrefab("Enemy", scene);
         _spawnTimer = 0.0f;
     }
     _spawnTimer += FIXED_DELTA_TIME;
+}
+
+void Game::InitializeEnemyPosition(Scene &scene, Entity enemy)
+{
+    float randomY = static_cast<float>(rand() % 1080);
+    scene.getComponent<Position>(enemy).y = randomY;
 }
