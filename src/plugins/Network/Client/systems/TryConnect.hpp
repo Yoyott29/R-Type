@@ -19,12 +19,12 @@ class TryConnect : public System
     void update(Scene &scene) override
     {
         Socket &socket = scene.getResource<Socket>();
+
         if (socket.connected) {
             scene.removeSystem<TryConnect>();
             return;
         }
 
-        // UDP may drop the CONNECT packet, so resend it until the server accepts
         auto now = std::chrono::steady_clock::now();
         if (now - socket.lastConnectAttempt < CONNECT_RETRY_DELAY)
             return;
@@ -48,9 +48,9 @@ class TryConnect : public System
     static bool openSocket(Socket &socket, asio::error_code &ec)
     {
         asio::ip::udp::endpoint server(asio::ip::make_address(DEFAULT_ADDRESS, ec), DEFAULT_PORT);
+
         if (ec)
             return false;
-        // connect() opens the socket and fixes the peer for send/receive
         socket.socket.connect(server, ec);
         if (!ec)
             socket.socket.non_blocking(true, ec);
