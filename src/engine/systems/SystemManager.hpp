@@ -7,6 +7,7 @@
 
 #pragma once
 #include "System.hpp"
+#include <algorithm>
 #include <iostream>
 #include <memory>
 #include <typeindex>
@@ -52,6 +53,24 @@ class SystemManager
         }
 
         _componentSets.insert_or_assign(key, componentSet);
+    }
+
+    template <typename SystemType> void removeSystem()
+    {
+        const std::type_index key(typeid(SystemType));
+
+        auto it = _systems.find(key);
+        if (it == _systems.end()) {
+            std::cout << "System removed before registered." << "\n";
+            return;
+        }
+
+        for (auto &pair : _systemsByLabel) {
+            auto &systems = pair.second;
+            systems.erase(std::remove(systems.begin(), systems.end(), it->second), systems.end());
+        }
+        _componentSets.erase(key);
+        _systems.erase(it);
     }
 
     void entityDestroyed(Entity entity);

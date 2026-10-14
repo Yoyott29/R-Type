@@ -63,6 +63,11 @@ class Scene
         _systemManager->setComponentSet<SystemType>(componentSet);
     }
 
+    template <typename SystemType> void removeSystem()
+    {
+        _systemManager->removeSystem<SystemType>();
+    }
+
     template <typename Component> ComponentType getComponentType()
     {
         return _componentManager->getComponentType<Component>();

@@ -32,7 +32,9 @@ void SystemManager::runSchedule(ScheduleLabel label, Scene &scene)
 {
     auto it = _systemsByLabel.find(label);
     if (it != _systemsByLabel.end()) {
-        for (auto const &system : it->second) {
+        // Copy so a system can remove itself (or another) during update
+        auto const systems = it->second;
+        for (auto const &system : systems) {
             system->update(scene);
         }
     }
