@@ -12,6 +12,7 @@
 #include "AppAlive.hpp"
 #include "RayLibRenderer.hpp"
 #include "Physics.hpp"
+#include "Client.hpp"
 #include "Sprite.hpp"
 #include <algorithm>
 #include <chrono>
@@ -30,6 +31,7 @@ Application::Application()
     //setup plugins
     addPlugin(std::make_shared<RayLibRenderer>());
     addPlugin(std::make_shared<Physics>());
+    addPlugin(std::make_shared<Client>());
 
     //setup entities
     Entity playerOne = _scene.createEntity();

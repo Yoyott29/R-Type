@@ -68,6 +68,7 @@ add_executable(${PROJECT_NAME}
     src/engine/systems/SystemManager.cpp
     src/plugins/Renderer/RayLibRenderer.cpp
     src/plugins/Physics/Physics.cpp
+    src/plugins/Network/Client/Client.cpp
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE
@@ -85,13 +86,16 @@ target_include_directories(${PROJECT_NAME} PRIVATE
     src/plugins/Physics
     src/plugins/Physics/components
     src/plugins/Physics/systems
+    src/plugins/Network/components
+    src/plugins/Network/Client
+    src/plugins/Network/Client/systems
 )
 
 target_include_directories(${PROJECT_NAME} SYSTEM PRIVATE
     "${raylib_SOURCE_DIR}/src"
 )
 
-target_link_libraries(${PROJECT_NAME} PRIVATE raylib)
+target_link_libraries(${PROJECT_NAME} PRIVATE raylib asio)
 
 # ============================================================
 # Compiler warnings
