@@ -19,5 +19,6 @@ class IRenderer
     virtual void endFrame() = 0;
     virtual void clear(ColorRGBA color) = 0;
     virtual void drawRectangle(float x, float y, float width, float height, ColorRGBA color) = 0;
+    virtual void drawCircle(float x, float y, float radius, ColorRGBA color) = 0;
     virtual float getFrameTime() = 0;
 };

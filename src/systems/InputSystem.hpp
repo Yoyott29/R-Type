@@ -8,7 +8,7 @@
 #pragma once
 #include "Scene.hpp"
 #include "System.hpp"
-#define PLAYER_SPEED 150.0f
+#define PLAYER_SPEED 300.0f
 
 class InputSystem : public System
 {

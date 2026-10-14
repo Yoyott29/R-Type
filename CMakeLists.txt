@@ -47,6 +47,7 @@ add_executable(${PROJECT_NAME}
     src/systems/InputSystem.cpp
     src/systems/RenderSystem.cpp
     src/systems/MovementSystem.cpp
+    src/systems/Collider2DSystem.cpp
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE

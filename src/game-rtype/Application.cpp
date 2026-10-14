@@ -32,6 +32,7 @@ void Application::setupComponents()
     _scene.registerComponent<Velocity>();
     _scene.registerComponent<Sprite>();
     _scene.registerComponent<PlayerControlled>();
+    _scene.registerComponent<Collider2D>();
 }
 
 void Application::setupSystems()
@@ -52,7 +53,14 @@ void Application::setupSystems()
     ComponentSet renderRequirements;
     renderRequirements.set(_scene.getComponentType<Position>());
     renderRequirements.set(_scene.getComponentType<Sprite>());
+    renderRequirements.set(_scene.getComponentType<Collider2D>());
     _scene.setSystemComponentSet<RenderSystem>(renderRequirements);
+
+    _Collider2DSystem = _scene.registerSystem<Collider2DSystem>();
+    ComponentSet colliderRequirements;
+    colliderRequirements.set(_scene.getComponentType<Position>());
+    colliderRequirements.set(_scene.getComponentType<Collider2D>());
+    _scene.setSystemComponentSet<Collider2DSystem>(colliderRequirements);
 }
 
 void Application::setupEntities()
@@ -60,13 +68,15 @@ void Application::setupEntities()
     Entity playerOne = _scene.createEntity();
     _scene.addComponent(playerOne, Position{0.0f, 200.0f});
     _scene.addComponent(playerOne, Velocity{0.0f, 0.0f});
-    _scene.addComponent(playerOne, Sprite{50.0f, 35.0f, ColorRGBA{230, 41, 55, 255}});
+    _scene.addComponent(playerOne, Sprite{BoxShape{50.0f, 35.0f}, ColorRGBA{0, 228, 48, 255}});
     _scene.addComponent(playerOne, PlayerControlled{});
+    _scene.addComponent(playerOne, Collider2D{BoxShape{50.0f, 35.0f}, nullptr});
 
     Entity decoration = _scene.createEntity();
     _scene.addComponent(decoration, Position{400.0f, 100.0f});
-    _scene.addComponent(decoration, Sprite{64.0f, 16.0f, ColorRGBA{0, 121, 241, 255}});
-    _scene.addComponent(decoration, Velocity{100.0f, 20.0f});
+    _scene.addComponent(decoration, Sprite{CircleShape{32.0f}, ColorRGBA{0, 121, 241, 255}});
+    // _scene.addComponent(decoration, Velocity{100.0f, 20.0f});
+    _scene.addComponent(decoration, Collider2D{CircleShape{32.0f}, nullptr});
 }
 
 void Application::run()
@@ -82,6 +92,7 @@ void Application::run()
         while (accumulator >= FIXED_DELTA_TIME) {
             _inputSystem->update(_scene);
             _movementSystem->update(_scene);
+            _Collider2DSystem->update(_scene);
             accumulator -= FIXED_DELTA_TIME;
         }
 
