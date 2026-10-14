@@ -31,6 +31,28 @@ if(TARGET raylib)
     target_compile_options(raylib PRIVATE -w)
 endif()
 
+find_package(Threads REQUIRED)
+
+# Standalone Asio is header-only and has no CMakeLists, so we wrap it in an
+# interface target
+CPMAddPackage(
+    NAME asio
+    VERSION 1.30.2
+    GITHUB_REPOSITORY chriskohlhoff/asio
+    GIT_TAG asio-1-30-2
+    DOWNLOAD_ONLY YES
+)
+
+if(asio_ADDED)
+    add_library(asio INTERFACE)
+    target_include_directories(asio SYSTEM INTERFACE "${asio_SOURCE_DIR}/asio/include")
+    target_compile_definitions(asio INTERFACE ASIO_STANDALONE)
+    target_link_libraries(asio INTERFACE Threads::Threads)
+    if(WIN32)
+        target_link_libraries(asio INTERFACE ws2_32 wsock32)
+    endif()
+endif()
+
 # ============================================================
 # Client
 # ============================================================
@@ -104,8 +126,6 @@ endif()
 # Server
 # ============================================================
 
-find_package(Threads REQUIRED)
-
 add_executable(r-type_server
     src/server/main.cpp
     src/server/server.cpp
@@ -129,7 +149,7 @@ target_include_directories(r-type_server PRIVATE
     src/components
 )
 
-target_link_libraries(r-type_server PRIVATE Threads::Threads)
+target_link_libraries(r-type_server PRIVATE asio)
 
 if(MSVC)
     target_compile_options(r-type_server PRIVATE /W4)
