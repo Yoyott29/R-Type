@@ -15,6 +15,7 @@
 class ScriptSystem : public System
 {
   public:
+    void Start(Scene &scene);
     void update(Scene &scene);
 };
 

@@ -12,9 +12,13 @@
 #include "IRenderer.hpp"
 #include "Scene.hpp"
 #include <functional>
+#include <memory>
 
+enum class Timing { AT_LAUNCH, ON_UPDATE };
 struct Script {
-    std::function<void(Scene &, Entity &)> update;
+    Timing timing;
+    std::function<void(Scene &, Entity &)> runScript;
+    bool isRunning = false;
 };
 
 #endif /* !SCRIPT_HPP_ */

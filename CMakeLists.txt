@@ -60,6 +60,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
     src/game-rtype
     src/engine/core
     src/engine/errors
+    src/engine/prefabs
     src/engine/renderer
     src/engine/systems
     src/systems

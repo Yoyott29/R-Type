@@ -18,13 +18,13 @@
 #define WINDOW_TITLE "R-Type"
 #define MAX_FRAME_TIME 0.25f
 
-Application::Application() : _renderer(std::make_unique<RaylibRenderer>())
+Application::Application() : _game(_prefabs), _renderer(std::make_unique<RaylibRenderer>())
 {
     _renderer->init(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE);
     setupComponents();
     setupSystems();
     setupEntities();
-    _game = Game();
+    setupPrefabs();
 }
 
 void Application::setupComponents()
@@ -82,8 +82,23 @@ void Application::setupEntities()
                                               }});
 
     Entity spawner = _scene.createEntity();
-    _scene.addComponent(spawner,
-                        Script{[this](Scene &scene, Entity &) { _game.SpawnEnemy(scene); }});
+    _scene.addComponent(spawner, Script{Timing::ON_UPDATE, [this](Scene &scene, Entity &) {
+                                            _game.SpawnEnemy(scene);
+                                        }});
+}
+
+void Application::setupPrefabs()
+{
+
+    _prefabs.createPrefab(
+        "Enemy", Prefab()
+                     .addComponent(Position{2000.0f, 0.0f})
+                     .addComponent(Velocity{-150.0f, 0.0f})
+                     .addComponent(Sprite{BoxShape{50.0f, 35.0f}, ColorRGBA{228, 48, 0, 255}})
+                     .addComponent(Collider2D{BoxShape{50.0f, 35.0f}, nullptr})
+                     .addComponent(Script{Timing::AT_LAUNCH, [this](Scene &scene, Entity &enemy) {
+                                              _game.InitializeEnemyPosition(scene, enemy);
+                                          }}));
 }
 
 void Application::run()
@@ -97,6 +112,7 @@ void Application::run()
         accumulator += frameTime;
 
         while (accumulator >= FIXED_DELTA_TIME) {
+            _scriptSystem->Start(_scene);
             _inputSystem->update(_scene);
             _movementSystem->update(_scene);
             _Collider2DSystem->update(_scene);
