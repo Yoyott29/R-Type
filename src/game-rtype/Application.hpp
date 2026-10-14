@@ -12,6 +12,7 @@
 #include "MovementSystem.hpp"
 #include "RenderSystem.hpp"
 #include "Scene.hpp"
+#include "ScriptSystem.hpp"
 #include <memory>
 
 class Application
@@ -31,4 +32,5 @@ class Application
     std::shared_ptr<MovementSystem> _movementSystem;
     std::shared_ptr<RenderSystem> _renderSystem;
     std::shared_ptr<Collider2DSystem> _Collider2DSystem;
+    std::shared_ptr<ScriptSystem> _scriptSystem;
 };

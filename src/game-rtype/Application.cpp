@@ -33,6 +33,7 @@ void Application::setupComponents()
     _scene.registerComponent<Sprite>();
     _scene.registerComponent<PlayerControlled>();
     _scene.registerComponent<Collider2D>();
+    _scene.registerComponent<Script>();
 }
 
 void Application::setupSystems()
@@ -61,6 +62,11 @@ void Application::setupSystems()
     colliderRequirements.set(_scene.getComponentType<Position>());
     colliderRequirements.set(_scene.getComponentType<Collider2D>());
     _scene.setSystemComponentSet<Collider2DSystem>(colliderRequirements);
+
+    _scriptSystem = _scene.registerSystem<ScriptSystem>();
+    ComponentSet scriptRequirements;
+    scriptRequirements.set(_scene.getComponentType<Script>());
+    _scene.setSystemComponentSet<ScriptSystem>(scriptRequirements);
 }
 
 void Application::setupEntities()
@@ -71,6 +77,7 @@ void Application::setupEntities()
     _scene.addComponent(playerOne, Sprite{BoxShape{50.0f, 35.0f}, ColorRGBA{0, 228, 48, 255}});
     _scene.addComponent(playerOne, PlayerControlled{});
     _scene.addComponent(playerOne, Collider2D{BoxShape{50.0f, 35.0f}, nullptr});
+    _scene.addComponent(playerOne, Script{nullptr});
 
     Entity decoration = _scene.createEntity();
     _scene.addComponent(decoration, Position{400.0f, 100.0f});
@@ -93,6 +100,7 @@ void Application::run()
             _inputSystem->update(_scene);
             _movementSystem->update(_scene);
             _Collider2DSystem->update(_scene);
+            _scriptSystem->update(_scene);
             accumulator -= FIXED_DELTA_TIME;
         }
 
