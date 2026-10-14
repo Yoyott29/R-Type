@@ -43,6 +43,12 @@ class ComponentNotRegisteredError : public EngineError
     ComponentNotRegisteredError() : EngineError("This component is not registered yet") {}
 };
 
+class ResourceNotFoundError : public EngineError
+{
+  public:
+    ResourceNotFoundError() : EngineError("This resource has not been inserted yet") {}
+};
+
 class OutOfRangeEntityError : public EngineError
 {
   public:

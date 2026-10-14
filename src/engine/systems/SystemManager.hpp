@@ -11,13 +11,25 @@
 #include <memory>
 #include <typeindex>
 #include <unordered_map>
+#include <map>
+#include <vector>
+
+enum ScheduleLabel
+{
+  PrepUpdate,
+  StateTransition,
+  FixedUpdate,
+  Update,
+  PostUpdate
+};
 
 class SystemManager
 {
   public:
-    template <typename SystemType> std::shared_ptr<SystemType> registerSystem()
+    template <typename SystemType> std::shared_ptr<SystemType> registerSystem(ScheduleLabel label = Update)
     {
         const std::type_index key(typeid(SystemType));
+
 
         if (_systems.find(key) != _systems.end()) {
             std::cout << "System registered more than once." << "\n";
@@ -26,6 +38,7 @@ class SystemManager
 
         auto system = std::make_shared<SystemType>();
         _systems.insert({key, system});
+        _systemsByLabel[label].push_back(system);
         return system;
     }
 
@@ -43,8 +56,10 @@ class SystemManager
 
     void entityDestroyed(Entity entity);
     void entityComponentSetChanged(Entity entity, ComponentSet entityComponentSet);
+    void runSchedule(ScheduleLabel label, Scene &scene);
 
   private:
     std::unordered_map<std::type_index, ComponentSet> _componentSets = {};
     std::unordered_map<std::type_index, std::shared_ptr<System>> _systems{};
+    std::map<ScheduleLabel, std::vector<std::shared_ptr<System>>> _systemsByLabel{};
 };

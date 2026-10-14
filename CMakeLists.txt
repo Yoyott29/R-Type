@@ -62,24 +62,29 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 add_executable(${PROJECT_NAME}
     src/main.cpp
     src/game-rtype/Application.cpp
-    src/game-rtype/RaylibRenderer.cpp
     src/engine/core/Scene.cpp
     src/engine/core/TickTimeManager.cpp
     src/engine/core/EntityManager.cpp
     src/engine/systems/SystemManager.cpp
-    src/systems/InputSystem.cpp
-    src/systems/RenderSystem.cpp
-    src/systems/MovementSystem.cpp
+    src/plugins/Renderer/RayLibRenderer.cpp
+    src/plugins/Physics/Physics.cpp
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE
     src/game-rtype
     src/engine/core
     src/engine/errors
-    src/engine/renderer
     src/engine/systems
-    src/systems
     src/components
+    src/common
+    src/ressources
+    src/plugins/Renderer
+    src/plugins/Renderer/components
+    src/plugins/Renderer/ressources
+    src/plugins/Renderer/systems
+    src/plugins/Physics
+    src/plugins/Physics/components
+    src/plugins/Physics/systems
 )
 
 target_include_directories(${PROJECT_NAME} SYSTEM PRIVATE
@@ -97,10 +102,6 @@ if(MSVC)
 else()
     target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra)
 endif()
-
-target_include_directories(r-type_client SYSTEM PRIVATE
-    "${raylib_SOURCE_DIR}/src"
-)
 
 # ============================================================
 # clang-tidy (runs on every compile of the client)
@@ -136,7 +137,6 @@ add_executable(r-type_server
     src/engine/core/TickTimeManager.cpp
     src/engine/core/EntityManager.cpp
     src/engine/systems/SystemManager.cpp
-    src/systems/MovementSystem.cpp
 )
 
 target_include_directories(r-type_server PRIVATE
@@ -145,7 +145,6 @@ target_include_directories(r-type_server PRIVATE
     src/engine/core
     src/engine/errors
     src/engine/systems
-    src/systems
     src/components
 )
 
