@@ -7,8 +7,10 @@
 
 #pragma once
 #include "input/input_queue.hpp"
+#include <asio.hpp>
 #include <atomic>
 #include <cstdint>
+#include <map>
 
 namespace rtype_server
 {
@@ -20,8 +22,14 @@ class Network
     void receiveLoop();
 
   private:
-    int _socket = -1;
+    void handleConnect(const char *packet, std::size_t size, const asio::ip::udp::endpoint &sender);
+    void reply(const asio::ip::udp::endpoint &target, uint8_t type, uint8_t value);
+
+    asio::io_context _ioContext;
+    asio::ip::udp::endpoint _endpoint;
+    asio::ip::udp::socket _socketAsio;
     InputQueue &_inputs;
     std::atomic<bool> &_running;
+    std::map<asio::ip::udp::endpoint, uint8_t> _players; // endpoint -> playerId
 };
 } // namespace rtype_server

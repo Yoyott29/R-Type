@@ -14,6 +14,7 @@ namespace rtype_protocol
 {
 
 constexpr uint8_t PROTOCOL_VERSION = 1;
+constexpr uint8_t MAX_PLAYERS = 4;
 
 // Octet 0 : bit 7 = sens (0 client -> serveur, 1 serveur -> client), bits 6-4 = categorie
 enum MessageType : uint8_t {
@@ -45,6 +46,7 @@ enum RejectReason : uint8_t {
     SERVER_FULL = 0x01,
     WRONG_VERSION = 0x02,
     GAME_ALREADY_STARTED = 0x03,
+    NOT_CONNECTED = 0x04,
 };
 
 } // namespace rtype_protocol
