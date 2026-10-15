@@ -72,7 +72,7 @@ if command -v clang-tidy >/dev/null 2>&1; then
     echo "  Already installed, skipping."
 elif [ "$OS" = "linux" ]; then
     if command -v apt-get >/dev/null 2>&1; then
-        $SUDO apt-get update
+        $SUDO apt-get update || echo "  Warning: apt-get update reported errors (a third-party repository may be broken), continuing anyway."
         $SUDO apt-get install -y --no-install-recommends clang-tidy
     elif command -v dnf >/dev/null 2>&1; then
         $SUDO dnf install -y clang-tools-extra

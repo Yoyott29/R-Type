@@ -1,5 +1,9 @@
 cmake_minimum_required(VERSION 3.28)
 
+if(NOT CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE Release)
+endif()
+
 project(r-type_client LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
@@ -21,7 +25,7 @@ include(CPM.cmake)
 CPMAddPackage(
     NAME raylib
     GITHUB_REPOSITORY raysan5/raylib
-    GIT_TAG 5.5
+    GIT_TAG 6.0
     OPTIONS
         "BUILD_EXAMPLES OFF"
         "BUILD_SHARED_LIBS OFF"
@@ -62,10 +66,13 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 add_executable(${PROJECT_NAME}
     src/main.cpp
     src/game-rtype/Application.cpp
+    src/game-rtype/Game.cpp
     src/engine/core/Scene.cpp
     src/engine/core/TickTimeManager.cpp
     src/engine/core/EntityManager.cpp
     src/engine/systems/SystemManager.cpp
+    src/systems/Collider2DSystem.cpp
+    src/systems/ScriptSystem.cpp
     src/plugins/Renderer/RayLibRenderer.cpp
     src/plugins/Physics/Physics.cpp
     src/plugins/Network/Client/Client.cpp
@@ -75,7 +82,9 @@ target_include_directories(${PROJECT_NAME} PRIVATE
     src/game-rtype
     src/engine/core
     src/engine/errors
+    src/engine/prefabs
     src/engine/systems
+    src/systems
     src/components
     src/common/
     src/ressources

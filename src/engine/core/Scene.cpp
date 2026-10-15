@@ -31,3 +31,10 @@ void Scene::runSchedule(ScheduleLabel label)
 {
     _systemManager->runSchedule(label, *this);
 }
+
+void Scene::flushDestroyQueue()
+{
+    for (Entity entity : _destroyQueue)
+        destroyEntity(entity);
+    _destroyQueue.clear();
+}

@@ -72,6 +72,8 @@ class Scene
     {
         return _componentManager->getComponentType<Component>();
     }
+    void queueDestroy(Entity entity) { _destroyQueue.push_back(entity); }
+    void flushDestroyQueue();
 
     template <typename Resource, typename... Args> Resource &addResource(Args &&...args)
     {
@@ -98,4 +100,5 @@ class Scene
     std::unique_ptr<ComponentManager> _componentManager;
     std::unique_ptr<SystemManager> _systemManager;
     std::unique_ptr<ResourceManager> _resourceManager;
+    std::vector<Entity> _destroyQueue;
 };

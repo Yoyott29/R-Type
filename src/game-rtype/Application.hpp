@@ -6,6 +6,8 @@
 */
 
 #pragma once
+#include "Game.hpp"
+#include "PrefabsManager.hpp"
 #include "Scene.hpp"
 #include <memory>
 #include <vector>
@@ -21,7 +23,11 @@ class Application
 
     Scene _scene;
   private:
+    void setupPrefabs();
+
     std::vector<std::shared_ptr<IPlugin>> _plugins;
+    Game _game;
+    PrefabsManager _prefabs;
 };
 
 class IPlugin {
