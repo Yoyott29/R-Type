@@ -13,12 +13,13 @@
 
 namespace rtype_server
 {
-GameLoop::GameLoop(InputQueue &inputs, std::atomic<bool> &running)
-    : _inputs(inputs), _running(running)
+GameLoop::GameLoop(Network &network, std::atomic<bool> &running)
+    : _network(network), _running(running)
 {
 }
 
-// Thread jeu : attend le prochain tick, puis execute le plus ancien input en attente (ou rien)
+// Thread jeu : attend le prochain tick, puis execute le plus ancien input en attente de chaque
+// joueur
 void GameLoop::run()
 {
     _ticks.start();
@@ -26,21 +27,24 @@ void GameLoop::run()
     while (_running) {
         _ticks.advance();
         std::this_thread::sleep_until(_ticks.getNextTickTime());
-        std::optional<uint8_t> input = _inputs.pop();
-        if (!input) {
-            if (_ticks.getCurrentTick() % 60 == 0)
-                std::cout << "[tick " << _ticks.getCurrentTick() << "] nothing received"
-                          << std::endl;
-            continue;
+        bool received = false;
+        for (uint8_t playerId = 0; playerId < rtype_protocol::MAX_PLAYERS; playerId++) {
+            auto &queue = _network.getPlayerInputs().at(playerId);
+            std::optional<uint8_t> input = queue.pop();
+            if (!input)
+                continue;
+            received = true;
+            executeInput(playerId, *input, _ticks.getCurrentTick());
         }
-        executeInput(*input, _ticks.getCurrentTick());
+        if (!received && _ticks.getCurrentTick() % 60 == 0)
+            std::cout << "[tick " << _ticks.getCurrentTick() << "] nothing received" << std::endl;
     }
 }
 
 // Pour l'instant on affiche juste les touches, plus tard -> l'ECS ici
-void GameLoop::executeInput(uint8_t input, std::uint64_t tick)
+void GameLoop::executeInput(uint8_t playerId, uint8_t input, std::uint64_t tick)
 {
-    std::cout << "[tick " << tick << "] executed :";
+    std::cout << "[tick " << tick << "] player " << static_cast<int>(playerId) << " :";
     debugPrintInput(input);
 }
 

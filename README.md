@@ -4,7 +4,7 @@ R-Type is an Epitech project that reimplements the classic side-scrolling shoot 
 
 ## Launch
 
-Requirements: CMake 3.28 or newer and a C++17 compiler. Run all commands from the repository root. The first command configures CMake and automatically downloads raylib; the second compiles the project.
+Requirements: CMake 3.28 or newer and a C++17 compiler. Run all commands from the repository root. The first command configures CMake and automatically downloads raylib and Asio; the second compiles the project.
 
 On Linux:
 
@@ -13,10 +13,11 @@ cmake -B build
 cmake --build build
 ```
 
-Start the server in one terminal. It listens for UDP packets on port 1234:
+Start the server in one terminal. It listens for UDP packets on port 1234, or on the port given as argument:
 
 ```sh
 ./r-type_server
+./r-type_server 4242
 ```
 
 Then start one client per player in separate terminals:
@@ -25,7 +26,7 @@ Then start one client per player in separate terminals:
 ./r-type_client
 ```
 
-On Windows, the build does not work yet: the server still uses Linux sockets. Once it does, run:
+On Windows, the build has not been tested yet: the server now uses Asio instead of Linux sockets. Once it is, run:
 
 ```powershell
 cmake -B build

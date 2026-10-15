@@ -16,6 +16,7 @@ namespace rtype_protocol
 using Packet = std::array<uint8_t, 1024>; // taille max d'un paquet UDP
 
 constexpr uint8_t PROTOCOL_VERSION = 1;
+constexpr uint8_t MAX_PLAYERS = 4;
 
 // Octet 0 : bit 7 = sens (0 client -> serveur, 1 serveur -> client), bits 6-4 = categorie
 enum MessageType : uint8_t {
@@ -47,6 +48,7 @@ enum RejectReason : uint8_t {
     SERVER_FULL = 0x01,
     WRONG_VERSION = 0x02,
     GAME_ALREADY_STARTED = 0x03,
+    NOT_CONNECTED = 0x04,
 };
 
 // Les entiers multi-octets sont envoyes en big-endian
