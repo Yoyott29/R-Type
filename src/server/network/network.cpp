@@ -12,9 +12,9 @@
 
 namespace rtype_server
 {
-Network::Network(uint16_t port, InputQueue &inputs, std::atomic<bool> &running)
-    : _endpoint(asio::ip::udp::v4(), port), _socketAsio(_ioContext, _endpoint), _inputs(inputs),
-      _running(running)
+Network::Network(uint16_t port, std::map<uint8_t, InputQueue> &inputs, std::atomic<bool> &running)
+    : _endpoint(asio::ip::udp::v4(), port), _socketAsio(_ioContext, _endpoint),
+      _playerInputs(inputs), _running(running)
 {
     _running = true;
     std::cout << "Server listening on port : " << port << std::endl;
@@ -27,6 +27,10 @@ Network::~Network()
         _socketAsio.close();
     }
 }
+
+const std::map<asio::ip::udp::endpoint, uint8_t> &Network::getPlayers() const { return _players; }
+
+std::map<uint8_t, InputQueue> &Network::getPlayerInputs() { return _playerInputs; }
 
 // Thread reseau : recoit les paquets en continu et range les inputs dans la queue
 void Network::receiveLoop()
@@ -55,7 +59,8 @@ void Network::receiveLoop()
             continue;
         }
         if (n == 2 && type == rtype_protocol::INPUT) {
-            _inputs.push(static_cast<uint8_t>(buffer[1]));
+            uint8_t playerId = _players[sender];
+            _playerInputs.at(playerId).push(static_cast<uint8_t>(buffer[1]));
             continue;
         }
     }
