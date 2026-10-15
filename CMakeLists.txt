@@ -71,10 +71,10 @@ add_executable(${PROJECT_NAME}
     src/engine/core/TickTimeManager.cpp
     src/engine/core/EntityManager.cpp
     src/engine/systems/SystemManager.cpp
-    src/systems/Collider2DSystem.cpp
     src/systems/ScriptSystem.cpp
     src/plugins/Renderer/RayLibRenderer.cpp
     src/plugins/Physics/Physics.cpp
+    src/plugins/Physics/systems/Collider2DSystem.cpp
     src/plugins/Network/Client/Client.cpp
 )
 

@@ -9,7 +9,6 @@
 #include "AppAlive.hpp"
 #include "Client.hpp"
 #include "Collider2D.hpp"
-#include "Collider2DSystem.hpp"
 #include "Physics.hpp"
 #include "Position.hpp"
 #include "RayLibRenderer.hpp"
@@ -30,7 +29,6 @@ Application::Application() : _game(_prefabs)
 {
     // setup basic components and resources
     _scene.registerComponent<Position>();
-    _scene.registerComponent<Collider2D>();
     _scene.registerComponent<Script>();
     _scene.addResource<AppAlive>();
 
@@ -39,13 +37,7 @@ Application::Application() : _game(_prefabs)
     addPlugin(std::make_shared<Physics>());
     addPlugin(std::make_shared<Client>());
 
-    // setup gameplay systems, after the Physics movement in the fixed update
-    _scene.registerSystem<Collider2DSystem>(FixedUpdate);
-    ComponentSet colliderRequirements;
-    colliderRequirements.set(_scene.getComponentType<Position>());
-    colliderRequirements.set(_scene.getComponentType<Collider2D>());
-    _scene.setSystemComponentSet<Collider2DSystem>(colliderRequirements);
-
+    // setup gameplay systems, after the Physics systems in the fixed update
     _scene.registerSystem<ScriptSystem>(FixedUpdate);
     ComponentSet scriptRequirements;
     scriptRequirements.set(_scene.getComponentType<Script>());
