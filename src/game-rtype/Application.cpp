@@ -6,13 +6,14 @@
 */
 
 #include "Application.hpp"
+#include "AppAlive.hpp"
+#include "Client.hpp"
+#include "Physics.hpp"
 #include "Position.hpp"
+#include "RayLibRenderer.hpp"
+#include "Sprite.hpp"
 #include "Time.hpp"
 #include "Velocity.hpp"
-#include "AppAlive.hpp"
-#include "RayLibRenderer.hpp"
-#include "Physics.hpp"
-#include "Sprite.hpp"
 #include <algorithm>
 #include <chrono>
 
@@ -23,15 +24,16 @@
 
 Application::Application()
 {
-    //setup basic components and resources
+    // setup basic components and resources
     _scene.registerComponent<Position>();
     _scene.addResource<AppAlive>();
 
-    //setup plugins
+    // setup plugins
     addPlugin(std::make_shared<RayLibRenderer>());
     addPlugin(std::make_shared<Physics>());
+    addPlugin(std::make_shared<Client>());
 
-    //setup entities
+    // setup entities
     Entity playerOne = _scene.createEntity();
     _scene.addComponent(playerOne, Position{0.0f, 200.0f});
     _scene.addComponent(playerOne, Velocity{0.0f, 0.0f});
@@ -43,7 +45,7 @@ Application::Application()
     _scene.addComponent(decoration, Velocity{100.0f, 20.0f});
 }
 
-void Application ::addPlugin(std::shared_ptr<IPlugin> plugin)
+void Application::addPlugin(std::shared_ptr<IPlugin> plugin)
 {
     _plugins.push_back(plugin);
     plugin->build(*this);
@@ -57,7 +59,8 @@ void Application::run()
 
     while (_scene.getResource<AppAlive>().alive) {
         Clock::time_point now = Clock::now();
-        float frameTime = std::min(std::chrono::duration<float>(now - previous).count(), MAX_FRAME_TIME);
+        float frameTime =
+            std::min(std::chrono::duration<float>(now - previous).count(), MAX_FRAME_TIME);
         previous = now;
         accumulator += frameTime;
 

@@ -6,7 +6,7 @@
 */
 
 #include "server.hpp"
-#include "common/protocol.hpp"
+#include "rtype_protocol.hpp"
 #include <thread>
 
 namespace rtype_server

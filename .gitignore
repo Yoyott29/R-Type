@@ -21,3 +21,4 @@
 
 # Local test scripts
 /tests/send_inputs.sh
+/tests/fake_server.sh

@@ -9,9 +9,11 @@
 
 #pragma once
 #include <cstdint>
+#include <array>
 
 namespace rtype_protocol
 {
+using Packet = std::array<uint8_t, 1024>; // taille max d'un paquet UDP
 
 constexpr uint8_t PROTOCOL_VERSION = 1;
 constexpr uint8_t MAX_PLAYERS = 4;
@@ -49,4 +51,18 @@ enum RejectReason : uint8_t {
     NOT_CONNECTED = 0x04,
 };
 
+// Les entiers multi-octets sont envoyes en big-endian
+inline void writeU32(uint8_t *out, uint32_t value)
+{
+    out[0] = static_cast<uint8_t>(value >> 24);
+    out[1] = static_cast<uint8_t>(value >> 16);
+    out[2] = static_cast<uint8_t>(value >> 8);
+    out[3] = static_cast<uint8_t>(value);
+}
+
+inline uint32_t readU32(const uint8_t *in)
+{
+    return (static_cast<uint32_t>(in[0]) << 24) | (static_cast<uint32_t>(in[1]) << 16) |
+           (static_cast<uint32_t>(in[2]) << 8) | static_cast<uint32_t>(in[3]);
+}
 } // namespace rtype_protocol
