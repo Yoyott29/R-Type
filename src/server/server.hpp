@@ -17,12 +17,12 @@ namespace rtype_server
 class Server
 {
   public:
-    Server();
+    static constexpr uint16_t DEFAULT_PORT = 1234;
+
+    explicit Server(uint16_t port);
     void run();
 
   private:
-    static constexpr uint16_t DEFAULT_PORT = 1234;
-
     std::atomic<bool> _running{false};
     InputQueue _inputs;
     Network _network;

@@ -10,7 +10,7 @@
 
 namespace rtype_server
 {
-Server::Server() : _network(DEFAULT_PORT, _inputs, _running), _gameLoop(_inputs, _running) {}
+Server::Server(uint16_t port) : _network(port, _inputs, _running), _gameLoop(_inputs, _running) {}
 
 void Server::run()
 {
