@@ -8,6 +8,7 @@
 #pragma once
 #include "input/input_queue.hpp"
 #include "rtype_protocol.hpp"
+#include <array>
 #include <asio.hpp>
 #include <atomic>
 #include <cstdint>
@@ -16,6 +17,12 @@
 
 namespace rtype_server
 {
+
+struct SnapshotEntry {
+    uint32_t tick;
+    std::vector<rtype_protocol::EntitySnapshot> entities;
+};
+
 class Network
 {
   public:
@@ -38,5 +45,6 @@ class Network
     std::map<uint8_t, InputQueue> &_playerInputs; // playerId -> InputQueue
     std::atomic<bool> &_running;
     std::map<asio::ip::udp::endpoint, uint8_t> _players; // endpoint -> playerId
+    std::array<SnapshotEntry, 64> _snapshotHistory; // tick % 64 -> snapshot envoye
 };
 } // namespace rtype_server

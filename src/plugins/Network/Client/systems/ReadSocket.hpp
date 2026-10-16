@@ -73,36 +73,46 @@ class ReadSocket : public System
         case rtype_protocol::GAME_STARTED:
             if (len < 5)
                 return;
-            socket.tick = rtype_protocol::readU32(&packet[1]);
+            socket.tick = rtype_protocol::readValue<uint32_t>(&packet[1]);
             break;
-        case rtype_protocol::SNAPSHOT:
-            if (len < 7)
+        case rtype_protocol::SNAPSHOT: {
+            constexpr std::size_t headerSize =
+                sizeof(rtype_protocol::MessageType) + sizeof(rtype_protocol::SnapshotHeader);
+            if (len < headerSize)
                 return;
             {
-                uint32_t tick = rtype_protocol::readU32(&packet[1]);
+                uint32_t tick = rtype_protocol::readValue<uint32_t>(&packet[1]);
                 if (tick > socket.lastSnapshotTick)
                     socket.lastSnapshotTick = tick;
             }
 
-            for (std::size_t i = 7; i + sizeof(rtype_protocol::EntitySnapshot) <= len;
+            std::cout << "Processing snapshot with "
+                      << (len - sizeof(rtype_protocol::MessageType) -
+                          sizeof(rtype_protocol::SnapshotHeader)) /
+                             sizeof(rtype_protocol::EntitySnapshot)
+                      << " entities\n";
+            for (std::size_t i = headerSize; i + sizeof(rtype_protocol::EntitySnapshot) <= len;
                  i += sizeof(rtype_protocol::EntitySnapshot)) {
                 rtype_protocol::EntitySnapshot entity;
-                entity.pos.x = rtype_protocol::readU32(&packet[i]);
-                entity.pos.y = rtype_protocol::readU32(&packet[i + 4]);
+                entity.pos.x = rtype_protocol::readValue<float>(&packet[i]);
+                entity.pos.y = rtype_protocol::readValue<float>(&packet[i + 4]);
                 entity.type.type = static_cast<EntType>(packet[i + 2]);
                 Entity e = scene.createEntity();
                 scene.addComponent(e, entity.pos);
                 scene.addComponent(e, entity.type);
+                std::cout << "Entity: pos(" << entity.pos.x << ", " << entity.pos.y << "), type("
+                          << static_cast<int>(entity.type.type) << ")\n";
                 if (entity.type.type < typeSprites.size())
                     scene.addComponent(e, typeSprites[entity.type.type]);
             }
             break;
+        }
         case rtype_protocol::DELTA:
             // Entity payload format is not specified yet: only the tick is acknowledged
             if (len < 5)
                 return;
             {
-                uint32_t tick = rtype_protocol::readU32(&packet[1]);
+                uint32_t tick = rtype_protocol::readValue<uint32_t>(&packet[1]);
                 if (tick > socket.lastSnapshotTick)
                     socket.lastSnapshotTick = tick;
             }

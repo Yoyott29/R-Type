@@ -64,8 +64,6 @@ void Network::receiveLoop()
             if (n < sizeof(rtype_protocol::InputPacket)) {
                 uint8_t playerId = _players[sender];
                 _playerInputs.at(playerId).push(static_cast<uint8_t>(buffer[5]));
-                std::cout << "Received input from player " << static_cast<int>(playerId) << ": "
-                          << static_cast<int>(buffer[1]) << std::endl;
             }
             break;
         }
@@ -104,31 +102,44 @@ void Network::handleConnect(const rtype_protocol::Packet &packet, std::size_t si
     reply(sender, rtype_protocol::CONNECT_REJECT, rtype_protocol::SERVER_FULL);
 }
 
-// [SNAPSHOT, tick (u32), count (u16), entites...], entite = [x (u32), y (u32), type (u8)]
-// Decoupe en plusieurs paquets du meme tick si les entites ne tiennent pas dans un Packet
+// [SNAPSHOT, tick (u32), count (u16), entites...], entite = [x (f32), y (f32), type (u8)]
+// Garde le snapshot dans l'historique puis le decoupe en plusieurs paquets du meme tick
+// si les entites ne tiennent pas dans un Packet
 void Network::sendSnapshot(uint32_t tick,
                            const std::vector<rtype_protocol::EntitySnapshot> &entities)
 {
     constexpr std::size_t headerSize =
         sizeof(rtype_protocol::MessageType) + sizeof(rtype_protocol::SnapshotHeader);
-    constexpr std::size_t maxPerPacket =
-        (sizeof(rtype_protocol::Packet) - headerSize) / sizeof(rtype_protocol::EntitySnapshot);
+    constexpr std::size_t entitySize = sizeof(rtype_protocol::EntitySnapshot);
+    constexpr std::size_t maxPerPacket = (sizeof(rtype_protocol::Packet) - headerSize) / entitySize;
+    SnapshotEntry &entry = _snapshotHistory[tick % _snapshotHistory.size()];
     std::size_t sent = 0;
 
-    while (sent < entities.size()) {
-        rtype_protocol::Packet packet;
-        std::size_t count = std::min(entities.size() - sent, maxPerPacket);
+    // std::cout << "Sending snapshot tick " << tick << " with " << entities.size() << " entities"
+    //           << std::endl;
+    entry.tick = tick;
+    entry.entities = entities;
+    // for (int i = entry.entities.size(); i < 10; i++) {
+    //     entry.entities.push_back(rtype_protocol::EntitySnapshot{
+    //         Position{10 * static_cast<float>(i), 10 * static_cast<float>(i)},
+    //         Type{EntType::PLAYER}});
+    // }
+    while (sent < entry.entities.size()) {
+        rtype_protocol::Packet packet{};
+        std::size_t count = std::min(entry.entities.size() - sent, maxPerPacket);
         std::size_t size = headerSize;
 
         packet[0] = rtype_protocol::SNAPSHOT;
-        rtype_protocol::writeU32(&packet[1], tick);
+        rtype_protocol::writeValue<uint32_t>(&packet[1], entry.tick);
         packet[5] = static_cast<uint8_t>(count >> 8);
         packet[6] = static_cast<uint8_t>(count);
         for (std::size_t i = sent; i < sent + count; i++) {
-            rtype_protocol::writeU32(&packet[size], static_cast<uint32_t>(entities[i].pos.x));
-            rtype_protocol::writeU32(&packet[size + 4], static_cast<uint32_t>(entities[i].pos.y));
-            packet[size + 8] = static_cast<uint8_t>(entities[i].type.type);
-            size += sizeof(rtype_protocol::EntitySnapshot);
+            const rtype_protocol::EntitySnapshot &entity = entry.entities[i];
+
+            rtype_protocol::writeValue<float>(&packet[size], entity.pos.x);
+            rtype_protocol::writeValue<float>(&packet[size + 4], entity.pos.y);
+            packet[size + 8] = static_cast<uint8_t>(entity.type.type);
+            size += entitySize;
         }
         for (auto const &[endpoint, playerId] : _players) {
             asio::error_code error;

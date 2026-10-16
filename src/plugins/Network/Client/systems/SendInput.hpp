@@ -38,9 +38,9 @@ class SendInput : public System
         // [INPUT, tick (u32), InputBits, lastSnapshotTick (u32)]
         std::array<uint8_t, 10> packet{};
         packet[0] = rtype_protocol::INPUT;
-        rtype_protocol::writeU32(&packet[1], socket.tick);
+        rtype_protocol::writeValue<uint32_t>(&packet[1], socket.tick);
         packet[5] = inputs;
-        rtype_protocol::writeU32(&packet[6], socket.lastSnapshotTick);
+        rtype_protocol::writeValue<uint32_t>(&packet[6], socket.lastSnapshotTick);
 
         asio::error_code ec;
         socket.socket.send(asio::buffer(packet), 0, ec);

@@ -11,7 +11,10 @@
 #include "Position.hpp"
 #include "Type.hpp"
 #include <array>
+#include <cstddef>
 #include <cstdint>
+#include <cstring>
+#include <type_traits>
 
 namespace rtype_protocol
 {
@@ -61,19 +64,36 @@ enum RejectReason : uint8_t {
     NOT_CONNECTED = 0x04,
 };
 
-// Les entiers multi-octets sont envoyes en big-endian
-inline void writeU32(uint8_t *out, uint32_t value)
+// Entier non signe de la meme taille que T, pour manipuler ses octets
+template <std::size_t N> struct UintOfSize;
+template <> struct UintOfSize<1> { using type = uint8_t; };
+template <> struct UintOfSize<2> { using type = uint16_t; };
+template <> struct UintOfSize<4> { using type = uint32_t; };
+template <> struct UintOfSize<8> { using type = uint64_t; };
+
+// Les valeurs multi-octets sont envoyees en big-endian (floats copies bit a bit)
+template <typename T> inline void writeValue(uint8_t *out, T value)
 {
-    out[0] = static_cast<uint8_t>(value >> 24);
-    out[1] = static_cast<uint8_t>(value >> 16);
-    out[2] = static_cast<uint8_t>(value >> 8);
-    out[3] = static_cast<uint8_t>(value);
+    static_assert(std::is_arithmetic_v<T> || std::is_enum_v<T>, "T must be a number or an enum");
+    using Bits = typename UintOfSize<sizeof(T)>::type;
+    Bits bits;
+
+    std::memcpy(&bits, &value, sizeof(T));
+    for (std::size_t i = 0; i < sizeof(T); i++)
+        out[i] = static_cast<uint8_t>(bits >> (8 * (sizeof(T) - 1 - i)));
 }
 
-inline uint32_t readU32(const uint8_t *in)
+template <typename T> inline T readValue(const uint8_t *in)
 {
-    return (static_cast<uint32_t>(in[0]) << 24) | (static_cast<uint32_t>(in[1]) << 16) |
-           (static_cast<uint32_t>(in[2]) << 8) | static_cast<uint32_t>(in[3]);
+    static_assert(std::is_arithmetic_v<T> || std::is_enum_v<T>, "T must be a number or an enum");
+    using Bits = typename UintOfSize<sizeof(T)>::type;
+    Bits bits = 0;
+    T value;
+
+    for (std::size_t i = 0; i < sizeof(T); i++)
+        bits = static_cast<Bits>((static_cast<uint64_t>(bits) << 8) | in[i]);
+    std::memcpy(&value, &bits, sizeof(T));
+    return value;
 }
 
 struct SnapshotHeader {
