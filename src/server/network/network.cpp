@@ -7,6 +7,7 @@
 
 #include "network/network.hpp"
 #include "rtype_protocol.hpp"
+#include <algorithm>
 #include <asio.hpp>
 #include <iostream>
 #include <string_view>
@@ -101,6 +102,40 @@ void Network::handleConnect(const rtype_protocol::Packet &packet, std::size_t si
         }
     }
     reply(sender, rtype_protocol::CONNECT_REJECT, rtype_protocol::SERVER_FULL);
+}
+
+// [SNAPSHOT, tick (u32), count (u16), entites...], entite = [x (u32), y (u32), type (u8)]
+// Decoupe en plusieurs paquets du meme tick si les entites ne tiennent pas dans un Packet
+void Network::sendSnapshot(uint32_t tick,
+                           const std::vector<rtype_protocol::EntitySnapshot> &entities)
+{
+    constexpr std::size_t headerSize =
+        sizeof(rtype_protocol::MessageType) + sizeof(rtype_protocol::SnapshotHeader);
+    constexpr std::size_t maxPerPacket =
+        (sizeof(rtype_protocol::Packet) - headerSize) / sizeof(rtype_protocol::EntitySnapshot);
+    std::size_t sent = 0;
+
+    while (sent < entities.size()) {
+        rtype_protocol::Packet packet;
+        std::size_t count = std::min(entities.size() - sent, maxPerPacket);
+        std::size_t size = headerSize;
+
+        packet[0] = rtype_protocol::SNAPSHOT;
+        rtype_protocol::writeU32(&packet[1], tick);
+        packet[5] = static_cast<uint8_t>(count >> 8);
+        packet[6] = static_cast<uint8_t>(count);
+        for (std::size_t i = sent; i < sent + count; i++) {
+            rtype_protocol::writeU32(&packet[size], static_cast<uint32_t>(entities[i].pos.x));
+            rtype_protocol::writeU32(&packet[size + 4], static_cast<uint32_t>(entities[i].pos.y));
+            packet[size + 8] = static_cast<uint8_t>(entities[i].type.type);
+            size += sizeof(rtype_protocol::EntitySnapshot);
+        }
+        for (auto const &[endpoint, playerId] : _players) {
+            asio::error_code error;
+            _socketAsio.send_to(asio::buffer(packet.data(), size), endpoint, 0, error);
+        }
+        sent += count;
+    }
 }
 
 void Network::reply(const asio::ip::udp::endpoint &target, uint8_t type, uint8_t value)
