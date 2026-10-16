@@ -76,7 +76,7 @@ class ReadSocket : public System
             socket.tick = rtype_protocol::readU32(&packet[1]);
             break;
         case rtype_protocol::SNAPSHOT:
-            if (len < 5)
+            if (len < 7)
                 return;
             {
                 uint32_t tick = rtype_protocol::readU32(&packet[1]);
@@ -84,7 +84,8 @@ class ReadSocket : public System
                     socket.lastSnapshotTick = tick;
             }
 
-            for (std::size_t i = 5; i + 8 <= len; i += 8) {
+            for (std::size_t i = 7; i + sizeof(rtype_protocol::EntitySnapshot) <= len;
+                 i += sizeof(rtype_protocol::EntitySnapshot)) {
                 rtype_protocol::EntitySnapshot entity;
                 entity.pos.x = rtype_protocol::readU32(&packet[i]);
                 entity.pos.y = rtype_protocol::readU32(&packet[i + 4]);
