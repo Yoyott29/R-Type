@@ -13,6 +13,7 @@
 #include <atomic>
 #include <cstdint>
 #include <map>
+#include <mutex>
 #include <vector>
 
 namespace rtype_server
@@ -45,6 +46,7 @@ class Network
     std::map<uint8_t, InputQueue> &_playerInputs; // playerId -> InputQueue
     std::atomic<bool> &_running;
     std::map<asio::ip::udp::endpoint, uint8_t> _players; // endpoint -> playerId
+    std::mutex _playersMutex; // _players est ecrit par le thread reseau et lu par le thread jeu
     std::array<SnapshotEntry, 64> _snapshotHistory; // tick % 64 -> snapshot envoye
 };
 } // namespace rtype_server

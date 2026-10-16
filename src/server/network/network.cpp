@@ -90,7 +90,10 @@ void Network::handleConnect(const rtype_protocol::Packet &packet, std::size_t si
             if (playerId == id)
                 taken = true;
         if (!taken) {
-            _players[sender] = id;
+            {
+                std::lock_guard<std::mutex> lock(_playersMutex);
+                _players[sender] = id;
+            }
             std::cout << "Player " << static_cast<int>(id)
                       << " connected: " << sender.address().to_string() << ":" << sender.port()
                       << std::endl;
@@ -111,8 +114,15 @@ void Network::sendSnapshot(uint32_t tick,
     constexpr std::size_t entitySize = rtype_protocol::ENTITY_SIZE;
     constexpr std::size_t maxPerPacket = (sizeof(rtype_protocol::Packet) - headerSize) / entitySize;
     SnapshotEntry &entry = _snapshotHistory[tick % _snapshotHistory.size()];
+    std::vector<asio::ip::udp::endpoint> targets;
     std::size_t sent = 0;
 
+    // copie des destinataires sous le lock, pour ne pas bloquer le thread reseau pendant les envois
+    {
+        std::lock_guard<std::mutex> lock(_playersMutex);
+        for (auto const &[endpoint, playerId] : _players)
+            targets.push_back(endpoint);
+    }
     // std::cout << "Sending snapshot tick " << tick << " with " << entities.size() << " entities"
     //           << std::endl;
     entry.tick = tick;
@@ -139,7 +149,7 @@ void Network::sendSnapshot(uint32_t tick,
             packet[size + 8] = static_cast<uint8_t>(entity.type.type);
             size += entitySize;
         }
-        for (auto const &[endpoint, playerId] : _players) {
+        for (auto const &endpoint : targets) {
             asio::error_code error;
             _socketAsio.send_to(asio::buffer(packet.data(), size), endpoint, 0, error);
         }
