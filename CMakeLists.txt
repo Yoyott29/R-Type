@@ -76,6 +76,9 @@ add_executable(${PROJECT_NAME}
     src/plugins/Physics/Physics.cpp
     src/plugins/Physics/systems/Collider2DSystem.cpp
     src/plugins/Network/Client/Client.cpp
+    src/plugins/Network/Client/systems/ReadSocket.cpp
+    src/plugins/Network/Client/systems/SendInput.cpp
+    src/plugins/Network/Client/systems/TryConnect.cpp
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE
