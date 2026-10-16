@@ -20,6 +20,10 @@ class Scene
     Entity createEntity();
     void destroyEntity(Entity entity);
     void runSchedule(ScheduleLabel label);
+    void putAllEntitysInDestroyQueue()
+    {
+        _entityManager->putAllEntitysInDestroyQueue(_destroyQueue);
+    };
 
     template <typename Component> void registerComponent()
     {
@@ -53,7 +57,8 @@ class Scene
         return _componentManager->getComponent<Component>(entity);
     }
 
-    template <typename SystemType> std::shared_ptr<SystemType> registerSystem(ScheduleLabel label = Update)
+    template <typename SystemType>
+    std::shared_ptr<SystemType> registerSystem(ScheduleLabel label = Update)
     {
         return _systemManager->registerSystem<SystemType>(label);
     }
@@ -72,7 +77,7 @@ class Scene
     {
         return _componentManager->getComponentType<Component>();
     }
-    void queueDestroy(Entity entity) { _destroyQueue.push_back(entity); }
+    void queueDestroy(Entity entity) { _destroyQueue.push(entity); }
     void flushDestroyQueue();
 
     template <typename Resource, typename... Args> Resource &addResource(Args &&...args)
@@ -100,5 +105,5 @@ class Scene
     std::unique_ptr<ComponentManager> _componentManager;
     std::unique_ptr<SystemManager> _systemManager;
     std::unique_ptr<ResourceManager> _resourceManager;
-    std::vector<Entity> _destroyQueue;
+    std::queue<Entity> _destroyQueue;
 };

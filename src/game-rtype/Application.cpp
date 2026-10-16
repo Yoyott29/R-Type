@@ -8,7 +8,6 @@
 #include "Application.hpp"
 #include "AppAlive.hpp"
 #include "Client.hpp"
-#include "Collider2D.hpp"
 #include "Physics.hpp"
 #include "Position.hpp"
 #include "RayLibRenderer.hpp"
@@ -16,6 +15,7 @@
 #include "ScriptSystem.hpp"
 #include "Sprite.hpp"
 #include "Time.hpp"
+#include "Type.hpp"
 #include "Velocity.hpp"
 #include <algorithm>
 #include <chrono>
@@ -30,6 +30,7 @@ Application::Application() : _game(_prefabs)
     // setup basic components and resources
     _scene.registerComponent<Position>();
     _scene.registerComponent<Script>();
+    _scene.registerComponent<Type>();
     _scene.addResource<AppAlive>();
 
     // setup plugins
@@ -74,7 +75,7 @@ void Application::setupPrefabs()
                                           }}));
 }
 
-void Application::addPlugin(std::shared_ptr<IPlugin> plugin)
+void Application::addPlugin(const std::shared_ptr<IPlugin> &plugin)
 {
     _plugins.push_back(plugin);
     plugin->build(*this);

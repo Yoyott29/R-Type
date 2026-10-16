@@ -19,7 +19,7 @@ class Application
   public:
     Application();
     void run();
-    void addPlugin(std::shared_ptr<IPlugin> plugin);
+    void addPlugin(const std::shared_ptr<IPlugin> &plugin);
 
     Scene _scene;
   private:
