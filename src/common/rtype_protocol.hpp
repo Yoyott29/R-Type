@@ -19,6 +19,8 @@ using Packet = std::array<uint8_t, 1024>; // taille max d'un paquet UDP
 
 constexpr uint8_t PROTOCOL_VERSION = 1;
 constexpr uint8_t MAX_PLAYERS = 4;
+constexpr uint16_t DEFAULT_PORT = 4242;
+constexpr const char *DEFAULT_ADDRESS = "127.0.0.1";
 
 // Octet 0 : bit 7 = sens (0 client -> serveur, 1 serveur -> client), bits 6-4 = categorie
 enum MessageType : uint8_t {
@@ -42,6 +44,12 @@ enum InputBits : uint8_t {
     LEFT = 1 << 2,   // 0b00000100
     RIGHT = 1 << 3,  // 0b00001000
     CHARGE = 1 << 4, // 0b00010000
+};
+
+struct InputPacket {
+    uint32_t tick;
+    uint8_t inputBits;
+    uint32_t lastSnapshotTick;
 };
 
 constexpr uint8_t INPUT_UNUSED_BITS = 0xE0; // doivent valoir 0
@@ -77,7 +85,5 @@ struct EntitySnapshot {
     Position pos;
     Type type;
 };
-
-
 
 } // namespace rtype_protocol

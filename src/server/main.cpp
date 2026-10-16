@@ -25,7 +25,7 @@ static std::optional<uint16_t> parsePort(const char *arg)
 
 int main(int argc, char **argv)
 {
-    uint16_t port = rtype_server::Server::DEFAULT_PORT;
+    uint16_t port = rtype_protocol::DEFAULT_PORT;
 
     if (argc > 2) {
         std::cerr << "Usage: " << argv[0] << " [port]" << std::endl;

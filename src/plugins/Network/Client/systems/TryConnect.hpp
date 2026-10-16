@@ -47,7 +47,9 @@ class TryConnect : public System
 
     static bool openSocket(Socket &socket, asio::error_code &ec)
     {
-        asio::ip::udp::endpoint server(asio::ip::make_address(DEFAULT_ADDRESS, ec), DEFAULT_PORT);
+        asio::ip::udp::endpoint server(
+            asio::ip::make_address(rtype_protocol::DEFAULT_ADDRESS, ec),
+            rtype_protocol::DEFAULT_PORT);
 
         if (ec)
             return false;

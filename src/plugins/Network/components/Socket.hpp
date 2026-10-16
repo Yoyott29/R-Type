@@ -9,8 +9,6 @@
 #include <asio.hpp>
 #include <chrono>
 #include <cstdint>
-#define DEFAULT_PORT 4242
-#define DEFAULT_ADDRESS "127.0.0.1"
 
 struct Socket {
     asio::io_context io_context;

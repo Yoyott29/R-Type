@@ -18,8 +18,6 @@ namespace rtype_server
 class Server
 {
   public:
-    static constexpr uint16_t DEFAULT_PORT = 1234;
-
     explicit Server(uint16_t port);
     void run();
 
