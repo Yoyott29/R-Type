@@ -4,8 +4,8 @@
 Usage: ./tests/test_server.py [--port 4242] [--rate 20] [--no-autostart] [--reject REASON]
 
 Packet layouts follow src/common/rtype_protocol.hpp (big-endian integers).
-SNAPSHOT entity layout is not fixed by the protocol yet; this server sends
-[x (u32), y (u32), type (u8)] per entity, see ENTITY_FORMAT.
+SNAPSHOT entity layout matches the C++ server: [x (f32), y (f32), type (u8)]
+per entity, see ENTITY_FORMAT.
 """
 
 import argparse
@@ -41,7 +41,7 @@ REJECT_REASONS = {
 
 PLAYER, ENEMY, BULLET, OBSTACLE = 0, 1, 2, 3
 
-ENTITY_FORMAT = ">IIB"
+ENTITY_FORMAT = ">ffB"
 SPEED = 5
 WIDTH, HEIGHT = 800, 600
 

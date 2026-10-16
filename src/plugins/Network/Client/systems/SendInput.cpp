@@ -32,7 +32,7 @@ void SendInput::update(Scene &scene)
         inputs |= rtype_protocol::CHARGE;
 
     // [INPUT, tick (u32), InputBits, lastSnapshotTick (u32)]
-    std::array<uint8_t, 10> packet{};
+    std::array<uint8_t, rtype_protocol::INPUT_SIZE> packet{};
     packet[0] = rtype_protocol::INPUT;
     rtype_protocol::writeValue<uint32_t>(&packet[1], socket.tick);
     packet[5] = inputs;

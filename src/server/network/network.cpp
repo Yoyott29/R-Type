@@ -108,9 +108,8 @@ void Network::handleConnect(const rtype_protocol::Packet &packet, std::size_t si
 void Network::sendSnapshot(uint32_t tick,
                            const std::vector<rtype_protocol::EntitySnapshot> &entities)
 {
-    constexpr std::size_t headerSize =
-        sizeof(rtype_protocol::MessageType) + sizeof(rtype_protocol::SnapshotHeader);
-    constexpr std::size_t entitySize = sizeof(rtype_protocol::EntitySnapshot);
+    constexpr std::size_t headerSize = rtype_protocol::SNAPSHOT_HEADER_SIZE;
+    constexpr std::size_t entitySize = rtype_protocol::ENTITY_SIZE;
     constexpr std::size_t maxPerPacket = (sizeof(rtype_protocol::Packet) - headerSize) / entitySize;
     SnapshotEntry &entry = _snapshotHistory[tick % _snapshotHistory.size()];
     std::size_t sent = 0;

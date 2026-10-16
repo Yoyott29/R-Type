@@ -71,8 +71,7 @@ void ReadSocket::handlePacket(Scene &scene, Socket &socket, rtype_protocol::Pack
         socket.tick = rtype_protocol::readValue<uint32_t>(&packet[1]);
         break;
     case rtype_protocol::SNAPSHOT: {
-        constexpr std::size_t headerSize =
-            sizeof(rtype_protocol::MessageType) + sizeof(rtype_protocol::SnapshotHeader);
+        constexpr std::size_t headerSize = rtype_protocol::SNAPSHOT_HEADER_SIZE;
         if (len < headerSize)
             return;
         {
@@ -81,13 +80,10 @@ void ReadSocket::handlePacket(Scene &scene, Socket &socket, rtype_protocol::Pack
                 socket.lastSnapshotTick = tick;
         }
 
-        std::cout << "Processing snapshot with "
-                  << (len - sizeof(rtype_protocol::MessageType) -
-                      sizeof(rtype_protocol::SnapshotHeader)) /
-                         sizeof(rtype_protocol::EntitySnapshot)
+        std::cout << "Processing snapshot with " << (len - headerSize) / rtype_protocol::ENTITY_SIZE
                   << " entities\n";
-        for (std::size_t i = headerSize; i + sizeof(rtype_protocol::EntitySnapshot) <= len;
-             i += sizeof(rtype_protocol::EntitySnapshot)) {
+        for (std::size_t i = headerSize; i + rtype_protocol::ENTITY_SIZE <= len;
+             i += rtype_protocol::ENTITY_SIZE) {
             rtype_protocol::EntitySnapshot entity;
             entity.pos.x = rtype_protocol::readValue<float>(&packet[i]);
             entity.pos.y = rtype_protocol::readValue<float>(&packet[i + 4]);
