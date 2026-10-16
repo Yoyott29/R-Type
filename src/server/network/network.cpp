@@ -61,10 +61,9 @@ void Network::receiveLoop()
             handleConnect(buffer, n, sender);
             break;
         case rtype_protocol::INPUT:
-            if (n < sizeof(rtype_protocol::InputPacket)) {
-                uint8_t playerId = _players[sender];
-                _playerInputs.at(playerId).push(static_cast<uint8_t>(buffer[5]));
-            }
+            if (n != rtype_protocol::INPUT_SIZE)
+                break; // paquet malforme : on ne lit pas d'octets non recus
+            _playerInputs.at(_players.at(sender)).push(buffer[5]);
             break;
         }
     }
