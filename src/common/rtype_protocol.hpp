@@ -106,10 +106,8 @@ struct EntitySnapshot {
     Type type;
 };
 
-// Tailles sur le reseau, comptees champ par champ : sizeof(struct) inclut le padding
-// du compilateur et ne correspond pas au format envoye
-constexpr std::size_t INPUT_SIZE = 1 + 4 + 1 + 4;       // type, tick, InputBits, lastSnapshotTick
-constexpr std::size_t SNAPSHOT_HEADER_SIZE = 1 + 4 + 2; // type, tick, count
-constexpr std::size_t ENTITY_SIZE = 4 + 4 + 1;          // x, y, type
+constexpr std::size_t INPUT_SIZE = 1 + 4 + 1 + 4;
+constexpr std::size_t SNAPSHOT_HEADER_SIZE = 1 + 4 + 2;
+constexpr std::size_t ENTITY_SIZE = 4 + 4 + 1;
 
 } // namespace rtype_protocol

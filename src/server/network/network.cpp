@@ -62,7 +62,7 @@ void Network::receiveLoop()
             break;
         case rtype_protocol::INPUT:
             if (n != rtype_protocol::INPUT_SIZE)
-                break; // paquet malforme : on ne lit pas d'octets non recus
+                break;
             _playerInputs.at(_players.at(sender)).push(buffer[5]);
             break;
         }
@@ -117,7 +117,6 @@ void Network::sendSnapshot(uint32_t tick,
     std::vector<asio::ip::udp::endpoint> targets;
     std::size_t sent = 0;
 
-    // copie des destinataires sous le lock, pour ne pas bloquer le thread reseau pendant les envois
     {
         std::lock_guard<std::mutex> lock(_playersMutex);
         for (auto const &[endpoint, playerId] : _players)

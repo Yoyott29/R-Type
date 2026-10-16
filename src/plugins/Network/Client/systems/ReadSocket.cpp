@@ -88,7 +88,6 @@ void ReadSocket::handlePacket(Scene &scene, Socket &socket, rtype_protocol::Pack
             uint8_t type = packet[i + 8];
             entity.pos.x = rtype_protocol::readValue<float>(&packet[i]);
             entity.pos.y = rtype_protocol::readValue<float>(&packet[i + 4]);
-            // check before the cast: a value outside EntType is undefined behavior
             if (type >= typeSprites.size()) {
                 std::cout << "Entity skipped: unknown type " << static_cast<int>(type) << "\n";
                 continue;
