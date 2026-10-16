@@ -9,7 +9,9 @@
 #include "AppAlive.hpp"
 #include "Scene.hpp"
 #include "Socket.hpp"
+#include "Sprite.hpp"
 #include "rtype_protocol.hpp"
+#include <array>
 #include <cstddef>
 #include <iostream>
 
@@ -22,14 +24,14 @@ class ReadSocket : public System
         if (!socket.socket.is_open())
             return;
 
-        // Drain every packet received since the last frame without blocking the loop
+        scene.putAllEntitysInDestroyQueue();
+        scene.flushDestroyQueue();
         rtype_protocol::Packet packet;
         asio::error_code ec;
         while (socket.socket.is_open()) {
             std::size_t len = socket.socket.receive(asio::buffer(packet), 0, ec);
             if (ec == asio::error::would_block)
                 return;
-            // ICMP answer to an earlier send: the server is not up yet, TryConnect retries
             if (ec == asio::error::connection_refused)
                 return;
             if (ec) {
@@ -41,6 +43,14 @@ class ReadSocket : public System
     }
 
   private:
+    // temporary visuals, indexed by EntType, until real sprites are in place
+    static inline std::array<Sprite, 4> const typeSprites = {{
+        {BoxShape{50.0f, 35.0f}, Color{0, 228, 48, 255}},   // PLAYER
+        {BoxShape{50.0f, 35.0f}, Color{228, 48, 0, 255}},   // ENEMY
+        {CircleShape{5.0f}, Color{253, 249, 0, 255}},       // BULLET
+        {BoxShape{60.0f, 60.0f}, Color{130, 130, 130, 255}} // OBSTACLE
+    }};
+
     static void handlePacket(Scene &scene, Socket &socket, rtype_protocol::Packet const &packet,
                              std::size_t len)
     {
@@ -66,6 +76,26 @@ class ReadSocket : public System
             socket.tick = rtype_protocol::readU32(&packet[1]);
             break;
         case rtype_protocol::SNAPSHOT:
+            if (len < 5)
+                return;
+            {
+                uint32_t tick = rtype_protocol::readU32(&packet[1]);
+                if (tick > socket.lastSnapshotTick)
+                    socket.lastSnapshotTick = tick;
+            }
+
+            for (std::size_t i = 5; i + 8 <= len; i += 8) {
+                rtype_protocol::EntitySnapshot entity;
+                entity.pos.x = rtype_protocol::readU32(&packet[i]);
+                entity.pos.y = rtype_protocol::readU32(&packet[i + 4]);
+                entity.type.type = static_cast<EntType>(packet[i + 2]);
+                Entity e = scene.createEntity();
+                scene.addComponent(e, entity.pos);
+                scene.addComponent(e, entity.type);
+                if (entity.type.type < typeSprites.size())
+                    scene.addComponent(e, typeSprites[entity.type.type]);
+            }
+            break;
         case rtype_protocol::DELTA:
             // Entity payload format is not specified yet: only the tick is acknowledged
             if (len < 5)

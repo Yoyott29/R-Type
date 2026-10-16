@@ -8,8 +8,10 @@
 // Format des paquets UDP, partage entre le client et le serveur
 
 #pragma once
-#include <cstdint>
+#include "Position.hpp"
+#include "Type.hpp"
 #include <array>
+#include <cstdint>
 
 namespace rtype_protocol
 {
@@ -65,4 +67,17 @@ inline uint32_t readU32(const uint8_t *in)
     return (static_cast<uint32_t>(in[0]) << 24) | (static_cast<uint32_t>(in[1]) << 16) |
            (static_cast<uint32_t>(in[2]) << 8) | static_cast<uint32_t>(in[3]);
 }
+
+struct SnapshotHeader {
+    uint32_t tick;
+    uint16_t entityCount;
+};
+
+struct EntitySnapshot {
+    Position pos;
+    Type type;
+};
+
+
+
 } // namespace rtype_protocol

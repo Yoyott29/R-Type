@@ -27,14 +27,13 @@ void Scene::destroyEntity(Entity entity)
     _systemManager->entityDestroyed(entity);
 }
 
-void Scene::runSchedule(ScheduleLabel label)
-{
-    _systemManager->runSchedule(label, *this);
-}
+void Scene::runSchedule(ScheduleLabel label) { _systemManager->runSchedule(label, *this); }
 
 void Scene::flushDestroyQueue()
 {
-    for (Entity entity : _destroyQueue)
+    while (!_destroyQueue.empty()) {
+        Entity entity = _destroyQueue.front();
+        _destroyQueue.pop();
         destroyEntity(entity);
-    _destroyQueue.clear();
+    }
 }
