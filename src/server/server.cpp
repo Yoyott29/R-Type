@@ -24,5 +24,9 @@ void Server::run()
     std::thread networkThread(&Network::receiveLoop, &_network);
     _gameLoop.run();
     networkThread.join();
+
+    networkThread = std::thread(&Network::sendSnapshot, &_network, 0,
+                                std::vector<rtype_protocol::EntitySnapshot>());
+    networkThread.join();
 }
 } // namespace rtype_server
