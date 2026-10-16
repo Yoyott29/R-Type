@@ -35,5 +35,6 @@ void Physics::build(Application &app)
 
 void Physics::cleanup(Application &app)
 {
+    (void)app;
     // Cleanup logic for the Physics plugin
 }

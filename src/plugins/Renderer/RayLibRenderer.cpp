@@ -37,5 +37,6 @@ void RayLibRenderer::build(Application &app)
 
 void RayLibRenderer::cleanup(Application &app)
 {
+    (void)app;
  //   Cleanup logic for the RayLibRenderer plugin
 }
