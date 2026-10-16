@@ -7,6 +7,7 @@
 
 #pragma once
 #include "input/input_queue.hpp"
+#include "rtype_protocol.hpp"
 #include <asio.hpp>
 #include <atomic>
 #include <cstdint>
@@ -25,7 +26,8 @@ class Network
     std::map<uint8_t, InputQueue> &getPlayerInputs();                     // playerId -> InputQueue
 
   private:
-    void handleConnect(const char *packet, std::size_t size, const asio::ip::udp::endpoint &sender);
+    void handleConnect(const rtype_protocol::Packet &packet, std::size_t size,
+                       const asio::ip::udp::endpoint &sender);
     void reply(const asio::ip::udp::endpoint &target, uint8_t type, uint8_t value);
 
     asio::io_context _ioContext;

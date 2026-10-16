@@ -36,7 +36,7 @@ std::map<uint8_t, InputQueue> &Network::getPlayerInputs() { return _playerInputs
 // Thread reseau : recoit les paquets en continu et range les inputs dans la queue
 void Network::receiveLoop()
 {
-    char buffer[1024];
+    rtype_protocol::Packet buffer;
     asio::ip::udp::endpoint sender;
     asio::error_code error;
 
@@ -44,31 +44,35 @@ void Network::receiveLoop()
         std::size_t n = _socketAsio.receive_from(asio::buffer(buffer), sender, 0, error);
         if (error)
             break;
-        std::string_view message(buffer, n);
+        std::string_view message(reinterpret_cast<const char *>(buffer.data()), n);
 
         if (message == "exit\n")
             break;
         if (n == 0)
             continue;
         uint8_t type = static_cast<uint8_t>(buffer[0]);
-        if (type == rtype_protocol::CONNECT) {
-            handleConnect(buffer, n, sender);
-            continue;
-        }
-        if (_players.find(sender) == _players.end()) {
+        if (type != rtype_protocol::CONNECT && _players.find(sender) == _players.end()) {
             reply(sender, rtype_protocol::CONNECT_REJECT, rtype_protocol::NOT_CONNECTED);
             continue;
         }
-        if (n == 2 && type == rtype_protocol::INPUT) {
-            uint8_t playerId = _players[sender];
-            _playerInputs.at(playerId).push(static_cast<uint8_t>(buffer[1]));
-            continue;
+        switch (type) {
+        case rtype_protocol::CONNECT:
+            handleConnect(buffer, n, sender);
+            break;
+        case rtype_protocol::INPUT:
+            if (n < sizeof(rtype_protocol::InputPacket)) {
+                uint8_t playerId = _players[sender];
+                _playerInputs.at(playerId).push(static_cast<uint8_t>(buffer[5]));
+                std::cout << "Received input from player " << static_cast<int>(playerId) << ": "
+                          << static_cast<int>(buffer[1]) << std::endl;
+            }
+            break;
         }
     }
     _running = false;
 }
 
-void Network::handleConnect(const char *packet, std::size_t size,
+void Network::handleConnect(const rtype_protocol::Packet &packet, std::size_t size,
                             const asio::ip::udp::endpoint &sender)
 {
     if (size != 2)
