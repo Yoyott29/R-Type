@@ -76,14 +76,14 @@ cmake -B build
 cmake --build build
 ```
 
-Start the server in one terminal. It listens for UDP packets on port 1234, or on the port given as argument:
+Start the server in one terminal. It listens for UDP packets on port 4242, or on the port given as argument:
 
 ```sh
 ./r-type_server
-./r-type_server 4242
+./r-type_server 5000
 ```
 
-Then start one client per player in separate terminals:
+Then start one client per player in separate terminals. Each client connects to the server on 127.0.0.1:4242:
 
 ```sh
 ./r-type_client
