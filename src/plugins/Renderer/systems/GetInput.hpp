@@ -6,17 +6,19 @@
 */
 
 #pragma once
+#include "AppAlive.hpp"
 #include "KeyboardInput.hpp"
 #include "Scene.hpp"
 #include "System.hpp"
-#include "AppAlive.hpp"
 #include <array>
 #include <raylib.h>
 #include <utility>
 
-class GetInput: public System{
-    public:
-    void update(Scene &scene) {
+class GetInput : public System
+{
+  public:
+    void update(Scene &scene)
+    {
         KeyboardInput &keyboard = scene.getResource<KeyboardInput>();
 
         keyboard.pressed.reset();
@@ -27,16 +29,16 @@ class GetInput: public System{
             scene.getResource<AppAlive>().alive = false;
     }
 
-    private:
-        static constexpr std::array<std::pair<KeyboardKey, Key>, 9> KEY_BINDINGS = {{
-            {KEY_Z, Key::Z},
-            {KEY_S, Key::S},
-            {KEY_Q, Key::Q},
-            {KEY_D, Key::D},
-            {KEY_UP, Key::Up},
-            {KEY_DOWN, Key::Down},
-            {KEY_LEFT, Key::Left},
-            {KEY_RIGHT, Key::Right},
-            {KEY_SPACE, Key::Space},
-        }};
+  private:
+    static constexpr std::array<std::pair<KeyboardKey, Key>, 9> KEY_BINDINGS = {{
+        {KEY_Z, Key::Z},
+        {KEY_S, Key::S},
+        {KEY_Q, Key::Q},
+        {KEY_D, Key::D},
+        {KEY_UP, Key::Up},
+        {KEY_DOWN, Key::Down},
+        {KEY_LEFT, Key::Left},
+        {KEY_RIGHT, Key::Right},
+        {KEY_SPACE, Key::Space},
+    }};
 };
