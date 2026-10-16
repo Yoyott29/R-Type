@@ -20,6 +20,7 @@ void ScriptSystem::Start(Scene &scene)
 
 void ScriptSystem::update(Scene &scene)
 {
+    Start(scene);
     for (Entity entity : _entities) {
         Script &script = scene.getComponent<Script>(entity);
         if (script.timing == Timing::ON_UPDATE)

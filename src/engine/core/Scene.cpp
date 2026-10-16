@@ -10,7 +10,8 @@
 Scene::Scene()
     : _entityManager(std::make_unique<EntityManager>()),
       _componentManager(std::make_unique<ComponentManager>()),
-      _systemManager(std::make_unique<SystemManager>())
+      _systemManager(std::make_unique<SystemManager>()),
+      _resourceManager(std::make_unique<ResourceManager>())
 {
 }
 
@@ -26,9 +27,13 @@ void Scene::destroyEntity(Entity entity)
     _systemManager->entityDestroyed(entity);
 }
 
+void Scene::runSchedule(ScheduleLabel label) { _systemManager->runSchedule(label, *this); }
+
 void Scene::flushDestroyQueue()
 {
-    for (Entity entity : _destroyQueue)
+    while (!_destroyQueue.empty()) {
+        Entity entity = _destroyQueue.front();
+        _destroyQueue.pop();
         destroyEntity(entity);
-    _destroyQueue.clear();
+    }
 }

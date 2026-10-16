@@ -67,7 +67,7 @@ CMake must report 3.28 or higher.
 
 ## Launch
 
-Run all commands from the repository root. The first command configures CMake and downloads raylib (an internet connection is required the first time). The second compiles the project.
+Run all commands from the repository root. The first command configures CMake and downloads raylib and Asio (an internet connection is required the first time). The second compiles the project.
 
 On Linux:
 
@@ -76,19 +76,20 @@ cmake -B build
 cmake --build build
 ```
 
-Start the server in one terminal. It listens for UDP packets on port 1234:
+Start the server in one terminal. It listens for UDP packets on port 4242, or on the port given as argument:
 
 ```sh
 ./r-type_server
+./r-type_server 5000
 ```
 
-Then start one client per player in separate terminals:
+Then start one client per player in separate terminals. Each client connects to the server on 127.0.0.1:4242:
 
 ```sh
 ./r-type_client
 ```
 
-On Windows, the build does not work yet: the server still uses Linux sockets. Once it does, run:
+On Windows, the build has not been tested yet: the server now uses Asio instead of Linux sockets. Once it is, run:
 
 ```powershell
 cmake -B build

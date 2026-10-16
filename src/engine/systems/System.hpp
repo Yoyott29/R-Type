@@ -9,9 +9,11 @@
 #include "Entity.hpp"
 #include <set>
 
+class Scene;
 class System
 {
   public:
     virtual ~System() = default;
+    virtual void update(Scene &scene) = 0;
     std::set<Entity> _entities;
 };

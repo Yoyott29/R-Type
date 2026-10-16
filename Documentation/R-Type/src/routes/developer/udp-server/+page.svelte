@@ -1,16 +1,37 @@
 <script>
-	const flowExample = `client ──UDP──> network thread ──push──> InputQueue ──pop──> game loop (1 tick / s)`;
+	const flowExample = `client ──UDP──> network thread ──push──> one InputQueue per player ──pop──> game loop (60 ticks / s)
+client <──UDP── SNAPSHOT of the tick <──────────────────────────────────────── game loop`;
 
-	const packetExample = `byte 0   message type   INPUT = 0x01
-byte 1   pressed keys   UP = 0x01, DOWN = 0x02, LEFT = 0x04, RIGHT = 0x08, SHOOT = 0x10`;
+	const connectExample = `client                                server
+  [CONNECT, version] ──────────────────>  known version and a free slot?
+                     <──────────────────  [CONNECT_ACCEPT, playerId]   (0 to 3)
+                     <──────────────────  [CONNECT_REJECT, reason]     (otherwise)`;
 
-	const runExample = `./r-type_server`;
+	const packetExample = `CONNECT         0x10   [0x10, version]                                   2 bytes    client -> server
+INPUT           0x30   [0x30, tick (u32), keys, lastSnapshotTick (u32)]  10 bytes   client -> server
+CONNECT_ACCEPT  0x90   [0x90, playerId]                                  2 bytes    server -> client
+CONNECT_REJECT  0x91   [0x91, reason]                                    2 bytes    server -> client
+SNAPSHOT        0xC0   [0xC0, tick (u32), count (u16), entities...]      7 + 9 per entity
 
-	const sendExample = `# UP + RIGHT (0x01 | 0x08 = 0x09)
-printf '\\x01\\x09' | nc -u -w1 127.0.0.1 1234`;
+entity   [x (f32), y (f32), type (u8)]
+keys     UP = 0x01, DOWN = 0x02, LEFT = 0x04, RIGHT = 0x08, CHARGE = 0x10
+reason   SERVER_FULL = 0x01, WRONG_VERSION = 0x02, NOT_CONNECTED = 0x04`;
 
-	const outputExample = `[tick] ----- nothing received
-[tick] executed : UP RIGHT (9)`;
+	const runExample = `./r-type_server          # port 4242
+./r-type_server 5000     # any port from 1 to 65535
+./r-type_client          # connects to 127.0.0.1:4242`;
+
+	const sendExample = `# CONNECT with protocol version 1, prints the reply
+printf '\\x10\\x01' | nc -u -w1 127.0.0.1 4242 | od -An -tx1
+ 90 00    → CONNECT_ACCEPT, you are player 0
+
+# an INPUT from an address that never sent CONNECT
+printf '\\x30\\x00\\x00\\x00\\x01\\x05\\x00\\x00\\x00\\x00' | nc -u -w1 127.0.0.1 4242 | od -An -tx1
+ 91 04    → CONNECT_REJECT, NOT_CONNECTED`;
+
+	const outputExample = `Server listening on port : 4242
+Player 0 connected: 127.0.0.1:51391
+[tick 30] player 0 : UP LEFT (5)`;
 </script>
 
 <svelte:head>
@@ -31,41 +52,85 @@ printf '\\x01\\x09' | nc -u -w1 127.0.0.1 1234`;
 
 <h1 class="text-3xl font-semibold">How the server works</h1>
 <p class="mt-1 mb-8 text-[15px] text-[#7f9189]">
-	What the game server receives and how to test it
+	How clients connect to the game server, how their inputs reach the game loop and how the state is sent back
 </p>
 
 <p class="max-w-[100ch] leading-7">
-	{@render c('r-type_server')} receives player inputs over UDP on port {@render c('1234')} and
-	handles them on a fixed tick. This is a first version that will change a lot, so this page only
-	covers the basics.
+	{@render c('r-type_server')} talks to the clients over UDP with Asio, on port
+	{@render c('4242')} by default. Up to 4 players can connect. This part will still change a lot,
+	so this page only covers what works today.
 </p>
 
 <h2 class="mt-9 text-lg font-semibold">How it works</h2>
 <p class="mt-3 max-w-[100ch] leading-7">
-	A network thread receives the packets and stores the inputs in a queue. The game loop takes one
-	input from the queue at each tick. For now it only prints it; the ECS will run there later.
+	A network thread receives every packet on a single socket and finds out which player sent it from
+	its address. Each player has their own input queue, so inputs never get mixed. At each tick, the
+	game loop takes one input from each player's queue. For now it only prints it; the ECS will run
+	there later. At the end of each tick, the game loop sends a snapshot of the game state to every
+	connected player.
 </p>
 {@render code(flowExample)}
 
-<h2 class="mt-9 text-lg font-semibold">The INPUT packet</h2>
+<h2 class="mt-9 text-lg font-semibold">Connecting</h2>
 <p class="mt-3 max-w-[100ch] leading-7">
-	The format is shared by the client and the server in {@render c('src/common/protocol.hpp')}. An
-	input packet is 2 bytes, with one bit per key, so several keys can be sent at once:
+	A client must send {@render c('CONNECT')} before anything else. The server checks the protocol
+	version, gives the client the smallest free player id and replies. Any other message from an
+	address that is not connected is refused with {@render c('NOT_CONNECTED')}. If the client sends
+	{@render c('CONNECT')} again because the reply got lost, it gets the same id back. The client
+	sends {@render c('CONNECT')} again every few moments until it is accepted, then starts sending
+	its inputs every frame.
+</p>
+{@render code(connectExample)}
+
+<h2 class="mt-9 text-lg font-semibold">The packets</h2>
+<p class="mt-3 max-w-[100ch] leading-7">
+	The format is shared by the client and the server in
+	{@render c('src/common/rtype_protocol.hpp')}. The first byte is the message type: bit 7 is the
+	direction (0 from the client, 1 from the server). Numbers bigger than one byte are sent in
+	big-endian with {@render c('writeValue')} and {@render c('readValue')}. These messages are
+	handled today:
 </p>
 {@render code(packetExample)}
+<p class="mt-3 max-w-[100ch] leading-7">
+	The file also defines the next messages ({@render c('DISCONNECT')}, {@render c('GAME_START')},
+	{@render c('DELTA')}...), which the server does not handle yet.
+</p>
+
+<h2 class="mt-9 text-lg font-semibold">Snapshots</h2>
+<p class="mt-3 max-w-[100ch] leading-7">
+	{@render c('Network::sendSnapshot')} keeps the last 64 snapshots in a history and sends the
+	entities of the tick to every player. If they do not fit in one 1024 bytes packet, they are split
+	into several packets with the same tick. The client rebuilds its scene from each snapshot it
+	receives and sends the last tick it got back in its next {@render c('INPUT')}.
+</p>
 
 <h2 class="mt-9 text-lg font-semibold">Testing it</h2>
-<p class="mt-3 max-w-[100ch] leading-7">Start the server from the repository root:</p>
+<p class="mt-3 max-w-[100ch] leading-7">
+	Start the server from the repository root, with an optional port:
+</p>
 {@render code(runExample)}
 <p class="mt-3 max-w-[100ch] leading-7">
-	In another terminal, send a packet with {@render c('nc')}:
+	Or, in another terminal, send packets with {@render c('nc')} and read the reply with
+	{@render c('od')}. Each {@render c('nc')} uses a new port, so the server sees a new client every
+	time:
 </p>
 {@render code(sendExample)}
-<p class="mt-3 max-w-[100ch] leading-7">The server prints the keys it received at the next tick:</p>
+<p class="mt-3 max-w-[100ch] leading-7">The server logs each connection and each input it runs:</p>
 {@render code(outputExample)}
 
 <h2 class="mt-9 text-lg font-semibold">Good to know</h2>
 <ul class="mt-3 max-w-[100ch] list-disc space-y-1.5 pl-5 leading-7">
-	<li>The port is fixed to {@render c('1234')} for now.</li>
-	<li>The server uses Linux sockets, so it does not build on Windows yet.</li>
+	<li>
+		The game loop still sends an empty entity list, so no {@render c('SNAPSHOT')} actually leaves
+		the server until the ECS runs there.
+	</li>
+	<li>
+		The server only reads the keys of an {@render c('INPUT')}: the tick and the snapshot
+		acknowledgement are not used yet.
+	</li>
+	<li>Players are never removed yet: there is no disconnect or timeout.</li>
+	<li>
+		Sending the text {@render c('exit')} stops the server. It is a debug shortcut that will be
+		removed.
+	</li>
 </ul>

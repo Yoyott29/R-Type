@@ -35,6 +35,28 @@ if(TARGET raylib)
     target_compile_options(raylib PRIVATE -w)
 endif()
 
+find_package(Threads REQUIRED)
+
+# Standalone Asio is header-only and has no CMakeLists, so we wrap it in an
+# interface target
+CPMAddPackage(
+    NAME asio
+    VERSION 1.30.2
+    GITHUB_REPOSITORY chriskohlhoff/asio
+    GIT_TAG asio-1-30-2
+    DOWNLOAD_ONLY YES
+)
+
+if(asio_ADDED)
+    add_library(asio INTERFACE)
+    target_include_directories(asio SYSTEM INTERFACE "${asio_SOURCE_DIR}/asio/include")
+    target_compile_definitions(asio INTERFACE ASIO_STANDALONE ASIO_NO_DEPRECATED)
+    target_link_libraries(asio INTERFACE Threads::Threads)
+    if(WIN32)
+        target_link_libraries(asio INTERFACE ws2_32 wsock32)
+    endif()
+endif()
+
 # ============================================================
 # Client
 # ============================================================
@@ -44,16 +66,19 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 add_executable(${PROJECT_NAME}
     src/main.cpp
     src/game-rtype/Application.cpp
-    src/game-rtype/RaylibRenderer.cpp
     src/game-rtype/Game.cpp
     src/engine/core/Scene.cpp
+    src/engine/core/TickTimeManager.cpp
     src/engine/core/EntityManager.cpp
     src/engine/systems/SystemManager.cpp
-    src/systems/InputSystem.cpp
-    src/systems/RenderSystem.cpp
-    src/systems/MovementSystem.cpp
-    src/systems/Collider2DSystem.cpp
     src/systems/ScriptSystem.cpp
+    src/plugins/Renderer/RayLibRenderer.cpp
+    src/plugins/Physics/Physics.cpp
+    src/plugins/Physics/systems/Collider2DSystem.cpp
+    src/plugins/Network/Client/Client.cpp
+    src/plugins/Network/Client/systems/ReadSocket.cpp
+    src/plugins/Network/Client/systems/SendInput.cpp
+    src/plugins/Network/Client/systems/TryConnect.cpp
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE
@@ -61,13 +86,28 @@ target_include_directories(${PROJECT_NAME} PRIVATE
     src/engine/core
     src/engine/errors
     src/engine/prefabs
-    src/engine/renderer
     src/engine/systems
     src/systems
     src/components
+    src/common/
+    src/ressources
+    src/plugins/Renderer
+    src/plugins/Renderer/components
+    src/plugins/Renderer/ressources
+    src/plugins/Renderer/systems
+    src/plugins/Physics
+    src/plugins/Physics/components
+    src/plugins/Physics/systems
+    src/plugins/Network/components
+    src/plugins/Network/Client
+    src/plugins/Network/Client/systems
 )
 
-target_link_libraries(${PROJECT_NAME} PRIVATE raylib)
+target_include_directories(${PROJECT_NAME} SYSTEM PRIVATE
+    "${raylib_SOURCE_DIR}/src"
+)
+
+target_link_libraries(${PROJECT_NAME} PRIVATE raylib asio)
 
 # ============================================================
 # Compiler warnings
@@ -103,22 +143,29 @@ endif()
 # Server
 # ============================================================
 
-find_package(Threads REQUIRED)
-
 add_executable(r-type_server
     src/server/main.cpp
     src/server/server.cpp
     src/server/network/network.cpp
     src/server/game/game_loop.cpp
     src/server/input/input_queue.cpp
+    src/engine/core/Scene.cpp
+    src/engine/core/TickTimeManager.cpp
+    src/engine/core/EntityManager.cpp
+    src/engine/systems/SystemManager.cpp
 )
 
 target_include_directories(r-type_server PRIVATE
     src
+    src/common
     src/server
+    src/engine/core
+    src/engine/errors
+    src/engine/systems
+    src/components
 )
 
-target_link_libraries(r-type_server PRIVATE Threads::Threads)
+target_link_libraries(r-type_server PRIVATE asio)
 
 if(MSVC)
     target_compile_options(r-type_server PRIVATE /W4)

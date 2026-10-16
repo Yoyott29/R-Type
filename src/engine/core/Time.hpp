@@ -6,5 +6,12 @@
 */
 
 #pragma once
+#include <chrono>
+#include <cstdint>
+#include <ratio>
 
-#define FIXED_DELTA_TIME (1.0f / 60.0f)
+// Duree d'un tick : exactement 1/60 s, a additionner a un std::chrono::time_point
+constexpr std::chrono::duration<std::int64_t, std::ratio<1, 60>> FIXED_TICK_DURATION{1};
+
+// La meme duree en secondes (float), pour les calculs de gameplay (position += vitesse * dt)
+constexpr float FIXED_DELTA_TIME = std::chrono::duration<float>(FIXED_TICK_DURATION).count();

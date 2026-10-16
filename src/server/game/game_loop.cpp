@@ -6,39 +6,46 @@
 */
 
 #include "game/game_loop.hpp"
-#include "common/protocol.hpp"
+#include "rtype_protocol.hpp"
 #include <iostream>
 #include <optional>
 #include <thread>
 
 namespace rtype_server
 {
-GameLoop::GameLoop(InputQueue &inputs, std::atomic<bool> &running)
-    : _inputs(inputs), _running(running)
+GameLoop::GameLoop(Network &network, std::atomic<bool> &running)
+    : _network(network), _running(running)
 {
 }
 
-// Thread jeu : a chaque tick, execute le plus ancien input en attente, ou rien si la queue est vide
+// Thread jeu : attend le prochain tick, puis execute le plus ancien input en attente de chaque
+// joueur
 void GameLoop::run()
 {
-    auto nextTick = std::chrono::steady_clock::now();
+    _ticks.start();
 
     while (_running) {
-        nextTick += TICK_DURATION;
-        std::this_thread::sleep_until(nextTick);
-        std::optional<uint8_t> input = _inputs.pop();
-        if (!input) {
-            std::cout << "[tick] ----- nothing received" << std::endl;
-            continue;
+        _ticks.advance();
+        std::this_thread::sleep_until(_ticks.getNextTickTime());
+        bool received = false;
+        for (uint8_t playerId = 0; playerId < rtype_protocol::MAX_PLAYERS; playerId++) {
+            auto &queue = _network.getPlayerInputs().at(playerId);
+            std::optional<uint8_t> input = queue.pop();
+            if (!input)
+                continue;
+            received = true;
+            executeInput(playerId, *input, _ticks.getCurrentTick());
         }
-        executeInput(*input);
+        if (!received && _ticks.getCurrentTick() % 60 == 0)
+            std::cout << "[tick " << _ticks.getCurrentTick() << "] nothing received" << std::endl;
+        _network.sendSnapshot(_ticks.getCurrentTick(), {}); // TODO: send real snapshot
     }
 }
 
 // Pour l'instant on affiche juste les touches, plus tard -> l'ECS ici
-void GameLoop::executeInput(uint8_t input)
+void GameLoop::executeInput(uint8_t playerId, uint8_t input, std::uint64_t tick)
 {
-    std::cout << "[tick] executed :";
+    std::cout << "[tick " << tick << "] player " << static_cast<int>(playerId) << " :";
     debugPrintInput(input);
 }
 
@@ -55,8 +62,8 @@ void GameLoop::debugPrintInput(uint8_t input)
         std::cout << " LEFT";
     if (input & rtype_protocol::RIGHT)
         std::cout << " RIGHT";
-    if (input & rtype_protocol::SHOOT)
-        std::cout << " SHOOT";
+    if (input & rtype_protocol::CHARGE)
+        std::cout << " CHARGE";
     std::cout << " (" << static_cast<int>(input) << ")" << std::endl;
 }
 } // namespace rtype_server

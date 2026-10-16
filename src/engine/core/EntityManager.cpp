@@ -57,3 +57,12 @@ bool EntityManager::isAlive(Entity entity) const
 {
     return entity < MAX_ENTITIES && _alive.test(entity);
 }
+
+void EntityManager::putAllEntitysInDestroyQueue(std::queue<Entity> &destroyQueue)
+{
+    for (Entity entity = 0; entity < MAX_ENTITIES; entity++) {
+        if (isAlive(entity)) {
+            destroyQueue.push(entity);
+        }
+    }
+}

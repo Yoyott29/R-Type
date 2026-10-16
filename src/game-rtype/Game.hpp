@@ -9,10 +9,8 @@
 #define GAME_HPP_
 #include "Collider2D.hpp"
 #include "Entity.hpp"
-#include "IRenderer.hpp"
 #include "Position.hpp"
 #include "PrefabsManager.hpp"
-#include "RaylibRenderer.hpp"
 #include "Scene.hpp"
 #include "Sprite.hpp"
 #include "Velocity.hpp"

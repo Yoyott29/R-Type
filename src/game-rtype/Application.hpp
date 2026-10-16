@@ -6,36 +6,33 @@
 */
 
 #pragma once
-#include "Collider2DSystem.hpp"
 #include "Game.hpp"
-#include "IRenderer.hpp"
-#include "InputSystem.hpp"
-#include "MovementSystem.hpp"
 #include "PrefabsManager.hpp"
-#include "RenderSystem.hpp"
 #include "Scene.hpp"
-#include "ScriptSystem.hpp"
 #include <memory>
+#include <vector>
+
+class IPlugin;
 
 class Application
 {
   public:
     Application();
     void run();
-
-  private:
-    void setupComponents();
-    void setupEntities();
-    void setupSystems();
-    void setupPrefabs();
+    void addPlugin(const std::shared_ptr<IPlugin> &plugin);
 
     Scene _scene;
+  private:
+    void setupPrefabs();
+
+    std::vector<std::shared_ptr<IPlugin>> _plugins;
     Game _game;
-    std::unique_ptr<IRenderer> _renderer;
-    std::shared_ptr<InputSystem> _inputSystem;
-    std::shared_ptr<MovementSystem> _movementSystem;
-    std::shared_ptr<RenderSystem> _renderSystem;
-    std::shared_ptr<Collider2DSystem> _Collider2DSystem;
-    std::shared_ptr<ScriptSystem> _scriptSystem;
     PrefabsManager _prefabs;
+};
+
+class IPlugin {
+    public:
+        virtual ~IPlugin() = default;
+        virtual void build(Application &app) = 0;
+        virtual void cleanup(Application &app) = 0;
 };
