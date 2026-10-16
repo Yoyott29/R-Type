@@ -43,6 +43,7 @@ int main(int argc, char **argv)
     try {
         rtype_server::Server server(port);
         server.run();
+        
     } catch (std::exception const &error) {
         std::cerr << "Fatal error: " << error.what() << std::endl;
         return 84;

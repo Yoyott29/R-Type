@@ -38,6 +38,7 @@ void GameLoop::run()
         }
         if (!received && _ticks.getCurrentTick() % 60 == 0)
             std::cout << "[tick " << _ticks.getCurrentTick() << "] nothing received" << std::endl;
+        _network.sendSnapshot(_ticks.getCurrentTick(), {}); // TODO: send real snapshot
     }
 }
 
