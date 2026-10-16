@@ -85,16 +85,21 @@ void ReadSocket::handlePacket(Scene &scene, Socket &socket, rtype_protocol::Pack
         for (std::size_t i = headerSize; i + rtype_protocol::ENTITY_SIZE <= len;
              i += rtype_protocol::ENTITY_SIZE) {
             rtype_protocol::EntitySnapshot entity;
+            uint8_t type = packet[i + 8];
             entity.pos.x = rtype_protocol::readValue<float>(&packet[i]);
             entity.pos.y = rtype_protocol::readValue<float>(&packet[i + 4]);
-            entity.type.type = static_cast<EntType>(packet[i + 2]);
+            // check before the cast: a value outside EntType is undefined behavior
+            if (type >= typeSprites.size()) {
+                std::cout << "Entity skipped: unknown type " << static_cast<int>(type) << "\n";
+                continue;
+            }
+            entity.type.type = static_cast<EntType>(type);
             Entity e = scene.createEntity();
             scene.addComponent(e, entity.pos);
             scene.addComponent(e, entity.type);
             std::cout << "Entity: pos(" << entity.pos.x << ", " << entity.pos.y << "), type("
                       << static_cast<int>(entity.type.type) << ")\n";
-            if (entity.type.type < typeSprites.size())
-                scene.addComponent(e, typeSprites[entity.type.type]);
+            scene.addComponent(e, typeSprites[type]);
         }
         break;
     }
