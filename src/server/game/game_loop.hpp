@@ -11,6 +11,8 @@
 #include <atomic>
 #include <cstdint>
 
+#define PLAYER_SPEED 300.0f
+
 namespace rtype_server
 {
 class GameLoop
@@ -26,5 +28,6 @@ class GameLoop
     Network &_network;
     TickTimeManager _ticks;
     std::atomic<bool> &_running;
+    std::map<uint8_t, Position> _players;
 };
 } // namespace rtype_server

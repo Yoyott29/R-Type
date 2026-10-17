@@ -27,28 +27,41 @@ void GameLoop::run()
     while (_running) {
         _ticks.advance();
         std::this_thread::sleep_until(_ticks.getNextTickTime());
-        bool received = false;
+
+        // "spawn": any newly connected player gets a position
+        for (uint8_t id : _network.getConnectedPlayerIds())
+            _players.try_emplace(id, Position{100.0f, 200.0f + 100.0f * id});
+
         for (uint8_t playerId = 0; playerId < rtype_protocol::MAX_PLAYERS; playerId++) {
             auto &queue = _network.getPlayerInputs().at(playerId);
             std::optional<uint8_t> input = queue.pop();
             if (!input)
                 continue;
-            received = true;
             executeInput(playerId, *input, _ticks.getCurrentTick());
         }
-        if (!received && _ticks.getCurrentTick() % 60 == 0)
-            std::cout << "[tick " << _ticks.getCurrentTick() << "] nothing received" << std::endl;
-        _network.sendSnapshot(_ticks.getCurrentTick(), {}); // TODO: send real snapshot
+
+        std::vector<rtype_protocol::EntitySnapshot> entities;
+        for (auto const &[id, pos] : _players)
+            entities.push_back({pos, Type{EntType::PLAYER}});
+        _network.sendSnapshot(_ticks.getCurrentTick(), entities);
     }
 }
 
-// Pour l'instant on affiche juste les touches, plus tard -> l'ECS ici
-void GameLoop::executeInput(uint8_t playerId, uint8_t input, std::uint64_t tick)
+void GameLoop::executeInput(uint8_t playerId, uint8_t input, std::uint64_t)
 {
-    std::cout << "[tick " << tick << "] player " << static_cast<int>(playerId) << " :";
-    debugPrintInput(input);
+    auto it = _players.find(playerId);
+    if (it == _players.end())
+        return;
+    float speed = PLAYER_SPEED * FIXED_DELTA_TIME;
+    if (input & rtype_protocol::UP)
+        it->second.y -= speed;
+    if (input & rtype_protocol::DOWN)
+        it->second.y += speed;
+    if (input & rtype_protocol::LEFT)
+        it->second.x -= speed;
+    if (input & rtype_protocol::RIGHT)
+        it->second.x += speed;
 }
-
 // DEBUG
 void GameLoop::debugPrintInput(uint8_t input)
 {

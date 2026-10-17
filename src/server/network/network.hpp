@@ -34,6 +34,7 @@ class Network
 
     const std::map<asio::ip::udp::endpoint, uint8_t> &getPlayers() const; // endpoint -> playerId
     std::map<uint8_t, InputQueue> &getPlayerInputs();                     // playerId -> InputQueue
+    std::vector<uint8_t> getConnectedPlayerIds();
 
   private:
     void handleConnect(const rtype_protocol::Packet &packet, std::size_t size,

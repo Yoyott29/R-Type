@@ -163,4 +163,13 @@ void Network::reply(const asio::ip::udp::endpoint &target, uint8_t type, uint8_t
 
     _socketAsio.send_to(asio::buffer(packet), target, 0, error);
 }
+
+std::vector<uint8_t> Network::getConnectedPlayerIds()
+{
+    std::lock_guard<std::mutex> lock(_playersMutex);
+    std::vector<uint8_t> ids;
+    for (auto const &[endpoint, id] : _players)
+        ids.push_back(id);
+    return ids;
+}
 } // namespace rtype_server
