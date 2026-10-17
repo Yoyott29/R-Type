@@ -12,6 +12,7 @@
 
 #include "Sprite.hpp"
 #include "TickTimeManager.hpp"
+#include "Time.hpp"
 #include "Type.hpp"
 #include "Velocity.hpp"
 #include "rtype_protocol.hpp"
@@ -77,11 +78,30 @@ void GameLoop::initializePrebabs()
                      .addComponent(Collider2D{BoxShape{50.0f, 35.0f}, nullptr})
                      .addComponent(Script{Timing::ON_UPDATE,
                                           [this](Scene &scene, Entity &enemy) {
-                                              _game.killOffScreenEnemy(scene, enemy);
+                                              _game.DestroyOffScreenEntity(scene, enemy);
                                           }})
                      .addComponent(Script{Timing::ON_UPDATE, [this](Scene &scene, Entity &enemy) {
                                               _game.makeSinusoidalMovement(scene, enemy);
                                           }}));
+    _prefabs.createPrefab(
+        "PlayerBullet",
+        Prefab()
+            .addComponent(Type{EntType::BULLET})
+            .addComponent(Position{0.0f, 0.0f})
+            .addComponent(Velocity{500.0f, 0.0f})
+            .addComponent(Sprite{BoxShape{10.0f, 5.0f}, Color{0, 0, 228, 255}})
+            .addComponent(Collider2D{BoxShape{10.0f, 5.0f},
+                                     [this](Entity bullet, Entity other) {
+                                         if (_scene.isEntityAlive(other) &&
+                                             _scene.getComponent<Type>(other).type ==
+                                                 EntType::ENEMY) {
+                                             _scene.queueDestroy(bullet);
+                                             _scene.queueDestroy(other);
+                                         }
+                                     }})
+            .addComponent(Script{Timing::ON_UPDATE, [this](Scene &scene, Entity &bullet) {
+                                     _game.DestroyOffScreenEntity(scene, bullet);
+                                 }}));
 }
 
 void GameLoop::initializePlayer(uint8_t id)
@@ -137,6 +157,8 @@ void GameLoop::run()
     while (_running) {
         ticks.advance();
         std::this_thread::sleep_until(ticks.getNextTickTime());
+        for (float &cooldown : _shootCooldowns)
+            cooldown = std::max(0.0f, cooldown - FIXED_DELTA_TIME);
 
         // "spawn": any newly connected player gets a position
         for (uint8_t id : _network.getConnectedPlayerIds()) {
@@ -195,6 +217,15 @@ void GameLoop::executeInput(uint8_t playerId, uint8_t input, std::uint64_t)
         velocity.dx -= PLAYER_SPEED;
     if (input & rtype_protocol::RIGHT)
         velocity.dx += PLAYER_SPEED;
+
+    if (input & rtype_protocol::CHARGE && _shootCooldowns.at(playerId) <= 0.0f) {
+        Entity bullet = _prefabs.InstantiatePrefab("PlayerBullet", _scene);
+        Position &pos = _scene.getComponent<Position>(bullet);
+        pos.x = _scene.getComponent<Position>(playerEntity).x + 50.0f;
+        pos.y = _scene.getComponent<Position>(playerEntity).y;
+        _entities.push_back(bullet);
+        _shootCooldowns.at(playerId) = 0.5f;
+    }
 }
 
 } // namespace rtype_server

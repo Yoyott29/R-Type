@@ -23,7 +23,7 @@ class Game
 
     Entity SpawnEnemy(Scene &scene);
     void InitializeEnemyPosition(Scene &scene, Entity enemy);
-    void killOffScreenEnemy(Scene &scene, Entity enemy);
+    void DestroyOffScreenEntity(Scene &scene, Entity enemy);
     void maintainPlayerOnScreen(Scene &scene, Entity player);
     void makeSinusoidalMovement(Scene &scene, Entity enemy);
 

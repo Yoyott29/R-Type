@@ -49,7 +49,7 @@ void Game::InitializeEnemyPosition(Scene &scene, Entity enemy)
     scene.getComponent<Position>(enemy).y = randomY;
 }
 
-void Game::killOffScreenEnemy(Scene &scene, Entity enemy)
+void Game::DestroyOffScreenEntity(Scene &scene, Entity enemy)
 {
     Position &pos = scene.getComponent<Position>(enemy);
 
