@@ -152,7 +152,7 @@ Player 0 connected: 127.0.0.1:51391`;
 	</li>
 	<li>Players are never removed yet: there is no disconnect or timeout.</li>
 	<li>
-		Sending the text {@render c('exit')} stops the server. It is a debug shortcut that will be
-		removed.
+		Type {@render c('exit')} in the server terminal, or press Ctrl+D, to stop it cleanly. Ctrl+C
+		still kills it without any cleanup.
 	</li>
 </ul>
