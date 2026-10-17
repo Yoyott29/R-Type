@@ -163,6 +163,10 @@ target_include_directories(r-type_server PRIVATE
     src/engine/errors
     src/engine/systems
     src/components
+    src/plugins/Physics/components
+    src/plugins/Physics/systems
+    src/plugins/Renderer/components
+    src/plugins/Renderer/systems
 )
 
 target_link_libraries(r-type_server PRIVATE asio)
