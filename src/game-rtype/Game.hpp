@@ -25,10 +25,15 @@ class Game
     void InitializeEnemyPosition(Scene &scene, Entity enemy);
     void killOffScreenEnemy(Scene &scene, Entity enemy);
     void maintainPlayerOnScreen(Scene &scene, Entity player);
+    void makeSinusoidalMovement(Scene &scene, Entity enemy);
 
   protected:
   private:
     float _spawnTimer;
+    float _waveTimer;
+    int _enemyCount;
+    float _waveDelay;
+    float _waveY;
     PrefabsManager &_prefabs;
 };
 

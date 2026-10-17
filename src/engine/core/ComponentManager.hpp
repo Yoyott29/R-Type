@@ -12,6 +12,7 @@
 #include <memory>
 #include <typeindex>
 #include <unordered_map>
+#include <vector>
 
 class ComponentManager
 {
@@ -53,6 +54,21 @@ class ComponentManager
     template <typename Component> Component &getComponent(Entity entity)
     {
         return getComponentPool<Component>().getComponent(entity);
+    }
+
+    template <typename Component> Component &getComponent(Entity entity, std::size_t index)
+    {
+        return getComponentPool<Component>().getComponent(entity, index);
+    }
+
+    template <typename Component> std::size_t getComponentCount(Entity entity)
+    {
+        return getComponentPool<Component>().count(entity);
+    }
+
+    template <typename Component> std::vector<Component *> getComponents(Entity entity)
+    {
+        return getComponentPool<Component>().getComponents(entity);
     }
 
     void entityDestroyed(Entity entity)
