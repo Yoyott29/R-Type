@@ -14,6 +14,7 @@
 #include <cstdint>
 #include <map>
 #include <mutex>
+#include <set>
 #include <vector>
 
 namespace rtype_server
@@ -29,6 +30,7 @@ class Network
   public:
     Network(uint16_t port, std::map<uint8_t, InputQueue> &inputs, std::atomic<bool> &running);
     ~Network();
+    void disconnectPlayer(uint8_t playerId);
     void receiveLoop();
     void sendSnapshot(uint32_t tick, const std::vector<rtype_protocol::EntitySnapshot> &entities);
 
@@ -47,6 +49,7 @@ class Network
     std::map<uint8_t, InputQueue> &_playerInputs; // playerId -> InputQueue
     std::atomic<bool> &_running;
     std::map<asio::ip::udp::endpoint, uint8_t> _players; // endpoint -> playerId
+    std::set<asio::ip::udp::endpoint> _eliminatedPlayers;
     std::mutex _playersMutex;
     std::array<SnapshotEntry, 64> _snapshotHistory; // tick % 64 -> snapshot envoye
 };

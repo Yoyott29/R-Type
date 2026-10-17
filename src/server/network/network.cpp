@@ -79,6 +79,10 @@ void Network::handleConnect(const rtype_protocol::Packet &packet, std::size_t si
         reply(sender, rtype_protocol::CONNECT_REJECT, rtype_protocol::WRONG_VERSION);
         return;
     }
+    if (_eliminatedPlayers.find(sender) != _eliminatedPlayers.end()) {
+        reply(sender, rtype_protocol::CONNECT_REJECT, rtype_protocol::SERVER_FULL);
+        return;
+    }
     auto player = _players.find(sender);
     if (player != _players.end()) {
         reply(sender, rtype_protocol::CONNECT_ACCEPT, player->second);
@@ -102,6 +106,29 @@ void Network::handleConnect(const rtype_protocol::Packet &packet, std::size_t si
         }
     }
     reply(sender, rtype_protocol::CONNECT_REJECT, rtype_protocol::SERVER_FULL);
+}
+
+void Network::disconnectPlayer(uint8_t playerId)
+{
+    std::lock_guard<std::mutex> lock(_playersMutex);
+    auto player = std::find_if(_players.begin(), _players.end(),
+                               [playerId](auto const &entry) {
+                                   return entry.second == playerId;
+                               });
+    if (player == _players.end())
+        return;
+
+    const auto endpoint = player->first;
+    _eliminatedPlayers.insert(endpoint);
+
+    const uint8_t packet[] = {rtype_protocol::PLAYER_LEFT, playerId};
+    for (auto const &[target, unused] : _players) {
+        asio::error_code error;
+        _socketAsio.send_to(asio::buffer(packet), target, 0, error);
+    }
+    asio::error_code error;
+    _socketAsio.send_to(asio::buffer(packet), endpoint, 0, error);
+    _players.erase(player);
 }
 
 // [SNAPSHOT, tick (u32), count (u16), entites...], entite = [x (f32), y (f32), type (u8)]

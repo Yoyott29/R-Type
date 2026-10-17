@@ -149,6 +149,9 @@ add_executable(r-type_server
     src/server/network/network.cpp
     src/server/game/game_loop.cpp
     src/server/input/input_queue.cpp
+    src/game-rtype/Game.cpp
+    src/systems/ScriptSystem.cpp
+    src/plugins/Physics/systems/Collider2DSystem.cpp
     src/engine/core/Scene.cpp
     src/engine/core/TickTimeManager.cpp
     src/engine/core/EntityManager.cpp
@@ -157,16 +160,23 @@ add_executable(r-type_server
 
 target_include_directories(r-type_server PRIVATE
     src
+    src/game-rtype
     src/common
     src/server
     src/engine/core
     src/engine/errors
+    src/engine/prefabs
     src/engine/systems
+    src/systems
     src/components
     src/plugins/Physics/components
     src/plugins/Physics/systems
     src/plugins/Renderer/components
     src/plugins/Renderer/systems
+)
+
+target_include_directories(r-type_server SYSTEM PRIVATE
+    "${raylib_SOURCE_DIR}/src"
 )
 
 target_link_libraries(r-type_server PRIVATE asio)
