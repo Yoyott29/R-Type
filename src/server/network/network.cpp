@@ -120,9 +120,7 @@ void Network::disconnectPlayer(uint8_t playerId)
 {
     std::lock_guard<std::mutex> lock(_playersMutex);
     auto player = std::find_if(_players.begin(), _players.end(),
-                               [playerId](auto const &entry) {
-                                   return entry.second == playerId;
-                               });
+                               [playerId](auto const &entry) { return entry.second == playerId; });
     if (player == _players.end())
         return;
 
