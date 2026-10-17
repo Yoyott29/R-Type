@@ -17,6 +17,8 @@ Scene::Scene()
 
 Entity Scene::createEntity() { return _entityManager->createEntity(); }
 
+bool Scene::isEntityAlive(Entity entity) const { return _entityManager->isAlive(entity); }
+
 void Scene::destroyEntity(Entity entity)
 {
     if (!_entityManager->isAlive(entity))

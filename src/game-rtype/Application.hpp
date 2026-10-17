@@ -22,17 +22,15 @@ class Application
     void addPlugin(const std::shared_ptr<IPlugin> &plugin);
 
     Scene _scene;
-  private:
-    void setupPrefabs();
 
+  private:
     std::vector<std::shared_ptr<IPlugin>> _plugins;
-    Game _game;
-    PrefabsManager _prefabs;
 };
 
-class IPlugin {
-    public:
-        virtual ~IPlugin() = default;
-        virtual void build(Application &app) = 0;
-        virtual void cleanup(Application &app) = 0;
+class IPlugin
+{
+  public:
+    virtual ~IPlugin() = default;
+    virtual void build(Application &app) = 0;
+    virtual void cleanup(Application &app) = 0;
 };

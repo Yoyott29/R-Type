@@ -6,14 +6,19 @@
 */
 
 #pragma once
+#include "Collider2D.hpp"
+#include "Collider2DSystem.hpp"
+#include "Game.hpp"
+#include "PlayerId.hpp"
 #include "Scene.hpp"
+#include "Script.hpp"
+#include "ScriptSystem.hpp"
 #include "network/network.hpp"
 #include <atomic>
 #include <cstdint>
-#include <map>
 #include <vector>
 
-#define PLAYER_SPEED 3000.0f
+#define PLAYER_SPEED 300.0f
 
 namespace rtype_server
 {
@@ -26,11 +31,15 @@ class GameLoop
   private:
     void executeInput(uint8_t playerId, uint8_t input, std::uint64_t tick);
     std::vector<rtype_protocol::EntitySnapshot> buildSnapshot();
-    void debugPrintInput(uint8_t input); // DEBUG
+    void initializePlayer(uint8_t id);
+    void initializeEntities();
+    void initializePrebabs();
 
     Network &_network;
     std::atomic<bool> &_running;
     Scene _scene;
-    std::map<uint8_t, Entity> _players;
+    std::vector<Entity> _entities;
+    PrefabsManager _prefabs;
+    Game _game;
 };
 } // namespace rtype_server

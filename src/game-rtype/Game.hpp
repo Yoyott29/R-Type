@@ -21,8 +21,10 @@ class Game
     Game(PrefabsManager &prefabs);
     ~Game() = default;
 
-    void SpawnEnemy(Scene &scene);
+    Entity SpawnEnemy(Scene &scene);
     void InitializeEnemyPosition(Scene &scene, Entity enemy);
+    void killOffScreenEnemy(Scene &scene, Entity enemy);
+    void maintainPlayerOnScreen(Scene &scene, Entity player);
 
   protected:
   private:

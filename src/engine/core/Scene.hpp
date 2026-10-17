@@ -18,6 +18,7 @@ class Scene
   public:
     Scene();
     Entity createEntity();
+    bool isEntityAlive(Entity entity) const;
     void destroyEntity(Entity entity);
     void runSchedule(ScheduleLabel label);
     void putAllEntitysInDestroyQueue()

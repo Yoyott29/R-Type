@@ -65,6 +65,14 @@ void ReadSocket::handlePacket(Scene &scene, Socket &socket, rtype_protocol::Pack
         std::cerr << "Connection rejected by the server: " << rejectReason(packet[1]) << "\n";
         scene.getResource<AppAlive>().alive = false;
         break;
+    case rtype_protocol::PLAYER_LEFT:
+        if (len < 2)
+            return;
+        if (socket.connected && packet[1] == socket.playerId) {
+            std::cerr << "Player eliminated by the server\n";
+            scene.getResource<AppAlive>().alive = false;
+        }
+        break;
     case rtype_protocol::GAME_STARTED:
         if (len < 5)
             return;
