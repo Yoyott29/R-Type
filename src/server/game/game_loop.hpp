@@ -6,12 +6,14 @@
 */
 
 #pragma once
-#include "TickTimeManager.hpp"
+#include "Scene.hpp"
 #include "network/network.hpp"
 #include <atomic>
 #include <cstdint>
+#include <map>
+#include <vector>
 
-#define PLAYER_SPEED 300.0f
+#define PLAYER_SPEED 3000.0f
 
 namespace rtype_server
 {
@@ -23,11 +25,12 @@ class GameLoop
 
   private:
     void executeInput(uint8_t playerId, uint8_t input, std::uint64_t tick);
+    std::vector<rtype_protocol::EntitySnapshot> buildSnapshot();
     void debugPrintInput(uint8_t input); // DEBUG
 
     Network &_network;
-    TickTimeManager _ticks;
     std::atomic<bool> &_running;
-    std::map<uint8_t, Position> _players;
+    Scene _scene;
+    std::map<uint8_t, Entity> _players;
 };
 } // namespace rtype_server

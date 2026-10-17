@@ -6,6 +6,13 @@
 */
 
 #include "game/game_loop.hpp"
+#include "MovementSystem.hpp"
+#include "Position.hpp"
+
+#include "Sprite.hpp"
+#include "TickTimeManager.hpp"
+#include "Type.hpp"
+#include "Velocity.hpp"
 #include "rtype_protocol.hpp"
 #include <iostream>
 #include <optional>
@@ -16,34 +23,59 @@ namespace rtype_server
 GameLoop::GameLoop(Network &network, std::atomic<bool> &running)
     : _network(network), _running(running)
 {
+    _scene.registerComponent<Position>();
+    _scene.registerComponent<Velocity>();
+    _scene.registerComponent<Type>();
+    _scene.registerComponent<Sprite>();
+    _scene.addResource<TickTimeManager>();
+
+    _scene.registerSystem<MovementSystem>(FixedUpdate);
+    ComponentSet movementRequirements;
+    movementRequirements.set(_scene.getComponentType<Position>());
+    movementRequirements.set(_scene.getComponentType<Velocity>());
+    _scene.setSystemComponentSet<MovementSystem>(movementRequirements);
+}
+
+std::vector<rtype_protocol::EntitySnapshot> GameLoop::buildSnapshot()
+{
+    std::vector<rtype_protocol::EntitySnapshot> snapshot;
+
+    for (auto const &[id, entity] : _players)
+        snapshot.push_back({_scene.getComponent<Position>(entity), Type{EntType::PLAYER}});
+    return snapshot;
 }
 
 // Thread jeu : attend le prochain tick, puis execute le plus ancien input en attente de chaque
 // joueur
 void GameLoop::run()
 {
-    _ticks.start();
+    TickTimeManager &ticks = _scene.getResource<TickTimeManager>();
+    ticks.start();
 
     while (_running) {
-        _ticks.advance();
-        std::this_thread::sleep_until(_ticks.getNextTickTime());
+        ticks.advance();
+        std::this_thread::sleep_until(ticks.getNextTickTime());
 
         // "spawn": any newly connected player gets a position
-        for (uint8_t id : _network.getConnectedPlayerIds())
-            _players.try_emplace(id, Position{100.0f, 200.0f + 100.0f * id});
+        for (uint8_t id : _network.getConnectedPlayerIds()) {
+            Entity playerEntity = _scene.createEntity();
+            _scene.addComponent(playerEntity, Position{100.0f, 200.0f + 100.0f * id});
+            _scene.addComponent(playerEntity, Velocity{0.0f, 0.0f});
+            _scene.addComponent(playerEntity,
+                                Sprite{BoxShape{50.0f, 35.0f}, Color{0, 228, 48, 255}});
+            _players.emplace(id, playerEntity);
+        }
 
         for (uint8_t playerId = 0; playerId < rtype_protocol::MAX_PLAYERS; playerId++) {
             auto &queue = _network.getPlayerInputs().at(playerId);
             std::optional<uint8_t> input = queue.pop();
             if (!input)
                 continue;
-            executeInput(playerId, *input, _ticks.getCurrentTick());
+            executeInput(playerId, *input, ticks.getCurrentTick());
         }
-
-        std::vector<rtype_protocol::EntitySnapshot> entities;
-        for (auto const &[id, pos] : _players)
-            entities.push_back({pos, Type{EntType::PLAYER}});
-        _network.sendSnapshot(_ticks.getCurrentTick(), entities);
+        _scene.runSchedule(FixedUpdate);
+        _scene.flushDestroyQueue();
+        _network.sendSnapshot(ticks.getCurrentTick(), buildSnapshot());
     }
 }
 
@@ -52,15 +84,17 @@ void GameLoop::executeInput(uint8_t playerId, uint8_t input, std::uint64_t)
     auto it = _players.find(playerId);
     if (it == _players.end())
         return;
+    Velocity &velocity = _scene.getComponent<Velocity>(it->second);
+    velocity = {0.0f, 0.0f};
     float speed = PLAYER_SPEED * FIXED_DELTA_TIME;
     if (input & rtype_protocol::UP)
-        it->second.y -= speed;
+        velocity.dy -= speed;
     if (input & rtype_protocol::DOWN)
-        it->second.y += speed;
+        velocity.dy += speed;
     if (input & rtype_protocol::LEFT)
-        it->second.x -= speed;
+        velocity.dx -= speed;
     if (input & rtype_protocol::RIGHT)
-        it->second.x += speed;
+        velocity.dx += speed;
 }
 // DEBUG
 void GameLoop::debugPrintInput(uint8_t input)
