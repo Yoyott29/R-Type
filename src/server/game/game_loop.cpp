@@ -18,6 +18,7 @@
 #include <algorithm>
 #include <iostream>
 #include <optional>
+#include <string>
 #include <thread>
 
 namespace rtype_server
@@ -120,6 +121,15 @@ void GameLoop::run()
     TickTimeManager &ticks = _scene.getResource<TickTimeManager>();
     ticks.start();
 
+    std::thread inputThread([this]() {
+        std::string input;
+        while (_running && std::getline(std::cin, input)) {
+            if (input == "exit")
+                break;
+        }
+        _network.stop();
+    });
+
     while (_running) {
         ticks.advance();
         std::this_thread::sleep_until(ticks.getNextTickTime());
@@ -155,6 +165,7 @@ void GameLoop::run()
             _entities.end());
         _network.sendSnapshot(ticks.getCurrentTick(), buildSnapshot());
     }
+    inputThread.join();
 }
 
 void GameLoop::executeInput(uint8_t playerId, uint8_t input, std::uint64_t)
