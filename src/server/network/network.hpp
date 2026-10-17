@@ -32,6 +32,7 @@ class Network
     ~Network();
     void disconnectPlayer(uint8_t playerId);
     void receiveLoop();
+    void stop();
     void sendSnapshot(uint32_t tick, const std::vector<rtype_protocol::EntitySnapshot> &entities);
 
     const std::map<asio::ip::udp::endpoint, uint8_t> &getPlayers() const; // endpoint -> playerId

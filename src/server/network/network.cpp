@@ -10,7 +10,6 @@
 #include <algorithm>
 #include <asio.hpp>
 #include <iostream>
-#include <string_view>
 
 namespace rtype_server
 {
@@ -43,11 +42,7 @@ void Network::receiveLoop()
 
     while (_running) {
         std::size_t n = _socketAsio.receive_from(asio::buffer(buffer), sender, 0, error);
-        if (error)
-            break;
-        std::string_view message(reinterpret_cast<const char *>(buffer.data()), n);
-
-        if (message == "exit\n")
+        if (!_running || error)
             break;
         if (n == 0)
             continue;
@@ -68,6 +63,19 @@ void Network::receiveLoop()
         }
     }
     _running = false;
+}
+
+void Network::stop()
+{
+    _running = false;
+    asio::ip::udp::socket wakeUp(_ioContext);
+    asio::error_code error;
+    wakeUp.open(asio::ip::udp::v4(), error);
+    if (error)
+        return;
+    wakeUp.send_to(asio::buffer("", 1),
+                   asio::ip::udp::endpoint(asio::ip::address_v4::loopback(), _endpoint.port()), 0,
+                   error);
 }
 
 void Network::handleConnect(const rtype_protocol::Packet &packet, std::size_t size,
