@@ -2,7 +2,13 @@
 	const flowExample = `client ──UDP──> network thread ──push──> one InputQueue per player ──pop──> game loop (60 ticks / s)
 client <──UDP── SNAPSHOT of the tick <──────────────────────────────────────── game loop`;
 
-	const connectExample = `client                                server
+	const sceneExample = `each tick
+  new player       -> createEntity + Position, Velocity, Sprite   (_players[id] = entity)
+  input of a tick  -> sets the Velocity of the player's entity
+  FixedUpdate      -> MovementSystem: Position += Velocity * FIXED_DELTA_TIME
+  buildSnapshot()  -> one entry per player: its Position and Type PLAYER`;
+
+	const connectExample =`client                                server
   [CONNECT, version] ──────────────────>  known version and a free slot?
                      <──────────────────  [CONNECT_ACCEPT, playerId]   (0 to 3)
                      <──────────────────  [CONNECT_REJECT, reason]     (otherwise)`;
@@ -30,8 +36,7 @@ printf '\\x30\\x00\\x00\\x00\\x01\\x05\\x00\\x00\\x00\\x00' | nc -u -w1 127.0.0.
  91 04    → CONNECT_REJECT, NOT_CONNECTED`;
 
 	const outputExample = `Server listening on port : 4242
-Player 0 connected: 127.0.0.1:51391
-[tick 30] player 0 : UP LEFT (5)`;
+Player 0 connected: 127.0.0.1:51391`;
 </script>
 
 <svelte:head>
@@ -65,11 +70,22 @@ Player 0 connected: 127.0.0.1:51391
 <p class="mt-3 max-w-[100ch] leading-7">
 	A network thread receives every packet on a single socket and finds out which player sent it from
 	its address. Each player has their own input queue, so inputs never get mixed. At each tick, the
-	game loop takes one input from each player's queue. For now it only prints it; the ECS will run
-	there later. At the end of each tick, the game loop sends a snapshot of the game state to every
-	connected player.
+	game loop takes one input from each player's queue, runs the game scene for one tick, then sends a
+	snapshot of the game state to every connected player.
 </p>
 {@render code(flowExample)}
+
+<h2 class="mt-9 text-lg font-semibold">The game scene</h2>
+<p class="mt-3 max-w-[100ch] leading-7">
+	{@render c('GameLoop')} owns its own ECS {@render c('Scene')}, separate from the one of each
+	client. It registers {@render c('Position')}, {@render c('Velocity')}, {@render c('Type')} and
+	{@render c('Sprite')}, the {@render c('TickTimeManager')} resource, and the
+	{@render c('MovementSystem')} in {@render c('FixedUpdate')}. When a player connects, the game loop
+	creates an entity for them and keeps it in {@render c('_players')}, which maps each player id to
+	its entity. An input sets the velocity of the player's entity, then
+	{@render c('runSchedule(FixedUpdate)')} moves it.
+</p>
+{@render code(sceneExample)}
 
 <h2 class="mt-9 text-lg font-semibold">Connecting</h2>
 <p class="mt-3 max-w-[100ch] leading-7">
@@ -98,8 +114,9 @@ Player 0 connected: 127.0.0.1:51391
 
 <h2 class="mt-9 text-lg font-semibold">Snapshots</h2>
 <p class="mt-3 max-w-[100ch] leading-7">
-	{@render c('Network::sendSnapshot')} keeps the last 64 snapshots in a history and sends the
-	entities of the tick to every player. If they do not fit in one 1024 bytes packet, they are split
+	{@render c('GameLoop::buildSnapshot')} reads the {@render c('Position')} of every player entity
+	in the scene. {@render c('Network::sendSnapshot')} keeps the last 64 snapshots in a history and
+	sends the entities of the tick to every player. If they do not fit in one 1024 bytes packet, they are split
 	into several packets with the same tick. The client rebuilds its scene from each snapshot it
 	receives and sends the last tick it got back in its next {@render c('INPUT')}.
 </p>
@@ -115,14 +132,19 @@ Player 0 connected: 127.0.0.1:51391
 	time:
 </p>
 {@render code(sendExample)}
-<p class="mt-3 max-w-[100ch] leading-7">The server logs each connection and each input it runs:</p>
+<p class="mt-3 max-w-[100ch] leading-7">The server logs each connection:</p>
 {@render code(outputExample)}
 
 <h2 class="mt-9 text-lg font-semibold">Good to know</h2>
 <ul class="mt-3 max-w-[100ch] list-disc space-y-1.5 pl-5 leading-7">
 	<li>
-		The game loop still sends an empty entity list, so no {@render c('SNAPSHOT')} actually leaves
-		the server until the ECS runs there.
+		Only the players are sent in the snapshot for now, all with the {@render c('PLAYER')} type.
+		The client picks the sprite to draw from that type, so the {@render c('Sprite')} of the server
+		is never sent.
+	</li>
+	<li>
+		The server and the clients have separate scenes, so their entity ids do not match. A network
+		id will be needed to sync them.
 	</li>
 	<li>
 		The server only reads the keys of an {@render c('INPUT')}: the tick and the snapshot
