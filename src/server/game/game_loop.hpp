@@ -15,6 +15,7 @@
 #include "ScriptSystem.hpp"
 #include "network/network.hpp"
 #include <atomic>
+#include <array>
 #include <cstdint>
 #include <vector>
 
@@ -39,6 +40,7 @@ class GameLoop
     std::atomic<bool> &_running;
     Scene _scene;
     std::vector<Entity> _entities;
+    std::array<float, rtype_protocol::MAX_PLAYERS> _shootCooldowns{};
     PrefabsManager _prefabs;
     Game _game;
 };
