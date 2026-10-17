@@ -72,11 +72,15 @@ void GameLoop::initializePrebabs()
         "Enemy", Prefab()
                      .addComponent(Type{EntType::ENEMY})
                      .addComponent(Position{2000.0f, 0.0f})
-                     .addComponent(Velocity{-150.0f, 0.0f})
+                     .addComponent(Velocity{-300.0f, 0.0f})
                      .addComponent(Sprite{BoxShape{50.0f, 35.0f}, Color{228, 48, 0, 255}})
                      .addComponent(Collider2D{BoxShape{50.0f, 35.0f}, nullptr})
-                     .addComponent(Script{Timing::ON_UPDATE, [this](Scene &scene, Entity &enemy) {
+                     .addComponent(Script{Timing::ON_UPDATE,
+                                          [this](Scene &scene, Entity &enemy) {
                                               _game.killOffScreenEnemy(scene, enemy);
+                                          }})
+                     .addComponent(Script{Timing::ON_UPDATE, [this](Scene &scene, Entity &enemy) {
+                                              _game.makeSinusoidalMovement(scene, enemy);
                                           }}));
 }
 

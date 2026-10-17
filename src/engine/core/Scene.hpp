@@ -12,6 +12,7 @@
 #include "SystemManager.hpp"
 #include <memory>
 #include <utility>
+#include <vector>
 
 class Scene
 {
@@ -56,6 +57,21 @@ class Scene
     template <typename Component> Component &getComponent(Entity entity)
     {
         return _componentManager->getComponent<Component>(entity);
+    }
+
+    template <typename Component> Component &getComponent(Entity entity, std::size_t componentIndex)
+    {
+        return _componentManager->getComponent<Component>(entity, componentIndex);
+    }
+
+    template <typename Component> std::size_t getComponentCount(Entity entity)
+    {
+        return _componentManager->getComponentCount<Component>(entity);
+    }
+
+    template <typename Component> std::vector<Component> &getComponents(Entity entity)
+    {
+        return _componentManager->getComponents<Component>(entity);
     }
 
     template <typename SystemType>
