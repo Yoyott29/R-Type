@@ -6,88 +6,105 @@
 */
 
 #include "Application.hpp"
-#include "PlayerControlled.hpp"
+#include "AppAlive.hpp"
+#include "Client.hpp"
+#include "Physics.hpp"
 #include "Position.hpp"
-#include "RaylibRenderer.hpp"
+#include "RayLibRenderer.hpp"
+#include "Script.hpp"
+#include "ScriptSystem.hpp"
 #include "Sprite.hpp"
 #include "Time.hpp"
+#include "Type.hpp"
 #include "Velocity.hpp"
+#include <algorithm>
+#include <chrono>
 
-#define WINDOW_WIDTH 1200
-#define WINDOW_HEIGHT 800
+#define WINDOW_WIDTH 1920
+#define WINDOW_HEIGHT 1080
 #define WINDOW_TITLE "R-Type"
 #define MAX_FRAME_TIME 0.25f
 
-Application::Application() : _renderer(std::make_unique<RaylibRenderer>())
+Application::Application() : _game(_prefabs)
 {
-    _renderer->init(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE);
-    setupComponents();
-    setupSystems();
-    setupEntities();
-}
-
-void Application::setupComponents()
-{
+    // setup basic components and resources
     _scene.registerComponent<Position>();
-    _scene.registerComponent<Velocity>();
-    _scene.registerComponent<Sprite>();
-    _scene.registerComponent<PlayerControlled>();
-}
+    _scene.registerComponent<Script>();
+    _scene.registerComponent<Type>();
+    _scene.addResource<AppAlive>();
 
-void Application::setupSystems()
-{
-    _inputSystem = _scene.registerSystem<InputSystem>();
-    ComponentSet inputRequirements;
-    inputRequirements.set(_scene.getComponentType<PlayerControlled>());
-    inputRequirements.set(_scene.getComponentType<Velocity>());
-    _scene.setSystemComponentSet<InputSystem>(inputRequirements);
+    // setup plugins
+    addPlugin(std::make_shared<RayLibRenderer>());
+    addPlugin(std::make_shared<Physics>());
+    addPlugin(std::make_shared<Client>());
 
-    _movementSystem = _scene.registerSystem<MovementSystem>();
-    ComponentSet movementRequirements;
-    movementRequirements.set(_scene.getComponentType<Position>());
-    movementRequirements.set(_scene.getComponentType<Velocity>());
-    _scene.setSystemComponentSet<MovementSystem>(movementRequirements);
+    // setup gameplay systems, after the Physics systems in the fixed update
+    _scene.registerSystem<ScriptSystem>(FixedUpdate);
+    ComponentSet scriptRequirements;
+    scriptRequirements.set(_scene.getComponentType<Script>());
+    _scene.setSystemComponentSet<ScriptSystem>(scriptRequirements);
 
-    _renderSystem = _scene.registerSystem<RenderSystem>();
-    ComponentSet renderRequirements;
-    renderRequirements.set(_scene.getComponentType<Position>());
-    renderRequirements.set(_scene.getComponentType<Sprite>());
-    _scene.setSystemComponentSet<RenderSystem>(renderRequirements);
-}
+    setupPrefabs();
 
-void Application::setupEntities()
-{
+    // setup entities
     Entity playerOne = _scene.createEntity();
     _scene.addComponent(playerOne, Position{0.0f, 200.0f});
     _scene.addComponent(playerOne, Velocity{0.0f, 0.0f});
-    _scene.addComponent(playerOne, Sprite{50.0f, 35.0f, ColorRGBA{230, 41, 55, 255}});
-    _scene.addComponent(playerOne, PlayerControlled{});
+    _scene.addComponent(playerOne, Sprite{BoxShape{50.0f, 35.0f}, Color{0, 228, 48, 255}});
+    _scene.addComponent(playerOne, Collider2D{BoxShape{50.0f, 35.0f}, [&](Entity player, Entity) {
+                                                  _scene.queueDestroy(player);
+                                              }});
 
-    Entity decoration = _scene.createEntity();
-    _scene.addComponent(decoration, Position{400.0f, 100.0f});
-    _scene.addComponent(decoration, Sprite{64.0f, 16.0f, ColorRGBA{0, 121, 241, 255}});
-    _scene.addComponent(decoration, Velocity{100.0f, 20.0f});
+    Entity spawner = _scene.createEntity();
+    _scene.addComponent(spawner, Script{Timing::ON_UPDATE, [this](Scene &scene, Entity &) {
+                                            _game.SpawnEnemy(scene);
+                                        }});
+}
+
+void Application::setupPrefabs()
+{
+
+    _prefabs.createPrefab(
+        "Enemy", Prefab()
+                     .addComponent(Position{2000.0f, 0.0f})
+                     .addComponent(Velocity{-150.0f, 0.0f})
+                     .addComponent(Sprite{BoxShape{50.0f, 35.0f}, Color{228, 48, 0, 255}})
+                     .addComponent(Collider2D{BoxShape{50.0f, 35.0f}, nullptr})
+                     .addComponent(Script{Timing::AT_LAUNCH, [this](Scene &scene, Entity &enemy) {
+                                              _game.InitializeEnemyPosition(scene, enemy);
+                                          }}));
+}
+
+void Application::addPlugin(const std::shared_ptr<IPlugin> &plugin)
+{
+    _plugins.push_back(plugin);
+    plugin->build(*this);
 }
 
 void Application::run()
 {
+    using Clock = std::chrono::steady_clock;
+    Clock::time_point previous = Clock::now();
     float accumulator = 0.0f;
 
-    while (!_renderer->shouldClose()) {
-        float frameTime = _renderer->getFrameTime();
-        if (frameTime > MAX_FRAME_TIME)
-            frameTime = MAX_FRAME_TIME;
+    while (_scene.getResource<AppAlive>().alive) {
+        Clock::time_point now = Clock::now();
+        float frameTime =
+            std::min(std::chrono::duration<float>(now - previous).count(), MAX_FRAME_TIME);
+        previous = now;
         accumulator += frameTime;
 
+        _scene.runSchedule(PrepUpdate);
+        _scene.runSchedule(StateTransition);
         while (accumulator >= FIXED_DELTA_TIME) {
-            _inputSystem->update(_scene);
-            _movementSystem->update(_scene);
+            _scene.runSchedule(FixedUpdate);
+            _scene.flushDestroyQueue();
             accumulator -= FIXED_DELTA_TIME;
         }
-
-        _renderer->beginFrame();
-        _renderer->clear(ColorRGBA{0, 0, 0, 255});
-        _renderSystem->update(_scene, *_renderer);
-        _renderer->endFrame();
+        _scene.runSchedule(Update);
+        _scene.runSchedule(PostUpdate);
     }
+
+    for (auto &plugin : _plugins)
+        plugin->cleanup(*this);
 }

@@ -21,6 +21,8 @@
 		{ title: 'Developer Environment'},
 		{ title: 'Build and Tests'},
 		{ title: 'Github Workflows'},
+		{ title: 'ECS'},
+		{ title: 'Network'},
 		{ title: 'Documentation'},
 	];
 
@@ -48,7 +50,15 @@
 		{ title: 'Mirror Repository', path: '/developer/mirror-repository', section: 3 },
 		{ title: 'Running Tests', path: '/developer/running-tests', section: 3 },
 
-		{ title: 'How to add a page', path: '/developer/add-a-page', type: 'Developer', section: 4 },
+		{ title: 'How the ECS works', path: '/developer/ecs', section: 4 },
+		{ title: 'How entities work', path: '/developer/ecs-entities', section: 4 },
+		{ title: 'How components work', path: '/developer/ecs-components', section: 4 },
+		{ title: 'How systems work', path: '/developer/ecs-systems', section: 4 },
+		{ title: 'How the game loop works', path: '/developer/game-loop', section: 4 },
+
+		{ title: 'How the server works', path: '/developer/udp-server', section: 5 },
+
+		{ title: 'How to add a page', path: '/developer/add-a-page', type: 'Developer', section: 6 },
 	];
 
 

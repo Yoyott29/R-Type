@@ -6,12 +6,13 @@
 */
 
 #pragma once
-#include "ColorRGBA.hpp"
+#include "Shape.hpp"
+#include <raylib.h>
+#include <variant>
 
 struct Sprite {
-    float width;
-    float height;
+    std::variant<BoxShape, CircleShape> shape;
     // int layer;
     // Sprite sprite;
-    ColorRGBA color;
+    Color color;
 };

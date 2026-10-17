@@ -17,4 +17,11 @@
 
 # VsCode settings
 .vscode/
+
+#Other
 *.txt
+*.zip
+
+# Local test scripts
+/tests/send_inputs.sh
+/tests/server.sh
