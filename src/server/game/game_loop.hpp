@@ -44,8 +44,8 @@ class GameLoop
     std::vector<Entity> _entities;
     std::array<float, rtype_protocol::MAX_PLAYERS> _shootCooldowns{};
     std::array<ColorRGBA, rtype_protocol::MAX_PLAYERS> _playerColors{
-        ColorRGBA{0, 228, 48, 255}, ColorRGBA{0, 0, 255, 255}, ColorRGBA{255, 0, 0, 255},
-        ColorRGBA{255, 255, 0, 255}};
+        ColorRGBA{0, 228, 48, 255}, ColorRGBA{0, 0, 255, 255}, ColorRGBA{255, 0, 255, 255},
+        ColorRGBA{255, 0, 0, 255}};
     PrefabsManager _prefabs;
     Game _game;
 };

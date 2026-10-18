@@ -13,21 +13,25 @@
 
 namespace
 {
-// temporary visuals, indexed by EntType, until real sprites are in place
-std::array<Sprite, 5> const typeSprites = {{
-    {BoxShape{50.0f, 35.0f}, ColorRGBA{0, 228, 48, 255}, 0},   // PLAYER
-    {BoxShape{50.0f, 35.0f}, ColorRGBA{228, 48, 0, 255}, 0},   // ENEMY
-    {CircleShape{5.0f}, ColorRGBA{253, 249, 0, 255}, 0},       // BULLET
-    {BoxShape{60.0f, 60.0f}, ColorRGBA{130, 130, 130, 255}, 0}, // OBSTACLE
-    {BoxShape{5.0f, 5.0f}, ColorRGBA{255, 255, 255, 255}, -1}   // OTHER
+std::array<std::string, rtype_protocol::MAX_PLAYERS> const playerTextures = {{
+    "Assets/PlayerGreen.png",
+    "Assets/PlayerBlue.png",
+    "Assets/PlayerMagenta.png",
+    "Assets/PlayerRed.png",
 }};
 
-std::array<ColorRGBA, rtype_protocol::MAX_PLAYERS> const playerColors = {{
-    {0, 228, 48, 255},
-    {0, 0, 228, 255},
-    {228, 0, 0, 255},
-    {228, 228, 0, 255},
-}};
+std::string texturePathForType(EntType type, uint8_t variant)
+{
+    switch (type) {
+    case EntType::ENEMY:
+        return variant == rtype_protocol::ENEMY_VARIANT_2 ? "Assets/Bydos2.png"
+                                                         : "Assets/Bydos1.png";
+    case EntType::BULLET:
+        return "Assets/Bullet.png";
+    default:
+        return {};
+    }
+}
 } // namespace
 
 void ReadSocket::update(Scene &scene)
@@ -86,16 +90,29 @@ void ReadSocket::createEntities(Scene &scene, rtype_protocol::Packet const &pack
         uint8_t playerId = packet[i + 9];
         entity.pos.x = rtype_protocol::readValue<float>(&packet[i]);
         entity.pos.y = rtype_protocol::readValue<float>(&packet[i + 4]);
-        if (type >= typeSprites.size()) {
+        if (type > EntType::OTHER) {
             throw UnknownComponentType(std::to_string(type));
         }
         entity.type.type = static_cast<EntType>(type);
         entity.playerId = playerId;
-        Sprite sprite = typeSprites[type];
+        entity.variant = packet[i + 10];
+        entity.width = rtype_protocol::readValue<float>(&packet[i + 11]);
+        entity.height = rtype_protocol::readValue<float>(&packet[i + 15]);
+        entity.shape = packet[i + 19];
+        entity.drawOrder = static_cast<int8_t>(packet[i + 20]);
+        for (std::size_t color = 0; color < 4; color++)
+            entity.color[color] = packet[i + 21 + color];
+
+        ColorRGBA color{entity.color[0], entity.color[1], entity.color[2], entity.color[3]};
+        Sprite sprite = entity.shape == rtype_protocol::CIRCLE_SHAPE
+                            ? Sprite{CircleShape{entity.width}, color, entity.drawOrder}
+                            : Sprite{BoxShape{entity.width, entity.height}, color,
+                                     entity.drawOrder};
+        sprite.texturePath = texturePathForType(entity.type.type, entity.variant);
         if (entity.type.type == EntType::PLAYER) {
-            if (playerId >= playerColors.size())
+            if (playerId >= rtype_protocol::MAX_PLAYERS)
                 throw UnknownComponentType("invalid player id: " + std::to_string(playerId));
-            sprite.color = playerColors[playerId];
+            sprite.texturePath = playerTextures[playerId];
         }
         Entity e = scene.createEntity();
         scene.addComponent(e, entity.pos);

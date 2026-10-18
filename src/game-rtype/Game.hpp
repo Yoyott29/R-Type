@@ -34,6 +34,7 @@ class Game
     float _spaceSpawnTimer;
     float _waveTimer;
     int _enemyCount;
+    int _waveType;
     float _waveDelay;
     float _waveY;
     PrefabsManager &_prefabs;

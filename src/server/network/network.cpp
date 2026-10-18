@@ -217,6 +217,13 @@ void Network::sendSnapshot(uint32_t tick,
             rtype_protocol::writeValue<float>(&packet[size + 4], entity.pos.y);
             packet[size + 8] = static_cast<uint8_t>(entity.type.type);
             packet[size + 9] = entity.playerId;
+            packet[size + 10] = entity.variant;
+            rtype_protocol::writeValue<float>(&packet[size + 11], entity.width);
+            rtype_protocol::writeValue<float>(&packet[size + 15], entity.height);
+            packet[size + 19] = entity.shape;
+            packet[size + 20] = static_cast<uint8_t>(entity.drawOrder);
+            for (std::size_t color = 0; color < 4; color++)
+                packet[size + 21 + color] = entity.color[color];
             size += entitySize;
         }
         for (auto const &endpoint : targets) {

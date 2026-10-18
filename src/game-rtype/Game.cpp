@@ -12,8 +12,8 @@
 #include <ctime>
 
 Game::Game(PrefabsManager &prefabs)
-    : _spawnTimer(0.0f), _spaceSpawnTimer(0.0f), _waveTimer(0.0f), _enemyCount(0), _waveDelay(0.0f),
-      _waveY(0.0f), _prefabs(prefabs)
+    : _spawnTimer(0.0f), _spaceSpawnTimer(0.0f), _waveTimer(0.0f), _enemyCount(0),
+      _waveType(1), _waveDelay(0.0f), _waveY(0.0f), _prefabs(prefabs)
 {
     srand(static_cast<unsigned int>(time(nullptr)));
     _waveDelay = static_cast<float>(rand() % 10) * 0.1f + 0.5f;
@@ -40,6 +40,7 @@ Entity Game::SpawnEnemy(Scene &scene)
             return static_cast<Entity>(NULL_INDEX);
 
         _enemyCount = 5 + rand() % 6;
+        _waveType = 1 + rand() % 2;
         _waveY = static_cast<float>(rand() % 1080);
         _waveTimer = 0.0f;
         _spawnTimer = 0.3f;
@@ -47,7 +48,8 @@ Entity Game::SpawnEnemy(Scene &scene)
 
     _spawnTimer += FIXED_DELTA_TIME;
     if (_spawnTimer >= 0.2f) {
-        Entity enemy = _prefabs.InstantiatePrefab("Enemy", scene);
+        Entity enemy =
+            _prefabs.InstantiatePrefab(_waveType == 2 ? "Enemy2" : "Enemy", scene);
         _spawnTimer = 0.0f;
         _enemyCount--;
         scene.getComponent<Position>(enemy).y = _waveY;

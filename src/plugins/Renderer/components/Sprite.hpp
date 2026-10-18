@@ -7,6 +7,7 @@
 
 #pragma once
 #include "Shape.hpp"
+#include <string>
 #include <variant>
 
 struct ColorRGBA {
@@ -20,4 +21,5 @@ struct Sprite {
     std::variant<BoxShape, CircleShape> shape;
     ColorRGBA color;
     int drawOrder = 0;
+    std::string texturePath = "";
 };

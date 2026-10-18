@@ -94,8 +94,11 @@ void GameLoop::initializePrebabs()
                      .addComponent(Type{EntType::ENEMY})
                      .addComponent(Position{2000.0f, 0.0f})
                      .addComponent(Velocity{-500.0f, 0.0f})
-                     .addComponent(Sprite{BoxShape{50.0f, 35.0f}, ColorRGBA{228, 48, 0, 255}})
-                     .addComponent(Collider2D{BoxShape{50.0f, 35.0f}, nullptr})
+                     .addComponent(Sprite{BoxShape{40.0f, 60.0f},
+                                          ColorRGBA{228, 48, 0, 255},
+                                          0,
+                                          "Assets/Bydos1.png"})
+                     .addComponent(Collider2D{BoxShape{40.0f, 60.0f}, nullptr})
                      .addComponent(Script{Timing::ON_UPDATE,
                                           [this](Scene &scene, Entity &enemy) {
                                               _game.DestroyOffScreenEntity(scene, enemy);
@@ -104,13 +107,30 @@ void GameLoop::initializePrebabs()
                                               _game.makeSinusoidalMovement(scene, enemy);
                                           }}));
     _prefabs.createPrefab(
+        "Enemy2", Prefab()
+                      .addComponent(Type{EntType::ENEMY})
+                      .addComponent(Position{2000.0f, 0.0f})
+                      .addComponent(Velocity{-500.0f, 0.0f})
+                      .addComponent(Sprite{BoxShape{40.0f, 60.0f},
+                                           ColorRGBA{228, 48, 0, 255},
+                                           0,
+                                           "Assets/Bydos2.png"})
+                      .addComponent(Collider2D{BoxShape{40.0f, 60.0f}, nullptr})
+                      .addComponent(Script{Timing::ON_UPDATE,
+                                           [this](Scene &scene, Entity &enemy) {
+                                               _game.DestroyOffScreenEntity(scene, enemy);
+                                           }})
+                      .addComponent(Script{Timing::ON_UPDATE, [this](Scene &scene, Entity &enemy) {
+                                               _game.makeSinusoidalMovement(scene, enemy);
+                                           }}));
+    _prefabs.createPrefab(
         "PlayerBullet",
         Prefab()
             .addComponent(Type{EntType::BULLET})
             .addComponent(Position{0.0f, 0.0f})
             .addComponent(Velocity{550.0f, 0.0f})
-            .addComponent(Sprite{BoxShape{10.0f, 5.0f}, ColorRGBA{0, 0, 228, 255}})
-            .addComponent(Collider2D{BoxShape{10.0f, 5.0f},
+            .addComponent(Sprite{BoxShape{20.0f, 10.0f}, ColorRGBA{0, 0, 228, 255}})
+            .addComponent(Collider2D{BoxShape{20.0f, 10.0f},
                                      [this](Entity bullet, Entity other) {
                                          if (_scene.isEntityAlive(other) &&
                                              _scene.getComponent<Type>(other).type ==
@@ -127,7 +147,7 @@ void GameLoop::initializePrebabs()
                     .addComponent(Type{EntType::OTHER})
                     .addComponent(Position{2000.0f, 0.0f})
                     .addComponent(Velocity{-100.0f, 0.0f})
-                    .addComponent(Sprite{BoxShape{5.0f, 5.0f}, ColorRGBA{0, 0, 0, 255}})
+                    .addComponent(Sprite{BoxShape{5.0f, 5.0f}, ColorRGBA{255, 255, 255, 255}, -1})
                     .addComponent(Script{Timing::ON_UPDATE, [this](Scene &scene, Entity &space) {
                                              _game.DestroyOffScreenEntity(scene, space);
                                          }}));
@@ -140,13 +160,17 @@ void GameLoop::initializePlayer(uint8_t id)
     _scene.addComponent(playerEntity, PlayerId{id});
     _scene.addComponent(playerEntity, Position{100.0f, 200.0f + 100.0f * id});
     _scene.addComponent(playerEntity, Velocity{0.0f, 0.0f});
-    _scene.addComponent(playerEntity, Sprite{BoxShape{50.0f, 35.0f}, _playerColors[id]});
-    _scene.addComponent(playerEntity, Collider2D{BoxShape{50.0f, 35.0f}, [this](Entity a, Entity) {
-                                                     const uint8_t playerId =
-                                                         _scene.getComponent<PlayerId>(a).value;
-                                                     _network.disconnectPlayer(playerId);
-                                                     _scene.queueDestroy(a);
-                                                 }});
+    _scene.addComponent(playerEntity, Sprite{BoxShape{103.0f, 50.0f}, _playerColors[id]});
+    _scene.addComponent(playerEntity,
+                        Collider2D{BoxShape{103.0f, 50.0f}, [this](Entity a, Entity other) {
+                                       if (!_scene.isEntityAlive(other) ||
+                                           _scene.getComponent<Type>(other).type != EntType::ENEMY)
+                                           return;
+                                       const uint8_t playerId =
+                                           _scene.getComponent<PlayerId>(a).value;
+                                       _network.disconnectPlayer(playerId);
+                                       _scene.queueDestroy(a);
+                                   }});
     _scene.addComponent(playerEntity,
                         Script{Timing::ON_UPDATE, [this](Scene &scene, Entity &player) {
                                    _game.maintainPlayerOnScreen(scene, player);
@@ -164,8 +188,35 @@ std::vector<rtype_protocol::EntitySnapshot> GameLoop::buildSnapshot()
         uint8_t playerId = rtype_protocol::NO_PLAYER;
         if (_scene.getComponent<Type>(entity).type == EntType::PLAYER)
             playerId = _scene.getComponent<PlayerId>(entity).value;
-        snapshot.push_back(
-            {_scene.getComponent<Position>(entity), _scene.getComponent<Type>(entity), playerId});
+        Sprite const &sprite = _scene.getComponent<Sprite>(entity);
+        uint8_t variant = rtype_protocol::DEFAULT_VARIANT;
+        if (sprite.texturePath == "Assets/Bydos2.png")
+            variant = rtype_protocol::ENEMY_VARIANT_2;
+        float width = 0.0f;
+        float height = 0.0f;
+        uint8_t shape = rtype_protocol::BOX_SHAPE;
+        std::visit(
+            [&](auto const &value) {
+                using Shape = std::decay_t<decltype(value)>;
+                if constexpr (std::is_same_v<Shape, BoxShape>) {
+                    width = value.width;
+                    height = value.height;
+                } else {
+                    width = value.radius;
+                    height = value.radius;
+                    shape = rtype_protocol::CIRCLE_SHAPE;
+                }
+            },
+            sprite.shape);
+        snapshot.push_back({_scene.getComponent<Position>(entity),
+                            _scene.getComponent<Type>(entity),
+                            playerId,
+                            variant,
+                            width,
+                            height,
+                            shape,
+                            static_cast<int8_t>(sprite.drawOrder),
+                            {sprite.color.r, sprite.color.g, sprite.color.b, sprite.color.a}});
     }
     return snapshot;
 }
