@@ -35,25 +35,25 @@ static bool isValidIp(const char *arg)
 static int check_args(int argc, char **argv, std::string &ip, uint16_t &port)
 {
     if (argc > 3) {
-        std::cerr << "Usage: " << argv[0] << " [ip] [port]" << std::endl;
+        std::cerr << "Usage: " << argv[0] << " [ip] [port]" << '\n';
         return 84;
     }
     if (argc == 2) {
         auto parsedPort = parsePort(argv[1]);
         if (!parsedPort.has_value()) {
-            std::cerr << "Invalid port: " << argv[1] << std::endl;
+            std::cerr << "Invalid port: " << argv[1] << '\n';
             return 84;
         }
         port = *parsedPort;
     }
     if (argc == 3) {
         if (!isValidIp(argv[1])) {
-            std::cerr << "Invalid ip: " << argv[1] << std::endl;
+            std::cerr << "Invalid ip: " << argv[1] << '\n';
             return 84;
         }
         auto parsedPort = parsePort(argv[2]);
         if (!parsedPort.has_value()) {
-            std::cerr << "Invalid port: " << argv[2] << std::endl;
+            std::cerr << "Invalid port: " << argv[2] << '\n';
             return 84;
         }
         ip = argv[1];
@@ -73,7 +73,7 @@ int main(int argc, char **argv)
         rtype_server::Server server(port, ip);
         server.run();
     } catch (std::exception const &error) {
-        std::cerr << "Fatal error: " << error.what() << std::endl;
+        std::cerr << "Fatal error: " << error.what() << '\n';
         return 84;
     }
     return 0;

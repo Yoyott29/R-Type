@@ -29,7 +29,7 @@ struct SnapshotEntry {
 class Network
 {
   public:
-    Network(uint16_t port, std::string ip, std::map<uint8_t, InputQueue> &inputs,
+    Network(uint16_t port, const std::string &ip, std::map<uint8_t, InputQueue> &inputs,
             std::atomic<bool> &running);
     ~Network();
     void disconnectPlayer(uint8_t playerId);

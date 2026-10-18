@@ -158,7 +158,7 @@ void GameLoop::initializePlayer(uint8_t id)
     Entity playerEntity = _scene.createEntity();
     _scene.addComponent(playerEntity, Type{EntType::PLAYER});
     _scene.addComponent(playerEntity, PlayerId{id});
-    _scene.addComponent(playerEntity, Position{100.0f, 200.0f + 100.0f * id});
+    _scene.addComponent(playerEntity, Position{100.0f, 200.0f + 100.0f * static_cast<float>(id)});
     _scene.addComponent(playerEntity, Velocity{0.0f, 0.0f});
     _scene.addComponent(playerEntity, Sprite{BoxShape{103.0f, 50.0f}, _playerColors[id]});
     _scene.addComponent(playerEntity,

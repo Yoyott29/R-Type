@@ -18,7 +18,7 @@ namespace rtype_server
 class Server
 {
   public:
-    explicit Server(uint16_t port, std::string ip);
+    explicit Server(uint16_t port, const std::string &ip);
     void run();
 
   private:

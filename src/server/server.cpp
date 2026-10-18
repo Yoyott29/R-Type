@@ -11,7 +11,7 @@
 
 namespace rtype_server
 {
-Server::Server(uint16_t port, std::string ip)
+Server::Server(uint16_t port, const std::string &ip)
     : _network(port, ip, _playerInputs, _running), _gameLoop(_network, _running)
 {
     for (uint8_t id = 0; id < rtype_protocol::MAX_PLAYERS; id++)

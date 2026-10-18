@@ -15,21 +15,22 @@
 
 namespace rtype_server
 {
-Network::Network(uint16_t port, std::string ip, std::map<uint8_t, InputQueue> &inputs,
+Network::Network(uint16_t port, const std::string &ip, std::map<uint8_t, InputQueue> &inputs,
                  std::atomic<bool> &running)
     : _endpoint(asio::ip::make_address(ip), port), _socketAsio(_ioContext, _endpoint),
       _playerInputs(inputs), _running(running)
 {
     _running = true;
-    std::cout << "Server listening on ip : " << ip << std::endl;
-    std::cout << "Server listening on port : " << port << std::endl;
+    std::cout << "Server listening on ip : " << ip << '\n';
+    std::cout << "Server listening on port : " << port << '\n';
 }
 
 Network::~Network()
 {
     if (_socketAsio.is_open()) {
-        std::cout << "Closing server" << std::endl;
-        _socketAsio.close();
+        asio::error_code error;
+        std::cout << "Closing server" << '\n';
+        _socketAsio.close(error);
     }
 }
 
@@ -49,7 +50,7 @@ void Network::receiveLoop()
         if (error == asio::error::connection_reset || error == asio::error::connection_refused)
             continue;
         if (error) {
-            std::cerr << "Network: " << error.message() << std::endl;
+            std::cerr << "Network: " << error.message() << '\n';
             break;
         }
         if (n == 0)
@@ -74,16 +75,19 @@ void Network::receiveLoop()
                 handleConnect(buffer, n, sender);
                 break;
             case rtype_protocol::INPUT:
-                if (n != rtype_protocol::INPUT_SIZE)
+                if (n != rtype_protocol::INPUT_SIZE || !playerId)
                     break;
                 _playerInputs.at(*playerId).push(buffer[5]);
                 break;
             case rtype_protocol::DISCONNECT:
-                disconnectPlayer(*playerId);
+                if (playerId)
+                    disconnectPlayer(*playerId);
+                break;
+            default:
                 break;
             }
         } catch (std::exception const &exception) {
-            std::cerr << "Dropped packet: " << exception.what() << std::endl;
+            std::cerr << "Dropped packet: " << exception.what() << '\n';
         }
     }
     _running = false;
@@ -133,7 +137,7 @@ void Network::handleConnect(const rtype_protocol::Packet &packet, std::size_t si
             _lastSeen[id] = std::chrono::steady_clock::now();
             std::cout << "Player " << static_cast<int>(id)
                       << " connected: " << sender.address().to_string() << ":" << sender.port()
-                      << std::endl;
+                      << '\n';
             reply(sender, rtype_protocol::CONNECT_ACCEPT, id);
             return;
         }
@@ -175,7 +179,7 @@ void Network::dropTimedOutPlayers()
                 timedOut.push_back(playerId);
     }
     for (uint8_t playerId : timedOut) {
-        std::cout << "Player " << static_cast<int>(playerId) << " timed out" << std::endl;
+        std::cout << "Player " << static_cast<int>(playerId) << " timed out" << '\n';
         disconnectPlayer(playerId);
     }
 }
@@ -246,6 +250,7 @@ std::vector<uint8_t> Network::getConnectedPlayerIds()
 {
     std::lock_guard<std::mutex> lock(_playersMutex);
     std::vector<uint8_t> ids;
+    ids.reserve(_players.size());
     for (auto const &[endpoint, id] : _players)
         ids.push_back(id);
     return ids;
