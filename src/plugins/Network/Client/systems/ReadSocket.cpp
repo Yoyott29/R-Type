@@ -28,21 +28,63 @@ void ReadSocket::update(Scene &scene)
     if (!socket.socket.is_open())
         return;
 
-    scene.putAllEntitysInDestroyQueue();
-    scene.flushDestroyQueue();
+    _snapshotParts.clear();
     rtype_protocol::Packet packet;
     asio::error_code ec;
     while (socket.socket.is_open()) {
         std::size_t len = socket.socket.receive(asio::buffer(packet), 0, ec);
         if (ec == asio::error::would_block)
-            return;
+            break;
         if (ec == asio::error::connection_refused)
-            return;
+            break;
         if (ec) {
             std::cerr << "ReadSocket: " << ec.message() << "\n";
-            return;
+            break;
         }
         handlePacket(scene, socket, packet, len);
+    }
+    applySnapshot(scene, socket);
+}
+
+void ReadSocket::applySnapshot(Scene &scene, Socket &socket)
+{
+    if (_snapshotParts.empty())
+        return;
+    if (_snapshotTick > _displayedTick) {
+        scene.putAllEntitysInDestroyQueue();
+        scene.flushDestroyQueue();
+        _displayedTick = _snapshotTick;
+    }
+    for (auto const &[packet, len] : _snapshotParts)
+        createEntities(scene, packet, len);
+    if (_snapshotTick > socket.lastSnapshotTick)
+        socket.lastSnapshotTick = _snapshotTick;
+}
+
+void ReadSocket::createEntities(Scene &scene, rtype_protocol::Packet const &packet,
+                                std::size_t len)
+{
+    constexpr std::size_t headerSize = rtype_protocol::SNAPSHOT_HEADER_SIZE;
+
+    std::cout << "Processing snapshot with " << (len - headerSize) / rtype_protocol::ENTITY_SIZE
+              << " entities\n";
+    for (std::size_t i = headerSize; i + rtype_protocol::ENTITY_SIZE <= len;
+         i += rtype_protocol::ENTITY_SIZE) {
+        rtype_protocol::EntitySnapshot entity;
+        uint8_t type = packet[i + 8];
+        entity.pos.x = rtype_protocol::readValue<float>(&packet[i]);
+        entity.pos.y = rtype_protocol::readValue<float>(&packet[i + 4]);
+        if (type >= typeSprites.size()) {
+            std::cout << "Entity skipped: unknown type " << static_cast<int>(type) << "\n";
+            continue;
+        }
+        entity.type.type = static_cast<EntType>(type);
+        Entity e = scene.createEntity();
+        scene.addComponent(e, entity.pos);
+        scene.addComponent(e, entity.type);
+        std::cout << "Entity: pos(" << entity.pos.x << ", " << entity.pos.y << "), type("
+                  << static_cast<int>(entity.type.type) << ")\n";
+        scene.addComponent(e, typeSprites[type]);
     }
 }
 
@@ -79,35 +121,17 @@ void ReadSocket::handlePacket(Scene &scene, Socket &socket, rtype_protocol::Pack
         socket.tick = rtype_protocol::readValue<uint32_t>(&packet[1]);
         break;
     case rtype_protocol::SNAPSHOT: {
-        constexpr std::size_t headerSize = rtype_protocol::SNAPSHOT_HEADER_SIZE;
-        if (len < headerSize)
+        if (len < rtype_protocol::SNAPSHOT_HEADER_SIZE)
             return;
-        {
-            uint32_t tick = rtype_protocol::readValue<uint32_t>(&packet[1]);
-            if (tick > socket.lastSnapshotTick)
-                socket.lastSnapshotTick = tick;
+        uint32_t tick = rtype_protocol::readValue<uint32_t>(&packet[1]);
+        if (tick < _displayedTick)
+            return;
+        if (_snapshotParts.empty() || tick > _snapshotTick) {
+            _snapshotParts.clear();
+            _snapshotTick = tick;
         }
-
-        std::cout << "Processing snapshot with " << (len - headerSize) / rtype_protocol::ENTITY_SIZE
-                  << " entities\n";
-        for (std::size_t i = headerSize; i + rtype_protocol::ENTITY_SIZE <= len;
-             i += rtype_protocol::ENTITY_SIZE) {
-            rtype_protocol::EntitySnapshot entity;
-            uint8_t type = packet[i + 8];
-            entity.pos.x = rtype_protocol::readValue<float>(&packet[i]);
-            entity.pos.y = rtype_protocol::readValue<float>(&packet[i + 4]);
-            if (type >= typeSprites.size()) {
-                std::cout << "Entity skipped: unknown type " << static_cast<int>(type) << "\n";
-                continue;
-            }
-            entity.type.type = static_cast<EntType>(type);
-            Entity e = scene.createEntity();
-            scene.addComponent(e, entity.pos);
-            scene.addComponent(e, entity.type);
-            std::cout << "Entity: pos(" << entity.pos.x << ", " << entity.pos.y << "), type("
-                      << static_cast<int>(entity.type.type) << ")\n";
-            scene.addComponent(e, typeSprites[type]);
-        }
+        if (tick == _snapshotTick)
+            _snapshotParts.emplace_back(packet, len);
         break;
     }
     case rtype_protocol::DELTA:
