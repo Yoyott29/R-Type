@@ -88,65 +88,100 @@ void ReadSocket::createEntities(Scene &scene, rtype_protocol::Packet const &pack
     }
 }
 
+void ReadSocket::handleConnectAccept(Scene &, Socket &socket,
+    rtype_protocol::Packet const &packet, std::size_t len)
+{
+    if (len < 2)
+        return;
+
+    socket.connected = true;
+    socket.playerId = packet[1];
+}
+
+void ReadSocket::handleConnectReject(Scene &scene, Socket &,
+    rtype_protocol::Packet const &packet, std::size_t len)
+{
+    if (len < 2)
+        return;
+
+    std::cerr << "Connection rejected by the server: " << rejectReason(packet[1]) << "\n";
+    scene.getResource<AppAlive>().alive = false;
+}
+
+void ReadSocket::handlePlayerLeft(Scene &scene, Socket &socket,
+    rtype_protocol::Packet const &packet, std::size_t len)
+{
+    if (len < 2)
+        return;
+
+    if (socket.connected && packet[1] == socket.playerId) {
+        std::cerr << "Player eliminated by the server\n";
+        scene.getResource<AppAlive>().alive = false;
+    }
+}
+
+void ReadSocket::handleGameStarted(Scene &, Socket &socket,
+    rtype_protocol::Packet const &packet, std::size_t len)
+{
+    if (len < 5)
+        return;
+    socket.tick = rtype_protocol::readValue<uint32_t>(&packet[1]);
+}
+
+void ReadSocket::handleSnapshot(Scene &, Socket &,
+    rtype_protocol::Packet const &packet, std::size_t len)
+{
+    if (len < rtype_protocol::SNAPSHOT_HEADER_SIZE)
+        return;
+
+    uint32_t tick = rtype_protocol::readValue<uint32_t>(&packet[1]);
+    if (tick < _displayedTick)
+        return;
+
+    if (_snapshotParts.empty() || tick > _snapshotTick) {
+        _snapshotParts.clear();
+        _snapshotTick = tick;
+    }
+
+    if (tick == _snapshotTick)
+        _snapshotParts.emplace_back(packet, len);
+}
+
+void ReadSocket::handleDelta(Scene &, Socket &socket,
+    rtype_protocol::Packet const &packet, std::size_t len)
+{
+    if (len < 5)
+        return;
+
+    uint32_t tick = rtype_protocol::readValue<uint32_t>(&packet[1]);
+    if (tick > socket.lastSnapshotTick)
+        socket.lastSnapshotTick = tick;
+}
+
 void ReadSocket::handlePacket(Scene &scene, Socket &socket, rtype_protocol::Packet const &packet,
                               std::size_t len)
 {
     if (len == 0)
         return;
 
-    switch (packet[0]) {
-    case rtype_protocol::CONNECT_ACCEPT:
-        if (len < 2)
-            return;
-        socket.connected = true;
-        socket.playerId = packet[1];
-        break;
-    case rtype_protocol::CONNECT_REJECT:
-        if (len < 2)
-            return;
-        std::cerr << "Connection rejected by the server: " << rejectReason(packet[1]) << "\n";
-        scene.getResource<AppAlive>().alive = false;
-        break;
-    case rtype_protocol::PLAYER_LEFT:
-        if (len < 2)
-            return;
-        if (socket.connected && packet[1] == socket.playerId) {
-            std::cerr << "Player eliminated by the server\n";
-            scene.getResource<AppAlive>().alive = false;
-        }
-        break;
-    case rtype_protocol::GAME_STARTED:
-        if (len < 5)
-            return;
-        socket.tick = rtype_protocol::readValue<uint32_t>(&packet[1]);
-        break;
-    case rtype_protocol::SNAPSHOT: {
-        if (len < rtype_protocol::SNAPSHOT_HEADER_SIZE)
-            return;
-        uint32_t tick = rtype_protocol::readValue<uint32_t>(&packet[1]);
-        if (tick < _displayedTick)
-            return;
-        if (_snapshotParts.empty() || tick > _snapshotTick) {
-            _snapshotParts.clear();
-            _snapshotTick = tick;
-        }
-        if (tick == _snapshotTick)
-            _snapshotParts.emplace_back(packet, len);
-        break;
-    }
-    case rtype_protocol::DELTA:
-        // Entity payload format is not specified yet: only the tick is acknowledged
-        if (len < 5)
-            return;
+    auto dispatch = [&](uint8_t packetType) {
+        static const std::unordered_map<uint8_t, void (ReadSocket::*)(Scene &, Socket &,
+            rtype_protocol::Packet const &, std::size_t)> handlers =
         {
-            uint32_t tick = rtype_protocol::readValue<uint32_t>(&packet[1]);
-            if (tick > socket.lastSnapshotTick)
-                socket.lastSnapshotTick = tick;
-        }
-        break;
-    default:
-        break;
-    }
+            {rtype_protocol::CONNECT_ACCEPT, &ReadSocket::handleConnectAccept},
+            {rtype_protocol::CONNECT_REJECT, &ReadSocket::handleConnectReject},
+            {rtype_protocol::PLAYER_LEFT, &ReadSocket::handlePlayerLeft},
+            {rtype_protocol::GAME_STARTED, &ReadSocket::handleGameStarted},
+            {rtype_protocol::SNAPSHOT, &ReadSocket::handleSnapshot},
+            {rtype_protocol::DELTA, &ReadSocket::handleDelta}
+        };
+
+        auto it = handlers.find(packetType);
+        if (it != handlers.end())
+            (this->*(it->second))(scene, socket, packet, len);
+    };
+
+    dispatch(packet[0]);
 }
 
 char const *ReadSocket::rejectReason(uint8_t reason)
