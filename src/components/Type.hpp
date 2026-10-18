@@ -7,7 +7,7 @@
 
 #pragma once
 
-enum EntType { PLAYER, ENEMY, BULLET, OBSTACLE };
+enum EntType { PLAYER, ENEMY, BULLET, OBSTACLE, OTHER };
 
 struct Type {
     EntType type;

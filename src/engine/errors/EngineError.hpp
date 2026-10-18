@@ -10,6 +10,45 @@
 #include <stdexcept>
 #include <string>
 
+class FileNotFound : public std::exception
+{
+  public:
+    FileNotFound(const std::string &message) : errorMessage("File not found: " + message) {}
+
+    const char *what() const noexcept override { return errorMessage.c_str(); }
+
+  private:
+    std::string errorMessage;
+};
+
+class UnknownComponentType : public std::exception
+{
+  public:
+    UnknownComponentType(const std::string &message)
+        : errorMessage("Unknown component type: " + message)
+    {
+    }
+
+    const char *what() const noexcept override { return errorMessage.c_str(); }
+
+  private:
+    std::string errorMessage;
+};
+
+class MultipleComponentDefinition : public std::exception
+{
+  public:
+    MultipleComponentDefinition(const std::string &message)
+        : errorMessage("Multiple component definition: " + message)
+    {
+    }
+
+    const char *what() const noexcept override { return errorMessage.c_str(); }
+
+  private:
+    std::string errorMessage;
+};
+
 class EngineError : public std::runtime_error
 {
   public:

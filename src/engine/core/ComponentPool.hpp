@@ -12,7 +12,6 @@
 #include <algorithm>
 #include <array>
 #include <functional>
-#include <iostream>
 #include <type_traits>
 #include <utility>
 #include <vector>
@@ -27,8 +26,7 @@ template <typename Component> class ComponentPool : public IComponentPool
         if (entity >= MAX_ENTITIES)
             throw OutOfRangeEntityError();
         if (!AllowMultiple<Component>::value && has(entity)) {
-            std::cout << "Tried to add a component on the same entity twice" << "\n";
-            return;
+            throw MultipleComponentDefinition("entity " + std::to_string(entity));
         }
 
         _entityToPackedIndices[entity].push_back(_packedComponents.size());
@@ -39,9 +37,7 @@ template <typename Component> class ComponentPool : public IComponentPool
     void removeComponent(Entity entity)
     {
         if (!has(entity)) {
-            std::cout << "Tried to remove a component from an entity that didn't have it"
-                      << "\n";
-            return;
+            throw MissingComponentError(entity);
         }
 
         std::vector<std::size_t> indices = std::move(_entityToPackedIndices[entity]);

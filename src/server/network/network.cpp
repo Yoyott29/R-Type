@@ -100,7 +100,8 @@ void Network::stop()
     asio::ip::address target = _endpoint.address();
     if (target.is_unspecified())
         target = asio::ip::address_v4::loopback();
-    wakeUp.send_to(asio::buffer("", 1), asio::ip::udp::endpoint(target, _endpoint.port()), 0, error);
+    wakeUp.send_to(asio::buffer("", 1), asio::ip::udp::endpoint(target, _endpoint.port()), 0,
+                   error);
 }
 
 void Network::handleConnect(const rtype_protocol::Packet &packet, std::size_t size,
@@ -179,7 +180,8 @@ void Network::dropTimedOutPlayers()
     }
 }
 
-// [SNAPSHOT, tick (u32), count (u16), entites...], entite = [x (f32), y (f32), type (u8)]
+// [SNAPSHOT, tick (u32), count (u16), entites...],
+// entite = [x (f32), y (f32), type (u8), player id (u8)]
 // Garde le snapshot dans l'historique puis le decoupe en plusieurs paquets du meme tick
 // si les entites ne tiennent pas dans un Packet
 void Network::sendSnapshot(uint32_t tick,
@@ -197,15 +199,8 @@ void Network::sendSnapshot(uint32_t tick,
         for (auto const &[endpoint, playerId] : _players)
             targets.push_back(endpoint);
     }
-    // std::cout << "Sending snapshot tick " << tick << " with " << entities.size() << " entities"
-    //           << std::endl;
     entry.tick = tick;
     entry.entities = entities;
-    // for (int i = entry.entities.size(); i < 10; i++) {
-    //     entry.entities.push_back(rtype_protocol::EntitySnapshot{
-    //         Position{10 * static_cast<float>(i), 10 * static_cast<float>(i)},
-    //         Type{EntType::PLAYER}});
-    // }
     while (sent < entry.entities.size()) {
         rtype_protocol::Packet packet{};
         std::size_t count = std::min(entry.entities.size() - sent, maxPerPacket);
@@ -221,6 +216,14 @@ void Network::sendSnapshot(uint32_t tick,
             rtype_protocol::writeValue<float>(&packet[size], entity.pos.x);
             rtype_protocol::writeValue<float>(&packet[size + 4], entity.pos.y);
             packet[size + 8] = static_cast<uint8_t>(entity.type.type);
+            packet[size + 9] = entity.playerId;
+            packet[size + 10] = entity.variant;
+            rtype_protocol::writeValue<float>(&packet[size + 11], entity.width);
+            rtype_protocol::writeValue<float>(&packet[size + 15], entity.height);
+            packet[size + 19] = entity.shape;
+            packet[size + 20] = static_cast<uint8_t>(entity.drawOrder);
+            for (std::size_t color = 0; color < 4; color++)
+                packet[size + 21 + color] = entity.color[color];
             size += entitySize;
         }
         for (auto const &endpoint : targets) {

@@ -6,23 +6,24 @@
 */
 
 #include "RenderSystem.hpp"
+#include <algorithm>
+#include <functional>
 
 void RenderSystem::update(Scene &scene)
 {
-    BeginDrawing();
-    ClearBackground({0, 0, 0, 255});
-    for (Entity entity : _entities) {
-        Position const &position = scene.getComponent<Position>(entity);
-        Sprite const &sprite = scene.getComponent<Sprite>(entity);
+    IRenderer &renderer = scene.getResource<std::reference_wrapper<IRenderer>>().get();
+    std::vector<Entity> entities(_entities.begin(), _entities.end());
+    std::stable_sort(entities.begin(), entities.end(), [&scene](Entity left, Entity right) {
+        return scene.getComponent<Sprite>(left).drawOrder <
+               scene.getComponent<Sprite>(right).drawOrder;
+    });
 
-        if (std::holds_alternative<BoxShape>(sprite.shape)) {
-          BoxShape const &box = std::get<BoxShape>(sprite.shape);
-          DrawRectangleV({position.x - box.width / 2.0f, position.y - box.height / 2.0f},
-            {box.width, box.height}, sprite.color);
-        } else {
-          CircleShape const &circle = std::get<CircleShape>(sprite.shape);
-          DrawCircleV({position.x, position.y}, circle.radius, sprite.color);
-        }
+    renderer.beginFrame();
+    renderer.clearBackground();
+    for (Entity entity : entities) {
+            Position const &position = scene.getComponent<Position>(entity);
+            Sprite const &sprite = scene.getComponent<Sprite>(entity);
+            renderer.drawSprite(position, sprite);
     }
-    EndDrawing();
+    renderer.endFrame();
 }

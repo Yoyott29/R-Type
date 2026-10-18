@@ -30,6 +30,7 @@ void TryConnect::update(Scene &scene)
         return;
     }
 
+    std::cout << "Connecting to " << socket.serverAddress << ":" << socket.serverPort << "\n";
     std::array<uint8_t, 2> packet = {rtype_protocol::CONNECT, rtype_protocol::PROTOCOL_VERSION};
     socket.socket.send(asio::buffer(packet), 0, ec);
     if (ec)
