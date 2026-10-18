@@ -7,8 +7,15 @@
 
 #include "Collider2DSystem.hpp"
 #include "Sprite.hpp"
+#include "Type.hpp"
 #include <set>
 #include <variant>
+
+static bool isPlayer(Scene &scene, Entity entity)
+{
+    return scene.getComponentCount<Type>(entity) > 0 &&
+           scene.getComponent<Type>(entity).type == EntType::PLAYER;
+}
 
 void Collider2DSystem::update(Scene &scene)
 {
@@ -17,8 +24,11 @@ void Collider2DSystem::update(Scene &scene)
     for (Entity entity : _entities) {
         Position &position = scene.getComponent<Position>(entity);
         Collider2D &collider = scene.getComponent<Collider2D>(entity);
+        bool entityIsPlayer = isPlayer(scene, entity);
 
         for (Entity otherEntity : checkedEntities) {
+            if (entityIsPlayer && isPlayer(scene, otherEntity))
+                continue;
             Position &otherPosition = scene.getComponent<Position>(otherEntity);
             Collider2D &otherCollider = scene.getComponent<Collider2D>(otherEntity);
 
