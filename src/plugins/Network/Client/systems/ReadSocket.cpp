@@ -44,6 +44,12 @@ void ReadSocket::update(Scene &scene)
         handlePacket(scene, socket, packet, len);
     }
     applySnapshot(scene, socket);
+    if (socket.connected &&
+        std::chrono::steady_clock::now() - _lastSnapshotReceived > SNAPSHOT_TIMEOUT) {
+        std::cerr << "Timeout: No snapshot received for " << SNAPSHOT_TIMEOUT.count()
+                  << " seconds, disconnecting\n";
+        scene.getResource<AppAlive>().alive = false;
+    }
 }
 
 void ReadSocket::applySnapshot(Scene &scene, Socket &socket)
@@ -90,6 +96,7 @@ void ReadSocket::handleConnectAccept(Scene &, Socket &socket, rtype_protocol::Pa
 
     socket.connected = true;
     socket.playerId = packet[1];
+    _lastSnapshotReceived = std::chrono::steady_clock::now();
 }
 
 void ReadSocket::handleConnectReject(Scene &scene, Socket &, rtype_protocol::Packet const &packet,
@@ -127,6 +134,8 @@ void ReadSocket::handleSnapshot(Scene &, Socket &, rtype_protocol::Packet const 
 {
     if (len < rtype_protocol::SNAPSHOT_HEADER_SIZE)
         return;
+
+    _lastSnapshotReceived = std::chrono::steady_clock::now();
 
     uint32_t tick = rtype_protocol::readValue<uint32_t>(&packet[1]);
     if (tick < _displayedTick)
