@@ -71,10 +71,14 @@ add_executable(${PROJECT_NAME}
     src/engine/core/TickTimeManager.cpp
     src/engine/core/EntityManager.cpp
     src/engine/systems/SystemManager.cpp
+    src/engine/prefabs/Prefab.cpp
+    src/engine/prefabs/PrefabsManager.cpp
     src/systems/ScriptSystem.cpp
     src/plugins/Renderer/RayLibRenderer.cpp
+    src/plugins/Renderer/systems/RenderSystem.cpp
     src/plugins/Physics/Physics.cpp
     src/plugins/Physics/systems/Collider2DSystem.cpp
+    src/plugins/Physics/systems/MovementSystem.cpp
     src/plugins/Network/Client/Client.cpp
     src/plugins/Network/Client/systems/ReadSocket.cpp
     src/plugins/Network/Client/systems/SendInput.cpp
@@ -87,6 +91,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
     src/engine/errors
     src/engine/prefabs
     src/engine/systems
+    src/engine/prefabs
     src/systems
     src/components
     src/common/
@@ -152,10 +157,13 @@ add_executable(r-type_server
     src/game-rtype/Game.cpp
     src/systems/ScriptSystem.cpp
     src/plugins/Physics/systems/Collider2DSystem.cpp
+    src/plugins/Physics/systems/MovementSystem.cpp
     src/engine/core/Scene.cpp
     src/engine/core/TickTimeManager.cpp
     src/engine/core/EntityManager.cpp
     src/engine/systems/SystemManager.cpp
+    src/engine/prefabs/Prefab.cpp
+    src/engine/prefabs/PrefabsManager.cpp
 )
 
 target_include_directories(r-type_server PRIVATE
