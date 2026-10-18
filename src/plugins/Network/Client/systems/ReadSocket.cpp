@@ -15,10 +15,10 @@ namespace
 {
 // temporary visuals, indexed by EntType, until real sprites are in place
 std::array<Sprite, 4> const typeSprites = {{
-    {BoxShape{50.0f, 35.0f}, Color{0, 228, 48, 255}},   // PLAYER
-    {BoxShape{50.0f, 35.0f}, Color{228, 48, 0, 255}},   // ENEMY
-    {CircleShape{5.0f}, Color{253, 249, 0, 255}},       // BULLET
-    {BoxShape{60.0f, 60.0f}, Color{130, 130, 130, 255}} // OBSTACLE
+    {BoxShape{50.0f, 35.0f}, ColorRGBA{0, 228, 48, 255}},   // PLAYER
+    {BoxShape{50.0f, 35.0f}, ColorRGBA{228, 48, 0, 255}},   // ENEMY
+    {CircleShape{5.0f}, ColorRGBA{253, 249, 0, 255}},       // BULLET
+    {BoxShape{60.0f, 60.0f}, ColorRGBA{130, 130, 130, 255}} // OBSTACLE
 }};
 } // namespace
 
