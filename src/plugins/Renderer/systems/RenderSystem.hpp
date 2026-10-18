@@ -6,8 +6,7 @@
 */
 
 #pragma once
-#include "Sprite.hpp"
-#include "Position.hpp"
+#include "IRenderer.hpp"
 #include "Scene.hpp"
 #include "System.hpp"
 
