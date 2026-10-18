@@ -9,7 +9,9 @@
 #include "rtype_protocol.hpp"
 #include <algorithm>
 #include <asio.hpp>
+#include <exception>
 #include <iostream>
+#include <optional>
 
 namespace rtype_server
 {
@@ -29,8 +31,6 @@ Network::~Network()
     }
 }
 
-const std::map<asio::ip::udp::endpoint, uint8_t> &Network::getPlayers() const { return _players; }
-
 std::map<uint8_t, InputQueue> &Network::getPlayerInputs() { return _playerInputs; }
 
 // Thread reseau : recoit les paquets en continu et range les inputs dans la queue
@@ -42,24 +42,44 @@ void Network::receiveLoop()
 
     while (_running) {
         std::size_t n = _socketAsio.receive_from(asio::buffer(buffer), sender, 0, error);
-        if (!_running || error)
+        if (!_running)
             break;
+        if (error == asio::error::connection_reset || error == asio::error::connection_refused)
+            continue;
+        if (error) {
+            std::cerr << "Network: " << error.message() << std::endl;
+            break;
+        }
         if (n == 0)
             continue;
         uint8_t type = static_cast<uint8_t>(buffer[0]);
-        if (type != rtype_protocol::CONNECT && _players.find(sender) == _players.end()) {
+        std::optional<uint8_t> playerId;
+        {
+            std::lock_guard<std::mutex> lock(_playersMutex);
+            auto player = _players.find(sender);
+            if (player != _players.end())
+                playerId = player->second;
+        }
+        if (type != rtype_protocol::CONNECT && !playerId) {
             reply(sender, rtype_protocol::CONNECT_REJECT, rtype_protocol::NOT_CONNECTED);
             continue;
         }
-        switch (type) {
-        case rtype_protocol::CONNECT:
-            handleConnect(buffer, n, sender);
-            break;
-        case rtype_protocol::INPUT:
-            if (n != rtype_protocol::INPUT_SIZE)
+        try {
+            switch (type) {
+            case rtype_protocol::CONNECT:
+                handleConnect(buffer, n, sender);
                 break;
-            _playerInputs.at(_players.at(sender)).push(buffer[5]);
-            break;
+            case rtype_protocol::INPUT:
+                if (n != rtype_protocol::INPUT_SIZE)
+                    break;
+                _playerInputs.at(*playerId).push(buffer[5]);
+                break;
+            case rtype_protocol::DISCONNECT:
+                disconnectPlayer(*playerId);
+                break;
+            }
+        } catch (std::exception const &exception) {
+            std::cerr << "Dropped packet: " << exception.what() << std::endl;
         }
     }
     _running = false;
@@ -87,6 +107,7 @@ void Network::handleConnect(const rtype_protocol::Packet &packet, std::size_t si
         reply(sender, rtype_protocol::CONNECT_REJECT, rtype_protocol::WRONG_VERSION);
         return;
     }
+    std::lock_guard<std::mutex> lock(_playersMutex);
     if (_eliminatedPlayers.find(sender) != _eliminatedPlayers.end()) {
         reply(sender, rtype_protocol::CONNECT_REJECT, rtype_protocol::SERVER_FULL);
         return;
@@ -102,10 +123,7 @@ void Network::handleConnect(const rtype_protocol::Packet &packet, std::size_t si
             if (playerId == id)
                 taken = true;
         if (!taken) {
-            {
-                std::lock_guard<std::mutex> lock(_playersMutex);
-                _players[sender] = id;
-            }
+            _players[sender] = id;
             std::cout << "Player " << static_cast<int>(id)
                       << " connected: " << sender.address().to_string() << ":" << sender.port()
                       << std::endl;
