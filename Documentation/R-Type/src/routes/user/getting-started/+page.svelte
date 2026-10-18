@@ -42,3 +42,17 @@ class="mt-3 overflow-x-auto rounded-md border border-[#1e2b26] bg-[#121a17] p-4 
 <pre
 	class="mt-3 overflow-x-auto rounded-md border border-[#1e2b26] bg-[#121a17] p-4 font-mono text-[13.5px] leading-6"><code>.\r-type_server.exe
 .\r-type_client.exe</code></pre>
+
+<h2 class="mt-9 text-lg font-semibold">First launch checklist</h2>
+<ol class="mt-3 max-w-[100ch] list-decimal space-y-1.5 pl-6 leading-7">
+	<li>Run the server before launching a client.</li>
+	<li>Run from the repository root so relative <code>Assets/</code> paths resolve.</li>
+	<li>Launch up to four clients; player slots are assigned automatically.</li>
+	<li>Read <a href="/user/controls" class="text-[#ff8a3d] hover:underline">Controls</a> before playing.</li>
+</ol>
+
+<h2 class="mt-9 text-lg font-semibold">Server port</h2>
+<p class="mt-3 max-w-[100ch] leading-7">
+	The server listens on UDP port <code>4242</code> by default. It accepts an optional port:
+</p>
+<pre class="mt-3 overflow-x-auto rounded-md border border-[#1e2b26] bg-[#121a17] p-4 font-mono text-[13.5px] leading-6"><code>./r-type_server 5000</code></pre>
