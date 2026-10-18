@@ -6,6 +6,14 @@
 
 cd "$(dirname "$0")/.." || exit 1
 
+if { [ -t 1 ] || [ -n "${CI:-}" ]; } && [ -z "${NO_COLOR:-}" ]; then
+    GREEN=$'\e[32m' RED=$'\e[31m' YELLOW=$'\e[33m' BLUE=$'\e[1;34m' BOLD=$'\e[1m' DIM=$'\e[2m' RESET=$'\e[0m'
+else
+    GREEN="" RED="" YELLOW="" BLUE="" BOLD="" DIM="" RESET=""
+fi
+
+section() { echo "${BLUE}== $1 ==${RESET}"; }
+
 passed=0
 failed=0
 skipped=0
@@ -22,14 +30,14 @@ run_test() {
     ( trap cleanup EXIT; "$@" ) > /tmp/test_output.log 2>&1
     status=$?
     if [ "$status" -eq 0 ]; then
-        echo "  [PASS] $name"
+        echo "  ${GREEN}[PASS]${RESET} $name"
         passed=$((passed + 1))
     elif [ "$status" -eq 77 ]; then
-        echo "  [SKIP] $name ($(tail -n 1 /tmp/test_output.log))"
+        echo "  ${YELLOW}[SKIP]${RESET} $name ${DIM}($(tail -n 1 /tmp/test_output.log))${RESET}"
         skipped=$((skipped + 1))
     else
-        echo "  [FAIL] $name"
-        sed 's/^/         /' /tmp/test_output.log | tail -n 20
+        echo "  ${RED}[FAIL]${RESET} ${BOLD}$name${RESET}"
+        sed "s/^/         ${RED}/; s/\$/${RESET}/" /tmp/test_output.log | tail -n 20
         failed=$((failed + 1))
         failed_names+=("$name")
     fi
@@ -1180,14 +1188,14 @@ test_client_killed_is_dropped() {
 # Run
 # ============================================================
 
-echo "== Build =="
+section "Build"
 run_test "build" bash -c "cmake -B build && cmake --build build"
 
-echo "== Binaries =="
+section "Binaries"
 run_test "server binary exists" test_server_binary_exists
 run_test "client binary exists" test_client_binary_exists
 
-echo "== Server arguments =="
+section "Server arguments"
 run_test "server: port not a number" test_server_args_port_not_a_number
 run_test "server: port 0" test_server_args_port_zero
 run_test "server: port too big" test_server_args_port_too_big
@@ -1202,7 +1210,7 @@ run_test "server: port already used" test_server_port_already_used
 run_test "server: default address" test_server_default_address
 run_test "server: default port" test_server_default_port
 
-echo "== Client arguments =="
+section "Client arguments"
 run_test "client: port not a number" test_client_args_port_not_a_number
 run_test "client: port 0" test_client_args_port_zero
 run_test "client: port too big" test_client_args_port_too_big
@@ -1210,7 +1218,7 @@ run_test "client: invalid ip" test_client_args_invalid_ip
 run_test "client: too many arguments" test_client_args_too_many
 run_test "client: no display" test_client_without_display
 
-echo "== Server start and shutdown =="
+section "Server start and shutdown"
 run_test "logs the ip" test_server_logs_ip
 run_test "logs the port" test_server_logs_port
 run_test "runs with closed stdin" test_server_runs_with_closed_stdin
@@ -1221,7 +1229,7 @@ run_test "stops in less than 1 s" test_server_stops_quickly
 run_test "stops with clients connected" test_server_shutdown_with_clients
 run_test "port reusable after stop" test_server_port_reusable
 
-echo "== Connection =="
+section "Connection"
 run_test "first client gets id 0" test_connect_first_client_id_0
 run_test "logs the new player" test_connect_logs_player
 run_test "second client gets id 1" test_connect_second_client_id_1
@@ -1238,7 +1246,7 @@ run_test "DISCONNECT before CONNECT rejected" test_connect_disconnect_before_con
 run_test "unknown packet before CONNECT rejected" test_connect_unknown_packet_before_connect
 run_test "lowest free id reused" test_connect_lowest_free_id
 
-echo "== Snapshots =="
+section "Snapshots"
 run_test "snapshot after connect" test_snapshot_after_connect
 run_test "snapshots well formed" test_snapshot_well_formed
 run_test "one player in the snapshot" test_snapshot_one_player
@@ -1253,7 +1261,7 @@ run_test "no snapshot to rejected clients" test_snapshot_not_sent_to_rejected
 run_test "no snapshot to wrong version" test_snapshot_not_sent_to_wrong_version
 run_test "no snapshot after DISCONNECT" test_snapshot_stops_after_disconnect
 
-echo "== Movement =="
+section "Movement"
 run_test "move right" test_move_right
 run_test "move left" test_move_left
 run_test "move up" test_move_up
@@ -1269,7 +1277,7 @@ run_test "bottom edge" test_move_bottom_edge
 run_test "wrong size INPUT ignored" test_move_wrong_size_input_ignored
 run_test "only the own player moves" test_move_only_own_player
 
-echo "== Shooting =="
+section "Shooting"
 run_test "fire creates a bullet" test_shoot_creates_bullet
 run_test "bullet starts in front of the player" test_shoot_bullet_position
 run_test "bullet moves right" test_shoot_bullet_moves_right
@@ -1279,7 +1287,7 @@ run_test "bullet at the player height" test_shoot_follows_player_height
 run_test "two players shoot" test_shoot_two_players
 run_test "bullet destroyed off screen" test_shoot_bullet_despawns
 
-echo "== Disconnect and timeout =="
+section "Disconnect and timeout"
 run_test "DISCONNECT notifies the others" test_disconnect_notifies_others
 run_test "DISCONNECT notifies the leaver" test_disconnect_notifies_leaver
 run_test "DISCONNECT removes the player" test_disconnect_removes_player
@@ -1292,13 +1300,13 @@ run_test "crashed player body removed" test_timeout_body_removed
 run_test "active client kept" test_timeout_active_client_kept
 run_test "timeout frees the slot" test_timeout_frees_slot
 
-echo "== Game =="
+section "Game"
 run_test "players overlap without dying" test_game_players_overlap
 run_test "enemies spawn" test_game_enemies_spawn
 run_test "enemies move left" test_game_enemies_move_left
 run_test "enemy waves" test_game_enemy_waves
 
-echo "== Robustness =="
+section "Robustness"
 run_test "unknown packet ignored" test_robust_unknown_packet
 run_test "one byte packet" test_robust_one_byte_packet
 run_test "huge packet" test_robust_huge_packet
@@ -1307,7 +1315,7 @@ run_test "input flood" test_robust_input_flood
 run_test "client vanishes" test_robust_client_vanishes
 run_test "many sessions" test_robust_many_sessions
 
-echo "== Real client =="
+section "Real client"
 run_test "client connects" test_client_connects
 run_test "client stays alive" test_client_stays_alive
 run_test "client stops when the server stops" test_client_server_stops
@@ -1316,15 +1324,15 @@ run_test "client rejected when full" test_client_rejected_when_full
 run_test "killed client dropped" test_client_killed_is_dropped
 
 echo
-echo "================================"
-echo " Passed:  $passed"
-echo " Failed:  $failed"
-echo " Skipped: $skipped"
-echo " Total:   $((passed + failed + skipped))"
-echo "================================"
+echo "${BOLD}================================${RESET}"
+echo " ${GREEN}Passed:  $passed${RESET}"
+if [ "$failed" -ne 0 ]; then echo " ${RED}Failed:  $failed${RESET}"; else echo " Failed:  $failed"; fi
+if [ "$skipped" -ne 0 ]; then echo " ${YELLOW}Skipped: $skipped${RESET}"; else echo " Skipped: $skipped"; fi
+echo " ${BOLD}Total:   $((passed + failed + skipped))${RESET}"
+echo "${BOLD}================================${RESET}"
 
 if [ "$failed" -ne 0 ]; then
-    echo "Failed tests:"
-    printf '  - %s\n' "${failed_names[@]}"
+    echo "${RED}Failed tests:${RESET}"
+    printf "  ${RED}-${RESET} %s\n" "${failed_names[@]}"
     exit 1
 fi
