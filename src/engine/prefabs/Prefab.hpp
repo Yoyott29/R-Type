@@ -22,13 +22,7 @@ class Prefab
         return *this;
     }
 
-    Entity instantiate(Scene &scene) const
-    {
-        Entity entity = scene.createEntity();
-        for (auto const &component : _components)
-            component(scene, entity);
-        return entity;
-    }
+    Entity instantiate(Scene &scene) const;
 
   private:
     std::vector<std::function<void(Scene &, Entity)>> _components;
