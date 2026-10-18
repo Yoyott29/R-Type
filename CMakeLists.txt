@@ -125,26 +125,6 @@ else()
 endif()
 
 # ============================================================
-# clang-tidy (runs on every compile of the client)
-# ============================================================
-
-option(ENABLE_CLANG_TIDY "Run clang-tidy during the build" ON)
-
-if(ENABLE_CLANG_TIDY)
-    find_program(CLANG_TIDY_EXE NAMES clang-tidy)
-
-    if(CLANG_TIDY_EXE)
-        message(STATUS "clang-tidy enabled: ${CLANG_TIDY_EXE}")
-        set_target_properties(${PROJECT_NAME} PROPERTIES
-            CXX_CLANG_TIDY
-                "${CLANG_TIDY_EXE};--config-file=${CMAKE_SOURCE_DIR}/Norms/.clang-tidy"
-        )
-    else()
-        message(WARNING "clang-tidy not found: static analysis skipped")
-    endif()
-endif()
-
-# ============================================================
 # Server
 # ============================================================
 
@@ -193,4 +173,24 @@ if(MSVC)
     target_compile_options(r-type_server PRIVATE /W4)
 else()
     target_compile_options(r-type_server PRIVATE -Wall -Wextra)
+endif()
+
+# ============================================================
+# clang-tidy (runs on every compile of the client and server)
+# ============================================================
+
+option(ENABLE_CLANG_TIDY "Run clang-tidy during the build" ON)
+
+if(ENABLE_CLANG_TIDY)
+    find_program(CLANG_TIDY_EXE NAMES clang-tidy)
+
+    if(CLANG_TIDY_EXE)
+        message(STATUS "clang-tidy enabled: ${CLANG_TIDY_EXE}")
+        set_target_properties(${PROJECT_NAME} r-type_server PROPERTIES
+            CXX_CLANG_TIDY
+                "${CLANG_TIDY_EXE};--config-file=${CMAKE_SOURCE_DIR}/Norms/.clang-tidy"
+        )
+    else()
+        message(WARNING "clang-tidy not found: static analysis skipped")
+    endif()
 endif()
