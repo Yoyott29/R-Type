@@ -59,8 +59,10 @@ void Network::receiveLoop()
         {
             std::lock_guard<std::mutex> lock(_playersMutex);
             auto player = _players.find(sender);
-            if (player != _players.end())
+            if (player != _players.end()) {
                 playerId = player->second;
+                _lastSeen[player->second] = std::chrono::steady_clock::now();
+            }
         }
         if (type != rtype_protocol::CONNECT && !playerId) {
             reply(sender, rtype_protocol::CONNECT_REJECT, rtype_protocol::NOT_CONNECTED);
@@ -127,6 +129,7 @@ void Network::handleConnect(const rtype_protocol::Packet &packet, std::size_t si
                 taken = true;
         if (!taken) {
             _players[sender] = id;
+            _lastSeen[id] = std::chrono::steady_clock::now();
             std::cout << "Player " << static_cast<int>(id)
                       << " connected: " << sender.address().to_string() << ":" << sender.port()
                       << std::endl;
@@ -156,6 +159,24 @@ void Network::disconnectPlayer(uint8_t playerId)
     asio::error_code error;
     _socketAsio.send_to(asio::buffer(packet), endpoint, 0, error);
     _players.erase(player);
+    _lastSeen.erase(playerId);
+}
+
+void Network::dropTimedOutPlayers()
+{
+    const auto now = std::chrono::steady_clock::now();
+    std::vector<uint8_t> timedOut;
+
+    {
+        std::lock_guard<std::mutex> lock(_playersMutex);
+        for (auto const &[playerId, lastSeen] : _lastSeen)
+            if (now - lastSeen > PLAYER_TIMEOUT)
+                timedOut.push_back(playerId);
+    }
+    for (uint8_t playerId : timedOut) {
+        std::cout << "Player " << static_cast<int>(playerId) << " timed out" << std::endl;
+        disconnectPlayer(playerId);
+    }
 }
 
 // [SNAPSHOT, tick (u32), count (u16), entites...], entite = [x (f32), y (f32), type (u8)]

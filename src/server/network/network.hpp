@@ -11,6 +11,7 @@
 #include <array>
 #include <asio.hpp>
 #include <atomic>
+#include <chrono>
 #include <cstdint>
 #include <map>
 #include <mutex>
@@ -38,8 +39,11 @@ class Network
 
     std::map<uint8_t, InputQueue> &getPlayerInputs(); // playerId -> InputQueue
     std::vector<uint8_t> getConnectedPlayerIds();
+    void dropTimedOutPlayers();
 
   private:
+    static constexpr std::chrono::seconds PLAYER_TIMEOUT{2};
+
     void handleConnect(const rtype_protocol::Packet &packet, std::size_t size,
                        const asio::ip::udp::endpoint &sender);
     void reply(const asio::ip::udp::endpoint &target, uint8_t type, uint8_t value);
@@ -51,6 +55,7 @@ class Network
     std::atomic<bool> &_running;
     std::map<asio::ip::udp::endpoint, uint8_t> _players; // endpoint -> playerId
     std::set<asio::ip::udp::endpoint> _eliminatedPlayers;
+    std::map<uint8_t, std::chrono::steady_clock::time_point> _lastSeen;
     std::mutex _playersMutex;
     std::array<SnapshotEntry, 64> _snapshotHistory; // tick % 64 -> snapshot envoye
 };
