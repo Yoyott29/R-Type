@@ -161,6 +161,7 @@ void GameLoop::run()
         for (float &cooldown : _shootCooldowns)
             cooldown = std::max(0.0f, cooldown - FIXED_DELTA_TIME);
 
+        _network.dropTimedOutPlayers();
         std::vector<uint8_t> connected = _network.getConnectedPlayerIds();
         for (Entity entity : _entities)
             if (_scene.getComponent<Type>(entity).type == EntType::PLAYER &&
