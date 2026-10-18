@@ -38,8 +38,8 @@ void TryConnect::update(Scene &scene)
 
 bool TryConnect::openSocket(Socket &socket, asio::error_code &ec)
 {
-    asio::ip::udp::endpoint server(asio::ip::make_address(rtype_protocol::DEFAULT_ADDRESS, ec),
-                                   rtype_protocol::DEFAULT_PORT);
+    asio::ip::udp::endpoint server(asio::ip::make_address(socket.serverAddress, ec),
+                                   socket.serverPort);
 
     if (ec)
         return false;

@@ -9,7 +9,9 @@
 #include "Game.hpp"
 #include "PrefabsManager.hpp"
 #include "Scene.hpp"
+#include <cstdint>
 #include <memory>
+#include <string>
 #include <vector>
 
 class IPlugin;
@@ -17,7 +19,7 @@ class IPlugin;
 class Application
 {
   public:
-    Application();
+    Application(const std::string &serverAddress, uint16_t serverPort);
     void run();
     void addPlugin(const std::shared_ptr<IPlugin> &plugin);
 
