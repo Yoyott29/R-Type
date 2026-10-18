@@ -6,6 +6,7 @@
 */
 
 #include "RayLibRenderer.hpp"
+#include "EngineError.hpp"
 
 RayLibRenderer::~RayLibRenderer()
 {
@@ -32,6 +33,8 @@ void RayLibRenderer::build(Application &app)
     //raylib inits
     SetTraceLogLevel(LOG_NONE);
     InitWindow(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE);
+    if (!IsWindowReady())
+        throw EngineError("Could not open the window");
     SetTargetFPS(60);
 }
 

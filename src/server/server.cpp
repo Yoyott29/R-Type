@@ -22,7 +22,13 @@ void Server::run()
 {
     _running = true;
     std::thread networkThread(&Network::receiveLoop, &_network);
-    _gameLoop.run();
+    try {
+        _gameLoop.run();
+    } catch (...) {
+        _network.stop();
+        networkThread.join();
+        throw;
+    }
     networkThread.join();
 }
 } // namespace rtype_server

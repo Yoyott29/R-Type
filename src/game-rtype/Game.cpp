@@ -53,7 +53,7 @@ void Game::DestroyOffScreenEntity(Scene &scene, Entity enemy)
 {
     Position &pos = scene.getComponent<Position>(enemy);
 
-    if (pos.x < -50.0f || pos.y < -50.0f || pos.y > 1130.0f)
+    if (pos.x < -50.0f || pos.x > 2050.0f || pos.y < -50.0f || pos.y > 1130.0f)
         scene.queueDestroy(enemy);
 }
 

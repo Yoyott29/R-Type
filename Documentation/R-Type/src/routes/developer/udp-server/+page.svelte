@@ -152,7 +152,7 @@ Player 0 connected: 127.0.0.1:51391`;
 	</li>
 	<li>Players are never removed yet: there is no disconnect or timeout.</li>
 	<li>
-		Type {@render c('exit')} in the server terminal, or press Ctrl+D, to stop it cleanly. Ctrl+C
-		still kills it without any cleanup.
+		Press Ctrl+C (SIGINT) or send SIGTERM to stop the server cleanly. It does not read stdin, so
+		it can run under nohup, docker or CI.
 	</li>
 </ul>
