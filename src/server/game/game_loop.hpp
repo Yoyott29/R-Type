@@ -14,12 +14,12 @@
 #include "Script.hpp"
 #include "ScriptSystem.hpp"
 #include "network/network.hpp"
-#include <atomic>
 #include <array>
+#include <atomic>
 #include <cstdint>
 #include <vector>
 
-#define PLAYER_SPEED 300.0f
+#define PLAYER_SPEED 500.0f
 
 namespace rtype_server
 {

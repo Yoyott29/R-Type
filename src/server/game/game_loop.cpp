@@ -61,8 +61,8 @@ GameLoop::GameLoop(Network &network, std::atomic<bool> &running)
     colliderRequirements.set(_scene.getComponentType<Collider2D>());
     _scene.setSystemComponentSet<Collider2DSystem>(colliderRequirements);
 
-    initializeEntities();
     initializePrebabs();
+    initializeEntities();
 }
 
 void GameLoop::initializeEntities()
@@ -73,6 +73,18 @@ void GameLoop::initializeEntities()
                                             if (enemy != static_cast<Entity>(NULL_INDEX))
                                                 _entities.push_back(enemy);
                                         }});
+    Entity spaceSwpawner = _scene.createEntity();
+    _scene.addComponent(spaceSwpawner, Script{Timing::ON_UPDATE, [this](Scene &scene, Entity &) {
+                                                  Entity space = _game.SpawnSpace(scene);
+                                                  if (space != static_cast<Entity>(NULL_INDEX))
+                                                      _entities.push_back(space);
+                                              }});
+    for (int i = 0; i < 20; i++) {
+        Entity star = _prefabs.InstantiatePrefab("Star", _scene);
+        _scene.getComponent<Position>(star).x = static_cast<float>(rand() % 1920);
+        _scene.getComponent<Position>(star).y = static_cast<float>(rand() % 1080);
+        _entities.push_back(star);
+    }
 }
 
 void GameLoop::initializePrebabs()
@@ -81,7 +93,7 @@ void GameLoop::initializePrebabs()
         "Enemy", Prefab()
                      .addComponent(Type{EntType::ENEMY})
                      .addComponent(Position{2000.0f, 0.0f})
-                     .addComponent(Velocity{-300.0f, 0.0f})
+                     .addComponent(Velocity{-500.0f, 0.0f})
                      .addComponent(Sprite{BoxShape{50.0f, 35.0f}, ColorRGBA{228, 48, 0, 255}})
                      .addComponent(Collider2D{BoxShape{50.0f, 35.0f}, nullptr})
                      .addComponent(Script{Timing::ON_UPDATE,
@@ -110,6 +122,15 @@ void GameLoop::initializePrebabs()
             .addComponent(Script{Timing::ON_UPDATE, [this](Scene &scene, Entity &bullet) {
                                      _game.DestroyOffScreenEntity(scene, bullet);
                                  }}));
+    _prefabs.createPrefab(
+        "Star", Prefab()
+                    .addComponent(Type{EntType::OTHER})
+                    .addComponent(Position{2000.0f, 0.0f})
+                    .addComponent(Velocity{-100.0f, 0.0f})
+                    .addComponent(Sprite{BoxShape{5.0f, 5.0f}, ColorRGBA{0, 0, 0, 255}})
+                    .addComponent(Script{Timing::ON_UPDATE, [this](Scene &scene, Entity &space) {
+                                             _game.DestroyOffScreenEntity(scene, space);
+                                         }}));
 }
 
 void GameLoop::initializePlayer(uint8_t id)
@@ -119,8 +140,7 @@ void GameLoop::initializePlayer(uint8_t id)
     _scene.addComponent(playerEntity, PlayerId{id});
     _scene.addComponent(playerEntity, Position{100.0f, 200.0f + 100.0f * id});
     _scene.addComponent(playerEntity, Velocity{0.0f, 0.0f});
-    _scene.addComponent(playerEntity,
-                         Sprite{BoxShape{50.0f, 35.0f}, ColorRGBA{0, 228, 48, 255}});
+    _scene.addComponent(playerEntity, Sprite{BoxShape{50.0f, 35.0f}, ColorRGBA{0, 228, 48, 255}});
     _scene.addComponent(playerEntity, Collider2D{BoxShape{50.0f, 35.0f}, [this](Entity a, Entity) {
                                                      const uint8_t playerId =
                                                          _scene.getComponent<PlayerId>(a).value;
@@ -228,13 +248,13 @@ void GameLoop::executeInput(uint8_t playerId, uint8_t input, std::uint64_t)
     if (input & rtype_protocol::RIGHT)
         velocity.dx += PLAYER_SPEED;
 
-    if (input & rtype_protocol::CHARGE && _shootCooldowns.at(playerId) <= 0.0f) {
+    if (_shootCooldowns.at(playerId) <= 0.0f) {
         Entity bullet = _prefabs.InstantiatePrefab("PlayerBullet", _scene);
         Position &pos = _scene.getComponent<Position>(bullet);
         pos.x = _scene.getComponent<Position>(playerEntity).x + 50.0f;
         pos.y = _scene.getComponent<Position>(playerEntity).y;
         _entities.push_back(bullet);
-        _shootCooldowns.at(playerId) = 0.5f;
+        _shootCooldowns.at(playerId) = 0.2f;
     }
 }
 

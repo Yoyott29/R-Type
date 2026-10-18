@@ -22,6 +22,7 @@ class Game
     ~Game() = default;
 
     Entity SpawnEnemy(Scene &scene);
+    Entity SpawnSpace(Scene &scene);
     void InitializeEnemyPosition(Scene &scene, Entity enemy);
     void DestroyOffScreenEntity(Scene &scene, Entity enemy);
     void maintainPlayerOnScreen(Scene &scene, Entity player);
@@ -30,6 +31,7 @@ class Game
   protected:
   private:
     float _spawnTimer;
+    float _spaceSpawnTimer;
     float _waveTimer;
     int _enemyCount;
     float _waveDelay;

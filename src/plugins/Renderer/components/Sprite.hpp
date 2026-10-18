@@ -18,7 +18,6 @@ struct ColorRGBA {
 
 struct Sprite {
     std::variant<BoxShape, CircleShape> shape;
-    // int layer;
-    // Sprite sprite;
     ColorRGBA color;
+    int drawOrder = 0;
 };
