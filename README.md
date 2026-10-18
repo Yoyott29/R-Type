@@ -112,7 +112,12 @@ The executables are generated at the repository root because of the current CMak
 
 ## Documentation
 
-Read the full project documentation on the [R-Type documentation website](https://r-type-project-documentation.vercel.app/), especially if you are a collaborator.
+Read the full project documentation on the [R-Type documentation website](https://r-type-project-documentation.vercel.app/).
+Players should start with the User documentation for [getting started](https://r-type-project-documentation.vercel.app/user/getting-started),
+[controls](https://r-type-project-documentation.vercel.app/user/controls), [gameplay](https://r-type-project-documentation.vercel.app/user/gameplay),
+[multiplayer](https://r-type-project-documentation.vercel.app/user/multiplayer), and
+[troubleshooting](https://r-type-project-documentation.vercel.app/user/troubleshooting).
+Contributors can use the Developer documentation for the ECS, network protocol, build, and test guides.
 
 ## Authors
 

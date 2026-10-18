@@ -54,6 +54,7 @@ if(asio_ADDED)
     target_link_libraries(asio INTERFACE Threads::Threads)
     if(WIN32)
         target_link_libraries(asio INTERFACE ws2_32 wsock32)
+        target_compile_definitions(asio INTERFACE _WIN32_WINNT=0x0A00)
     endif()
 endif()
 
@@ -113,6 +114,12 @@ target_include_directories(${PROJECT_NAME} SYSTEM PRIVATE
 )
 
 target_link_libraries(${PROJECT_NAME} PRIVATE raylib asio)
+
+# Asio pulls in windows.h, whose GDI/USER declarations (Rectangle, CloseWindow,
+# LoadImage, SendInput...) clash with raylib and our own names
+if(WIN32)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE NOGDI NOUSER WIN32_LEAN_AND_MEAN)
+endif()
 
 # ============================================================
 # Compiler warnings
