@@ -74,15 +74,15 @@ add_executable(${PROJECT_NAME}
     src/engine/prefabs/Prefab.cpp
     src/engine/prefabs/PrefabsManager.cpp
     src/systems/ScriptSystem.cpp
-    src/plugins/Renderer/RayLibRenderer.cpp
-    src/plugins/Renderer/systems/RenderSystem.cpp
-    src/plugins/Physics/Physics.cpp
-    src/plugins/Physics/systems/Collider2DSystem.cpp
-    src/plugins/Physics/systems/MovementSystem.cpp
-    src/plugins/Network/Client/Client.cpp
-    src/plugins/Network/Client/systems/ReadSocket.cpp
-    src/plugins/Network/Client/systems/SendInput.cpp
-    src/plugins/Network/Client/systems/TryConnect.cpp
+    src/plugins/renderer/RayLibRenderer.cpp
+    src/plugins/renderer/systems/RenderSystem.cpp
+    src/plugins/physics/Physics.cpp
+    src/plugins/physics/systems/Collider2DSystem.cpp
+    src/plugins/physics/systems/MovementSystem.cpp
+    src/plugins/network/client/Client.cpp
+    src/plugins/network/client/systems/ReadSocket.cpp
+    src/plugins/network/client/systems/SendInput.cpp
+    src/plugins/network/client/systems/TryConnect.cpp
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE
@@ -96,16 +96,16 @@ target_include_directories(${PROJECT_NAME} PRIVATE
     src/components
     src/common/
     src/ressources
-    src/plugins/Renderer
-    src/plugins/Renderer/components
-    src/plugins/Renderer/ressources
-    src/plugins/Renderer/systems
-    src/plugins/Physics
-    src/plugins/Physics/components
-    src/plugins/Physics/systems
-    src/plugins/Network/components
-    src/plugins/Network/Client
-    src/plugins/Network/Client/systems
+    src/plugins/renderer
+    src/plugins/renderer/components
+    src/plugins/renderer/ressources
+    src/plugins/renderer/systems
+    src/plugins/physics
+    src/plugins/physics/components
+    src/plugins/physics/systems
+    src/plugins/network/components
+    src/plugins/network/client
+    src/plugins/network/client/systems
 )
 
 target_include_directories(${PROJECT_NAME} SYSTEM PRIVATE
@@ -150,14 +150,14 @@ endif()
 
 add_executable(r-type_server
     src/server/main.cpp
-    src/server/server.cpp
-    src/server/network/network.cpp
-    src/server/game/game_loop.cpp
-    src/server/input/input_queue.cpp
+    src/server/Server.cpp
+    src/server/network/Network.cpp
+    src/server/game/GameLoop.cpp
+    src/server/input/InputQueue.cpp
     src/game-rtype/Game.cpp
     src/systems/ScriptSystem.cpp
-    src/plugins/Physics/systems/Collider2DSystem.cpp
-    src/plugins/Physics/systems/MovementSystem.cpp
+    src/plugins/physics/systems/Collider2DSystem.cpp
+    src/plugins/physics/systems/MovementSystem.cpp
     src/engine/core/Scene.cpp
     src/engine/core/TickTimeManager.cpp
     src/engine/core/EntityManager.cpp
@@ -171,16 +171,19 @@ target_include_directories(r-type_server PRIVATE
     src/game-rtype
     src/common
     src/server
+    src/server/game
+    src/server/input
+    src/server/network
     src/engine/core
     src/engine/errors
     src/engine/prefabs
     src/engine/systems
     src/systems
     src/components
-    src/plugins/Physics/components
-    src/plugins/Physics/systems
-    src/plugins/Renderer/components
-    src/plugins/Renderer/systems
+    src/plugins/physics/components
+    src/plugins/physics/systems
+    src/plugins/renderer/components
+    src/plugins/renderer/systems
 )
 
 target_include_directories(r-type_server SYSTEM PRIVATE

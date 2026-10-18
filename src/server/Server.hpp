@@ -6,14 +6,14 @@
 */
 
 #pragma once
-#include "game/game_loop.hpp"
-#include "input/input_queue.hpp"
-#include "network/network.hpp"
+#include "GameLoop.hpp"
+#include "InputQueue.hpp"
+#include "Network.hpp"
 #include <atomic>
 #include <cstdint>
 #include <map>
 
-namespace rtype_server
+namespace RTypeServer
 {
 class Server
 {
@@ -29,4 +29,4 @@ class Server
     Network _network;
     GameLoop _gameLoop;
 };
-} // namespace rtype_server
+} // namespace RTypeServer

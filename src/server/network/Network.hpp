@@ -6,8 +6,8 @@
 */
 
 #pragma once
-#include "input/input_queue.hpp"
-#include "rtype_protocol.hpp"
+#include "InputQueue.hpp"
+#include "RTypeProtocol.hpp"
 #include <array>
 #include <asio.hpp>
 #include <atomic>
@@ -18,12 +18,12 @@
 #include <set>
 #include <vector>
 
-namespace rtype_server
+namespace RTypeServer
 {
 
 struct SnapshotEntry {
     uint32_t tick;
-    std::vector<rtype_protocol::EntitySnapshot> entities;
+    std::vector<RTypeProtocol::EntitySnapshot> entities;
 };
 
 class Network
@@ -35,7 +35,7 @@ class Network
     void disconnectPlayer(uint8_t playerId);
     void receiveLoop();
     void stop();
-    void sendSnapshot(uint32_t tick, const std::vector<rtype_protocol::EntitySnapshot> &entities);
+    void sendSnapshot(uint32_t tick, const std::vector<RTypeProtocol::EntitySnapshot> &entities);
 
     std::map<uint8_t, InputQueue> &getPlayerInputs(); // playerId -> InputQueue
     std::vector<uint8_t> getConnectedPlayerIds();
@@ -44,7 +44,7 @@ class Network
   private:
     static constexpr std::chrono::seconds PLAYER_TIMEOUT{2};
 
-    void handleConnect(const rtype_protocol::Packet &packet, std::size_t size,
+    void handleConnect(const RTypeProtocol::Packet &packet, std::size_t size,
                        const asio::ip::udp::endpoint &sender);
     void reply(const asio::ip::udp::endpoint &target, uint8_t type, uint8_t value);
 
@@ -59,4 +59,4 @@ class Network
     std::mutex _playersMutex;
     std::array<SnapshotEntry, 64> _snapshotHistory; // tick % 64 -> snapshot envoye
 };
-} // namespace rtype_server
+} // namespace RTypeServer

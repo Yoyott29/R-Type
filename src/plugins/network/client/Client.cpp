@@ -6,10 +6,10 @@
 */
 
 #include "Client.hpp"
+#include "RTypeProtocol.hpp"
 #include "ReadSocket.hpp"
 #include "SendInput.hpp"
 #include "TryConnect.hpp"
-#include "rtype_protocol.hpp"
 #include <array>
 #include <iostream>
 
@@ -38,7 +38,7 @@ void Client::cleanup(Application &app)
 
     if (socket.connected) {
         asio::error_code ec;
-        std::array<uint8_t, 1> packet = {rtype_protocol::DISCONNECT};
+        std::array<uint8_t, 1> packet = {RTypeProtocol::DISCONNECT};
         socket.socket.send(asio::buffer(packet), 0, ec);
         if (ec)
             std::cerr << "Client: " << ec.message() << "\n";

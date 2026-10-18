@@ -5,16 +5,16 @@
 ** server
 */
 
-#include "server.hpp"
-#include "rtype_protocol.hpp"
+#include "Server.hpp"
+#include "RTypeProtocol.hpp"
 #include <thread>
 
-namespace rtype_server
+namespace RTypeServer
 {
 Server::Server(uint16_t port, std::string ip)
     : _network(port, ip, _playerInputs, _running), _gameLoop(_network, _running)
 {
-    for (uint8_t id = 0; id < rtype_protocol::MAX_PLAYERS; id++)
+    for (uint8_t id = 0; id < RTypeProtocol::MAX_PLAYERS; id++)
         _playerInputs.try_emplace(id);
 }
 
@@ -31,4 +31,4 @@ void Server::run()
     }
     networkThread.join();
 }
-} // namespace rtype_server
+} // namespace RTypeServer

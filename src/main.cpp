@@ -6,7 +6,7 @@
 */
 
 #include "Application.hpp"
-#include "rtype_protocol.hpp"
+#include "RTypeProtocol.hpp"
 #include <asio.hpp>
 #include <charconv>
 #include <cstring>
@@ -58,8 +58,8 @@ static int checkArgs(int argc, char **argv, std::string &ip, uint16_t &port)
 
 int main(int argc, char **argv)
 {
-    std::string ip = rtype_protocol::DEFAULT_ADDRESS;
-    uint16_t port = rtype_protocol::DEFAULT_PORT;
+    std::string ip = RTypeProtocol::DEFAULT_ADDRESS;
+    uint16_t port = RTypeProtocol::DEFAULT_PORT;
 
     if (checkArgs(argc, argv, ip, port) == 84)
         return 84;

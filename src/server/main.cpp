@@ -5,7 +5,7 @@
 ** main
 */
 
-#include "server.hpp"
+#include "Server.hpp"
 #include <asio.hpp>
 #include <charconv>
 #include <cstring>
@@ -64,13 +64,13 @@ static int check_args(int argc, char **argv, std::string &ip, uint16_t &port)
 
 int main(int argc, char **argv)
 {
-    uint16_t port = rtype_protocol::DEFAULT_PORT;
+    uint16_t port = RTypeProtocol::DEFAULT_PORT;
     std::string ip = "0.0.0.0";
 
     if (check_args(argc, argv, ip, port) == 84)
         return 84;
     try {
-        rtype_server::Server server(port, ip);
+        RTypeServer::Server server(port, ip);
         server.run();
     } catch (std::exception const &error) {
         std::cerr << "Fatal error: " << error.what() << std::endl;

@@ -7,8 +7,8 @@
 
 #include "SendInput.hpp"
 #include "KeyboardInput.hpp"
+#include "RTypeProtocol.hpp"
 #include "Socket.hpp"
-#include "rtype_protocol.hpp"
 #include <array>
 #include <iostream>
 
@@ -21,22 +21,22 @@ void SendInput::update(Scene &scene)
     KeyboardInput const &keyboard = scene.getResource<KeyboardInput>();
     uint8_t inputs = 0;
     if (keyboard.isDown(Key::Z) || keyboard.isDown(Key::Up))
-        inputs |= rtype_protocol::UP;
+        inputs |= RTypeProtocol::UP;
     if (keyboard.isDown(Key::S) || keyboard.isDown(Key::Down))
-        inputs |= rtype_protocol::DOWN;
+        inputs |= RTypeProtocol::DOWN;
     if (keyboard.isDown(Key::Q) || keyboard.isDown(Key::Left))
-        inputs |= rtype_protocol::LEFT;
+        inputs |= RTypeProtocol::LEFT;
     if (keyboard.isDown(Key::D) || keyboard.isDown(Key::Right))
-        inputs |= rtype_protocol::RIGHT;
+        inputs |= RTypeProtocol::RIGHT;
     if (keyboard.isDown(Key::Space))
-        inputs |= rtype_protocol::CHARGE;
+        inputs |= RTypeProtocol::CHARGE;
 
     // [INPUT, tick (u32), InputBits, lastSnapshotTick (u32)]
-    std::array<uint8_t, rtype_protocol::INPUT_SIZE> packet{};
-    packet[0] = rtype_protocol::INPUT;
-    rtype_protocol::writeValue<uint32_t>(&packet[1], socket.tick);
+    std::array<uint8_t, RTypeProtocol::INPUT_SIZE> packet{};
+    packet[0] = RTypeProtocol::INPUT;
+    RTypeProtocol::writeValue<uint32_t>(&packet[1], socket.tick);
     packet[5] = inputs;
-    rtype_protocol::writeValue<uint32_t>(&packet[6], socket.lastSnapshotTick);
+    RTypeProtocol::writeValue<uint32_t>(&packet[6], socket.lastSnapshotTick);
 
     asio::error_code ec;
     socket.socket.send(asio::buffer(packet), 0, ec);

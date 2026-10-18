@@ -5,9 +5,9 @@
 ** input_queue
 */
 
-#include "input/input_queue.hpp"
+#include "InputQueue.hpp"
 
-namespace rtype_server
+namespace RTypeServer
 {
 void InputQueue::push(uint8_t input)
 {
@@ -28,4 +28,4 @@ std::optional<uint8_t> InputQueue::pop()
     _inputs.pop();
     return input;
 }
-} // namespace rtype_server
+} // namespace RTypeServer

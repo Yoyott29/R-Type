@@ -6,7 +6,7 @@
 */
 
 #pragma once
-#include "keyboard.hpp"
+#include "Keyboard.hpp"
 #include <bitset>
 #include <cstddef>
 

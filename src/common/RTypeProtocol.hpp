@@ -16,7 +16,7 @@
 #include <cstring>
 #include <type_traits>
 
-namespace rtype_protocol
+namespace RTypeProtocol
 {
 using Packet = std::array<uint8_t, 1024>; // taille max d'un paquet UDP
 
@@ -66,10 +66,18 @@ enum RejectReason : uint8_t {
 
 // Entier non signe de la meme taille que T, pour manipuler ses octets
 template <std::size_t N> struct UintOfSize;
-template <> struct UintOfSize<1> { using type = uint8_t; };
-template <> struct UintOfSize<2> { using type = uint16_t; };
-template <> struct UintOfSize<4> { using type = uint32_t; };
-template <> struct UintOfSize<8> { using type = uint64_t; };
+template <> struct UintOfSize<1> {
+    using type = uint8_t;
+};
+template <> struct UintOfSize<2> {
+    using type = uint16_t;
+};
+template <> struct UintOfSize<4> {
+    using type = uint32_t;
+};
+template <> struct UintOfSize<8> {
+    using type = uint64_t;
+};
 
 // Les valeurs multi-octets sont envoyees en big-endian (floats copies bit a bit)
 template <typename T> inline void writeValue(uint8_t *out, T value)
@@ -110,4 +118,4 @@ constexpr std::size_t INPUT_SIZE = 1 + 4 + 1 + 4;
 constexpr std::size_t SNAPSHOT_HEADER_SIZE = 1 + 4 + 2;
 constexpr std::size_t ENTITY_SIZE = 4 + 4 + 1;
 
-} // namespace rtype_protocol
+} // namespace RTypeProtocol

@@ -12,7 +12,7 @@
 #include <optional>
 #include <queue>
 
-namespace rtype_server
+namespace RTypeServer
 {
 class InputQueue
 {
@@ -26,4 +26,4 @@ class InputQueue
     std::mutex _mutex;
     std::queue<uint8_t> _inputs;
 };
-} // namespace rtype_server
+} // namespace RTypeServer
