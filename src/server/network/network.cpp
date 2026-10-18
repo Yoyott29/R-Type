@@ -13,11 +13,13 @@
 
 namespace rtype_server
 {
-Network::Network(uint16_t port, std::map<uint8_t, InputQueue> &inputs, std::atomic<bool> &running)
+Network::Network(uint16_t port, std::string ip, std::map<uint8_t, InputQueue> &inputs,
+                 std::atomic<bool> &running)
     : _endpoint(asio::ip::udp::v4(), port), _socketAsio(_ioContext, _endpoint),
       _playerInputs(inputs), _running(running)
 {
     _running = true;
+    std::cout << "Server listening on ip : " << ip << std::endl;
     std::cout << "Server listening on port : " << port << std::endl;
 }
 

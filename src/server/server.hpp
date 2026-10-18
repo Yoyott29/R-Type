@@ -18,7 +18,7 @@ namespace rtype_server
 class Server
 {
   public:
-    explicit Server(uint16_t port);
+    explicit Server(uint16_t port, std::string ip);
     void run();
 
   private:
@@ -28,6 +28,5 @@ class Server
     std::map<uint8_t, InputQueue> _playerInputs; // playerId -> InputQueue
     Network _network;
     GameLoop _gameLoop;
-    
 };
 } // namespace rtype_server
