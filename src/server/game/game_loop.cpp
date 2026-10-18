@@ -82,7 +82,7 @@ void GameLoop::initializePrebabs()
                      .addComponent(Type{EntType::ENEMY})
                      .addComponent(Position{2000.0f, 0.0f})
                      .addComponent(Velocity{-300.0f, 0.0f})
-                     .addComponent(Sprite{BoxShape{50.0f, 35.0f}, Color{228, 48, 0, 255}})
+                     .addComponent(Sprite{BoxShape{50.0f, 35.0f}, ColorRGBA{228, 48, 0, 255}})
                      .addComponent(Collider2D{BoxShape{50.0f, 35.0f}, nullptr})
                      .addComponent(Script{Timing::ON_UPDATE,
                                           [this](Scene &scene, Entity &enemy) {
@@ -97,7 +97,7 @@ void GameLoop::initializePrebabs()
             .addComponent(Type{EntType::BULLET})
             .addComponent(Position{0.0f, 0.0f})
             .addComponent(Velocity{500.0f, 0.0f})
-            .addComponent(Sprite{BoxShape{10.0f, 5.0f}, Color{0, 0, 228, 255}})
+            .addComponent(Sprite{BoxShape{10.0f, 5.0f}, ColorRGBA{0, 0, 228, 255}})
             .addComponent(Collider2D{BoxShape{10.0f, 5.0f},
                                      [this](Entity bullet, Entity other) {
                                          if (_scene.isEntityAlive(other) &&
@@ -119,7 +119,8 @@ void GameLoop::initializePlayer(uint8_t id)
     _scene.addComponent(playerEntity, PlayerId{id});
     _scene.addComponent(playerEntity, Position{100.0f, 200.0f + 100.0f * id});
     _scene.addComponent(playerEntity, Velocity{0.0f, 0.0f});
-    _scene.addComponent(playerEntity, Sprite{BoxShape{50.0f, 35.0f}, Color{0, 228, 48, 255}});
+    _scene.addComponent(playerEntity,
+                         Sprite{BoxShape{50.0f, 35.0f}, ColorRGBA{0, 228, 48, 255}});
     _scene.addComponent(playerEntity, Collider2D{BoxShape{50.0f, 35.0f}, [this](Entity a, Entity) {
                                                      const uint8_t playerId =
                                                          _scene.getComponent<PlayerId>(a).value;

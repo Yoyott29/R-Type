@@ -6,35 +6,27 @@
 */
 
 #pragma once
+#include "EngineError.hpp"
 #include "System.hpp"
 #include <algorithm>
-#include <iostream>
+#include <map>
 #include <memory>
 #include <typeindex>
 #include <unordered_map>
-#include <map>
 #include <vector>
 
-enum ScheduleLabel
-{
-  PrepUpdate,
-  StateTransition,
-  FixedUpdate,
-  Update,
-  PostUpdate
-};
+enum ScheduleLabel { PrepUpdate, StateTransition, FixedUpdate, Update, PostUpdate };
 
 class SystemManager
 {
   public:
-    template <typename SystemType> std::shared_ptr<SystemType> registerSystem(ScheduleLabel label = Update)
+    template <typename SystemType>
+    std::shared_ptr<SystemType> registerSystem(ScheduleLabel label = Update)
     {
         const std::type_index key(typeid(SystemType));
 
-
         if (_systems.find(key) != _systems.end()) {
-            std::cout << "System registered more than once." << "\n";
-            return nullptr;
+            throw RegisterError();
         }
 
         auto system = std::make_shared<SystemType>();
@@ -48,8 +40,7 @@ class SystemManager
         const std::type_index key(typeid(SystemType));
 
         if (_systems.find(key) == _systems.end()) {
-            std::cout << "System used before registered." << "\n";
-            return;
+            throw ComponentNotRegisteredError();
         }
 
         _componentSets.insert_or_assign(key, componentSet);
@@ -61,8 +52,7 @@ class SystemManager
 
         auto it = _systems.find(key);
         if (it == _systems.end()) {
-            std::cout << "System removed before registered." << "\n";
-            return;
+            throw ComponentNotRegisteredError();
         }
 
         for (auto &pair : _systemsByLabel) {

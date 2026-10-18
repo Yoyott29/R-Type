@@ -7,6 +7,8 @@
 
 #include "RayLibRenderer.hpp"
 #include "EngineError.hpp"
+#include <functional>
+#include <variant>
 
 RayLibRenderer::~RayLibRenderer()
 {
@@ -16,6 +18,8 @@ RayLibRenderer::~RayLibRenderer()
 
 void RayLibRenderer::build(Application &app)
 {
+    app._scene.addResource<std::reference_wrapper<IRenderer>>(*this);
+
     // register components
     app._scene.registerComponent<Sprite>();
 
@@ -42,4 +46,34 @@ void RayLibRenderer::cleanup(Application &app)
 {
     (void)app;
  //   Cleanup logic for the RayLibRenderer plugin
+}
+
+void RayLibRenderer::beginFrame()
+{
+    BeginDrawing();
+}
+
+void RayLibRenderer::clearBackground()
+{
+    ClearBackground({0, 0, 0, 255});
+}
+
+void RayLibRenderer::drawSprite(Position const &position, Sprite const &sprite)
+{
+    if (std::holds_alternative<BoxShape>(sprite.shape)) {
+        BoxShape const &box = std::get<BoxShape>(sprite.shape);
+        DrawRectangleV({position.x - box.width / 2.0f, position.y - box.height / 2.0f},
+                       {box.width, box.height},
+                       {sprite.color.r, sprite.color.g, sprite.color.b, sprite.color.a});
+        return;
+    }
+
+    CircleShape const &circle = std::get<CircleShape>(sprite.shape);
+    DrawCircleV({position.x, position.y}, circle.radius,
+                {sprite.color.r, sprite.color.g, sprite.color.b, sprite.color.a});
+}
+
+void RayLibRenderer::endFrame()
+{
+    EndDrawing();
 }
