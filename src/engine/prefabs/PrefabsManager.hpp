@@ -18,11 +18,8 @@
 class PrefabsManager
 {
   public:
-    void createPrefab(std::string const &name, Prefab const &prefab) { _prefabs[name] = prefab; }
-    Entity InstantiatePrefab(std::string const &name, Scene &scene)
-    {
-        return _prefabs[name].instantiate(scene);
-    }
+    void createPrefab(std::string const &name, Prefab const &prefab);
+    Entity InstantiatePrefab(std::string const &name, Scene &scene);
 
   protected:
   private:
