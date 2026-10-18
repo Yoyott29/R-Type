@@ -21,14 +21,11 @@ Network::Network(uint16_t port, std::string ip, std::map<uint8_t, InputQueue> &i
       _playerInputs(inputs), _running(running)
 {
     _running = true;
-    std::cout << "Server listening on ip : " << ip << std::endl;
-    std::cout << "Server listening on port : " << port << std::endl;
 }
 
 Network::~Network()
 {
     if (_socketAsio.is_open()) {
-        std::cout << "Closing server" << std::endl;
         _socketAsio.close();
     }
 }
@@ -100,7 +97,8 @@ void Network::stop()
     asio::ip::address target = _endpoint.address();
     if (target.is_unspecified())
         target = asio::ip::address_v4::loopback();
-    wakeUp.send_to(asio::buffer("", 1), asio::ip::udp::endpoint(target, _endpoint.port()), 0, error);
+    wakeUp.send_to(asio::buffer("", 1), asio::ip::udp::endpoint(target, _endpoint.port()), 0,
+                   error);
 }
 
 void Network::handleConnect(const rtype_protocol::Packet &packet, std::size_t size,
@@ -130,9 +128,6 @@ void Network::handleConnect(const rtype_protocol::Packet &packet, std::size_t si
         if (!taken) {
             _players[sender] = id;
             _lastSeen[id] = std::chrono::steady_clock::now();
-            std::cout << "Player " << static_cast<int>(id)
-                      << " connected: " << sender.address().to_string() << ":" << sender.port()
-                      << std::endl;
             reply(sender, rtype_protocol::CONNECT_ACCEPT, id);
             return;
         }
@@ -174,7 +169,6 @@ void Network::dropTimedOutPlayers()
                 timedOut.push_back(playerId);
     }
     for (uint8_t playerId : timedOut) {
-        std::cout << "Player " << static_cast<int>(playerId) << " timed out" << std::endl;
         disconnectPlayer(playerId);
     }
 }
@@ -197,15 +191,8 @@ void Network::sendSnapshot(uint32_t tick,
         for (auto const &[endpoint, playerId] : _players)
             targets.push_back(endpoint);
     }
-    // std::cout << "Sending snapshot tick " << tick << " with " << entities.size() << " entities"
-    //           << std::endl;
     entry.tick = tick;
     entry.entities = entities;
-    // for (int i = entry.entities.size(); i < 10; i++) {
-    //     entry.entities.push_back(rtype_protocol::EntitySnapshot{
-    //         Position{10 * static_cast<float>(i), 10 * static_cast<float>(i)},
-    //         Type{EntType::PLAYER}});
-    // }
     while (sent < entry.entities.size()) {
         rtype_protocol::Packet packet{};
         std::size_t count = std::min(entry.entities.size() - sent, maxPerPacket);

@@ -7,9 +7,9 @@
 
 #include "ReadSocket.hpp"
 #include "AppAlive.hpp"
+#include "EngineError.hpp"
 #include "Sprite.hpp"
 #include <array>
-#include <iostream>
 
 namespace
 {
@@ -61,13 +61,10 @@ void ReadSocket::applySnapshot(Scene &scene, Socket &socket)
         socket.lastSnapshotTick = _snapshotTick;
 }
 
-void ReadSocket::createEntities(Scene &scene, rtype_protocol::Packet const &packet,
-                                std::size_t len)
+void ReadSocket::createEntities(Scene &scene, rtype_protocol::Packet const &packet, std::size_t len)
 {
     constexpr std::size_t headerSize = rtype_protocol::SNAPSHOT_HEADER_SIZE;
 
-    std::cout << "Processing snapshot with " << (len - headerSize) / rtype_protocol::ENTITY_SIZE
-              << " entities\n";
     for (std::size_t i = headerSize; i + rtype_protocol::ENTITY_SIZE <= len;
          i += rtype_protocol::ENTITY_SIZE) {
         rtype_protocol::EntitySnapshot entity;
@@ -75,21 +72,18 @@ void ReadSocket::createEntities(Scene &scene, rtype_protocol::Packet const &pack
         entity.pos.x = rtype_protocol::readValue<float>(&packet[i]);
         entity.pos.y = rtype_protocol::readValue<float>(&packet[i + 4]);
         if (type >= typeSprites.size()) {
-            std::cout << "Entity skipped: unknown type " << static_cast<int>(type) << "\n";
-            continue;
+            throw UnknownComponentType(std::to_string(type));
         }
         entity.type.type = static_cast<EntType>(type);
         Entity e = scene.createEntity();
         scene.addComponent(e, entity.pos);
         scene.addComponent(e, entity.type);
-        std::cout << "Entity: pos(" << entity.pos.x << ", " << entity.pos.y << "), type("
-                  << static_cast<int>(entity.type.type) << ")\n";
         scene.addComponent(e, typeSprites[type]);
     }
 }
 
-void ReadSocket::handleConnectAccept(Scene &, Socket &socket,
-    rtype_protocol::Packet const &packet, std::size_t len)
+void ReadSocket::handleConnectAccept(Scene &, Socket &socket, rtype_protocol::Packet const &packet,
+                                     std::size_t len)
 {
     if (len < 2)
         return;
@@ -98,8 +92,8 @@ void ReadSocket::handleConnectAccept(Scene &, Socket &socket,
     socket.playerId = packet[1];
 }
 
-void ReadSocket::handleConnectReject(Scene &scene, Socket &,
-    rtype_protocol::Packet const &packet, std::size_t len)
+void ReadSocket::handleConnectReject(Scene &scene, Socket &, rtype_protocol::Packet const &packet,
+                                     std::size_t len)
 {
     if (len < 2)
         return;
@@ -109,7 +103,7 @@ void ReadSocket::handleConnectReject(Scene &scene, Socket &,
 }
 
 void ReadSocket::handlePlayerLeft(Scene &scene, Socket &socket,
-    rtype_protocol::Packet const &packet, std::size_t len)
+                                  rtype_protocol::Packet const &packet, std::size_t len)
 {
     if (len < 2)
         return;
@@ -120,16 +114,16 @@ void ReadSocket::handlePlayerLeft(Scene &scene, Socket &socket,
     }
 }
 
-void ReadSocket::handleGameStarted(Scene &, Socket &socket,
-    rtype_protocol::Packet const &packet, std::size_t len)
+void ReadSocket::handleGameStarted(Scene &, Socket &socket, rtype_protocol::Packet const &packet,
+                                   std::size_t len)
 {
     if (len < 5)
         return;
     socket.tick = rtype_protocol::readValue<uint32_t>(&packet[1]);
 }
 
-void ReadSocket::handleSnapshot(Scene &, Socket &,
-    rtype_protocol::Packet const &packet, std::size_t len)
+void ReadSocket::handleSnapshot(Scene &, Socket &, rtype_protocol::Packet const &packet,
+                                std::size_t len)
 {
     if (len < rtype_protocol::SNAPSHOT_HEADER_SIZE)
         return;
@@ -147,8 +141,8 @@ void ReadSocket::handleSnapshot(Scene &, Socket &,
         _snapshotParts.emplace_back(packet, len);
 }
 
-void ReadSocket::handleDelta(Scene &, Socket &socket,
-    rtype_protocol::Packet const &packet, std::size_t len)
+void ReadSocket::handleDelta(Scene &, Socket &socket, rtype_protocol::Packet const &packet,
+                             std::size_t len)
 {
     if (len < 5)
         return;
@@ -165,16 +159,15 @@ void ReadSocket::handlePacket(Scene &scene, Socket &socket, rtype_protocol::Pack
         return;
 
     auto dispatch = [&](uint8_t packetType) {
-        static const std::unordered_map<uint8_t, void (ReadSocket::*)(Scene &, Socket &,
-            rtype_protocol::Packet const &, std::size_t)> handlers =
-        {
-            {rtype_protocol::CONNECT_ACCEPT, &ReadSocket::handleConnectAccept},
-            {rtype_protocol::CONNECT_REJECT, &ReadSocket::handleConnectReject},
-            {rtype_protocol::PLAYER_LEFT, &ReadSocket::handlePlayerLeft},
-            {rtype_protocol::GAME_STARTED, &ReadSocket::handleGameStarted},
-            {rtype_protocol::SNAPSHOT, &ReadSocket::handleSnapshot},
-            {rtype_protocol::DELTA, &ReadSocket::handleDelta}
-        };
+        static const std::unordered_map<uint8_t, void (ReadSocket::*)(
+                                                     Scene &, Socket &,
+                                                     rtype_protocol::Packet const &, std::size_t)>
+            handlers = {{rtype_protocol::CONNECT_ACCEPT, &ReadSocket::handleConnectAccept},
+                        {rtype_protocol::CONNECT_REJECT, &ReadSocket::handleConnectReject},
+                        {rtype_protocol::PLAYER_LEFT, &ReadSocket::handlePlayerLeft},
+                        {rtype_protocol::GAME_STARTED, &ReadSocket::handleGameStarted},
+                        {rtype_protocol::SNAPSHOT, &ReadSocket::handleSnapshot},
+                        {rtype_protocol::DELTA, &ReadSocket::handleDelta}};
 
         auto it = handlers.find(packetType);
         if (it != handlers.end())
