@@ -6,7 +6,7 @@
 */
 
 #include "server.hpp"
-#include <cctype>
+#include <asio.hpp>
 #include <charconv>
 #include <cstring>
 #include <exception>
@@ -25,23 +25,11 @@ static std::optional<uint16_t> parsePort(const char *arg)
     return static_cast<uint16_t>(port);
 }
 
-static std::optional<std::string> parseIp(const char *arg)
+static bool isValidIp(const char *arg)
 {
-    int segments = 0;
-    const char *ptr = arg;
-
-    while (*ptr) {
-        if (*ptr == '.') {
-            segments++;
-        } else if (!std::isdigit(*ptr)) {
-            return std::nullopt;
-        }
-        ptr++;
-    }
-    if (segments != 3) {
-        return std::nullopt;
-    }
-    return std::string(arg);
+    asio::error_code error;
+    asio::ip::make_address_v4(arg, error);
+    return !error;
 }
 
 static int check_args(int argc, char **argv, std::string &ip, uint16_t &port)
@@ -59,8 +47,7 @@ static int check_args(int argc, char **argv, std::string &ip, uint16_t &port)
         port = *parsedPort;
     }
     if (argc == 3) {
-        auto parsedIp = parseIp(argv[1]);
-        if (!parsedIp.has_value()) {
+        if (!isValidIp(argv[1])) {
             std::cerr << "Invalid ip: " << argv[1] << std::endl;
             return 84;
         }
@@ -69,7 +56,7 @@ static int check_args(int argc, char **argv, std::string &ip, uint16_t &port)
             std::cerr << "Invalid port: " << argv[2] << std::endl;
             return 84;
         }
-        ip = *parsedIp;
+        ip = argv[1];
         port = *parsedPort;
     }
     return 0;
@@ -78,7 +65,7 @@ static int check_args(int argc, char **argv, std::string &ip, uint16_t &port)
 int main(int argc, char **argv)
 {
     uint16_t port = rtype_protocol::DEFAULT_PORT;
-    std::string ip = rtype_protocol::DEFAULT_ADDRESS;
+    std::string ip = "0.0.0.0";
 
     if (check_args(argc, argv, ip, port) == 84)
         return 84;
