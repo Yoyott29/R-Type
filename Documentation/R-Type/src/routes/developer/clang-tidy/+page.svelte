@@ -11,7 +11,7 @@ if(ENABLE_CLANG_TIDY)
     find_program(CLANG_TIDY_EXE NAMES clang-tidy)
 
     if(CLANG_TIDY_EXE)
-        set_target_properties(\${PROJECT_NAME} PROPERTIES
+        set_target_properties(\${PROJECT_NAME} r-type_server PROPERTIES
             CXX_CLANG_TIDY
                 "\${CLANG_TIDY_EXE};--config-file=\${CMAKE_SOURCE_DIR}/Norms/.clang-tidy"
         )
@@ -78,7 +78,7 @@ int other = compute(); // NOLINT(bugprone-narrowing-conversions)`;
 
 <h2 class="mt-9 text-lg font-semibold">How it is plugged into CMake</h2>
 <p class="mt-3 max-w-[100ch] leading-7">
-	CMake sets the {@render c('CXX_CLANG_TIDY')} property on the client target, so clang-tidy runs on each
+	CMake sets the {@render c('CXX_CLANG_TIDY')} property on the client and server targets, so clang-tidy runs on each
 	source file right after it is compiled. Only the project files are analyzed, not raylib.
 </p>
 {@render code(cmakeExample)}

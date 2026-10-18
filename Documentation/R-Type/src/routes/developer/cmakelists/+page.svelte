@@ -144,7 +144,7 @@ cmake --build build`;
 
 <h2 class="mt-9 text-lg font-semibold">6. clang-tidy</h2>
 <p class="mt-3 max-w-[100ch] leading-7">
-	The end of the file attaches clang-tidy to the client target. See the
+	The end of the file attaches clang-tidy to the client and server targets. See the
 	<a href="/developer/clang-tidy" class="text-[#ff8a3d] hover:underline">clang-tidy</a> page.
 </p>
 
