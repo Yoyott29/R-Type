@@ -20,7 +20,7 @@ namespace rtype_protocol
 {
 using Packet = std::array<uint8_t, 1024>; // taille max d'un paquet UDP
 
-constexpr uint8_t PROTOCOL_VERSION = 1;
+constexpr uint8_t PROTOCOL_VERSION = 3;
 constexpr uint8_t MAX_PLAYERS = 4;
 constexpr uint16_t DEFAULT_PORT = 4242;
 constexpr const char *DEFAULT_ADDRESS = "127.0.0.1";
@@ -104,10 +104,22 @@ struct SnapshotHeader {
 struct EntitySnapshot {
     Position pos;
     Type type;
+    uint8_t playerId;
+    uint8_t variant;
+    float width;
+    float height;
+    uint8_t shape;
+    int8_t drawOrder;
+    uint8_t color[4];
 };
 
 constexpr std::size_t INPUT_SIZE = 1 + 4 + 1 + 4;
 constexpr std::size_t SNAPSHOT_HEADER_SIZE = 1 + 4 + 2;
-constexpr std::size_t ENTITY_SIZE = 4 + 4 + 1;
+constexpr std::size_t ENTITY_SIZE = 4 + 4 + 1 + 1 + 1 + 4 + 4 + 1 + 1 + 4;
+constexpr uint8_t NO_PLAYER = 0xFF;
+constexpr uint8_t DEFAULT_VARIANT = 0;
+constexpr uint8_t ENEMY_VARIANT_2 = 1;
+constexpr uint8_t BOX_SHAPE = 0;
+constexpr uint8_t CIRCLE_SHAPE = 1;
 
 } // namespace rtype_protocol

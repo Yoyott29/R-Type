@@ -12,11 +12,24 @@
 #include <ctime>
 
 Game::Game(PrefabsManager &prefabs)
-    : _spawnTimer(0.0f), _waveTimer(0.0f), _enemyCount(0), _waveDelay(2.0f), _waveY(0.0f),
-      _prefabs(prefabs)
+    : _spawnTimer(0.0f), _spaceSpawnTimer(0.0f), _waveTimer(0.0f), _enemyCount(0),
+      _waveType(1), _waveDelay(0.0f), _waveY(0.0f), _prefabs(prefabs)
 {
     srand(static_cast<unsigned int>(time(nullptr)));
-    _waveDelay = static_cast<float>(2 + rand() % 4);
+    _waveDelay = static_cast<float>(rand() % 10) * 0.1f + 0.5f;
+}
+
+Entity Game::SpawnSpace(Scene &scene)
+{
+    if (_spaceSpawnTimer < 0.5f) {
+        _spaceSpawnTimer += FIXED_DELTA_TIME;
+        return static_cast<Entity>(NULL_INDEX);
+    }
+
+    Entity space = _prefabs.InstantiatePrefab("Star", scene);
+    scene.getComponent<Position>(space).y = static_cast<float>(rand() % 1080);
+    _spaceSpawnTimer = 0.0f;
+    return space;
 }
 
 Entity Game::SpawnEnemy(Scene &scene)
@@ -27,14 +40,16 @@ Entity Game::SpawnEnemy(Scene &scene)
             return static_cast<Entity>(NULL_INDEX);
 
         _enemyCount = 5 + rand() % 6;
-        _waveY = static_cast<float>(rand() % 1081);
+        _waveType = 1 + rand() % 2;
+        _waveY = static_cast<float>(rand() % 1080);
         _waveTimer = 0.0f;
         _spawnTimer = 0.3f;
     }
 
     _spawnTimer += FIXED_DELTA_TIME;
-    if (_spawnTimer >= 0.3f) {
-        Entity enemy = _prefabs.InstantiatePrefab("Enemy", scene);
+    if (_spawnTimer >= 0.2f) {
+        Entity enemy =
+            _prefabs.InstantiatePrefab(_waveType == 2 ? "Enemy2" : "Enemy", scene);
         _spawnTimer = 0.0f;
         _enemyCount--;
         scene.getComponent<Position>(enemy).y = _waveY;

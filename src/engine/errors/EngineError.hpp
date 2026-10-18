@@ -10,6 +10,17 @@
 #include <stdexcept>
 #include <string>
 
+class FileNotFound : public std::exception
+{
+  public:
+    FileNotFound(const std::string &message) : errorMessage("File not found: " + message) {}
+
+    const char *what() const noexcept override { return errorMessage.c_str(); }
+
+  private:
+    std::string errorMessage;
+};
+
 class UnknownComponentType : public std::exception
 {
   public:
