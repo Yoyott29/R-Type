@@ -17,10 +17,18 @@
 #include "Velocity.hpp"
 #include "rtype_protocol.hpp"
 #include <algorithm>
+#include <csignal>
 #include <iostream>
 #include <optional>
 #include <string>
 #include <thread>
+
+namespace
+{
+std::atomic<bool> stopRequested{false};
+
+void requestStop(int) { stopRequested = true; }
+} // namespace
 
 namespace rtype_server
 {
@@ -144,24 +152,24 @@ void GameLoop::run()
 {
     TickTimeManager &ticks = _scene.getResource<TickTimeManager>();
     ticks.start();
+    std::signal(SIGINT, requestStop);
+    std::signal(SIGTERM, requestStop);
 
-    std::thread inputThread([this]() {
-        std::string input;
-        while (_running && std::getline(std::cin, input)) {
-            if (input == "exit")
-                break;
-        }
-        _network.stop();
-    });
-
-    while (_running) {
+    while (_running && !stopRequested) {
         ticks.advance();
         std::this_thread::sleep_until(ticks.getNextTickTime());
         for (float &cooldown : _shootCooldowns)
             cooldown = std::max(0.0f, cooldown - FIXED_DELTA_TIME);
 
+        std::vector<uint8_t> connected = _network.getConnectedPlayerIds();
+        for (Entity entity : _entities)
+            if (_scene.getComponent<Type>(entity).type == EntType::PLAYER &&
+                std::find(connected.begin(), connected.end(),
+                          _scene.getComponent<PlayerId>(entity).value) == connected.end())
+                _scene.queueDestroy(entity);
+
         // "spawn": any newly connected player gets a position
-        for (uint8_t id : _network.getConnectedPlayerIds()) {
+        for (uint8_t id : connected) {
             bool alreadySpawned = false;
             for (Entity entity : _entities) {
                 if (_scene.isEntityAlive(entity) &&
@@ -191,7 +199,7 @@ void GameLoop::run()
             _entities.end());
         _network.sendSnapshot(ticks.getCurrentTick(), buildSnapshot());
     }
-    inputThread.join();
+    _network.stop();
 }
 
 void GameLoop::executeInput(uint8_t playerId, uint8_t input, std::uint64_t)
