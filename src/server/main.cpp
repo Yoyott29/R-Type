@@ -65,7 +65,7 @@ static int check_args(int argc, char **argv, std::string &ip, uint16_t &port)
 int main(int argc, char **argv)
 {
     uint16_t port = rtype_protocol::DEFAULT_PORT;
-    std::string ip = "0.0.0.0";
+    std::string ip = rtype_protocol::DEFAULT_ADDRESS;
 
     if (check_args(argc, argv, ip, port) == 84)
         return 84;
