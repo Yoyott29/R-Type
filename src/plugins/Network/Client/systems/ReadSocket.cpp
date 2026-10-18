@@ -97,6 +97,8 @@ void ReadSocket::handleConnectAccept(Scene &, Socket &socket, rtype_protocol::Pa
     socket.connected = true;
     socket.playerId = packet[1];
     _lastSnapshotReceived = std::chrono::steady_clock::now();
+    std::cout << "Connected to " << socket.serverAddress << ":" << socket.serverPort
+              << " as player " << static_cast<int>(socket.playerId) << "\n";
 }
 
 void ReadSocket::handleConnectReject(Scene &scene, Socket &, rtype_protocol::Packet const &packet,
