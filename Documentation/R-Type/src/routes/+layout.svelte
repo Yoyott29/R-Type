@@ -13,7 +13,10 @@
 	});
 
 	const userSections = [
-		{ title: 'Introduction'},
+		{ title: 'Introduction' },
+		{ title: 'Playing R-Type' },
+		{ title: 'Using the Engine' },
+		{ title: 'Reference' },
 	];
 
 	const developerSections = [
@@ -27,9 +30,14 @@
 	];
 
 	const userPages = [
-
 		{ title: 'About', path: '/user/about', section: 0 },
 		{ title: 'Getting Started', path: '/user/getting-started', section: 0 },
+		{ title: 'Controls', path: '/user/controls', section: 1 },
+		{ title: 'Gameplay', path: '/user/gameplay', section: 1 },
+		{ title: 'Multiplayer', path: '/user/multiplayer', section: 1 },
+		{ title: 'Engine Functions', path: '/user/engine-functions', section: 2 },
+		{ title: 'Assets and Sprites', path: '/user/assets', section: 2 },
+		{ title: 'Troubleshooting', path: '/user/troubleshooting', section: 3 },
 	];
 
 	const developerPages = [
