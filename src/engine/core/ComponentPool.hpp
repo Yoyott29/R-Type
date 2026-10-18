@@ -16,7 +16,8 @@
 #include <utility>
 #include <vector>
 
-template <typename Component> struct AllowMultiple : std::false_type {};
+template <typename Component> struct AllowMultiple : std::false_type {
+};
 
 template <typename Component> class ComponentPool : public IComponentPool
 {

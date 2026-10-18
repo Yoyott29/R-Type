@@ -12,7 +12,8 @@
 #include <unordered_map>
 #include <utility>
 
-// Une ressource est une donnee unique par scene (renderer, input, temps...), sans entite proprietaire
+// Une ressource est une donnee unique par scene (renderer, input, temps...), sans entite
+// proprietaire
 class IResourceHolder
 {
   public:

@@ -7,7 +7,8 @@
 
 #include "MovementSystem.hpp"
 
-void MovementSystem::update(Scene &scene) {
+void MovementSystem::update(Scene &scene)
+{
     for (Entity entity : _entities) {
         Position &position = scene.getComponent<Position>(entity);
         Velocity const &velocity = scene.getComponent<Velocity>(entity);

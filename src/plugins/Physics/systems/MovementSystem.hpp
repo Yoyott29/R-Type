@@ -6,10 +6,10 @@
 */
 
 #pragma once
+#include "Position.hpp"
 #include "Scene.hpp"
 #include "System.hpp"
 #include "Time.hpp"
-#include "Position.hpp"
 #include "Velocity.hpp"
 
 class MovementSystem : public System

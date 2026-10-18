@@ -22,6 +22,7 @@ struct Script {
     bool isRunning = false;
 };
 
-template <> struct AllowMultiple<Script> : std::true_type {};
+template <> struct AllowMultiple<Script> : std::true_type {
+};
 
 #endif /* !SCRIPT_HPP_ */

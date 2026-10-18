@@ -21,9 +21,9 @@ void RenderSystem::update(Scene &scene)
     renderer.beginFrame();
     renderer.clearBackground();
     for (Entity entity : entities) {
-            Position const &position = scene.getComponent<Position>(entity);
-            Sprite const &sprite = scene.getComponent<Sprite>(entity);
-            renderer.drawSprite(position, sprite);
+        Position const &position = scene.getComponent<Position>(entity);
+        Sprite const &sprite = scene.getComponent<Sprite>(entity);
+        renderer.drawSprite(position, sprite);
     }
     renderer.endFrame();
 }

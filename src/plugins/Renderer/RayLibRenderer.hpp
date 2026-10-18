@@ -19,7 +19,6 @@
 #define WINDOW_HEIGHT 1080
 #define WINDOW_TITLE "R-Type"
 
-
 class RayLibRenderer : public IPlugin, public IRenderer
 {
   public:

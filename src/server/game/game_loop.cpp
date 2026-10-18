@@ -94,9 +94,7 @@ void GameLoop::initializePrebabs()
                      .addComponent(Type{EntType::ENEMY})
                      .addComponent(Position{2000.0f, 0.0f})
                      .addComponent(Velocity{-500.0f, 0.0f})
-                     .addComponent(Sprite{BoxShape{40.0f, 60.0f},
-                                          ColorRGBA{228, 48, 0, 255},
-                                          0,
+                     .addComponent(Sprite{BoxShape{40.0f, 60.0f}, ColorRGBA{228, 48, 0, 255}, 0,
                                           "Assets/Bydos1.png"})
                      .addComponent(Collider2D{BoxShape{40.0f, 60.0f}, nullptr})
                      .addComponent(Script{Timing::ON_UPDATE,
@@ -111,9 +109,7 @@ void GameLoop::initializePrebabs()
                       .addComponent(Type{EntType::ENEMY})
                       .addComponent(Position{2000.0f, 0.0f})
                       .addComponent(Velocity{-500.0f, 0.0f})
-                      .addComponent(Sprite{BoxShape{40.0f, 60.0f},
-                                           ColorRGBA{228, 48, 0, 255},
-                                           0,
+                      .addComponent(Sprite{BoxShape{40.0f, 60.0f}, ColorRGBA{228, 48, 0, 255}, 0,
                                            "Assets/Bydos2.png"})
                       .addComponent(Collider2D{BoxShape{40.0f, 60.0f}, nullptr})
                       .addComponent(Script{Timing::ON_UPDATE,

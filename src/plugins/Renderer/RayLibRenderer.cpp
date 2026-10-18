@@ -35,7 +35,7 @@ void RayLibRenderer::build(Application &app)
     renderRequirements.set(app._scene.getComponentType<Sprite>());
     app._scene.setSystemComponentSet<RenderSystem>(renderRequirements);
 
-    //raylib inits
+    // raylib inits
     SetTraceLogLevel(LOG_NONE);
     InitWindow(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE);
     if (!IsWindowReady())
@@ -46,18 +46,12 @@ void RayLibRenderer::build(Application &app)
 void RayLibRenderer::cleanup(Application &app)
 {
     (void)app;
- //   Cleanup logic for the RayLibRenderer plugin
+    //   Cleanup logic for the RayLibRenderer plugin
 }
 
-void RayLibRenderer::beginFrame()
-{
-    BeginDrawing();
-}
+void RayLibRenderer::beginFrame() { BeginDrawing(); }
 
-void RayLibRenderer::clearBackground()
-{
-    ClearBackground({0, 0, 0, 255});
-}
+void RayLibRenderer::clearBackground() { ClearBackground({0, 0, 0, 255}); }
 
 void RayLibRenderer::drawSprite(Position const &position, Sprite const &sprite)
 {
@@ -74,8 +68,8 @@ void RayLibRenderer::drawSprite(Position const &position, Sprite const &sprite)
         Texture2D &texture = getTexture(sprite.texturePath);
         Rectangle source = {0.0f, 0.0f, static_cast<float>(texture.width),
                             static_cast<float>(texture.height)};
-        Rectangle destination = {position.x - size.x / 2.0f, position.y - size.y / 2.0f,
-                                 size.x, size.y};
+        Rectangle destination = {position.x - size.x / 2.0f, position.y - size.y / 2.0f, size.x,
+                                 size.y};
         DrawTexturePro(texture, source, destination, {0.0f, 0.0f}, 0.0f, WHITE);
         return;
     }
@@ -93,10 +87,7 @@ void RayLibRenderer::drawSprite(Position const &position, Sprite const &sprite)
                 {sprite.color.r, sprite.color.g, sprite.color.b, sprite.color.a});
 }
 
-void RayLibRenderer::endFrame()
-{
-    EndDrawing();
-}
+void RayLibRenderer::endFrame() { EndDrawing(); }
 
 Texture2D &RayLibRenderer::getTexture(std::string const &path)
 {

@@ -25,7 +25,7 @@ std::string texturePathForType(EntType type, uint8_t variant)
     switch (type) {
     case EntType::ENEMY:
         return variant == rtype_protocol::ENEMY_VARIANT_2 ? "Assets/Bydos2.png"
-                                                         : "Assets/Bydos1.png";
+                                                          : "Assets/Bydos1.png";
     case EntType::BULLET:
         return "Assets/Bullet.png";
     default:
@@ -104,10 +104,10 @@ void ReadSocket::createEntities(Scene &scene, rtype_protocol::Packet const &pack
             entity.color[color] = packet[i + 21 + color];
 
         ColorRGBA color{entity.color[0], entity.color[1], entity.color[2], entity.color[3]};
-        Sprite sprite = entity.shape == rtype_protocol::CIRCLE_SHAPE
-                            ? Sprite{CircleShape{entity.width}, color, entity.drawOrder}
-                            : Sprite{BoxShape{entity.width, entity.height}, color,
-                                     entity.drawOrder};
+        Sprite sprite =
+            entity.shape == rtype_protocol::CIRCLE_SHAPE
+                ? Sprite{CircleShape{entity.width}, color, entity.drawOrder}
+                : Sprite{BoxShape{entity.width, entity.height}, color, entity.drawOrder};
         sprite.texturePath = texturePathForType(entity.type.type, entity.variant);
         if (entity.type.type == EntType::PLAYER) {
             if (playerId >= rtype_protocol::MAX_PLAYERS)

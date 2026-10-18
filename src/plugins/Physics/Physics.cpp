@@ -8,16 +8,16 @@
 #include "Physics.hpp"
 #include "Collider2D.hpp"
 #include "Collider2DSystem.hpp"
+#include "MovementSystem.hpp"
 #include "Position.hpp"
 #include "Velocity.hpp"
-#include "MovementSystem.hpp"
 
 void Physics::build(Application &app)
 {
     // register the Velocity and Collider2D components
     app._scene.registerComponent<Velocity>();
     app._scene.registerComponent<Collider2D>();
-    
+
     // setup the MovementSystem and its component requirements
     auto movementSystem = app._scene.registerSystem<MovementSystem>(FixedUpdate);
     ComponentSet movementRequirements;
