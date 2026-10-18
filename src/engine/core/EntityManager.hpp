@@ -18,6 +18,7 @@ class EntityManager
 
     Entity createEntity();
     void destroyEntity(Entity entity);
+    void putAllEntitysInDestroyQueue(std::queue<Entity> &destroyQueue);
     void setupComponentSet(Entity entity, ComponentSet componentSet);
     ComponentSet getComponentSet(Entity entity) const;
     bool isAlive(Entity entity) const;

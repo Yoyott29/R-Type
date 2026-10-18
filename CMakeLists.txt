@@ -1,5 +1,9 @@
 cmake_minimum_required(VERSION 3.28)
 
+if(NOT CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE Release)
+endif()
+
 project(r-type_client LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
@@ -21,7 +25,7 @@ include(CPM.cmake)
 CPMAddPackage(
     NAME raylib
     GITHUB_REPOSITORY raysan5/raylib
-    GIT_TAG 5.5
+    GIT_TAG 6.0
     OPTIONS
         "BUILD_EXAMPLES OFF"
         "BUILD_SHARED_LIBS OFF"
@@ -29,6 +33,28 @@ CPMAddPackage(
 
 if(TARGET raylib)
     target_compile_options(raylib PRIVATE -w)
+endif()
+
+find_package(Threads REQUIRED)
+
+# Standalone Asio is header-only and has no CMakeLists, so we wrap it in an
+# interface target
+CPMAddPackage(
+    NAME asio
+    VERSION 1.30.2
+    GITHUB_REPOSITORY chriskohlhoff/asio
+    GIT_TAG asio-1-30-2
+    DOWNLOAD_ONLY YES
+)
+
+if(asio_ADDED)
+    add_library(asio INTERFACE)
+    target_include_directories(asio SYSTEM INTERFACE "${asio_SOURCE_DIR}/asio/include")
+    target_compile_definitions(asio INTERFACE ASIO_STANDALONE ASIO_NO_DEPRECATED)
+    target_link_libraries(asio INTERFACE Threads::Threads)
+    if(WIN32)
+        target_link_libraries(asio INTERFACE ws2_32 wsock32)
+    endif()
 endif()
 
 # ============================================================
@@ -40,30 +66,53 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 add_executable(${PROJECT_NAME}
     src/main.cpp
     src/game-rtype/Application.cpp
-    src/game-rtype/RaylibRenderer.cpp
+    src/game-rtype/Game.cpp
     src/engine/core/Scene.cpp
+    src/engine/core/TickTimeManager.cpp
     src/engine/core/EntityManager.cpp
     src/engine/systems/SystemManager.cpp
-    src/systems/InputSystem.cpp
-    src/systems/RenderSystem.cpp
-    src/systems/MovementSystem.cpp
+    src/engine/prefabs/Prefab.cpp
+    src/engine/prefabs/PrefabsManager.cpp
+    src/systems/ScriptSystem.cpp
+    src/plugins/Renderer/RayLibRenderer.cpp
+    src/plugins/Renderer/systems/RenderSystem.cpp
+    src/plugins/Physics/Physics.cpp
+    src/plugins/Physics/systems/Collider2DSystem.cpp
+    src/plugins/Physics/systems/MovementSystem.cpp
+    src/plugins/Network/Client/Client.cpp
+    src/plugins/Network/Client/systems/ReadSocket.cpp
+    src/plugins/Network/Client/systems/SendInput.cpp
+    src/plugins/Network/Client/systems/TryConnect.cpp
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE
     src/game-rtype
     src/engine/core
     src/engine/errors
-    src/engine/renderer
+    src/engine/prefabs
     src/engine/systems
+    src/engine/prefabs
     src/systems
     src/components
+    src/common/
+    src/ressources
+    src/plugins/Renderer
+    src/plugins/Renderer/components
+    src/plugins/Renderer/ressources
+    src/plugins/Renderer/systems
+    src/plugins/Physics
+    src/plugins/Physics/components
+    src/plugins/Physics/systems
+    src/plugins/Network/components
+    src/plugins/Network/Client
+    src/plugins/Network/Client/systems
 )
 
 target_include_directories(${PROJECT_NAME} SYSTEM PRIVATE
     "${raylib_SOURCE_DIR}/src"
 )
 
-target_link_libraries(${PROJECT_NAME} PRIVATE raylib)
+target_link_libraries(${PROJECT_NAME} PRIVATE raylib asio)
 
 # ============================================================
 # Compiler warnings
@@ -75,12 +124,59 @@ else()
     target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra)
 endif()
 
-target_include_directories(r-type_client SYSTEM PRIVATE
+# ============================================================
+# Server
+# ============================================================
+
+add_executable(r-type_server
+    src/server/main.cpp
+    src/server/server.cpp
+    src/server/network/network.cpp
+    src/server/game/game_loop.cpp
+    src/server/input/input_queue.cpp
+    src/game-rtype/Game.cpp
+    src/systems/ScriptSystem.cpp
+    src/plugins/Physics/systems/Collider2DSystem.cpp
+    src/plugins/Physics/systems/MovementSystem.cpp
+    src/engine/core/Scene.cpp
+    src/engine/core/TickTimeManager.cpp
+    src/engine/core/EntityManager.cpp
+    src/engine/systems/SystemManager.cpp
+    src/engine/prefabs/Prefab.cpp
+    src/engine/prefabs/PrefabsManager.cpp
+)
+
+target_include_directories(r-type_server PRIVATE
+    src
+    src/game-rtype
+    src/common
+    src/server
+    src/engine/core
+    src/engine/errors
+    src/engine/prefabs
+    src/engine/systems
+    src/systems
+    src/components
+    src/plugins/Physics/components
+    src/plugins/Physics/systems
+    src/plugins/Renderer/components
+    src/plugins/Renderer/systems
+)
+
+target_include_directories(r-type_server SYSTEM PRIVATE
     "${raylib_SOURCE_DIR}/src"
 )
 
+target_link_libraries(r-type_server PRIVATE asio)
+
+if(MSVC)
+    target_compile_options(r-type_server PRIVATE /W4)
+else()
+    target_compile_options(r-type_server PRIVATE -Wall -Wextra)
+endif()
+
 # ============================================================
-# clang-tidy (runs on every compile of the client)
+# clang-tidy (runs on every compile of the client and server)
 # ============================================================
 
 option(ENABLE_CLANG_TIDY "Run clang-tidy during the build" ON)
@@ -90,7 +186,7 @@ if(ENABLE_CLANG_TIDY)
 
     if(CLANG_TIDY_EXE)
         message(STATUS "clang-tidy enabled: ${CLANG_TIDY_EXE}")
-        set_target_properties(${PROJECT_NAME} PROPERTIES
+        set_target_properties(${PROJECT_NAME} r-type_server PROPERTIES
             CXX_CLANG_TIDY
                 "${CLANG_TIDY_EXE};--config-file=${CMAKE_SOURCE_DIR}/Norms/.clang-tidy"
         )

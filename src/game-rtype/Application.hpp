@@ -6,27 +6,33 @@
 */
 
 #pragma once
-#include "IRenderer.hpp"
-#include "InputSystem.hpp"
-#include "MovementSystem.hpp"
-#include "RenderSystem.hpp"
+#include "Game.hpp"
+#include "PrefabsManager.hpp"
 #include "Scene.hpp"
+#include <cstdint>
 #include <memory>
+#include <string>
+#include <vector>
+
+class IPlugin;
 
 class Application
 {
   public:
-    Application();
+    Application(const std::string &serverAddress, uint16_t serverPort);
     void run();
-
-  private:
-    void setupComponents();
-    void setupEntities();
-    void setupSystems();
+    void addPlugin(const std::shared_ptr<IPlugin> &plugin);
 
     Scene _scene;
-    std::unique_ptr<IRenderer> _renderer;
-    std::shared_ptr<InputSystem> _inputSystem;
-    std::shared_ptr<MovementSystem> _movementSystem;
-    std::shared_ptr<RenderSystem> _renderSystem;
+
+  private:
+    std::vector<std::shared_ptr<IPlugin>> _plugins;
+};
+
+class IPlugin
+{
+  public:
+    virtual ~IPlugin() = default;
+    virtual void build(Application &app) = 0;
+    virtual void cleanup(Application &app) = 0;
 };

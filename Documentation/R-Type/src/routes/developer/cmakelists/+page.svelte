@@ -144,15 +144,17 @@ cmake --build build`;
 
 <h2 class="mt-9 text-lg font-semibold">6. clang-tidy</h2>
 <p class="mt-3 max-w-[100ch] leading-7">
-	The end of the file attaches clang-tidy to the client target. See the
+	The end of the file attaches clang-tidy to the client and server targets. See the
 	<a href="/developer/clang-tidy" class="text-[#ff8a3d] hover:underline">clang-tidy</a> page.
 </p>
 
 <h2 class="mt-9 text-lg font-semibold">Good to know</h2>
 <ul class="mt-3 max-w-[100ch] list-disc space-y-1.5 pl-5 leading-7">
 	<li>
-		Only the client is defined. There is no server target, so
-		{@render c('r-type_server')} is not built.
+		The server has its own target, {@render c('r-type_server')}, at the end of the file. It links
+		Asio instead of raylib and reuses the engine sources. Its include directories also list the
+		Physics and Renderer plugin folders, so the server can use {@render c('MovementSystem')},
+		{@render c('Velocity')} and {@render c('Sprite')}.
 	</li>
 	<li>
 		If you change {@render c('CMakeLists.txt')}, running {@render c('cmake --build build')} again is

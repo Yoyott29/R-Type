@@ -8,10 +8,10 @@
 #pragma once
 #include "ComponentPool.hpp"
 #include "EngineError.hpp"
-#include <iostream>
 #include <memory>
 #include <typeindex>
 #include <unordered_map>
+#include <vector>
 
 class ComponentManager
 {
@@ -21,8 +21,7 @@ class ComponentManager
         const std::type_index key(typeid(Component));
 
         if (_componentTypes.find(key) != _componentTypes.end()) {
-            std::cout << "Component type registered more than once" << "\n";
-            return;
+            throw MultipleComponentDefinition(typeid(Component).name());
         }
 
         _componentTypes.insert({key, _nextComponentType});
@@ -45,14 +44,29 @@ class ComponentManager
         getComponentPool<Component>().insertComponent(entity, component);
     }
 
-    template <typename Component> void removeComponent(Entity entity, Component component)
+    template <typename Component> void removeComponent(Entity entity)
     {
-        getComponentPool<Component>()->removeComponent(entity);
+        getComponentPool<Component>().removeComponent(entity);
     }
 
     template <typename Component> Component &getComponent(Entity entity)
     {
         return getComponentPool<Component>().getComponent(entity);
+    }
+
+    template <typename Component> Component &getComponent(Entity entity, std::size_t index)
+    {
+        return getComponentPool<Component>().getComponent(entity, index);
+    }
+
+    template <typename Component> std::size_t getComponentCount(Entity entity)
+    {
+        return getComponentPool<Component>().count(entity);
+    }
+
+    template <typename Component> std::vector<Component *> getComponents(Entity entity)
+    {
+        return getComponentPool<Component>().getComponents(entity);
     }
 
     void entityDestroyed(Entity entity)
