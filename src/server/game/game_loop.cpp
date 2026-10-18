@@ -108,7 +108,7 @@ void GameLoop::initializePrebabs()
         Prefab()
             .addComponent(Type{EntType::BULLET})
             .addComponent(Position{0.0f, 0.0f})
-            .addComponent(Velocity{500.0f, 0.0f})
+            .addComponent(Velocity{550.0f, 0.0f})
             .addComponent(Sprite{BoxShape{10.0f, 5.0f}, ColorRGBA{0, 0, 228, 255}})
             .addComponent(Collider2D{BoxShape{10.0f, 5.0f},
                                      [this](Entity bullet, Entity other) {
@@ -140,7 +140,7 @@ void GameLoop::initializePlayer(uint8_t id)
     _scene.addComponent(playerEntity, PlayerId{id});
     _scene.addComponent(playerEntity, Position{100.0f, 200.0f + 100.0f * id});
     _scene.addComponent(playerEntity, Velocity{0.0f, 0.0f});
-    _scene.addComponent(playerEntity, Sprite{BoxShape{50.0f, 35.0f}, ColorRGBA{0, 228, 48, 255}});
+    _scene.addComponent(playerEntity, Sprite{BoxShape{50.0f, 35.0f}, _playerColors[id]});
     _scene.addComponent(playerEntity, Collider2D{BoxShape{50.0f, 35.0f}, [this](Entity a, Entity) {
                                                      const uint8_t playerId =
                                                          _scene.getComponent<PlayerId>(a).value;
@@ -161,8 +161,11 @@ std::vector<rtype_protocol::EntitySnapshot> GameLoop::buildSnapshot()
     for (Entity entity : _entities) {
         if (!_scene.isEntityAlive(entity))
             continue;
+        uint8_t playerId = rtype_protocol::NO_PLAYER;
+        if (_scene.getComponent<Type>(entity).type == EntType::PLAYER)
+            playerId = _scene.getComponent<PlayerId>(entity).value;
         snapshot.push_back(
-            {_scene.getComponent<Position>(entity), _scene.getComponent<Type>(entity)});
+            {_scene.getComponent<Position>(entity), _scene.getComponent<Type>(entity), playerId});
     }
     return snapshot;
 }

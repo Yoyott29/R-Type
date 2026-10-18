@@ -104,10 +104,12 @@ struct SnapshotHeader {
 struct EntitySnapshot {
     Position pos;
     Type type;
+    uint8_t playerId;
 };
 
 constexpr std::size_t INPUT_SIZE = 1 + 4 + 1 + 4;
 constexpr std::size_t SNAPSHOT_HEADER_SIZE = 1 + 4 + 2;
-constexpr std::size_t ENTITY_SIZE = 4 + 4 + 1;
+constexpr std::size_t ENTITY_SIZE = 4 + 4 + 1 + 1;
+constexpr uint8_t NO_PLAYER = 0xFF;
 
 } // namespace rtype_protocol

@@ -180,7 +180,8 @@ void Network::dropTimedOutPlayers()
     }
 }
 
-// [SNAPSHOT, tick (u32), count (u16), entites...], entite = [x (f32), y (f32), type (u8)]
+// [SNAPSHOT, tick (u32), count (u16), entites...],
+// entite = [x (f32), y (f32), type (u8), player id (u8)]
 // Garde le snapshot dans l'historique puis le decoupe en plusieurs paquets du meme tick
 // si les entites ne tiennent pas dans un Packet
 void Network::sendSnapshot(uint32_t tick,
@@ -215,6 +216,7 @@ void Network::sendSnapshot(uint32_t tick,
             rtype_protocol::writeValue<float>(&packet[size], entity.pos.x);
             rtype_protocol::writeValue<float>(&packet[size + 4], entity.pos.y);
             packet[size + 8] = static_cast<uint8_t>(entity.type.type);
+            packet[size + 9] = entity.playerId;
             size += entitySize;
         }
         for (auto const &endpoint : targets) {

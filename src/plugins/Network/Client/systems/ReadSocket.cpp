@@ -21,6 +21,13 @@ std::array<Sprite, 5> const typeSprites = {{
     {BoxShape{60.0f, 60.0f}, ColorRGBA{130, 130, 130, 255}, 0}, // OBSTACLE
     {BoxShape{5.0f, 5.0f}, ColorRGBA{255, 255, 255, 255}, -1}   // OTHER
 }};
+
+std::array<ColorRGBA, rtype_protocol::MAX_PLAYERS> const playerColors = {{
+    {0, 228, 48, 255},
+    {0, 0, 228, 255},
+    {228, 0, 0, 255},
+    {228, 228, 0, 255},
+}};
 } // namespace
 
 void ReadSocket::update(Scene &scene)
@@ -76,16 +83,24 @@ void ReadSocket::createEntities(Scene &scene, rtype_protocol::Packet const &pack
          i += rtype_protocol::ENTITY_SIZE) {
         rtype_protocol::EntitySnapshot entity;
         uint8_t type = packet[i + 8];
+        uint8_t playerId = packet[i + 9];
         entity.pos.x = rtype_protocol::readValue<float>(&packet[i]);
         entity.pos.y = rtype_protocol::readValue<float>(&packet[i + 4]);
         if (type >= typeSprites.size()) {
             throw UnknownComponentType(std::to_string(type));
         }
         entity.type.type = static_cast<EntType>(type);
+        entity.playerId = playerId;
+        Sprite sprite = typeSprites[type];
+        if (entity.type.type == EntType::PLAYER) {
+            if (playerId >= playerColors.size())
+                throw UnknownComponentType("invalid player id: " + std::to_string(playerId));
+            sprite.color = playerColors[playerId];
+        }
         Entity e = scene.createEntity();
         scene.addComponent(e, entity.pos);
         scene.addComponent(e, entity.type);
-        scene.addComponent(e, typeSprites[type]);
+        scene.addComponent(e, sprite);
     }
 }
 
