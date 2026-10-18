@@ -6,11 +6,13 @@
 */
 
 #include "server.hpp"
+#include <asio.hpp>
 #include <charconv>
 #include <cstring>
 #include <exception>
 #include <iostream>
 #include <optional>
+#include <string>
 
 static std::optional<uint16_t> parsePort(const char *arg)
 {
@@ -23,27 +25,53 @@ static std::optional<uint16_t> parsePort(const char *arg)
     return static_cast<uint16_t>(port);
 }
 
-int main(int argc, char **argv)
+static bool isValidIp(const char *arg)
 {
-    uint16_t port = rtype_protocol::DEFAULT_PORT;
+    asio::error_code error;
+    asio::ip::make_address_v4(arg, error);
+    return !error;
+}
 
-    if (argc > 2) {
-        std::cerr << "Usage: " << argv[0] << " [port]" << std::endl;
+static int check_args(int argc, char **argv, std::string &ip, uint16_t &port)
+{
+    if (argc > 3) {
+        std::cerr << "Usage: " << argv[0] << " [ip] [port]" << std::endl;
         return 84;
     }
     if (argc == 2) {
-        std::optional<uint16_t> parsed = parsePort(argv[1]);
-        if (!parsed) {
-            std::cerr << "Invalid port: " << argv[1] << std::endl
-                      << "Usage: " << argv[0] << " [port]" << std::endl;
+        auto parsedPort = parsePort(argv[1]);
+        if (!parsedPort.has_value()) {
+            std::cerr << "Invalid port: " << argv[1] << std::endl;
             return 84;
         }
-        port = *parsed;
+        port = *parsedPort;
     }
+    if (argc == 3) {
+        if (!isValidIp(argv[1])) {
+            std::cerr << "Invalid ip: " << argv[1] << std::endl;
+            return 84;
+        }
+        auto parsedPort = parsePort(argv[2]);
+        if (!parsedPort.has_value()) {
+            std::cerr << "Invalid port: " << argv[2] << std::endl;
+            return 84;
+        }
+        ip = argv[1];
+        port = *parsedPort;
+    }
+    return 0;
+}
+
+int main(int argc, char **argv)
+{
+    uint16_t port = rtype_protocol::DEFAULT_PORT;
+    std::string ip = "0.0.0.0";
+
+    if (check_args(argc, argv, ip, port) == 84)
+        return 84;
     try {
-        rtype_server::Server server(port);
+        rtype_server::Server server(port, ip);
         server.run();
-        
     } catch (std::exception const &error) {
         std::cerr << "Fatal error: " << error.what() << std::endl;
         return 84;

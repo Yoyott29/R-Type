@@ -13,9 +13,16 @@
 #include <array>
 #include <iostream>
 
+Client::Client(const std::string &serverAddress, uint16_t serverPort)
+    : _serverAddress(serverAddress), _serverPort(serverPort)
+{
+}
+
 void Client::build(Application &app)
 {
-    app._scene.addResource<Socket>();
+    Socket &socket = app._scene.addResource<Socket>();
+    socket.serverAddress = _serverAddress;
+    socket.serverPort = _serverPort;
 
     // Connect and read the server's packets before the frame's logic runs
     app._scene.registerSystem<TryConnect>(PrepUpdate);

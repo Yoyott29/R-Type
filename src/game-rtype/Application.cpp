@@ -25,7 +25,7 @@
 #define WINDOW_TITLE "R-Type"
 #define MAX_FRAME_TIME 0.25f
 
-Application::Application()
+Application::Application(const std::string &serverAddress, uint16_t serverPort)
 {
     // setup basic components and resources
     _scene.registerComponent<Position>();
@@ -36,7 +36,7 @@ Application::Application()
     // setup plugins
     addPlugin(std::make_shared<RayLibRenderer>());
     addPlugin(std::make_shared<Physics>());
-    addPlugin(std::make_shared<Client>());
+    addPlugin(std::make_shared<Client>(serverAddress, serverPort));
 
     // setup gameplay systems, after the Physics systems in the fixed update
     _scene.registerSystem<ScriptSystem>(FixedUpdate);

@@ -13,11 +13,13 @@
 
 namespace rtype_server
 {
-Network::Network(uint16_t port, std::map<uint8_t, InputQueue> &inputs, std::atomic<bool> &running)
-    : _endpoint(asio::ip::udp::v4(), port), _socketAsio(_ioContext, _endpoint),
+Network::Network(uint16_t port, std::string ip, std::map<uint8_t, InputQueue> &inputs,
+                 std::atomic<bool> &running)
+    : _endpoint(asio::ip::make_address(ip), port), _socketAsio(_ioContext, _endpoint),
       _playerInputs(inputs), _running(running)
 {
     _running = true;
+    std::cout << "Server listening on ip : " << ip << std::endl;
     std::cout << "Server listening on port : " << port << std::endl;
 }
 
@@ -73,9 +75,10 @@ void Network::stop()
     wakeUp.open(asio::ip::udp::v4(), error);
     if (error)
         return;
-    wakeUp.send_to(asio::buffer("", 1),
-                   asio::ip::udp::endpoint(asio::ip::address_v4::loopback(), _endpoint.port()), 0,
-                   error);
+    asio::ip::address target = _endpoint.address();
+    if (target.is_unspecified())
+        target = asio::ip::address_v4::loopback();
+    wakeUp.send_to(asio::buffer("", 1), asio::ip::udp::endpoint(target, _endpoint.port()), 0, error);
 }
 
 void Network::handleConnect(const rtype_protocol::Packet &packet, std::size_t size,
