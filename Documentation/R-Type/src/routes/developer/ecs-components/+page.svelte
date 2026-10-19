@@ -9,7 +9,7 @@ struct PlayerId {
     std::uint8_t value;
 };
 
-enum EntType { PLAYER, ENEMY, BULLET, OBSTACLE };
+enum EntType { PLAYER, ENEMY, BULLET, OBSTACLE, OTHER };
 struct Type {
     EntType type;
 };
@@ -44,6 +44,8 @@ struct Collider2D {
 struct Sprite {
     std::variant<BoxShape, CircleShape> shape;
     ColorRGBA color;
+    int drawOrder = 0;          // smaller is drawn first
+    std::string texturePath;    // empty: drawn as a plain shape
 };`;
 
 	const registerExample = `// client: Application constructor, then each plugin's build()
@@ -169,7 +171,7 @@ Entity enemy = _prefabs.InstantiatePrefab("Enemy", _scene); // createEntity() + 
 	<li>{@render c('PlayerId')}: the id of the player that owns the entity (server only).</li>
 	<li>
 		{@render c('Type')}: what the entity is ({@render c('PLAYER')}, {@render c('ENEMY')},
-		{@render c('BULLET')} or {@render c('OBSTACLE')}).
+		{@render c('BULLET')}, {@render c('OBSTACLE')} or {@render c('OTHER')}, used for the stars).
 	</li>
 	<li>
 		{@render c('Script')}: a function run by the {@render c('ScriptSystem')}, at launch or on every
@@ -181,8 +183,10 @@ Entity enemy = _prefabs.InstantiatePrefab("Enemy", _scene); // createEntity() + 
 		{@render c('CircleShape')}) and the function called when it touches another entity.
 	</li>
 	<li>
-		{@render c('Sprite')}: how the entity is drawn. For now it is a coloured
-		{@render c('BoxShape')} or {@render c('CircleShape')}.
+		{@render c('Sprite')}: how the entity is drawn. A {@render c('BoxShape')} or
+		{@render c('CircleShape')} gives its size, a texture (when {@render c('texturePath')} is set) is
+		stretched to that size, otherwise the shape is filled with {@render c('color')}.
+		{@render c('drawOrder')} decides what is drawn on top.
 	</li>
 </ul>
 <p class="mt-3 max-w-[100ch] leading-7">

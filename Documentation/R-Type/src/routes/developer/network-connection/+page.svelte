@@ -1,6 +1,6 @@
 <script>
 	const handshakeExample = `client (TryConnect)                     server (Network::handleConnect)
-  [CONNECT, 1] ───────────────────────>  size is 2? version is 1?
+  [CONNECT, 3] ───────────────────────>  size is 2? version is 3?
                                          address not eliminated? a free id?
                <───────────────────────  [CONNECT_ACCEPT, playerId]   (0 to 3)
                <───────────────────────  [CONNECT_REJECT, reason]     (otherwise)
@@ -100,5 +100,13 @@ client   Connection rejected by the server: server full`;
 	</li>
 	<li>
 		There is no lobby yet: a player joins the game that is already running.
+	</li>
+	<li>
+		The server listens on {@render c('127.0.0.1')} by default, so only clients on the same machine
+		can join. Start it with {@render c('./r-type_server 0.0.0.0 4242')} to accept other machines.
+	</li>
+	<li>
+		A client that does not get any answer (no server running) keeps printing
+		{@render c('Connecting to ...')} every second: it never gives up by itself.
 	</li>
 </ul>

@@ -6,6 +6,7 @@
   PostUpdate        RenderSystem (draws the entities)`;
 
 	const socketExample = `struct Socket {
+    asio::io_context io_context;      // owns the socket
     asio::ip::udp::socket socket;     // connected to the server, non-blocking
     std::string serverAddress;        // from the command line
     uint16_t serverPort;

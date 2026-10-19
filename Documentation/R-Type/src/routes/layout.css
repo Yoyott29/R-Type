@@ -38,9 +38,15 @@
 }
 
 * {
-  scrollbar-width: none;
-  -ms-overflow-style: none;
+	scrollbar-width: thin;
+	scrollbar-color: #1e2b26 transparent;
 }
-*::-webkit-scrollbar {
-  display: none;
+
+:focus-visible {
+	outline: 2px solid #ff8a3d;
+	outline-offset: 2px;
+}
+
+main:focus {
+	outline: none;
 }

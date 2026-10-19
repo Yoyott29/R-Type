@@ -89,12 +89,14 @@ PostUpdate       RenderSystem (draws the frame)`;
 };`;
 
 	const errorsExample = `std::exception
-├── UnknownComponentType          unknown entity type in a snapshot (ReadSocket)
+├── FileNotFound                  a texture file cannot be loaded (RayLibRenderer)
+├── UnknownComponentType          unknown entity type, or player id above 3, in a snapshot (ReadSocket)
 ├── MultipleComponentDefinition   component registered twice, or added twice to an entity
 └── std::runtime_error
     └── EngineError               also thrown directly ("Could not open the window")
         ├── MissingComponentError        the entity does not have the requested component
-        ├── EntityLimitError             more than MAX_ENTITIES entities alive
+        ├── EntityLimitError             more than MAX_ENTITIES entities alive, or an out of
+        │                                range id given to the EntityManager
         ├── RegisterError                the same system registered twice
         ├── ComponentNotRegisteredError  component or system not registered
         ├── ResourceNotFoundError        the resource was never added to the scene
@@ -164,8 +166,8 @@ PostUpdate       RenderSystem (draws the frame)`;
 	</li>
 	<li>
 		<strong class="font-semibold">No entity is created</strong> at startup: {@render c('ReadSocket')}
-		creates them from the server snapshots, with a temporary {@render c('Sprite')} chosen from their
-		{@render c('Type')}.
+		creates them from the server snapshots. Their {@render c('Sprite')} gets the shape, size, color and
+		draw order of the snapshot, and a texture chosen from the type, the variant and the player id.
 	</li>
 </ul>
 
@@ -189,8 +191,9 @@ PostUpdate       RenderSystem (draws the frame)`;
 </ol>
 {@render code(stepsExample)}
 <p class="mt-3 max-w-[100ch] leading-7">
-	A fixed step keeps the simulation identical on every machine, which is why the server uses the same
-	{@render c('FIXED_DELTA_TIME')}. The frame time is clamped to {@render c('MAX_FRAME_TIME')} (0.25 s)
+	A fixed step makes the simulation independent of the CPU speed and the frame rate, which is why the
+	server uses the same {@render c('FIXED_DELTA_TIME')}. On the client the {@render c('FixedUpdate')}
+	systems have no entity to move today, since the server runs the game. The frame time is clamped to {@render c('MAX_FRAME_TIME')} (0.25 s)
 	so that a long freeze, such as dragging the window, does not trigger hundreds of steps at once.
 </p>
 <p class="mt-3 max-w-[100ch] leading-7">
@@ -211,17 +214,25 @@ PostUpdate       RenderSystem (draws the frame)`;
 <p class="mt-3 max-w-[100ch] leading-7">
 	{@render c('RayLibRenderer')} ({@render c('src/plugins/Renderer/RayLibRenderer.hpp')}) is both an
 	{@render c('IPlugin')} and an {@render c('IRenderer')}. Its {@render c('build')} (not its
-	constructor) hides raylib logs, opens the window and sets a 60 FPS target; its destructor closes the
-	window. {@render c('drawSprite')} draws a {@render c('BoxShape')} as a rectangle centred on the
-	position and a {@render c('CircleShape')} as a circle. Changing the graphics library only requires a
-	new plugin implementing {@render c('IRenderer')}.
+	constructor) hides raylib logs, opens the window and sets a 60 FPS target; its destructor unloads
+	the textures and closes the window. {@render c('drawSprite')} draws the texture of the sprite,
+	loaded once and cached ({@render c('getTexture')}), stretched to the shape and centred on the
+	position. Without a texture it draws a {@render c('BoxShape')} as a rectangle and a
+	{@render c('CircleShape')} as a circle.
+</p>
+<p class="mt-3 max-w-[100ch] leading-7">
+	Changing the graphics library needs a new plugin implementing {@render c('IRenderer')}, but also a
+	new {@render c('GetInput')} (it calls raylib to read the keyboard). The server also includes the
+	Renderer {@render c('Sprite')} component and the raylib headers, see
+	<a href="/developer/architecture" class="text-[#ff8a3d] hover:underline">Architecture</a>.
 </p>
 
 <h2 class="mt-9 text-lg font-semibold">Errors</h2>
 <p class="mt-3 max-w-[100ch] leading-7">
 	The engine reports misuse with exceptions defined in
 	{@render c('src/engine/errors/EngineError.hpp')}. Most inherit from {@render c('EngineError')}, but
-	{@render c('UnknownComponentType')} and {@render c('MultipleComponentDefinition')} inherit directly
+	{@render c('FileNotFound')}, {@render c('UnknownComponentType')} and
+	{@render c('MultipleComponentDefinition')} inherit directly
 	from {@render c('std::exception')}, so catching {@render c('EngineError')} misses them. All of them
 	end up in the {@render c('catch')} of {@render c('main')} if nothing catches them before:
 </p>
@@ -257,7 +268,17 @@ PostUpdate       RenderSystem (draws the frame)`;
 		The server runs its own loop ({@render c('GameLoop::run')} in
 		{@render c('src/server/game/game_loop.cpp')}): it sleeps until the next tick, runs
 		{@render c('FixedUpdate')} once, then flushes the destroy queue. Off-screen handling lives there:
-		enemy and bullet scripts call {@render c('Game::DestroyOffScreenEntity')}, and the player's script
+		enemy, bullet and star scripts call {@render c('Game::DestroyOffScreenEntity')}, enemies also
+		move with {@render c('Game::makeSinusoidalMovement')}, {@render c('Game::SpawnEnemy')} and
+		{@render c('Game::SpawnSpace')} create the waves and the stars, and the player's script
 		calls {@render c('Game::maintainPlayerOnScreen')} ({@render c('src/game-rtype/Game.cpp')}).
+	</li>
+	<li>
+		The server times its ticks with the {@render c('TickTimeManager')} resource
+		({@render c('src/engine/core/TickTimeManager.cpp')}). {@render c('getNextTickTime')} is computed
+		from the start time as {@render c('start + (tick + 1) * FIXED_TICK_DURATION')}, where
+		{@render c('FIXED_TICK_DURATION')} is exactly 1/60 s ({@render c('src/engine/core/Time.hpp')}). Since
+		it never adds up small durations, no rounding error builds up, and a slow tick is caught up by
+		the next ones. Each loop calls {@render c('advance()')} then {@render c('sleep_until(getNextTickTime())')}.
 	</li>
 </ul>

@@ -10,12 +10,12 @@ SendInput     [INPUT, tick, keys, ...] ─────> network thread: InputQue
 S or Down    -> DOWN     0x02
 Q or Left    -> LEFT     0x04
 D or Right   -> RIGHT    0x08
-Space        -> CHARGE   0x10   (fire)`;
+Space        -> CHARGE   0x10   (not used by the server yet)`;
 
 	const executeExample = `velocity = (0, 0)
-UP     -> dy -= 300        DOWN  -> dy += 300
-LEFT   -> dx -= 300        RIGHT -> dx += 300
-CHARGE and cooldown over -> PlayerBullet at (x + 50, y), speed 500 px/s, cooldown = 0.5 s`;
+UP     -> dy -= 400        DOWN  -> dy += 400       (PLAYER_SPEED)
+LEFT   -> dx -= 400        RIGHT -> dx += 400
+cooldown over -> PlayerBullet at (x + 50, y), speed 550 px/s, cooldown = 0.2 s`;
 </script>
 
 <svelte:head>
@@ -66,7 +66,8 @@ CHARGE and cooldown over -> PlayerBullet at (x + 50, y), speed 500 px/s, cooldow
 <p class="mt-3 max-w-[100ch] leading-7">
 	At each tick, the game loop pops one input per player and calls
 	{@render c('executeInput')}. It sets the {@render c('Velocity')} of the player entity, and fires
-	when {@render c('CHARGE')} is set and the cooldown of that player is over. Then the
+	whenever the cooldown of that player is over, whatever the keys: {@render c('CHARGE')} is not read,
+	so the ships fire on their own. Then the
 	{@render c('MovementSystem')} moves every entity, and a script keeps the player inside the
 	1920 x 1080 screen.
 </p>
@@ -84,4 +85,8 @@ CHARGE and cooldown over -> PlayerBullet at (x + 50, y), speed 500 px/s, cooldow
 		shoot at the same time.
 	</li>
 	<li>An {@render c('INPUT')} that is not exactly 10 bytes is ignored.</li>
+	<li>
+		The tick of an {@render c('INPUT')} is the client's own frame counter, it has nothing to do with
+		the server tick.
+	</li>
 </ul>

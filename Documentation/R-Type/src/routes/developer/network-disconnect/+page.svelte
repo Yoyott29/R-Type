@@ -6,7 +6,7 @@ the server stops or dies       -> no snapshot for 2 s: the client stops`;
 
 	const leaveExample = `Network::disconnectPlayer(id)
   address -> _eliminatedPlayers       (it cannot come back)
-  [PLAYER_LEFT, id] -> every player, the one leaving included
+  [PLAYER_LEFT, id] -> every player, the one leaving included (it gets it twice)
   removed from _players and _lastSeen (the id is free again)
 
 next tick, game loop
@@ -79,11 +79,14 @@ no snapshot for 2 s         -> "Timeout: No snapshot received for 2 seconds, dis
 		dropped by the server. Raise {@render c('PLAYER_TIMEOUT')} if that is too strict.
 	</li>
 	<li>
-		A player is eliminated by any collision except with another player, so a bullet of another
-		player eliminates it too.
+		A player is only eliminated by an enemy. Bullets, stars and other players do not hurt it.
 	</li>
 	<li>
-		The client sends {@render c('DISCONNECT')} only when it closes normally. If it is killed, the
-		server notices with the timeout.
+		The client sends {@render c('DISCONNECT')} only when it closes normally. If it is killed or
+		crashes, the server notices with the timeout.
+	</li>
+	<li>
+		An eliminated player that starts its client again from the same address and port is rejected
+		with {@render c('SERVER_FULL')}. A new client process uses a new port, so it can join.
 	</li>
 </ul>

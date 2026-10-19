@@ -3,13 +3,7 @@
 	import { page as current } from '$app/state';
 	import { goto } from '$app/navigation';
 	import { docMode } from '$lib/mode.svelte.js';
-
-	let {
-		userSections = [],
-		developerSections = [],
-		userPages = [],
-		developerPages = []
-	} = $props();
+	import { userSections, developerSections, userPages, developerPages } from '$lib/pages.js';
 
 	const types = ['User', 'Developer'];
 
@@ -46,27 +40,31 @@
 	const pages = $derived(mode === 'User' ? userPages : developerPages);
 </script>
 
-<div
-	class="flex h-screen w-60 shrink-0 flex-col overflow-y-auto border-r border-[#1e2b26] bg-[#0a0e0c] py-7 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+<nav
+	aria-label="Documentation"
+	class="flex h-screen w-60 shrink-0 flex-col overflow-y-auto border-r border-[#1e2b26] bg-[#0a0e0c] py-7"
 >
 	<div class="mb-4 border-b border-[#1e2b26] px-6 pb-5 font-mono text-[13px] text-[#7f9189]">
-		<strong class="font-semibold text-[#d8e4de]">R-Type</strong> / Documentation
+		<a href="/" class="hover:text-[#d8e4de]"
+			><strong class="font-semibold text-[#d8e4de]">R-Type</strong> / Documentation</a
+		>
 	</div>
 
 	<div class="px-6 pb-2">
 		<div
 			class="relative grid grid-cols-2 rounded-md border border-[#1e2b26] bg-[#0d1210] p-0.5 font-mono text-xs"
-			role="tablist"
+			role="group"
+			aria-label="Documentation part"
 		>
 			<span
 				class="absolute inset-y-0.5 left-0.5 w-[calc(50%-2px)] rounded bg-[#ff8a3d]/15 transition-transform duration-200
 					{mode === 'Developer' ? 'translate-x-full' : 'translate-x-0'}"
+				aria-hidden="true"
 			></span>
 			{#each types as t (t)}
 				<button
 					type="button"
-					role="tab"
-					aria-selected={mode === t}
+					aria-pressed={mode === t}
 					onclick={() => switchMode(t)}
 					class="relative z-10 cursor-pointer py-1.5 text-center transition-colors
 						{mode === t ? 'text-[#ff8a3d]' : 'text-[#7f9189] hover:text-[#d8e4de]'}"
@@ -81,26 +79,30 @@
 		{@const sectionPages = pages.filter((p) => p.section === n)}
 
 		<div class="flex flex-col">
-			<h3 class="mt-5 px-6 py-1 font-mono text-lg font-bold text-[#d8e4de]">
+			<h2 class="mt-5 px-6 py-1 font-mono text-lg font-bold text-[#d8e4de]">
 				{section.title}
-			</h3>
+			</h2>
 
-			{#each sectionPages as p, j (p.title)}
-				{@const active = current.url.pathname === p.path}
-				<button
-					type="button"
-					onclick={() => goto(p.path)}
-					class="flex w-full cursor-pointer items-center justify-between border-l-2 px-6 py-[7px] text-left text-sm transition-colors
-						{active
-						? 'border-[#ff8a3d] bg-[#ff8a3d]/[0.06] text-[#ff8a3d]'
-						: 'border-transparent text-[#7f9189] hover:text-[#d8e4de]'}"
-				>
-					<span>{p.title}</span>
-					{#if active}
-						<span class="font-mono text-xs">{n + 1}.{j + 1}</span>
-					{/if}
-				</button>
-			{/each}
+			<ul>
+				{#each sectionPages as p, j (p.title)}
+					{@const active = current.url.pathname === p.path}
+					<li>
+						<a
+							href={p.path}
+							aria-current={active ? 'page' : undefined}
+							class="flex w-full items-center justify-between border-l-2 px-6 py-[7px] text-left text-sm transition-colors
+								{active
+								? 'border-[#ff8a3d] bg-[#ff8a3d]/[0.06] text-[#ff8a3d]'
+								: 'border-transparent text-[#7f9189] hover:text-[#d8e4de]'}"
+						>
+							<span>{p.title}</span>
+							{#if active}
+								<span class="font-mono text-xs" aria-hidden="true">{n + 1}.{j + 1}</span>
+							{/if}
+						</a>
+					</li>
+				{/each}
+			</ul>
 		</div>
 	{/each}
-</div>
+</nav>

@@ -5,10 +5,10 @@ client <──UDP── SNAPSHOT of the tick <───────────�
 	const sceneExample = `each tick
   timeouts           -> players silent for 2 s are dropped, their entity destroyed
   new player         -> createEntity + Type, PlayerId, Position, Velocity, Sprite, Collider2D, Script
-  input of a tick    -> sets the Velocity of the player, CHARGE shoots a PlayerBullet
-  FixedUpdate        -> MovementSystem, ScriptSystem (enemy spawner, off-screen), Collider2DSystem
+  input of a tick    -> sets the Velocity of the player, shoots a PlayerBullet if the cooldown is over
+  FixedUpdate        -> MovementSystem, ScriptSystem (enemy and star spawners, off-screen), Collider2DSystem
   flushDestroyQueue  -> entities destroyed during the tick are removed
-  buildSnapshot()    -> Position and Type of every player, enemy and bullet`;
+  buildSnapshot()    -> position, type and look of every player, enemy, bullet and star`;
 
 	const connectExample =`client                                server
   [CONNECT, version] ──────────────────>  known version and a free slot?
@@ -20,8 +20,8 @@ client <──UDP── SNAPSHOT of the tick <───────────�
 ./r-type_server 192.168.0.39 4444  # a given ip and port, to play from other machines
 ./r-type_client                    # connects to 127.0.0.1:4242`;
 
-	const sendExample = `# CONNECT with protocol version 1, prints the reply
-printf '\\x10\\x01' | nc -u -w1 127.0.0.1 4242 | od -An -tx1
+	const sendExample = `# CONNECT with protocol version 3, prints the reply
+printf '\\x10\\x03' | nc -u -w1 127.0.0.1 4242 | od -An -tx1
  90 00    → CONNECT_ACCEPT, you are player 0
 
 # an INPUT from an address that never sent CONNECT
@@ -104,8 +104,9 @@ Closing server`;
 
 <h2 class="mt-9 text-lg font-semibold">Snapshots</h2>
 <p class="mt-3 max-w-[100ch] leading-7">
-	{@render c('GameLoop::buildSnapshot')} reads the {@render c('Position')} and
-	{@render c('Type')} of every entity in {@render c('_entities')}.
+	{@render c('GameLoop::buildSnapshot')} reads the {@render c('Position')}, the
+	{@render c('Type')}, the {@render c('PlayerId')} and the {@render c('Sprite')} (size, shape, color,
+	draw order) of every entity in {@render c('_entities')}.
 	{@render c('Network::sendSnapshot')} keeps the last 64 snapshots in a history and sends the
 	entities of the tick to every player. If they do not fit in one 1024 bytes packet, they are split
 	into several packets with the same tick. The client shows the newest tick it received, see
@@ -126,15 +127,15 @@ Closing server`;
 <p class="mt-3 max-w-[100ch] leading-7">The server logs what happens:</p>
 {@render code(outputExample)}
 <p class="mt-3 max-w-[100ch] leading-7">
-	{@render c('tests/tests.sh')} runs about a hundred of these checks automatically, see
+	{@render c('tests/tests.sh')} runs 109 of these checks automatically, see
 	<a href="/developer/tests-sh" class="text-[#ff8a3d] hover:underline">How tests.sh works</a>.
 </p>
 
 <h2 class="mt-9 text-lg font-semibold">Good to know</h2>
 <ul class="mt-3 max-w-[100ch] list-disc space-y-1.5 pl-5 leading-7">
 	<li>
-		The client picks the sprite to draw from the {@render c('Type')} of each entity, so the
-		{@render c('Sprite')} of the server is never sent.
+		The size, shape, color and draw order of the server {@render c('Sprite')} are sent, but not its
+		texture path: the client picks the texture from the type, the variant and the player id.
 	</li>
 	<li>
 		The server and the clients have separate scenes, so their entity ids do not match. A network

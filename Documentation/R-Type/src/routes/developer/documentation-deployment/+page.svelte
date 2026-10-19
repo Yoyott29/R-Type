@@ -61,8 +61,8 @@
 <h2 class="mt-9 text-lg font-semibold">Where it runs</h2>
 <ul class="mt-3 max-w-[68ch] list-disc space-y-1.5 pl-5 leading-7">
 	<li>
-		{@render c('if')} skips the job on the original school repository, so only other copies of the
-		repository run the deploy.
+		{@render c('if')} skips the job on the Epitech repository, the copy that the mirror workflow
+		pushes to, so only the team repository deploys.
 	</li>
 	<li>{@render c('ubuntu-latest')} is a standard GitHub-hosted machine.</li>
 	<li>
@@ -101,7 +101,11 @@
 
 <h2 class="mt-9 text-lg font-semibold">Good to know</h2>
 <ul class="mt-3 max-w-[68ch] list-disc space-y-1.5 pl-5 leading-7">
-	<li>It only deploys from main, and always to production. There are no preview deployments.</li>
+	<li>
+		It only deploys from main, and always to production:
+		<a href="https://r-type-project-documentation.vercel.app" class="text-[#ff8a3d] hover:underline">r-type-project-documentation.vercel.app</a>.
+		There are no preview deployments, so changes on dev are not online until they are merged.
+	</li>
 	<li>If a secret is missing, the {@render c('vercel pull')} step fails and nothing is deployed.</li>
-	<li>You can not start it manually, because there is no {@render c('workflow_dispatch')} trigger.</li>
+	<li>You cannot start it manually, because there is no {@render c('workflow_dispatch')} trigger.</li>
 </ul>

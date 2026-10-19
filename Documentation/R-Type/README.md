@@ -1,42 +1,43 @@
-# sv
+# R-Type documentation site
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+The source of the R-Type documentation, online at <https://r-type-project-documentation.vercel.app>. It is a [SvelteKit](https://svelte.dev/docs/kit) site styled with Tailwind CSS.
 
-## Creating a project
+## Run it locally
 
-If you're seeing this, you've probably already done this step. Congrats!
-
-```sh
-# create a new project
-npx sv create my-app
-```
-
-To recreate this project with the same configuration:
+Requires Node.js 20 or newer. From this folder:
 
 ```sh
-# recreate this project
-npx sv@0.17.1 create --template minimal --no-types --install npm R-Type
+npm install
+npm run dev          # http://localhost:5173, reloads on save
+npm run build        # production build
+npm run preview      # serve the production build
 ```
 
-## Developing
+## Layout
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
-
-```sh
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
+```
+src/
+├── app.html                  # HTML shell (lang="en")
+├── lib/
+│   ├── pages.js              # sidebar sections and pages, also used by the sitemap
+│   ├── site.js               # public URL of the site
+│   └── components/           # Sidebar, RTypeLogo
+└── routes/
+    ├── +layout.svelte        # sidebar, skip link, main area
+    ├── +page.svelte          # home page
+    ├── user/<page>/          # user documentation
+    ├── developer/<page>/     # developer documentation
+    ├── sitemap.xml/          # generated sitemap
+    └── robots.txt/           # generated robots.txt
 ```
 
-## Building
+## Add a page
 
-To create a production version of your app:
+1. Create `src/routes/user/<name>/+page.svelte` or `src/routes/developer/<name>/+page.svelte`.
+2. Register it in `src/lib/pages.js` with its title, path and section.
 
-```sh
-npm run build
-```
+The page then shows in the sidebar and the sitemap. The full guide is the [How to add a page](https://r-type-project-documentation.vercel.app/developer/add-a-page) page.
 
-You can preview the production build with `npm run preview`.
+## Deployment
 
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+Every push to `main` that changes this folder deploys the site to Vercel production, through `.github/workflows/deploy.yml`. See [Deploy Documentation](https://r-type-project-documentation.vercel.app/developer/documentation-deployment).

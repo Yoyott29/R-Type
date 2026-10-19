@@ -1,17 +1,19 @@
 <script>
 	const serverExample = `each tick, after the systems ran
-  buildSnapshot()   -> Position + Type of every alive entity in _entities
-                       (players, enemies, bullets)
+  buildSnapshot()   -> one 25 byte record per alive entity in _entities
+                       (players, enemies, bullets, stars):
+                       position, type, player id, variant, size, shape,
+                       draw order and color
   sendSnapshot()    -> keeps it in _snapshotHistory[tick % 64]
-                    -> cuts it in packets of at most 113 entities, all with the same tick
+                    -> cuts it in packets of at most 40 entities, all with the same tick
                     -> sends every packet to every connected player`;
 
-	const splitExample = `(1024 - 7 header bytes) / 9 bytes per entity = 113 entities per packet
+	const splitExample = `(1024 - 7 header bytes) / 25 bytes per entity = 40 entities per packet
 
-250 entities at tick 42
-  [SNAPSHOT, 42, count 113, ...]
-  [SNAPSHOT, 42, count 113, ...]
-  [SNAPSHOT, 42, count  24, ...]`;
+100 entities at tick 42
+  [SNAPSHOT, 42, count 40, ...]
+  [SNAPSHOT, 42, count 40, ...]
+  [SNAPSHOT, 42, count 20, ...]`;
 
 	const clientExample = `each frame, ReadSocket::update
   read every datagram waiting on the socket
@@ -47,14 +49,19 @@
 
 <p class="max-w-[100ch] leading-7">
 	The server is the only one that runs the game. 60 times per second, it sends a
-	{@render c('SNAPSHOT')}: the position and the type of every entity. The client does not simulate
+	{@render c('SNAPSHOT')}: the position, the type and the look (size, shape, color, draw order) of
+	every entity. The exact byte layout is on
+	<a href="/developer/network-protocol" class="text-[#ff8a3d] hover:underline">How the protocol works</a>.
+	The client does not simulate
 	anything, it only draws the last snapshot it received.
 </p>
 
 <h2 class="mt-9 text-lg font-semibold">On the server</h2>
 <p class="mt-3 max-w-[100ch] leading-7">
 	{@render c('GameLoop::buildSnapshot')} goes through {@render c('_entities')}, the players,
-	enemies and bullets the game loop created. {@render c('Network::sendSnapshot')} copies the list
+	enemies, bullets and stars the game loop created. The variant is
+	{@render c('ENEMY_VARIANT_2')} when the sprite of an enemy is {@render c('Assets/Bydos2.png')}, and
+	the player id is {@render c('NO_PLAYER')} (0xFF) for anything but a player. {@render c('Network::sendSnapshot')} copies the list
 	of players under the mutex, then sends without holding it.
 </p>
 {@render code(serverExample)}
@@ -76,7 +83,9 @@
 {@render code(clientExample)}
 <p class="mt-3 max-w-[100ch] leading-7">
 	Each new entity gets a {@render c('Position')}, a {@render c('Type')} and a
-	{@render c('Sprite')} picked from its type. The tick of the snapshot is stored in
+	{@render c('Sprite')} built from the shape, size, color and draw order of the snapshot. The texture
+	is picked on the client: from the player id for a player, from the type and the variant for the
+	others (see {@render c('texturePathForType')} in {@render c('ReadSocket.cpp')}). The tick of the snapshot is stored in
 	{@render c('Socket::lastSnapshotTick')} and sent back in each {@render c('INPUT')}.
 </p>
 
@@ -92,7 +101,12 @@
 		{@render c('DELTA')} packets, it is not read yet.
 	</li>
 	<li>
-		A snapshot with an unknown entity type throws {@render c('UnknownComponentType')} on the
-		client.
+		A snapshot with an unknown entity type (above 4), or a player with an id above 3, throws
+		{@render c('UnknownComponentType')} on the client. Nothing catches it before
+		{@render c('main')}, so the client stops with {@render c('Fatal error: ...')}.
+	</li>
+	<li>
+		The server never sends an empty snapshot: with no entity, no packet is sent. In practice the
+		stars are always there.
 	</li>
 </ul>
