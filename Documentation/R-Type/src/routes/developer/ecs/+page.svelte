@@ -14,7 +14,7 @@
 ├── systems/           # shared systems: ScriptSystem
 ├── ressources/        # shared resources: AppAlive
 ├── common/            # keyboard codes and the network protocol
-├── game-rtype/        # client Application (setup and game loop) and Game (enemy waves)
+├── game-rtype/        # client Application (setup and game loop) and Game (waves, stars, movement)
 └── server/            # server GameLoop, network thread and input queues`;
 
 	const sceneExample = `class Scene {
@@ -24,6 +24,7 @@
     void destroyEntity(Entity entity);
     void queueDestroy(Entity entity);
     void flushDestroyQueue();
+    void putAllEntitysInDestroyQueue();
     void runSchedule(ScheduleLabel label);
 
     template <typename Component> void registerComponent();
@@ -198,7 +199,10 @@ Entity enemy = prefabs.InstantiatePrefab("Enemy", scene); // new entity with a c
 <p class="mt-3 max-w-[100ch] leading-7">
 	A {@render c('Prefab')} is a list of components to add to a new entity. The
 	{@render c('PrefabsManager')} stores prefabs by name and creates an entity from one in a single
-	call. The server uses it for enemies and player bullets.
+	call. The server defines four prefabs in {@render c('GameLoop::initializePrebabs')}:
+	{@render c('Enemy')}, {@render c('Enemy2')}, {@render c('PlayerBullet')} and {@render c('Star')}.
+	It creates 20 stars at startup, then the two spawner scripts create enemies and stars. Asking for a
+	name that was never created gives an empty entity, without any error.
 </p>
 {@render code(prefabExample)}
 

@@ -148,7 +148,8 @@ _scene.setSystemComponentSet<OffScreenSystem>(offScreenRequirements);`;
 	With the entities of the game (a client entity is created from a snapshot with
 	{@render c('Position')} + {@render c('Type')} + {@render c('Sprite')}; the server player also has
 	{@render c('Velocity')}, {@render c('Collider2D')}, {@render c('Script')} and
-	{@render c('PlayerId')}; the server spawner only has a {@render c('Script')}):
+	{@render c('PlayerId')}; the two server spawners, one for enemies and one for stars, only have a
+	{@render c('Script')}):
 </p>
 {@render code(tableExample)}
 <p class="mt-3 max-w-[100ch] leading-7">
@@ -249,15 +250,17 @@ _scene.setSystemComponentSet<OffScreenSystem>(offScreenRequirements);`;
 	<li>
 		<strong class="font-semibold">RenderSystem</strong> ({@render c('src/plugins/Renderer/systems')},
 		{@render c('PostUpdate')}, {@render c('Position')} + {@render c('Sprite')}): gets the renderer
-		from the {@render c('std::reference_wrapper<IRenderer>')} resource and draws each entity as a
-		box or a circle at its position, so it never calls raylib directly.
+		from the {@render c('std::reference_wrapper<IRenderer>')} resource, sorts the entities by
+		{@render c('Sprite::drawOrder')} (a stable sort, smallest first) and draws each one at its
+		position, so it never calls raylib directly. This sort keeps the stars (draw order -1) behind
+		everything else.
 	</li>
 </ul>
 <p class="mt-3 max-w-[100ch] leading-7">
 	The server registers only {@render c('MovementSystem')}, {@render c('ScriptSystem')} and
 	{@render c('Collider2DSystem')}, all in {@render c('FixedUpdate')}, in the
 	{@render c('GameLoop')} constructor. The player's velocity is not set by a system: the server's
-	{@render c('GameLoop::executeInput')} sets it to {@render c('PLAYER_SPEED')} (300 pixels per second)
+	{@render c('GameLoop::executeInput')} sets it to {@render c('PLAYER_SPEED')} (400 pixels per second)
 	in the direction of the received input bits.
 </p>
 
