@@ -14,16 +14,8 @@
 class ScriptSystem : public System
 {
   public:
-    void Start(Scene &scene);
+    void Start(Scene &scene) override;
     void update(Scene &scene);
-};
-
-class IGringoEntityScript
-{
-  public:
-    virtual ~IGringoEntityScript() = default;
-    virtual void onStart(Scene &scene, Entity &entity) = 0;
-    virtual void onUpdate(Scene &scene, Entity &entity) = 0;
 };
 
 #endif /* !SCRIPTSYSTEM_HPP_ */

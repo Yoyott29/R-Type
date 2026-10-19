@@ -35,6 +35,7 @@ void SystemManager::runSchedule(ScheduleLabel label, Scene &scene)
         // Copy so a system can remove itself (or another) during update
         auto const systems = it->second;
         for (auto const &system : systems) {
+            system->runStart(scene);
             system->update(scene);
         }
     }

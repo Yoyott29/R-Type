@@ -67,7 +67,6 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 add_executable(${PROJECT_NAME}
     src/main.cpp
     src/engine/game-rtype/Application.cpp
-    src/scripts/Game.cpp
     src/engine/engine/core/Scene.cpp
     src/engine/engine/core/TickTimeManager.cpp
     src/engine/engine/core/EntityManager.cpp
@@ -142,7 +141,6 @@ add_executable(r-type_server
     src/engine/server/network/network.cpp
     src/engine/server/game/game_loop.cpp
     src/engine/server/input/input_queue.cpp
-    src/scripts/Game.cpp
     src/engine/systems/ScriptSystem.cpp
     src/engine/plugins/Physics/systems/Collider2DSystem.cpp
     src/engine/plugins/Physics/systems/MovementSystem.cpp

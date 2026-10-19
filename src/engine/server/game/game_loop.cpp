@@ -6,10 +6,15 @@
 */
 
 #include "game/game_loop.hpp"
+#include "DestroyOffScreenScript.hpp"
+#include "EnemyScript.hpp"
+#include "EnemySpawnerScript.hpp"
 #include "MovementSystem.hpp"
 #include "PlayerId.hpp"
+#include "PlayerScript.hpp"
 #include "Position.hpp"
 
+#include "SpaceSpawnerScript.hpp"
 #include "Sprite.hpp"
 #include "TickTimeManager.hpp"
 #include "Time.hpp"
@@ -33,7 +38,7 @@ void requestStop(int) { stopRequested = true; }
 namespace rtype_server
 {
 GameLoop::GameLoop(Network &network, std::atomic<bool> &running)
-    : _network(network), _running(running), _game(_prefabs)
+    : _network(network), _running(running)
 {
     _scene.registerComponent<Position>();
     _scene.registerComponent<Velocity>();
@@ -68,17 +73,10 @@ GameLoop::GameLoop(Network &network, std::atomic<bool> &running)
 void GameLoop::initializeEntities()
 {
     Entity spawner = _scene.createEntity();
-    _scene.addComponent(spawner, Script{Timing::ON_UPDATE, [this](Scene &scene, Entity &) {
-                                            Entity enemy = _game.SpawnEnemy(scene);
-                                            if (enemy != static_cast<Entity>(NULL_INDEX))
-                                                _entities.push_back(enemy);
-                                        }});
+    _scene.addComponent(spawner, Script{std::make_shared<EnemySpawnerScript>(_prefabs, _entities)});
     Entity spaceSwpawner = _scene.createEntity();
-    _scene.addComponent(spaceSwpawner, Script{Timing::ON_UPDATE, [this](Scene &scene, Entity &) {
-                                                  Entity space = _game.SpawnSpace(scene);
-                                                  if (space != static_cast<Entity>(NULL_INDEX))
-                                                      _entities.push_back(space);
-                                              }});
+    _scene.addComponent(spaceSwpawner,
+                        Script{std::make_shared<SpaceSpawnerScript>(_prefabs, _entities)});
     for (int i = 0; i < 20; i++) {
         Entity star = _prefabs.InstantiatePrefab("Star", _scene);
         _scene.getComponent<Position>(star).x = static_cast<float>(rand() % 1920);
@@ -97,13 +95,8 @@ void GameLoop::initializePrebabs()
                      .addComponent(Sprite{BoxShape{40.0f, 60.0f}, ColorRGBA{228, 48, 0, 255}, 0,
                                           "Assets/Bydos1.png"})
                      .addComponent(Collider2D{BoxShape{40.0f, 60.0f}, nullptr})
-                     .addComponent(Script{Timing::ON_UPDATE,
-                                          [this](Scene &scene, Entity &enemy) {
-                                              _game.DestroyOffScreenEntity(scene, enemy);
-                                          }})
-                     .addComponent(Script{Timing::ON_UPDATE, [this](Scene &scene, Entity &enemy) {
-                                              _game.makeSinusoidalMovement(scene, enemy);
-                                          }}));
+                     .addComponent(Script{std::make_shared<DestroyOffScreenScript>()})
+                     .addComponent(Script{std::make_shared<EnemyScript>()}));
     _prefabs.createPrefab(
         "Enemy2", Prefab()
                       .addComponent(Type{EntType::ENEMY})
@@ -112,41 +105,31 @@ void GameLoop::initializePrebabs()
                       .addComponent(Sprite{BoxShape{40.0f, 60.0f}, ColorRGBA{228, 48, 0, 255}, 0,
                                            "Assets/Bydos2.png"})
                       .addComponent(Collider2D{BoxShape{40.0f, 60.0f}, nullptr})
-                      .addComponent(Script{Timing::ON_UPDATE,
-                                           [this](Scene &scene, Entity &enemy) {
-                                               _game.DestroyOffScreenEntity(scene, enemy);
-                                           }})
-                      .addComponent(Script{Timing::ON_UPDATE, [this](Scene &scene, Entity &enemy) {
-                                               _game.makeSinusoidalMovement(scene, enemy);
-                                           }}));
+                      .addComponent(Script{std::make_shared<DestroyOffScreenScript>()})
+                      .addComponent(Script{std::make_shared<EnemyScript>()}));
     _prefabs.createPrefab(
-        "PlayerBullet",
-        Prefab()
-            .addComponent(Type{EntType::BULLET})
-            .addComponent(Position{0.0f, 0.0f})
-            .addComponent(Velocity{550.0f, 0.0f})
-            .addComponent(Sprite{BoxShape{20.0f, 10.0f}, ColorRGBA{0, 0, 228, 255}})
-            .addComponent(Collider2D{BoxShape{20.0f, 10.0f},
-                                     [this](Entity bullet, Entity other) {
-                                         if (_scene.isEntityAlive(other) &&
-                                             _scene.getComponent<Type>(other).type ==
-                                                 EntType::ENEMY) {
-                                             _scene.queueDestroy(bullet);
-                                             _scene.queueDestroy(other);
-                                         }
-                                     }})
-            .addComponent(Script{Timing::ON_UPDATE, [this](Scene &scene, Entity &bullet) {
-                                     _game.DestroyOffScreenEntity(scene, bullet);
-                                 }}));
+        "PlayerBullet", Prefab()
+                            .addComponent(Type{EntType::BULLET})
+                            .addComponent(Position{0.0f, 0.0f})
+                            .addComponent(Velocity{550.0f, 0.0f})
+                            .addComponent(Sprite{BoxShape{20.0f, 10.0f}, ColorRGBA{0, 0, 228, 255}})
+                            .addComponent(Collider2D{
+                                BoxShape{20.0f, 10.0f},
+                                [this](Entity bullet, Entity other) {
+                                    if (_scene.isEntityAlive(other) &&
+                                        _scene.getComponent<Type>(other).type == EntType::ENEMY) {
+                                        _scene.queueDestroy(bullet);
+                                        _scene.queueDestroy(other);
+                                    }
+                                }})
+                            .addComponent(Script{std::make_shared<DestroyOffScreenScript>()}));
     _prefabs.createPrefab(
         "Star", Prefab()
                     .addComponent(Type{EntType::OTHER})
                     .addComponent(Position{2000.0f, 0.0f})
                     .addComponent(Velocity{-100.0f, 0.0f})
                     .addComponent(Sprite{BoxShape{5.0f, 5.0f}, ColorRGBA{255, 255, 255, 255}, -1})
-                    .addComponent(Script{Timing::ON_UPDATE, [this](Scene &scene, Entity &space) {
-                                             _game.DestroyOffScreenEntity(scene, space);
-                                         }}));
+                    .addComponent(Script{std::make_shared<DestroyOffScreenScript>()}));
 }
 
 void GameLoop::initializePlayer(uint8_t id)
@@ -167,10 +150,7 @@ void GameLoop::initializePlayer(uint8_t id)
                                        _network.disconnectPlayer(playerId);
                                        _scene.queueDestroy(a);
                                    }});
-    _scene.addComponent(playerEntity,
-                        Script{Timing::ON_UPDATE, [this](Scene &scene, Entity &player) {
-                                   _game.maintainPlayerOnScreen(scene, player);
-                               }});
+    _scene.addComponent(playerEntity, Script{std::make_shared<PlayerScript>()});
     _entities.push_back(playerEntity);
 }
 

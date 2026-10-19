@@ -6,7 +6,6 @@
 */
 
 #pragma once
-#include "Game.hpp"
 #include "PrefabsManager.hpp"
 #include "Scene.hpp"
 #include <cstdint>

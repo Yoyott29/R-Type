@@ -8,8 +8,8 @@
 #pragma once
 #include "Collider2D.hpp"
 #include "Collider2DSystem.hpp"
-#include "Game.hpp"
 #include "PlayerId.hpp"
+#include "PrefabsManager.hpp"
 #include "Scene.hpp"
 #include "Script.hpp"
 #include "ScriptSystem.hpp"
@@ -47,6 +47,5 @@ class GameLoop
         ColorRGBA{0, 228, 48, 255}, ColorRGBA{0, 0, 255, 255}, ColorRGBA{255, 0, 255, 255},
         ColorRGBA{255, 0, 0, 255}};
     PrefabsManager _prefabs;
-    Game _game;
 };
 } // namespace rtype_server

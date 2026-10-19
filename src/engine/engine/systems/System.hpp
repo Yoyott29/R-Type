@@ -14,6 +14,17 @@ class System
 {
   public:
     virtual ~System() = default;
+    virtual void Start(Scene &) {}
     virtual void update(Scene &scene) = 0;
+    void runStart(Scene &scene)
+    {
+        if (_started)
+            return;
+        _started = true;
+        Start(scene);
+    }
     std::set<Entity> _entities;
+
+  private:
+    bool _started = false;
 };

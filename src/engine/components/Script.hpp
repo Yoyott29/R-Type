@@ -10,19 +10,23 @@
 
 #include "ComponentPool.hpp"
 #include "Entity.hpp"
-#include "Scene.hpp"
-#include <functional>
 #include <memory>
 
-enum class Timing { AT_LAUNCH, ON_UPDATE };
+class Scene;
+
+class GringoEntityScript
+{
+  public:
+    virtual ~GringoEntityScript() = default;
+    virtual void onStart(Scene &scene, Entity &entity) = 0;
+    virtual void onUpdate(Scene &scene, Entity &entity) = 0;
+};
 
 struct Script {
-    Timing timing;
-    std::function<void(Scene &, Entity &)> runScript;
+    std::shared_ptr<GringoEntityScript> gringoEntityScript;
     bool isRunning = false;
 };
 
-template <> struct AllowMultiple<Script> : std::true_type {
-};
+template <> struct AllowMultiple<Script> : std::true_type {};
 
 #endif /* !SCRIPT_HPP_ */
