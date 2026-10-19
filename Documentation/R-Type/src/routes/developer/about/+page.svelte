@@ -3,11 +3,14 @@
 ├── .github/workflows/       # GitHub Actions
 ├── .githooks/               # local git hooks
 ├── Documentation/R-Type/    # this documentation site
+├── Assets/                  # textures (players, Bydos, bullet)
 ├── Developer Setup/         # developer setup script
 ├── Norms/                   # clang-format and clang-tidy rules
 ├── src/                     # C++ source code
 ├── tests/                   # tests/tests.sh
 ├── CMakeLists.txt           # build configuration
+├── CPM.cmake                # downloads the CPM package manager
+├── LICENSE                  # MIT
 └── README.md`;
 </script>
 
@@ -53,15 +56,19 @@
 <ul class="mt-3 max-w-[100ch] list-disc space-y-1.5 pl-5 leading-7">
 	<li>
 		<strong class="font-semibold">main</strong> holds the stable version of the project. Every
-		major release (v1.0, v2.0...) is created from it.
+		merge on main creates a minor release (v1.1, v1.2...), and every release is created from it.
 	</li>
 	<li>
 		<strong class="font-semibold">dev</strong> is where work is integrated. Pull requests targeting
 		main run the test workflow.
 	</li>
 	<li>
-		The versioning workflow can be run manually on a selected branch. It creates a major release from
-		main and a pre-release from other branches.
+		Feature branches start from dev and come back to it through a pull request, see
+		{@render a('/developer/contributing', 'Contributing')}.
+	</li>
+	<li>
+		The versioning workflow can also be run manually on main, which creates a major release (v2.0,
+		v3.0...). On any other branch it stops with an error.
 	</li>
 </ul>
 

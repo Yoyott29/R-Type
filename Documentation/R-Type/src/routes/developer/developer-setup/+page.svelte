@@ -65,7 +65,8 @@ chmod +x .githooks/*`;
 <h3 class="mt-6 font-semibold">1. clang-format (pinned version)</h3>
 <p class="mt-3 max-w-[100ch] leading-7">
 	The script installs the exact version written in {@render c('CLANG_FORMAT_VERSION')}, with
-	{@render c('pipx')} if available, or with {@render c('pip install --user')} otherwise. A pinned
+	{@render c('pipx')} if available, or with {@render c('pip install --user')} otherwise (and
+	{@render c('--break-system-packages')} if the system Python refuses it). A pinned
 	version matters because two versions can format the same file differently, and the CI would then
 	reject code that looked correct on your machine. See the
 	<a href="/developer/clang-format" class="text-[#ff8a3d] hover:underline">clang-format</a> page.
@@ -105,6 +106,11 @@ chmod +x .githooks/*`;
 		If the script says your shell finds another clang-format version, add {@render c('~/.local/bin')}
 		(Linux) or the Python {@render c('Scripts')} folder (Windows) at the
 		<strong class="font-semibold">start</strong> of your PATH, then restart your terminal and VS Code.
+	</li>
+	<li>
+		The script does not install the libraries needed to build the game. On Linux, also install the
+		OpenGL and X11 development packages listed in
+		<a href="/user/getting-started" class="text-[#ff8a3d] hover:underline">Getting started</a>.
 	</li>
 	<li>
 		Install the <strong class="font-semibold">C/C++</strong> extension

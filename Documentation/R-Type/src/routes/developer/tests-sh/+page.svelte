@@ -23,7 +23,7 @@
     fi
 }`;
 
-	const buildExample = `echo "== Build =="
+	const buildExample = `section "Build"        # section() prints "== Build =="
 run_test "build" bash -c "cmake -B build && cmake --build build"`;
 
 	const helpersExample = `fail() { echo "FAIL: $*"; exit 1; }
@@ -41,7 +41,7 @@ test_move_right() {
     check "$(player_x "$(last_snapshot "$A")") > 150" "the player did not move right"
 }
 
-echo "== Movement =="
+section "Movement"
 run_test "move right" test_move_right`;
 
 	const outputExample = `== Build ==
@@ -63,15 +63,15 @@ run_test "move right" test_move_right`;
  Total:   109
 ================================`;
 
-	const addExample = `# A client with the protocol version 3 is rejected with WRONG_VERSION
-test_connect_version_three() {
+	const addExample = `# A client with an old protocol version is rejected with WRONG_VERSION (0x02)
+test_connect_old_version() {
     start_server
     open_client A
-    [ "$(connect_client "$A" 03)" = "REJECT 2" ] || fail "version 3 not rejected"
+    [ "$(connect_client "$A" 02)" = "REJECT 2" ] || fail "version 2 not rejected"
 }
 
-# in the Run part, under echo "== Connection =="
-run_test "version 3 rejected" test_connect_version_three`;
+# in the Run part, under section "Connection"
+run_test "old version rejected" test_connect_old_version`;
 </script>
 
 <svelte:head>
@@ -139,7 +139,7 @@ run_test "version 3 rejected" test_connect_version_three`;
 <p class="mt-3 max-w-[100ch] leading-7">
 	The first test is the build itself. If the project does not compile, you see the compiler and
 	clang-tidy output right away ({@render c('ENABLE_CLANG_TIDY')} is {@render c('ON')} by default and
-	runs on the client sources when clang-tidy is installed). The binaries are written to the
+	runs on the client and server sources when clang-tidy is installed). The binaries are written to the
 	repository root.
 </p>
 {@render code(buildExample)}
@@ -225,8 +225,10 @@ run_test "version 3 rejected" test_connect_version_three`;
 <p class="mt-3 max-w-[100ch] leading-7">
 	Write a {@render c('test_*')} function in the matching section of the file, using the helpers and
 	{@render c('fail')} / {@render c('check')} to report errors, then add one {@render c('run_test')}
-	line under the right {@render c('echo "== ... =="')} in the Run part. You do not need to pick a
-	port or stop the server yourself: {@render c('run_test')} handles both. Example (illustrative):
+	line under the right {@render c('section "..."')} in the Run part. You do not need to pick a
+	port or stop the server yourself: {@render c('run_test')} handles both. Example: the current
+	version is {@render c('03')} ({@render c('VERSION')} at the top of the script), and the existing
+	{@render c('test_connect_wrong_version')} already sends {@render c('04')}:
 </p>
 {@render code(addExample)}
 <p class="mt-3 max-w-[100ch] leading-7">

@@ -15,10 +15,18 @@ include(\${CPM_DOWNLOAD_LOCATION})`;
 	const addExample = `CPMAddPackage(
     NAME raylib
     GITHUB_REPOSITORY raysan5/raylib
-    GIT_TAG 5.5
+    GIT_TAG 6.0
     OPTIONS
         "BUILD_EXAMPLES OFF"
         "BUILD_SHARED_LIBS OFF"
+)
+
+CPMAddPackage(
+    NAME asio
+    VERSION 1.30.2
+    GITHUB_REPOSITORY chriskohlhoff/asio
+    GIT_TAG asio-1-30-2
+    DOWNLOAD_ONLY YES
 )`;
 
 	const cacheExample = `set(CPM_SOURCE_CACHE
@@ -65,7 +73,7 @@ target_link_libraries(\${PROJECT_NAME} PRIVATE fmt::fmt)`;
 <p class="max-w-[100ch] leading-7">
 	<strong class="font-semibold">CPM</strong> (CMake Package Manager) is a small CMake script that
 	downloads libraries from GitHub while the project is configured. That is why a fresh clone only needs
-	CMake and a compiler: raylib is fetched and compiled for you, on Linux and on Windows.
+	CMake and a compiler: raylib and Asio are fetched for you, on Linux and on Windows. No library source is copied into the repository.
 </p>
 
 <h2 class="mt-9 text-lg font-semibold">The bootstrap file</h2>
@@ -79,9 +87,12 @@ target_link_libraries(\${PROJECT_NAME} PRIVATE fmt::fmt)`;
 <h2 class="mt-9 text-lg font-semibold">Declaring a dependency</h2>
 <p class="mt-3 max-w-[100ch] leading-7">
 	{@render c('CPMAddPackage')} in {@render c('CMakeLists.txt')} tells CPM what to fetch. For raylib, it
-	downloads tag {@render c('5.5')} from GitHub and builds it as a static library without examples.
+	downloads tag {@render c('6.0')} from GitHub and builds it as a static library without examples.
 	CPM then makes the {@render c('raylib')} target and the {@render c('raylib_SOURCE_DIR')} variable
-	available, which the project uses to link the library and find its headers.
+	available, which the project uses to link the library and find its headers. Asio 1.30.2 is
+	header-only: {@render c('DOWNLOAD_ONLY YES')} only downloads it, and the project wraps
+	{@render c('asio_SOURCE_DIR')} in its own {@render c('asio')} interface target (see
+	<a href="/developer/cmakelists" class="text-[#ff8a3d] hover:underline">How CMakeLists works</a>).
 </p>
 {@render code(addExample)}
 
@@ -109,7 +120,10 @@ target_link_libraries(\${PROJECT_NAME} PRIVATE fmt::fmt)`;
 
 <h2 class="mt-9 text-lg font-semibold">Good to know</h2>
 <ul class="mt-3 max-w-[100ch] list-disc space-y-1.5 pl-5 leading-7">
-	<li>The first configuration needs an internet connection, since it downloads CPM and raylib.</li>
+	<li>The first configuration needs an internet connection, since it downloads CPM, raylib and Asio.</li>
+	<li>
+		The CI cache only holds the downloaded sources: raylib is still compiled on every CI run.
+	</li>
 	<li>
 		To update CPM itself, change both {@render c('CPM_DOWNLOAD_VERSION')} and
 		{@render c('CPM_HASH_SUM')} in {@render c('CPM.cmake')}.

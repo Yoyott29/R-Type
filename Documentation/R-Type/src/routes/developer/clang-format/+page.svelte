@@ -14,7 +14,8 @@ clang-format --style=file:Norms/.clang-format --dry-run -Werror src/main.cpp`;
 	const allExample = `find src -name '*.cpp' -o -name '*.hpp' \\
   | xargs clang-format --style=file:Norms/.clang-format -i`;
 
-	const ciExample = `clang-format --style=file:Norms/.clang-format --dry-run -Werror \\
+	const ciExample = `shopt -s globstar nullglob   # bash: makes src/** search every sub-folder
+clang-format --style=file:Norms/.clang-format --dry-run -Werror \\
   src/**/*.cpp src/**/*.hpp`;
 </script>
 

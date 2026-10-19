@@ -1,5 +1,6 @@
 <script>
-	const tree = `src/routes/
+	const tree = `src/lib/pages.js         # the sidebar: sections and pages
+src/routes/
 ├── +layout.svelte
 ├── user/
 │   ├── about/
@@ -22,22 +23,23 @@
 <p class="max-w-[100ch] leading-7">Your content here.</p>`;
 
 	const registerExample = `const developerPages = [
-	{ title: 'Auto Versioning', path: '/developer/auto-versioning', section: 1 },
-	{ title: 'My page', path: '/developer/my-page', section: 1 }
+	{ title: 'Auto Versioning', path: '/developer/auto-versioning', section: 3 },
+	{ title: 'My page', path: '/developer/my-page', section: 3 }
 ];`;
 
 	const sectionExample = `const developerSections = [
-	{ title: 'Introduction' },    // index 0
-	{ title: 'Github Workflows' }, // index 1
-	{ title: 'Architecture' },    // index 2
-	{ title: 'Network' },         // index 3
-	{ title: 'Game' },            // index 4
-	{ title: 'Documentation' },   // index 5
-	{ title: 'My new section' }   // index 6
+	{ title: 'Introduction' },          // index 0
+	{ title: 'Developer Environment' }, // index 1
+	{ title: 'Build and Tests' },       // index 2
+	{ title: 'GitHub Workflows' },      // index 3
+	{ title: 'ECS' },                   // index 4
+	{ title: 'Network' },               // index 5
+	{ title: 'Documentation' },         // index 6
+	{ title: 'My new section' }         // index 7
 ];
 
 const developerPages = [
-	{ title: 'My page', path: '/developer/my-page', section: 6 }
+	{ title: 'My page', path: '/developer/my-page', section: 7 }
 ];`;
 </script>
 
@@ -83,7 +85,7 @@ const developerPages = [
 
 <h2 class="mt-9 text-lg font-semibold">3. Register it in the sidebar</h2>
 <p class="mt-3 max-w-[100ch] leading-7">
-	Open {@render c('src/routes/+layout.svelte')} and add an entry to {@render c('userPages')} or
+	Open {@render c('src/lib/pages.js')} and add an entry to {@render c('userPages')} or
 	{@render c('developerPages')}. The {@render c('path')} must match the folder, including the
 	{@render c('/user')} or {@render c('/developer')} prefix. The {@render c('section')} is the index
 	of the section in {@render c('userSections')} or {@render c('developerSections')}, starting at 0.
@@ -107,6 +109,18 @@ const developerPages = [
 	<li>
 		If you insert a section in the middle of the list, every page after it must have its
 		{@render c('section')} index updated.
+	</li>
+	<li>
+		A page registered in the sidebar is also added to {@render c('sitemap.xml')}, there is nothing
+		else to do.
+	</li>
+	<li>
+		Write in English, keep the {@render c('code')} and {@render c('c')} snippets of the other pages,
+		and link related pages with relative links such as {@render c('/developer/ecs')}.
+	</li>
+	<li>
+		To preview the site, run {@render c('npm install')} once then {@render c('npm run dev')} in
+		{@render c('Documentation/R-Type')}.
 	</li>
 	<li>A page that is not in {@render c('userPages')} or {@render c('developerPages')} still works by URL, but does not appear in the sidebar.</li>
 </ul>
