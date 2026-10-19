@@ -20,6 +20,7 @@
 
 #Other
 *.txt
+!Documentation/R-Type/src/routes/robots.txt/
 *.zip
 
 # Local test scripts

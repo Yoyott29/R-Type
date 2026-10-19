@@ -79,3 +79,16 @@
 		</p>
 	</div>
 </section>
+
+<div class="mt-8 grid gap-4 sm:grid-cols-2">
+	{#each cards as card (card.title)}
+		<a
+			href={card.href}
+			class="block rounded-xl border border-[#1e2b26] bg-[#0a0e0c] p-6 transition-colors hover:border-[#ff8a3d]/60"
+		>
+			<h2 class="font-mono text-lg font-semibold text-[#d8e4de]">{card.title}</h2>
+			<p class="mt-2 leading-7 text-[#7f9189]">{card.text}</p>
+			<span class="mt-4 inline-block font-mono text-sm text-[#ff8a3d]">{card.cta} →</span>
+		</a>
+	{/each}
+</div>
