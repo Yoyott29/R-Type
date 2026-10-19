@@ -58,6 +58,8 @@ DOWN=2
 LEFT=4
 RIGHT=8
 CHARGE=16
+VERSION=03
+ENTITY_SIZE=25
 
 SERVER_PID=""
 CLIENT_PID=""
@@ -112,7 +114,7 @@ wait_log() {
 }
 
 start_server() {
-    "$SERVER_BIN" "$LOCAL" "$PORT" < /dev/null > "$SERVER_LOG" 2>&1 &
+    stdbuf -oL "$SERVER_BIN" "$LOCAL" "$PORT" < /dev/null > "$SERVER_LOG" 2>&1 &
     SERVER_PID=$!
     wait_log "$SERVER_LOG" "Server listening on port" || fail "server did not start: $(cat "$SERVER_LOG")"
 }
@@ -123,7 +125,7 @@ stop_server() {
 }
 
 start_client() {
-    "$CLIENT_BIN" "$LOCAL" "$PORT" < /dev/null > "$CLIENT_LOG" 2>&1 &
+    stdbuf -oL "$CLIENT_BIN" "$LOCAL" "$PORT" < /dev/null > "$CLIENT_LOG" 2>&1 &
     CLIENT_PID=$!
 }
 
@@ -161,6 +163,7 @@ disconnect_client() { send_bytes "$1" 11; }
 
 # Decodes the raw server packets into one line each:
 # ACCEPT <id> | REJECT <reason> | LEFT <id> | STARTED <tick> | SNAPSHOT <tick> <count> <type>:<x>:<y>...
+# A snapshot split in several packets of the same tick is printed as one SNAPSHOT line
 PARSE='
 function hex(s,   i, value) {
     value = 0
@@ -178,6 +181,11 @@ function f32(o,   bits, negative, e, m, value) {
     value = e == 0 ? m * 2 ^ (-149) : (1 + m / 8388608) * 2 ^ (e - 127)
     return negative ? -value : value
 }
+function flush() {
+    if (stick != "")
+        print "SNAPSHOT " stick " " scount sentities
+    stick = ""
+}
 { for (i = 1; i <= NF; i++) b[n++] = $i }
 END {
     p = 0
@@ -185,33 +193,43 @@ END {
         t = b[p]
         if (t == "c0") {
             count = hex(b[p + 5] b[p + 6])
-            if (p + 7 + 9 * count > n) { print "BROKEN"; exit }
-            line = "SNAPSHOT " hex(b[p + 1] b[p + 2] b[p + 3] b[p + 4]) " " count
-            for (k = 0; k < count; k++) {
-                o = p + 7 + 9 * k
-                line = line " " hex(b[o + 8]) ":" sprintf("%g", f32(o)) ":" sprintf("%g", f32(o + 4))
+            if (p + 7 + ENTITY_SIZE * count > n) { flush(); print "BROKEN"; exit }
+            tick = hex(b[p + 1] b[p + 2] b[p + 3] b[p + 4])
+            if (tick != stick) {
+                flush()
+                stick = tick
+                scount = 0
+                sentities = ""
             }
-            print line
-            p += 7 + 9 * count
+            scount += count
+            for (k = 0; k < count; k++) {
+                o = p + 7 + ENTITY_SIZE * k
+                sentities = sentities " " hex(b[o + 8]) ":" sprintf("%g", f32(o)) ":" sprintf("%g", f32(o + 4))
+            }
+            p += 7 + ENTITY_SIZE * count
         } else if (t == "90" || t == "91" || t == "92") {
+            flush()
             print (t == "90" ? "ACCEPT " : t == "91" ? "REJECT " : "LEFT ") hex(b[p + 1])
             p += 2
         } else if (t == "a0") {
+            flush()
             print "STARTED " hex(b[p + 1] b[p + 2] b[p + 3] b[p + 4])
             p += 5
         } else {
+            flush()
             print "UNKNOWN " t
             exit
         }
     }
+    flush()
 }'
 
 # Prints every packet the socket $1 receives during $2 seconds
-listen() { timeout "$2" dd bs=2048 <&"$1" 2>/dev/null | od -An -tx1 -v | awk "$PARSE"; }
+listen() { timeout "$2" dd bs=2048 <&"$1" 2>/dev/null | od -An -tx1 -v | awk -v ENTITY_SIZE="$ENTITY_SIZE" "$PARSE"; }
 
-# Sends CONNECT (version $2, default 1) and prints the answer: "ACCEPT <id>" or "REJECT <reason>"
+# Sends CONNECT (version $2, default $VERSION) and prints the answer: "ACCEPT <id>" or "REJECT <reason>"
 connect_client() {
-    send_bytes "$1" 10 "${2:-01}"
+    send_bytes "$1" 10 "${2:-$VERSION}"
     listen "$1" 0.3 | grep -m 1 -E '^(ACCEPT|REJECT) '
 }
 
@@ -226,8 +244,8 @@ hold() {
     wait "$pid" 2>/dev/null
 }
 
-# Prints the newest snapshot received by the socket $1
-last_snapshot() { listen "$1" "${2:-0.15}" | grep '^SNAPSHOT' | tail -n 1; }
+# Prints the newest complete snapshot received by the socket $1 (the very last one can be cut by the timeout)
+last_snapshot() { listen "$1" "${2:-0.15}" | grep '^SNAPSHOT' | tail -n 2 | head -n 1; }
 
 # Counts the entities of type $2 in the snapshot line $1
 count_type() {
@@ -237,6 +255,11 @@ count_type() {
 # Prints "x y" of the first entity of type $2 in the snapshot line $1
 first_xy() {
     awk -v type="$2" '{ for (i = 4; i <= NF; i++) { split($i, e, ":"); if (e[1] == type) { print e[2], e[3]; exit } } }' <<< "$1"
+}
+
+# Prints "x y" of the last (newest) entity of type $2 in the snapshot line $1
+last_xy() {
+    awk -v type="$2" '{ for (i = 4; i <= NF; i++) { split($i, e, ":"); if (e[1] == type) xy = e[2] " " e[3] } print xy }' <<< "$1"
 }
 
 player_x() { first_xy "$1" "$PLAYER" | cut -d' ' -f1; }
@@ -316,7 +339,7 @@ test_server_port_already_used() {
 
 # With only a port, the server listens on the default address 127.0.0.1
 test_server_default_address() {
-    "$SERVER_BIN" "$PORT" < /dev/null > "$SERVER_LOG" 2>&1 &
+    stdbuf -oL "$SERVER_BIN" "$PORT" < /dev/null > "$SERVER_LOG" 2>&1 &
     SERVER_PID=$!
     wait_log "$SERVER_LOG" "Server listening on ip : 127.0.0.1" || fail "$(cat "$SERVER_LOG")"
 }
@@ -324,7 +347,7 @@ test_server_default_address() {
 # With no argument, the server listens on 127.0.0.1:4242
 test_server_default_port() {
     ss -lun 2>/dev/null | grep -q ':4242 ' && skip "port 4242 already used on this machine"
-    "$SERVER_BIN" < /dev/null > "$SERVER_LOG" 2>&1 &
+    stdbuf -oL "$SERVER_BIN" < /dev/null > "$SERVER_LOG" 2>&1 &
     SERVER_PID=$!
     wait_log "$SERVER_LOG" "Server listening on port : 4242" || fail "$(cat "$SERVER_LOG")"
 }
@@ -475,7 +498,7 @@ test_connect_fifth_rejected() {
 test_connect_wrong_version() {
     start_server
     open_client A
-    [ "$(connect_client "$A" 02)" = "REJECT 2" ] || fail "version 2 not rejected"
+    [ "$(connect_client "$A" 04)" = "REJECT 2" ] || fail "version 4 not rejected"
 }
 
 # A client with the protocol version 0 is rejected with WRONG_VERSION
@@ -625,11 +648,11 @@ test_snapshot_ticks_increase() {
         || fail "ticks do not go up"
 }
 
-# Snapshots only contain known entity types (player, enemy, bullet, obstacle)
+# Snapshots only contain known entity types (player, enemy, bullet, obstacle, other)
 test_snapshot_known_types() {
     start_server
     connected_clients A
-    hold "$A" "$CHARGE" 0.3 | grep "^SNAPSHOT" | tr ' ' '\n' | grep ':' | cut -d: -f1 | sort -u | grep -qv '^[0-3]$' \
+    hold "$A" "$CHARGE" 0.3 | grep "^SNAPSHOT" | tr ' ' '\n' | grep ':' | cut -d: -f1 | sort -u | grep -qv '^[0-4]$' \
         && fail "unknown entity type in a snapshot"
     return 0
 }
@@ -717,14 +740,14 @@ test_move_diagonal() {
     check "${position% *} > 130 && ${position#* } > 230" "the player did not move diagonally: $position"
 }
 
-# The player moves at about 300 pixels per second
+# The player moves at about 400 pixels per second
 test_move_speed() {
     start_server
     connected_clients A
     hold "$A" "$RIGHT" 1 > /dev/null
     local x
     x=$(player_x "$(last_snapshot "$A" 0.05)")
-    check "$x > 330 && $x < 460" "the player is at x = $x after 1 s"
+    check "$x > 430 && $x < 610" "the player is at x = $x after 1 s"
 }
 
 # Sending no direction stops the player
@@ -760,7 +783,7 @@ test_move_left_edge() {
     start_server
     connected_clients A
     hold "$A" "$LEFT" 0.8 > /dev/null
-    [ "$(player_x "$(last_snapshot "$A")")" = 25 ] || fail "the player left the screen on the left"
+    [ "$(player_x "$(last_snapshot "$A")")" = 51.5 ] || fail "the player left the screen on the left"
 }
 
 # A player holding UP stops at the top edge of the screen
@@ -768,7 +791,7 @@ test_move_top_edge() {
     start_server
     connected_clients A
     hold "$A" "$UP" 1 > /dev/null
-    [ "$(player_y "$(last_snapshot "$A")")" = 17.5 ] || fail "the player left the screen on the top"
+    [ "$(player_y "$(last_snapshot "$A")")" = 25 ] || fail "the player left the screen on the top"
 }
 
 # A player holding DOWN stops at the bottom edge of the screen
@@ -776,7 +799,7 @@ test_move_bottom_edge() {
     start_server
     connected_clients A
     hold "$A" "$DOWN" 3.2 > /dev/null
-    [ "$(player_y "$(last_snapshot "$A")")" = 1062.5 ] || fail "the player left the screen on the bottom"
+    [ "$(player_y "$(last_snapshot "$A")")" = 1055 ] || fail "the player left the screen on the bottom"
 }
 
 # An INPUT with a wrong size is ignored and does not move the player
@@ -834,22 +857,21 @@ test_shoot_bullet_moves_right() {
     check "$(first_xy "$(last_snapshot "$A")" "$BULLET" | cut -d' ' -f1) > $start + 50" "the bullet did not move right"
 }
 
-# Without pressing fire, no bullet appears
-test_shoot_no_fire_no_bullet() {
+# Without sending any input, no bullet appears
+test_shoot_no_input_no_bullet() {
     start_server
     connected_clients A
-    hold "$A" "$RIGHT" 0.5 > /dev/null
-    [ "$(count_type "$(last_snapshot "$A")" "$BULLET")" = 0 ] || fail "a bullet appeared without fire"
+    [ "$(count_type "$(last_snapshot "$A" 0.5)" "$BULLET")" = 0 ] || fail "a bullet appeared without input"
 }
 
-# Holding fire shoots at most one bullet every 0.5 s
+# Holding fire shoots at most one bullet every 0.2 s
 test_shoot_cooldown() {
     start_server
     connected_clients A
     hold "$A" "$CHARGE" 1.2 > /dev/null
     local bullets
     bullets=$(count_type "$(last_snapshot "$A")" "$BULLET")
-    check "$bullets >= 2 && $bullets <= 3" "$bullets bullets after holding fire 1.2 s"
+    check "$bullets >= 5 && $bullets <= 7" "$bullets bullets after holding fire 1.2 s"
 }
 
 # A bullet shot after moving up starts at the new height of the player
@@ -857,11 +879,11 @@ test_shoot_follows_player_height() {
     start_server
     connected_clients A
     hold "$A" "$UP" 0.3 > /dev/null
-    hold "$A" 0 0.05 > /dev/null
+    hold "$A" 0 0.3 > /dev/null
     local y
     y=$(player_y "$(last_snapshot "$A")")
     hold "$A" "$CHARGE" 0.05 > /dev/null
-    [ "$(first_xy "$(last_snapshot "$A")" "$BULLET" | cut -d' ' -f2)" = "$y" ] || fail "the bullet is not at the player height"
+    [ "$(last_xy "$(last_snapshot "$A")" "$BULLET" | cut -d' ' -f2)" = "$y" ] || fail "the bullet is not at the player height"
 }
 
 # Two players can shoot at the same time
@@ -874,13 +896,16 @@ test_shoot_two_players() {
     [ "$(count_type "$(last_snapshot "$A")" "$BULLET")" = 2 ] || fail "not 2 bullets"
 }
 
-# A bullet that leaves the screen on the right is destroyed
+# A bullet that leaves the screen on the right is destroyed: every input shoots, so the farthest
+# bullet must stay near the right edge instead of flying away
 test_shoot_bullet_despawns() {
     start_server
     connected_clients A
     hold "$A" "$CHARGE" 0.05 > /dev/null
     hold "$A" 0 4.3 > /dev/null
-    [ "$(count_type "$(last_snapshot "$A")" "$BULLET")" = 0 ] || fail "the bullet is still alive after leaving the screen"
+    local farthest
+    farthest=$(last_snapshot "$A" | tr ' ' '\n' | awk -F: -v type="$BULLET" '$1 == type && $2 > max { max = $2 } END { print max + 0 }')
+    check "$farthest > 1500 && $farthest < 2100" "the farthest bullet is at x = $farthest"
 }
 
 # ============================================================
@@ -1267,7 +1292,7 @@ run_test "move left" test_move_left
 run_test "move up" test_move_up
 run_test "move down" test_move_down
 run_test "move diagonally" test_move_diagonal
-run_test "speed about 300 px/s" test_move_speed
+run_test "speed about 400 px/s" test_move_speed
 run_test "no input stops the player" test_move_stop
 run_test "UP + DOWN cancel" test_move_up_down_cancel
 run_test "LEFT + RIGHT cancel" test_move_left_right_cancel
@@ -1281,7 +1306,7 @@ section "Shooting"
 run_test "fire creates a bullet" test_shoot_creates_bullet
 run_test "bullet starts in front of the player" test_shoot_bullet_position
 run_test "bullet moves right" test_shoot_bullet_moves_right
-run_test "no fire, no bullet" test_shoot_no_fire_no_bullet
+run_test "no input, no bullet" test_shoot_no_input_no_bullet
 run_test "fire cooldown" test_shoot_cooldown
 run_test "bullet at the player height" test_shoot_follows_player_height
 run_test "two players shoot" test_shoot_two_players
