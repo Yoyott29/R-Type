@@ -22,7 +22,9 @@ _running                        std::atomic<bool>`;
                                   then main prints "Fatal error: ..." and exits with 84
 exception while reading a packet -> "Dropped packet: ...", the packet is ignored
 connection_reset / refused      -> ignored (a client closed on Windows)
-any other socket error          -> "Network: ...", the network thread stops`;
+any other socket error          -> "Network: ...", the network thread stops and sets
+                                  _running to false, so the game loop ends too:
+                                  the whole server stops`;
 </script>
 
 <svelte:head>
@@ -79,8 +81,8 @@ any other socket error          -> "Network: ...", the network thread stops`;
 <ul class="mt-3 max-w-[100ch] list-disc space-y-1.5 pl-5 leading-7">
 	<li>
 		The game thread also sends on the socket (snapshots, {@render c('PLAYER_LEFT')}) while the
-		network thread receives on it. This works on Linux, but a send queue read by the network thread
-		would be cleaner.
+		network thread receives on it. Asio does not guarantee that one socket can be used from two
+		threads at once. It works on Linux, but a send queue read by the network thread would be safe.
 	</li>
 	<li>
 		The server does not read stdin, so it can run under nohup, docker or CI. Stop it with Ctrl+C
