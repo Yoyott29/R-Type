@@ -18,4 +18,12 @@ class ScriptSystem : public System
     void update(Scene &scene);
 };
 
+class IGringoEntityScript
+{
+  public:
+    virtual ~IGringoEntityScript() = default;
+    virtual void onStart(Scene &scene, Entity &entity) = 0;
+    virtual void onUpdate(Scene &scene, Entity &entity) = 0;
+};
+
 #endif /* !SCRIPTSYSTEM_HPP_ */

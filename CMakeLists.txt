@@ -66,47 +66,48 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 add_executable(${PROJECT_NAME}
     src/main.cpp
-    src/game-rtype/Application.cpp
-    src/game-rtype/Game.cpp
-    src/engine/core/Scene.cpp
-    src/engine/core/TickTimeManager.cpp
-    src/engine/core/EntityManager.cpp
-    src/engine/systems/SystemManager.cpp
-    src/engine/prefabs/Prefab.cpp
-    src/engine/prefabs/PrefabsManager.cpp
-    src/systems/ScriptSystem.cpp
-    src/plugins/Renderer/RayLibRenderer.cpp
-    src/plugins/Renderer/systems/RenderSystem.cpp
-    src/plugins/Physics/Physics.cpp
-    src/plugins/Physics/systems/Collider2DSystem.cpp
-    src/plugins/Physics/systems/MovementSystem.cpp
-    src/plugins/Network/Client/Client.cpp
-    src/plugins/Network/Client/systems/ReadSocket.cpp
-    src/plugins/Network/Client/systems/SendInput.cpp
-    src/plugins/Network/Client/systems/TryConnect.cpp
+    src/engine/game-rtype/Application.cpp
+    src/scripts/Game.cpp
+    src/engine/engine/core/Scene.cpp
+    src/engine/engine/core/TickTimeManager.cpp
+    src/engine/engine/core/EntityManager.cpp
+    src/engine/engine/systems/SystemManager.cpp
+    src/engine/engine/prefabs/Prefab.cpp
+    src/engine/engine/prefabs/PrefabsManager.cpp
+    src/engine/systems/ScriptSystem.cpp
+    src/engine/plugins/Renderer/RayLibRenderer.cpp
+    src/engine/plugins/Renderer/systems/RenderSystem.cpp
+    src/engine/plugins/Physics/Physics.cpp
+    src/engine/plugins/Physics/systems/Collider2DSystem.cpp
+    src/engine/plugins/Physics/systems/MovementSystem.cpp
+    src/engine/plugins/Network/Client/Client.cpp
+    src/engine/plugins/Network/Client/systems/ReadSocket.cpp
+    src/engine/plugins/Network/Client/systems/SendInput.cpp
+    src/engine/plugins/Network/Client/systems/TryConnect.cpp
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE
-    src/game-rtype
-    src/engine/core
-    src/engine/errors
-    src/engine/prefabs
+    src/engine/game-rtype
+    src/scripts
+    src/engine/engine/core
+    src/engine/engine/errors
+    src/engine/engine/prefabs
+    src/engine/engine/systems
+    src/engine/engine/prefabs
     src/engine/systems
-    src/engine/prefabs
-    src/systems
-    src/components
-    src/common/
-    src/ressources
-    src/plugins/Renderer
-    src/plugins/Renderer/components
-    src/plugins/Renderer/ressources
-    src/plugins/Renderer/systems
-    src/plugins/Physics
-    src/plugins/Physics/components
-    src/plugins/Physics/systems
-    src/plugins/Network/components
-    src/plugins/Network/Client
-    src/plugins/Network/Client/systems
+    src/engine/components
+    src/engine/common/
+    src/engine/ressources
+    src/engine/plugins/Renderer
+    src/engine/plugins/Renderer/components
+    src/engine/plugins/Renderer/ressources
+    src/engine/plugins/Renderer/systems
+    src/engine/plugins/Physics
+    src/engine/plugins/Physics/components
+    src/engine/plugins/Physics/systems
+    src/engine/plugins/Network/components
+    src/engine/plugins/Network/Client
+    src/engine/plugins/Network/Client/systems
 )
 
 target_include_directories(${PROJECT_NAME} SYSTEM PRIVATE
@@ -136,38 +137,39 @@ endif()
 # ============================================================
 
 add_executable(r-type_server
-    src/server/main.cpp
-    src/server/server.cpp
-    src/server/network/network.cpp
-    src/server/game/game_loop.cpp
-    src/server/input/input_queue.cpp
-    src/game-rtype/Game.cpp
-    src/systems/ScriptSystem.cpp
-    src/plugins/Physics/systems/Collider2DSystem.cpp
-    src/plugins/Physics/systems/MovementSystem.cpp
-    src/engine/core/Scene.cpp
-    src/engine/core/TickTimeManager.cpp
-    src/engine/core/EntityManager.cpp
-    src/engine/systems/SystemManager.cpp
-    src/engine/prefabs/Prefab.cpp
-    src/engine/prefabs/PrefabsManager.cpp
+    src/engine/server/main.cpp
+    src/engine/server/server.cpp
+    src/engine/server/network/network.cpp
+    src/engine/server/game/game_loop.cpp
+    src/engine/server/input/input_queue.cpp
+    src/scripts/Game.cpp
+    src/engine/systems/ScriptSystem.cpp
+    src/engine/plugins/Physics/systems/Collider2DSystem.cpp
+    src/engine/plugins/Physics/systems/MovementSystem.cpp
+    src/engine/engine/core/Scene.cpp
+    src/engine/engine/core/TickTimeManager.cpp
+    src/engine/engine/core/EntityManager.cpp
+    src/engine/engine/systems/SystemManager.cpp
+    src/engine/engine/prefabs/Prefab.cpp
+    src/engine/engine/prefabs/PrefabsManager.cpp
 )
 
 target_include_directories(r-type_server PRIVATE
-    src
-    src/game-rtype
-    src/common
-    src/server
-    src/engine/core
-    src/engine/errors
-    src/engine/prefabs
+    src/engine/
+    src/engine/game-rtype
+    src/scripts
+    src/engine/common
+    src/engine/server
+    src/engine/engine/core
+    src/engine/engine/errors
+    src/engine/engine/prefabs
+    src/engine/engine/systems
     src/engine/systems
-    src/systems
-    src/components
-    src/plugins/Physics/components
-    src/plugins/Physics/systems
-    src/plugins/Renderer/components
-    src/plugins/Renderer/systems
+    src/engine/components
+    src/engine/plugins/Physics/components
+    src/engine/plugins/Physics/systems
+    src/engine/plugins/Renderer/components
+    src/engine/plugins/Renderer/systems
 )
 
 target_include_directories(r-type_server SYSTEM PRIVATE
