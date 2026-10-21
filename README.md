@@ -1,21 +1,26 @@
-# R-Type
 
-R-Type is an Epitech project that reimplements the classic side-scrolling shoot 'em up with a custom ECS engine, an authoritative server, and networked multiplayer clients. The game is written in C++17 with raylib.
+<table align="center">
+  <tr>
+    <td><img src="Documentation/R-Type/src/lib/assets/Favicon.png" alt="R-Type logo" width="200" height="200"></td>
+    <td><h1>X</h1></td>
+    <td><img src="Documentation/R-Type/src/lib/assets/Gringo.png" alt="Gringo logo" width="200" height="200"></td>
+  </tr>
+</table>
 
-## Quick start
+## Rtype
 
-```sh
-cmake -B build && cmake --build build
-./r-type_server &
-./r-type_client
-```
+
+
+R-Type is an Epitech project that reimplements the classic side-scrolling shoot 'em up with a custom ECS engine called Gringo, an authoritative server, and networked multiplayer clients. The game is written in C++17 with raylib.
+
 
 ## Supported platforms
 
-| Platform | Server | Client | Status |
-|---|---|---|---|
-| Linux | yes | yes | tested by the CI (Ubuntu) |
-| Windows | yes | yes | handled by CMake, not tested yet |
+| Platform | Server | Client |
+|---|---|---|
+| Linux | yes | yes |
+| Windows | yes | yes |
+| MacOS | no | no |
 
 ## Dependencies
 
@@ -65,13 +70,13 @@ sudo apt install libgl1-mesa-dev libx11-dev libxrandr-dev libxi-dev libxcursor-d
 
 Windows needs no extra libraries, because OpenGL is already part of the system.
 
-1. Install a C++ compiler: download the [Visual Studio Build Tools](https://visualstudio.microsoft.com/downloads/), run the installer and tick the **Desktop development with C++** workload.
+1. Install a C++ compiler: download the [Visual Studio Build Tools](https://visualstudio.microsoft.com/downloads/) and run the installer.
 
 2. Install Git from [git-scm.com](https://git-scm.com/download/win), keeping the default options.
 
 3. Install CMake from [cmake.org/download](https://cmake.org/download/) using the Windows `.msi` installer. During installation, choose **Add CMake to the system PATH**, otherwise the `cmake` command will not be found.
 
-   If you have `winget`, you can install both tools from PowerShell instead:
+   If you have `winget`, you can install Git and CMake from PowerShell instead:
 
 ```powershell
 winget install Kitware.CMake
