@@ -155,14 +155,14 @@ To run the tests (Linux): `./tests/tests.sh`.
 ## Documentation
 
 Read the full project documentation on the [R-Type documentation website](https://r-type-project-documentation.vercel.app/).
-Players should start with the User documentation for [getting started](https://r-type-project-documentation.vercel.app/user/getting-started),
-[controls](https://r-type-project-documentation.vercel.app/user/controls), [gameplay](https://r-type-project-documentation.vercel.app/user/gameplay),
-[multiplayer](https://r-type-project-documentation.vercel.app/user/multiplayer), and
-[troubleshooting](https://r-type-project-documentation.vercel.app/user/troubleshooting).
-Contributors can use the Developer documentation: [architecture](https://r-type-project-documentation.vercel.app/developer/architecture),
-[protocol](https://r-type-project-documentation.vercel.app/developer/network-protocol),
-[technical study](https://r-type-project-documentation.vercel.app/developer/technical-study) and
-[contributing guide](https://r-type-project-documentation.vercel.app/developer/contributing).
+
+### Contributing and community
+
+- [Code of Conduct](.github/CODE_OF_CONDUCT.md)
+- [Contributing Guide](.github/CONTRIBUTING.md)
+- [Security Policy](.github/SECURITY.md)
+- [Bug Report Template](.github/ISSUE_TEMPLATE/bug_report.md)
+- [Pull Request Template](.github/PULL_REQUEST_TEMPLATE.md)
 
 ## License
 
