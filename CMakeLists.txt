@@ -6,7 +6,7 @@ endif()
 
 project(r-type_client LANGUAGES CXX)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR})
@@ -65,48 +65,57 @@ endif()
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 add_executable(${PROJECT_NAME}
-    src/main.cpp
-    src/engine/game-rtype/Application.cpp
-    src/engine/engine/core/Scene.cpp
-    src/engine/engine/core/TickTimeManager.cpp
-    src/engine/engine/core/EntityManager.cpp
-    src/engine/engine/systems/SystemManager.cpp
-    src/engine/engine/prefabs/Prefab.cpp
-    src/engine/engine/prefabs/PrefabsManager.cpp
+    src/games/rtype/client/main.cpp
+    src/games/rtype/client/RTypeClientPlugin.cpp
+    src/games/rtype/client/systems/ClientNetSystem.cpp
+    src/games/rtype/client/systems/SendInputSystem.cpp
+    src/games/rtype/common/RTypeMessages.cpp
+    src/engine/app/Application.cpp
+    src/engine/core/Scene.cpp
+    src/engine/core/TickTimeManager.cpp
+    src/engine/core/EntityManager.cpp
+    src/engine/systems/SystemManager.cpp
+    src/engine/prefabs/Prefab.cpp
+    src/engine/prefabs/PrefabsManager.cpp
     src/engine/systems/ScriptSystem.cpp
-    src/engine/plugins/Renderer/RayLibRenderer.cpp
-    src/engine/plugins/Renderer/systems/RenderSystem.cpp
-    src/engine/plugins/Physics/Physics.cpp
-    src/engine/plugins/Physics/systems/Collider2DSystem.cpp
-    src/engine/plugins/Physics/systems/MovementSystem.cpp
-    src/engine/plugins/Network/Client/Client.cpp
-    src/engine/plugins/Network/Client/systems/ReadSocket.cpp
-    src/engine/plugins/Network/Client/systems/SendInput.cpp
-    src/engine/plugins/Network/Client/systems/TryConnect.cpp
+    src/plugins/Renderer/RayLibRenderer.cpp
+    src/plugins/Renderer/systems/RenderSystem.cpp
+    src/plugins/Physics/Physics.cpp
+    src/plugins/Physics/systems/Collider2DSystem.cpp
+    src/plugins/Physics/systems/MovementSystem.cpp
+    src/plugins/Network/NetworkPlugin.cpp
+    src/plugins/Network/resources/NetTransport.cpp
+    src/plugins/Network/Connection.cpp
+    src/plugins/Network/Packet.cpp
+    src/plugins/Network/resources/UdpSocket.cpp
+    src/plugins/Network/systems/NetReceiveSystem.cpp
+    src/plugins/Network/systems/NetSendSystem.cpp
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE
-    src/engine/game-rtype
-    src/scripts
-    src/engine/engine/core
-    src/engine/engine/errors
-    src/engine/engine/prefabs
-    src/engine/engine/systems
-    src/engine/engine/prefabs
+    src/games/rtype/client
+    src/games/rtype/client/systems
+    src/games/rtype/common
+    src/games/rtype/components
+    src/games/rtype/scripts
+    src/engine/app
+    src/engine/core
+    src/engine/errors
+    src/engine/prefabs
     src/engine/systems
     src/engine/components
-    src/engine/common/
-    src/engine/ressources
-    src/engine/plugins/Renderer
-    src/engine/plugins/Renderer/components
-    src/engine/plugins/Renderer/ressources
-    src/engine/plugins/Renderer/systems
-    src/engine/plugins/Physics
-    src/engine/plugins/Physics/components
-    src/engine/plugins/Physics/systems
-    src/engine/plugins/Network/components
-    src/engine/plugins/Network/Client
-    src/engine/plugins/Network/Client/systems
+    src/engine/input
+    src/engine/resources
+    src/plugins/Renderer
+    src/plugins/Renderer/components
+    src/plugins/Renderer/resources
+    src/plugins/Renderer/systems
+    src/plugins/Physics
+    src/plugins/Physics/components
+    src/plugins/Physics/systems
+    src/plugins/Network
+    src/plugins/Network/resources
+    src/plugins/Network/systems
 )
 
 target_include_directories(${PROJECT_NAME} SYSTEM PRIVATE
@@ -136,38 +145,54 @@ endif()
 # ============================================================
 
 add_executable(r-type_server
-    src/engine/server/main.cpp
-    src/engine/server/server.cpp
-    src/engine/server/network/network.cpp
-    src/engine/server/game/game_loop.cpp
-    src/engine/server/input/input_queue.cpp
+    src/games/rtype/server/main.cpp
+    src/games/rtype/server/ServerLoop.cpp
+    src/games/rtype/server/RTypeServerPlugin.cpp
+    src/games/rtype/server/systems/ServerNetSystem.cpp
+    src/games/rtype/server/systems/PlayerInputSystem.cpp
+    src/games/rtype/server/systems/SnapshotSystem.cpp
+    src/games/rtype/common/RTypeMessages.cpp
+    src/engine/app/Application.cpp
     src/engine/systems/ScriptSystem.cpp
-    src/engine/plugins/Physics/systems/Collider2DSystem.cpp
-    src/engine/plugins/Physics/systems/MovementSystem.cpp
-    src/engine/engine/core/Scene.cpp
-    src/engine/engine/core/TickTimeManager.cpp
-    src/engine/engine/core/EntityManager.cpp
-    src/engine/engine/systems/SystemManager.cpp
-    src/engine/engine/prefabs/Prefab.cpp
-    src/engine/engine/prefabs/PrefabsManager.cpp
+    src/engine/core/Scene.cpp
+    src/engine/core/EntityManager.cpp
+    src/engine/systems/SystemManager.cpp
+    src/engine/prefabs/Prefab.cpp
+    src/engine/prefabs/PrefabsManager.cpp
+    src/plugins/Physics/Physics.cpp
+    src/plugins/Physics/systems/Collider2DSystem.cpp
+    src/plugins/Physics/systems/MovementSystem.cpp
+    src/plugins/Network/NetworkPlugin.cpp
+    src/plugins/Network/resources/NetTransport.cpp
+    src/plugins/Network/Connection.cpp
+    src/plugins/Network/Packet.cpp
+    src/plugins/Network/resources/UdpSocket.cpp
+    src/plugins/Network/systems/NetReceiveSystem.cpp
+    src/plugins/Network/systems/NetSendSystem.cpp
 )
 
 target_include_directories(r-type_server PRIVATE
-    src/engine/
-    src/engine/game-rtype
-    src/scripts
-    src/engine/common
-    src/engine/server
-    src/engine/engine/core
-    src/engine/engine/errors
-    src/engine/engine/prefabs
-    src/engine/engine/systems
+    src/games/rtype/server
+    src/games/rtype/server/systems
+    src/games/rtype/common
+    src/games/rtype/components
+    src/games/rtype/scripts
+    src/engine/app
+    src/engine/core
+    src/engine/errors
+    src/engine/prefabs
     src/engine/systems
     src/engine/components
-    src/engine/plugins/Physics/components
-    src/engine/plugins/Physics/systems
-    src/engine/plugins/Renderer/components
-    src/engine/plugins/Renderer/systems
+    src/engine/input
+    src/engine/resources
+    src/plugins/Physics
+    src/plugins/Physics/components
+    src/plugins/Physics/systems
+    src/plugins/Renderer/components
+    src/plugins/Renderer/systems
+    src/plugins/Network
+    src/plugins/Network/resources
+    src/plugins/Network/systems
 )
 
 target_include_directories(r-type_server SYSTEM PRIVATE
