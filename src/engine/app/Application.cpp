@@ -10,7 +10,6 @@
 #include "Position.hpp"
 #include "Script.hpp"
 #include "Time.hpp"
-#include "Type.hpp"
 #include <algorithm>
 #include <chrono>
 
@@ -24,7 +23,6 @@ Application::Application()
     // setup basic components and resources
     _scene.registerComponent<Position>();
     _scene.registerComponent<Script>();
-    _scene.registerComponent<Type>();
     _scene.addResource<AppAlive>();
 }
 

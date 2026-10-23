@@ -112,6 +112,7 @@ void RTypeServerPlugin::build(Application &app)
     Scene &scene = app._scene;
     scene.registerComponent<PlayerId>();
     scene.registerComponent<Sprite>();
+    scene.registerComponent<Type>();
     auto &prefabs = scene.addResource<PrefabsManager>();
     scene.addResource<ServerTick>();
     scene.addResource<ServerPlayers>();
