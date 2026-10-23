@@ -7,6 +7,7 @@
 
 #include "RTypeServerPlugin.hpp"
 #include "Collider2D.hpp"
+#include "CollisionLayers.hpp"
 #include "DestroyOffScreenScript.hpp"
 #include "EnemyScript.hpp"
 #include "EnemySpawnerScript.hpp"
@@ -51,7 +52,8 @@ void createPrefabs(Scene &scene, PrefabsManager &prefabs)
                      .addComponent(Velocity{-500.0f, 0.0f})
                      .addComponent(Sprite{BoxShape{40.0f, 60.0f}, ColorRGBA{228, 48, 0, 255}, 0,
                                           "Assets/Bydos1.png"})
-                     .addComponent(Collider2D{BoxShape{40.0f, 60.0f}, nullptr})
+                     .addComponent(Collider2D{BoxShape{40.0f, 60.0f}, nullptr, rtype_layers::ENEMY,
+                                              rtype_layers::PLAYER | rtype_layers::PLAYER_BULLET})
                      .addComponent(Script{std::make_shared<DestroyOffScreenScript>()})
                      .addComponent(Script{std::make_shared<EnemyScript>()}));
     prefabs.createPrefab(
@@ -61,7 +63,8 @@ void createPrefabs(Scene &scene, PrefabsManager &prefabs)
                       .addComponent(Velocity{-500.0f, 0.0f})
                       .addComponent(Sprite{BoxShape{40.0f, 60.0f}, ColorRGBA{228, 48, 0, 255}, 0,
                                            "Assets/Bydos2.png"})
-                      .addComponent(Collider2D{BoxShape{40.0f, 60.0f}, nullptr})
+                      .addComponent(Collider2D{BoxShape{40.0f, 60.0f}, nullptr, rtype_layers::ENEMY,
+                                               rtype_layers::PLAYER | rtype_layers::PLAYER_BULLET})
                       .addComponent(Script{std::make_shared<DestroyOffScreenScript>()})
                       .addComponent(Script{std::make_shared<EnemyScript>()}));
     prefabs.createPrefab(
@@ -70,15 +73,16 @@ void createPrefabs(Scene &scene, PrefabsManager &prefabs)
                             .addComponent(Position{0.0f, 0.0f})
                             .addComponent(Velocity{550.0f, 0.0f})
                             .addComponent(Sprite{BoxShape{20.0f, 10.0f}, ColorRGBA{0, 0, 228, 255}})
-                            .addComponent(Collider2D{BoxShape{20.0f, 10.0f},
-                                                     [&scene](Entity bullet, Entity other) {
-                                                         if (scene.isEntityAlive(other) &&
-                                                             scene.getComponent<Type>(other).type ==
-                                                                 EntType::ENEMY) {
-                                                             scene.queueDestroy(bullet);
-                                                             scene.queueDestroy(other);
-                                                         }
-                                                     }})
+                            .addComponent(Collider2D{
+                                BoxShape{20.0f, 10.0f},
+                                [&scene](Entity bullet, Entity other) {
+                                    if (scene.isEntityAlive(other) &&
+                                        scene.getComponent<Type>(other).type == EntType::ENEMY) {
+                                        scene.queueDestroy(bullet);
+                                        scene.queueDestroy(other);
+                                    }
+                                },
+                                rtype_layers::PLAYER_BULLET, rtype_layers::ENEMY})
                             .addComponent(Script{std::make_shared<DestroyOffScreenScript>()}));
     prefabs.createPrefab(
         "Star", Prefab()

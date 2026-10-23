@@ -6,16 +6,8 @@
 */
 
 #include "Collider2DSystem.hpp"
-#include "Sprite.hpp"
-#include "Type.hpp"
 #include <set>
 #include <variant>
-
-static bool isPlayer(Scene &scene, Entity entity)
-{
-    return scene.getComponentCount<Type>(entity) > 0 &&
-           scene.getComponent<Type>(entity).type == EntType::PLAYER;
-}
 
 void Collider2DSystem::update(Scene &scene)
 {
@@ -24,20 +16,21 @@ void Collider2DSystem::update(Scene &scene)
     for (Entity entity : _entities) {
         Position &position = scene.getComponent<Position>(entity);
         Collider2D &collider = scene.getComponent<Collider2D>(entity);
-        bool entityIsPlayer = isPlayer(scene, entity);
 
         for (Entity otherEntity : checkedEntities) {
-            if (entityIsPlayer && isPlayer(scene, otherEntity))
+            Collider2D &otherCollider = scene.getComponent<Collider2D>(otherEntity);
+            bool entityWants = (collider.mask & otherCollider.layer) != 0;
+            bool otherWants = (otherCollider.mask & collider.layer) != 0;
+            if (!entityWants && !otherWants)
                 continue;
             Position &otherPosition = scene.getComponent<Position>(otherEntity);
-            Collider2D &otherCollider = scene.getComponent<Collider2D>(otherEntity);
 
             bool isColliding = checkCollisions(position, collider, otherPosition, otherCollider);
 
             if (isColliding) {
-                if (collider.onCollision)
+                if (entityWants && collider.onCollision)
                     collider.onCollision(entity, otherEntity);
-                if (otherCollider.onCollision)
+                if (otherWants && otherCollider.onCollision)
                     otherCollider.onCollision(otherEntity, entity);
             }
         }

@@ -8,6 +8,7 @@
 #include "ServerNetSystem.hpp"
 #include "ByteStream.hpp"
 #include "Collider2D.hpp"
+#include "CollisionLayers.hpp"
 #include "NetTransport.hpp"
 #include "PlayerId.hpp"
 #include "PlayerScript.hpp"
@@ -38,14 +39,16 @@ Entity spawnShip(Scene &scene, std::uint8_t slot)
     scene.addComponent(ship, Velocity{0.0f, 0.0f});
     scene.addComponent(ship, Sprite{BoxShape{103.0f, 50.0f}, PLAYER_COLORS.at(slot)});
     scene.addComponent(ship,
-                       Collider2D{BoxShape{103.0f, 50.0f}, [&scene](Entity a, Entity other) {
+                       Collider2D{BoxShape{103.0f, 50.0f},
+                                  [&scene](Entity a, Entity other) {
                                       if (!scene.isEntityAlive(other) ||
                                           scene.getComponent<Type>(other).type != EntType::ENEMY)
                                           return;
                                       auto peer = scene.getResource<ServerPlayers>().peerOf(a);
                                       if (peer)
                                           eliminatePlayer(scene, *peer);
-                                  }});
+                                  },
+                                  rtype_layers::PLAYER, rtype_layers::ENEMY});
     scene.addComponent(ship, Script{std::make_shared<PlayerScript>()});
     return ship;
 }
