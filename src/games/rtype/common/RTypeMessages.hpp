@@ -30,11 +30,6 @@ struct SnapshotEntity {
     EntType type;
     std::uint8_t playerId;
     std::uint8_t variant;
-    float width;
-    float height;
-    std::uint8_t shape;
-    std::int8_t drawOrder;
-    std::array<std::uint8_t, 4> color;
 
     bool operator==(SnapshotEntity const &) const = default;
 };
@@ -44,9 +39,9 @@ struct SnapshotMessage {
     std::vector<SnapshotEntity> entities;
 };
 
-constexpr std::size_t SNAPSHOT_HEADER_BYTES = 6;        // tick u32, count u16
-constexpr std::size_t SNAPSHOT_ENTITY_BYTES = 25;       // fields in declaration order, type as u8
-constexpr std::size_t SNAPSHOT_ENTITIES_PER_CHUNK = 47; // (MAX_PAYLOAD 1191 - 6) / 25
+constexpr std::size_t SNAPSHOT_HEADER_BYTES = 6;         // tick u32, count u16
+constexpr std::size_t SNAPSHOT_ENTITY_BYTES = 11;        // fields in declaration order, type as u8
+constexpr std::size_t SNAPSHOT_ENTITIES_PER_CHUNK = 107; // (MAX_PAYLOAD 1191 - 6) / 11
 
 std::vector<std::byte> encodeWelcome(WelcomeMessage message);
 WelcomeMessage decodeWelcome(std::span<const std::byte> bytes);

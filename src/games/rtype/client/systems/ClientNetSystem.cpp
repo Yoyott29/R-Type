@@ -29,34 +29,34 @@ std::array<std::string, rtype_protocol::MAX_PLAYERS> const PLAYER_TEXTURES = {{
     "Assets/PlayerRed.png",
 }};
 
-std::string texturePathForType(EntType type, std::uint8_t variant)
+constexpr ColorRGBA WHITE_COLOR{255, 255, 255, 255};
+
+// The server only sends what an entity is: its look is decided here
+Sprite spriteForType(SnapshotEntity const &snapshot)
 {
-    switch (type) {
+    switch (snapshot.type) {
+    case EntType::PLAYER: // decodeSnapshot checked the playerId
+        return {BoxShape{103.0f, 50.0f}, WHITE_COLOR, 0, PLAYER_TEXTURES.at(snapshot.playerId)};
     case EntType::ENEMY:
-        return variant == rtype_protocol::ENEMY_VARIANT_2 ? "Assets/Bydos2.png"
-                                                          : "Assets/Bydos1.png";
+        return {BoxShape{70.0f, 70.0f}, ColorRGBA{228, 48, 0, 255}, 0,
+                snapshot.variant == rtype_protocol::ENEMY_VARIANT_2 ? "Assets/Bydos2.png"
+                                                                    : "Assets/Bydos1.png"};
     case EntType::BULLET:
-        return "Assets/Bullet.png";
-    default:
-        return {};
+        return {BoxShape{20.0f, 10.0f}, ColorRGBA{0, 0, 228, 255}, 0, "Assets/Bullet.png"};
+    case EntType::OTHER: // background star
+        return {BoxShape{5.0f, 5.0f}, WHITE_COLOR, -1};
+    case EntType::OBSTACLE:
+        break;
     }
+    return {BoxShape{32.0f, 32.0f}, ColorRGBA{128, 128, 128, 255}};
 }
 
 void createEntity(Scene &scene, SnapshotEntity const &snapshot)
 {
-    ColorRGBA const color{snapshot.color[0], snapshot.color[1], snapshot.color[2],
-                          snapshot.color[3]};
-    Sprite sprite =
-        snapshot.shape == rtype_protocol::CIRCLE_SHAPE
-            ? Sprite{CircleShape{snapshot.width}, color, snapshot.drawOrder}
-            : Sprite{BoxShape{snapshot.width, snapshot.height}, color, snapshot.drawOrder};
-    sprite.texturePath = texturePathForType(snapshot.type, snapshot.variant);
-    if (snapshot.type == EntType::PLAYER)
-        sprite.texturePath = PLAYER_TEXTURES.at(snapshot.playerId); // decodeSnapshot checked it
     Entity entity = scene.createEntity();
     scene.addComponent(entity, Position{snapshot.x, snapshot.y});
-    scene.addComponent(entity, Type{snapshot.type});
-    scene.addComponent(entity, sprite);
+    scene.addComponent(entity, Type{snapshot.type, snapshot.variant});
+    scene.addComponent(entity, spriteForType(snapshot));
 }
 
 // Shows the newest tick of this frame; older ticks than the displayed one are dropped

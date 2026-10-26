@@ -29,7 +29,5 @@ constexpr uint8_t INPUT_UNUSED_BITS = 0xE0; // must be 0
 constexpr uint8_t NO_PLAYER = 0xFF;
 constexpr uint8_t DEFAULT_VARIANT = 0;
 constexpr uint8_t ENEMY_VARIANT_2 = 1;
-constexpr uint8_t BOX_SHAPE = 0;
-constexpr uint8_t CIRCLE_SHAPE = 1;
 
 } // namespace rtype_protocol

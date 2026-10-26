@@ -15,20 +15,14 @@
 #include "Position.hpp"
 #include "RTypeMessages.hpp"
 #include "ServerPlayers.hpp"
-#include "Sprite.hpp"
 #include "Type.hpp"
 #include "Velocity.hpp"
-#include <array>
 #include <iostream>
 #include <memory>
 
 namespace
 {
 constexpr std::size_t MAX_BUFFERED_INPUTS = 2;
-
-std::array<ColorRGBA, rtype_protocol::MAX_PLAYERS> const PLAYER_COLORS{
-    ColorRGBA{0, 228, 48, 255}, ColorRGBA{0, 0, 255, 255}, ColorRGBA{255, 0, 255, 255},
-    ColorRGBA{255, 0, 0, 255}};
 
 Entity spawnShip(Scene &scene, std::uint8_t slot)
 {
@@ -37,7 +31,6 @@ Entity spawnShip(Scene &scene, std::uint8_t slot)
     scene.addComponent(ship, PlayerId{slot});
     scene.addComponent(ship, Position{100.0f, 200.0f + 100.0f * static_cast<float>(slot)});
     scene.addComponent(ship, Velocity{0.0f, 0.0f});
-    scene.addComponent(ship, Sprite{BoxShape{103.0f, 50.0f}, PLAYER_COLORS.at(slot)});
     scene.addComponent(ship,
                        Collider2D{BoxShape{103.0f, 50.0f},
                                   [&scene](Entity a, Entity other) {

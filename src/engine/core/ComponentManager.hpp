@@ -16,13 +16,15 @@
 class ComponentManager
 {
   public:
+    // Idempotent: every plugin registers the components it uses, a second call is a no-op
     template <typename Component> void registerComponent()
     {
         const std::type_index key(typeid(Component));
 
-        if (_componentTypes.find(key) != _componentTypes.end()) {
-            throw MultipleComponentDefinition(typeid(Component).name());
-        }
+        if (_componentTypes.find(key) != _componentTypes.end())
+            return;
+        if (_nextComponentType >= MAX_COMPONENTS)
+            throw EngineError("Too many component types (MAX_COMPONENTS)");
 
         _componentTypes.insert({key, _nextComponentType});
         _componentPools.insert({key, std::make_unique<ComponentPool<Component>>()});

@@ -188,15 +188,9 @@ target_include_directories(r-type_server PRIVATE
     src/plugins/Physics
     src/plugins/Physics/components
     src/plugins/Physics/systems
-    src/plugins/Renderer/components
-    src/plugins/Renderer/systems
     src/plugins/Network
     src/plugins/Network/resources
     src/plugins/Network/systems
-)
-
-target_include_directories(r-type_server SYSTEM PRIVATE
-    "${raylib_SOURCE_DIR}/src"
 )
 
 target_link_libraries(r-type_server PRIVATE asio)

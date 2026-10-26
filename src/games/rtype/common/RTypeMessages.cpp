@@ -60,12 +60,6 @@ static void writeEntity(ByteWriter &writer, SnapshotEntity const &entity)
     writer.write<std::uint8_t>(static_cast<std::uint8_t>(entity.type));
     writer.write<std::uint8_t>(entity.playerId);
     writer.write<std::uint8_t>(entity.variant);
-    writer.write<float>(entity.width);
-    writer.write<float>(entity.height);
-    writer.write<std::uint8_t>(entity.shape);
-    writer.write<std::int8_t>(entity.drawOrder);
-    for (std::uint8_t channel : entity.color)
-        writer.write<std::uint8_t>(channel);
 }
 
 static SnapshotEntity readEntity(ByteReader &reader)
@@ -79,14 +73,6 @@ static SnapshotEntity readEntity(ByteReader &reader)
     entity.type = static_cast<EntType>(type);
     entity.playerId = reader.read<std::uint8_t>();
     entity.variant = reader.read<std::uint8_t>();
-    entity.width = reader.read<float>();
-    entity.height = reader.read<float>();
-    entity.shape = reader.read<std::uint8_t>();
-    entity.drawOrder = reader.read<std::int8_t>();
-    for (std::uint8_t &channel : entity.color)
-        channel = reader.read<std::uint8_t>();
-    if (entity.shape > rtype_protocol::CIRCLE_SHAPE)
-        throw NetError("Snapshot entity shape out of range");
     if (entity.type == PLAYER && entity.playerId >= rtype_protocol::MAX_PLAYERS)
         throw NetError("Snapshot player id out of range");
     return entity;

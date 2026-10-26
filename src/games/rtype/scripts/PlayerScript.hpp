@@ -1,11 +1,11 @@
 #ifndef PLAYERSCRIPT_HPP_
 #define PLAYERSCRIPT_HPP_
 
+#include "Collider2D.hpp"
 #include "Position.hpp"
 #include "Scene.hpp"
 #include "Script.hpp"
 #include "Shape.hpp"
-#include "Sprite.hpp"
 
 class PlayerScript : public GringoEntityScript
 {
@@ -19,13 +19,13 @@ inline void PlayerScript::onStart(Scene &, Entity &) {}
 inline void PlayerScript::onUpdate(Scene &scene, Entity &entity)
 {
     Position &position = scene.getComponent<Position>(entity);
-    Sprite &sprite = scene.getComponent<Sprite>(entity);
-    float offsetX = std::holds_alternative<BoxShape>(sprite.shape)
-                        ? std::get<BoxShape>(sprite.shape).width / 2.0f
-                        : std::get<CircleShape>(sprite.shape).radius;
-    float offsetY = std::holds_alternative<BoxShape>(sprite.shape)
-                        ? std::get<BoxShape>(sprite.shape).height / 2.0f
-                        : std::get<CircleShape>(sprite.shape).radius;
+    Collider2D &collider = scene.getComponent<Collider2D>(entity);
+    float offsetX = std::holds_alternative<BoxShape>(collider.shape)
+                        ? std::get<BoxShape>(collider.shape).width / 2.0f
+                        : std::get<CircleShape>(collider.shape).radius;
+    float offsetY = std::holds_alternative<BoxShape>(collider.shape)
+                        ? std::get<BoxShape>(collider.shape).height / 2.0f
+                        : std::get<CircleShape>(collider.shape).radius;
 
     if (position.x - offsetX < 0.0f)
         position.x = offsetX;
