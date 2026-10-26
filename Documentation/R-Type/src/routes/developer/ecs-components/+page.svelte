@@ -12,6 +12,7 @@ struct PlayerId {
 enum EntType { PLAYER, ENEMY, BULLET, OBSTACLE, OTHER };
 struct Type {
     EntType type;
+    std::uint8_t variant = 0; // e.g. ENEMY_VARIANT_2
 };
 
 enum class Timing { AT_LAUNCH, ON_UPDATE };
@@ -48,13 +49,13 @@ struct Sprite {
     std::string texturePath;    // empty: drawn as a plain shape
 };`;
 
-	const registerExample = `// client: Application constructor, then each plugin's build()
-_scene.registerComponent<Position>();      // ComponentType 0
-_scene.registerComponent<Script>();        // ComponentType 1
-_scene.registerComponent<Type>();          // ComponentType 2
-app._scene.registerComponent<Sprite>();    // ComponentType 3 (RayLibRenderer::build)
-app._scene.registerComponent<Velocity>();  // ComponentType 4 (Physics::build)
-app._scene.registerComponent<Collider2D>(); // ComponentType 5 (Physics::build)`;
+	const registerExample = `// client: Application constructor, then each plugin's build() in the order of main.cpp
+_scene.registerComponent<Position>();       // ComponentType 0 (Application)
+_scene.registerComponent<Script>();         // ComponentType 1 (Application)
+app._scene.registerComponent<Sprite>();     // ComponentType 2 (RayLibRenderer::build)
+app._scene.registerComponent<Velocity>();   // ComponentType 3 (Physics::build)
+app._scene.registerComponent<Collider2D>(); // ComponentType 4 (Physics::build)
+scene.registerComponent<Type>();            // ComponentType 5 (RTypeClientPlugin::build)`;
 
 	const useExample = `scene.addComponent(player, Position{0.0f, 200.0f});
 
@@ -171,7 +172,9 @@ Entity enemy = _prefabs.InstantiatePrefab("Enemy", _scene); // createEntity() + 
 	<li>{@render c('PlayerId')}: the id of the player that owns the entity (server only).</li>
 	<li>
 		{@render c('Type')}: what the entity is ({@render c('PLAYER')}, {@render c('ENEMY')},
-		{@render c('BULLET')}, {@render c('OBSTACLE')} or {@render c('OTHER')}, used for the stars).
+		{@render c('BULLET')}, {@render c('OBSTACLE')} or {@render c('OTHER')}, used for the stars),
+		plus a {@render c('variant')} for a second kind of the same type. It is what the snapshot sends:
+		the client maps it to a {@render c('Sprite')}.
 	</li>
 	<li>
 		{@render c('Script')}: a function run by the {@render c('ScriptSystem')}, at launch or on every
@@ -183,7 +186,7 @@ Entity enemy = _prefabs.InstantiatePrefab("Enemy", _scene); // createEntity() + 
 		{@render c('CircleShape')}) and the function called when it touches another entity.
 	</li>
 	<li>
-		{@render c('Sprite')}: how the entity is drawn. A {@render c('BoxShape')} or
+		{@render c('Sprite')} (client only, the server never registers it): how the entity is drawn. A {@render c('BoxShape')} or
 		{@render c('CircleShape')} gives its size, a texture (when {@render c('texturePath')} is set) is
 		stretched to that size, otherwise the shape is filled with {@render c('color')}.
 		{@render c('drawOrder')} decides what is drawn on top.
@@ -196,7 +199,7 @@ Entity enemy = _prefabs.InstantiatePrefab("Enemy", _scene); // createEntity() + 
 
 <h2 class="mt-9 text-lg font-semibold">Registering a component</h2>
 <p class="mt-3 max-w-[100ch] leading-7">
-	Each component type must be registered once, before it is used. Registering gives the type its
+	Each component type must be registered before it is used. Registering gives the type its
 	{@render c('ComponentType')}, which is its bit in the entities' {@render c('ComponentSet')}, and
 	creates the pool that stores its values. Registration is split between the
 	{@render c('Application')} constructor, which registers the basic components, and the
@@ -205,13 +208,16 @@ Entity enemy = _prefabs.InstantiatePrefab("Enemy", _scene); // createEntity() + 
 </p>
 {@render code(registerExample)}
 <p class="mt-3 max-w-[100ch] leading-7">
-	The server has its own {@render c('Scene')} and registers its own set in the
-	{@render c('GameLoop')} constructor ({@render c('src/server/game/game_loop.cpp')}), so the same
-	component can have a different id on the client and on the server.
+	The server is another binary with its own plugins ({@render c('Physics')},
+	{@render c('NetworkPlugin')}, {@render c('RTypeServerPlugin')}), so the same component can have a
+	different id on the client and on the server. Ids never go on the wire.
 </p>
 <p class="mt-3 max-w-[100ch] leading-7">
-	Registering the same type twice throws {@render c('MultipleComponentDefinition')}. Using a type
-	that is not registered throws {@render c('ComponentNotRegisteredError')}.
+	Registration is <strong>idempotent</strong>: registering a type that is already registered does
+	nothing. Each plugin registers every component it uses, without caring whether another plugin
+	already did, so plugins can be combined in any order. Registering more than
+	{@render c('MAX_COMPONENTS')} (32) types throws {@render c('EngineError')}. Using a type that is
+	not registered throws {@render c('ComponentNotRegisteredError')}.
 </p>
 
 <h2 class="mt-9 text-lg font-semibold">Using components</h2>
@@ -306,9 +312,8 @@ Entity enemy = _prefabs.InstantiatePrefab("Enemy", _scene); // createEntity() + 
 <h2 class="mt-9 text-lg font-semibold">Good to know</h2>
 <ul class="mt-3 max-w-[100ch] list-disc space-y-1.5 pl-5 leading-7">
 	<li>
-		The engine supports up to {@render c('MAX_COMPONENTS')} (32) component types. This is not
-		checked at registration: a 33rd type only fails when its bit is set in a
-		{@render c('ComponentSet')}.
+		The engine supports up to {@render c('MAX_COMPONENTS')} (32) component types. Registering a
+		33rd type throws {@render c('EngineError')}; registering one again does not count.
 	</li>
 	<li>
 		Adding a component an entity already has throws {@render c('MultipleComponentDefinition')},

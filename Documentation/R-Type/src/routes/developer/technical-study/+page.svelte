@@ -177,10 +177,10 @@
 {@render table(sync)}
 <p class="mt-3 max-w-[100ch] leading-7">
 	Full snapshots make the server the only authority and survive any packet loss, which is what a
-	first prototype needs. Cost: each entity is 25 bytes, so 60 entities are about 1.5 KB per tick, or
-	about 90 KB/s per player at 60 ticks per second. The server already keeps the last 64 snapshots
-	({@render c('_snapshotHistory')}) and the clients send back {@render c('lastSnapshotTick')}, which
-	is what delta snapshots will need.
+	first prototype needs. Cost: each entity is 11 bytes (position, type, player id, variant: the
+	client picks the look), so 60 entities are about 0.7 KB per tick, or about 40 KB/s per player at
+	60 ticks per second. Delta snapshots would need a snapshot history on the server and an
+	acknowledged tick from the clients, neither exists yet.
 </p>
 
 <h2 class="mt-9 text-lg font-semibold">5. Algorithms and data structures</h2>
