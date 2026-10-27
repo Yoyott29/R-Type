@@ -25,13 +25,18 @@ struct Text {
     Position position;
     int fontSize;
     std::string text;
+    ColorRGBA color;
 };
 
-struct Button {
+struct UiRectangle {
     Position position;
     int width;
     int height;
+    ColorRGBA color;
+};
+
+struct Button {
+    UiRectangle rectangle;
     Text text;
     std::function<void()> onClick;
 };
-

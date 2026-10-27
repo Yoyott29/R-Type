@@ -5,27 +5,35 @@
 ** main
 */
 
-#include <iostream>
-#include <raylib.h>
-#include "Menu.hpp"
-#include "Structs.hpp"
+#include <memory>
+#include "MainMenu.hpp"
+#include "TemplateMenu.hpp"
+#include "EditorMenu.hpp"
 #include "RaylibRenderer.hpp"
-
 
 int main(void)
 {
     RaylibRenderer renderer;
-    Menu menu(renderer);
-    
     renderer.initWindow(1920, 1080, "Gringo Engine");
 
-    while (!WindowShouldClose() && menu.isRunning()) {
+    std::unique_ptr<AMenu> currentMenu = std::make_unique<MainMenu>(renderer);
+
+    while (!WindowShouldClose() && currentMenu->isRunning()) {
         renderer.startDrawing();
         renderer.clearScreen(ColorRGBA{0, 0, 0, 255});
-        // menu.update();
-        menu.update();
+        currentMenu->update();
         renderer.endDrawing();
-    }
 
+        const std::string next = currentMenu->getSwitchMenu();
+        
+        if (next == "TemplateMenu")
+            currentMenu = std::make_unique<TemplateMenu>(renderer);
+        else if (next == "MainMenu")
+            currentMenu = std::make_unique<MainMenu>(renderer);
+        else if (next == "EditorMenu") {
+            std::string templateName = static_cast<TemplateMenu*>(currentMenu.get())->getTemplate();
+            currentMenu = std::make_unique<EditorMenu>(renderer, templateName);
+        }
+    }
     return 0;
 }
