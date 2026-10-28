@@ -11,6 +11,7 @@
 #include "ResourceManager.hpp"
 #include "Script.hpp"
 #include "SystemManager.hpp"
+#include "ThreadPool.hpp"
 #include <memory>
 #include <type_traits>
 #include <utility>
@@ -119,10 +120,13 @@ class Scene
         _resourceManager->removeResource<Resource>();
     }
 
+    ThreadPool &getThreadPool() { return *_threadPool; }
+
   private:
     std::unique_ptr<EntityManager> _entityManager;
     std::unique_ptr<ComponentManager> _componentManager;
     std::unique_ptr<SystemManager> _systemManager;
     std::unique_ptr<ResourceManager> _resourceManager;
+    std::unique_ptr<ThreadPool> _threadPool;
     std::queue<Entity> _destroyQueue;
 };

@@ -11,7 +11,8 @@ Scene::Scene()
     : _entityManager(std::make_unique<EntityManager>()),
       _componentManager(std::make_unique<ComponentManager>()),
       _systemManager(std::make_unique<SystemManager>()),
-      _resourceManager(std::make_unique<ResourceManager>())
+      _resourceManager(std::make_unique<ResourceManager>()),
+      _threadPool(std::make_unique<ThreadPool>())
 {
 }
 

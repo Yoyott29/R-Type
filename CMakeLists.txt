@@ -75,6 +75,7 @@ add_executable(${PROJECT_NAME}
     src/engine/core/TickTimeManager.cpp
     src/engine/core/EntityManager.cpp
     src/engine/systems/SystemManager.cpp
+    src/engine/systems/ThreadPool.cpp
     src/engine/prefabs/Prefab.cpp
     src/engine/prefabs/PrefabsManager.cpp
     src/engine/systems/ScriptSystem.cpp
@@ -157,6 +158,7 @@ add_executable(r-type_server
     src/engine/core/Scene.cpp
     src/engine/core/EntityManager.cpp
     src/engine/systems/SystemManager.cpp
+    src/engine/systems/ThreadPool.cpp
     src/engine/prefabs/Prefab.cpp
     src/engine/prefabs/PrefabsManager.cpp
     src/plugins/Physics/Physics.cpp
