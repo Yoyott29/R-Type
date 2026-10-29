@@ -21,5 +21,4 @@ class NetworkPlugin : public IPlugin
   private:
     void build(Scene &scene);
     void cleanup(Scene &scene);
-    NetworkConfig _config;
 };

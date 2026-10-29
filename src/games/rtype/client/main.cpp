@@ -7,9 +7,7 @@
 
 #include "Application.hpp"
 #include "NetworkConfig.hpp"
-#include "PluginLoader.hpp"
 #include "rtype_protocol.hpp"
-#include <array>
 #include <asio.hpp>
 #include <charconv>
 #include <cstring>
@@ -18,8 +16,7 @@
 #include <string>
 
 // Loaded in this order from the plugins folder next to the executable
-static constexpr std::array<char const *, 4> PLUGINS = {"RayLibRenderer", "Physics", "Network",
-                                                        "RTypeClient"};
+static constexpr char const *PLUGINS[] = {"RayLibRenderer", "Physics", "Network", "RTypeClient"};
 
 static std::optional<uint16_t> parsePort(const char *arg)
 {
@@ -70,13 +67,11 @@ int main(int argc, char **argv)
 
     if (checkArgs(argc, argv, ip, port) == 84)
         return 84;
-    // Declared outside the try: the plugins' code must stay loaded while their errors are caught
-    PluginLoader loader;
     try {
         Application application;
         application._scene.addResource<NetworkConfig>(NetworkConfig::client(ip, port));
         for (char const *plugin : PLUGINS)
-            application.addPlugin(loader.load(plugin));
+            application.addPlugin(plugin);
         std::cout << "Connecting to " << ip << ":" << port << "\n" << std::flush;
         application.run();
     } catch (std::exception const &error) {

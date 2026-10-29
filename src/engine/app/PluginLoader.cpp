@@ -34,8 +34,6 @@ void *findSymbol(void *library, char const *name)
     return reinterpret_cast<void *>(GetProcAddress(static_cast<HMODULE>(library), name));
 }
 
-void closeLibrary(void *library) { FreeLibrary(static_cast<HMODULE>(library)); }
-
 std::filesystem::path executablePath()
 {
     std::wstring buffer(MAX_PATH, L'\0');
@@ -62,8 +60,6 @@ void *openLibrary(std::filesystem::path const &path) { return dlopen(path.c_str(
 
 void *findSymbol(void *library, char const *name) { return dlsym(library, name); }
 
-void closeLibrary(void *library) { dlclose(library); }
-
 std::filesystem::path executablePath()
 {
     std::error_code error;
@@ -76,25 +72,20 @@ std::filesystem::path executablePath()
 #endif
 } // namespace
 
-PluginLoader::PluginLoader(std::filesystem::path directory) : _directory(std::move(directory)) {}
-
-PluginLoader::~PluginLoader()
+PluginLoader::PluginLoader(std::filesystem::path directory)
+    : _directory(directory.empty() ? executablePath().parent_path() / "plugins"
+                                   : std::move(directory))
 {
-    for (auto it = _libraries.rbegin(); it != _libraries.rend(); ++it)
-        closeLibrary(*it);
 }
 
-std::shared_ptr<IPlugin> PluginLoader::load(std::string const &name)
+std::shared_ptr<IPlugin> PluginLoader::load(std::string const &name) const
 {
-    if (_directory.empty())
-        _directory = executablePath().parent_path() / "plugins";
     std::filesystem::path const path =
         std::filesystem::absolute(_directory / (name + LIBRARY_SUFFIX));
 
     void *library = openLibrary(path);
     if (!library)
         throw PluginLoadError(name, lastError());
-    _libraries.push_back(library);
 
     auto create = reinterpret_cast<CreatePluginFunction>(findSymbol(library, PLUGIN_ENTRY_POINT));
     if (!create)

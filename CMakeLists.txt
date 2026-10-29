@@ -101,15 +101,14 @@ target_include_directories(rtype_engine PUBLIC
 
 target_link_libraries(rtype_engine PRIVATE ${CMAKE_DL_LIBS})
 
+# Asio and PluginLoader pull in windows.h, whose GDI/USER declarations (Rectangle, CloseWindow,
+# LoadImage, SendInput...) clash with raylib and our own names. PUBLIC: every target links the engine
+target_compile_definitions(rtype_engine PUBLIC
+    "$<$<PLATFORM_ID:Windows>:NOGDI;NOUSER;WIN32_LEAN_AND_MEAN>"
+)
+
 # MSVC exports nothing from a DLL by default: export every engine function for the plugins
 set_target_properties(rtype_engine PROPERTIES WINDOWS_EXPORT_ALL_SYMBOLS ON)
-
-# Asio and PluginLoader pull in windows.h, whose GDI/USER declarations (Rectangle, CloseWindow,
-# LoadImage, SendInput...) clash with raylib and our own names
-set(RTYPE_WINDOWS_DEFINITIONS NOGDI NOUSER WIN32_LEAN_AND_MEAN)
-if(WIN32)
-    target_compile_definitions(rtype_engine PRIVATE ${RTYPE_WINDOWS_DEFINITIONS})
-endif()
 
 # ============================================================
 # Plugins (one shared library each, loaded at runtime from plugins/)
@@ -123,13 +122,9 @@ function(add_plugin target name)
         PREFIX ""
         LIBRARY_OUTPUT_DIRECTORY ${RTYPE_PLUGIN_DIRECTORY}
         RUNTIME_OUTPUT_DIRECTORY ${RTYPE_PLUGIN_DIRECTORY}
-        WINDOWS_EXPORT_ALL_SYMBOLS ON
         INSTALL_RPATH "\$ORIGIN;\$ORIGIN/.."
     )
     target_link_libraries(${target} PUBLIC rtype_engine)
-    if(WIN32)
-        target_compile_definitions(${target} PRIVATE ${RTYPE_WINDOWS_DEFINITIONS})
-    endif()
 endfunction()
 
 add_plugin(plugin_renderer RayLibRenderer
@@ -180,6 +175,9 @@ target_include_directories(plugin_network PUBLIC
 )
 
 target_link_libraries(plugin_network PUBLIC asio)
+
+# Exports NetTransport, Packet... for the R-Type plugins (the others only export createPlugin)
+set_target_properties(plugin_network PROPERTIES WINDOWS_EXPORT_ALL_SYMBOLS ON)
 
 add_plugin(plugin_rtype_client RTypeClient
     src/games/rtype/client/RTypeClientPlugin.cpp
@@ -237,10 +235,6 @@ target_include_directories(${PROJECT_NAME} PRIVATE
 )
 
 target_link_libraries(${PROJECT_NAME} PRIVATE rtype_engine asio)
-
-if(WIN32)
-    target_compile_definitions(${PROJECT_NAME} PRIVATE ${RTYPE_WINDOWS_DEFINITIONS})
-endif()
 
 # The executables only load the plugins at runtime: build them too, so they are next to the binaries
 add_dependencies(${PROJECT_NAME} plugin_renderer plugin_physics plugin_network plugin_rtype_client)

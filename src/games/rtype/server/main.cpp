@@ -7,10 +7,8 @@
 
 #include "Application.hpp"
 #include "NetworkConfig.hpp"
-#include "PluginLoader.hpp"
 #include "ServerLoop.hpp"
 #include "rtype_protocol.hpp"
-#include <array>
 #include <asio.hpp>
 #include <charconv>
 #include <cstring>
@@ -20,7 +18,7 @@
 #include <string>
 
 // Loaded in this order from the plugins folder next to the executable
-static constexpr std::array<char const *, 3> PLUGINS = {"Physics", "Network", "RTypeServer"};
+static constexpr char const *PLUGINS[] = {"Physics", "Network", "RTypeServer"};
 
 static std::optional<uint16_t> parsePort(const char *arg)
 {
@@ -77,13 +75,11 @@ int main(int argc, char **argv)
 
     if (check_args(argc, argv, ip, port) == 84)
         return 84;
-    // Declared outside the try: the plugins' code must stay loaded while their errors are caught
-    PluginLoader loader;
     try {
         Application app;
         app._scene.addResource<NetworkConfig>(NetworkConfig::server(port, ip));
         for (char const *plugin : PLUGINS)
-            app.addPlugin(loader.load(plugin));
+            app.addPlugin(plugin);
         std::cout << "Server listening on ip : " << ip << '\n';
         std::cout << "Server listening on port : " << port << '\n';
         installStopSignals();

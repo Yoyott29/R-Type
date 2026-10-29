@@ -21,16 +21,16 @@ void NetworkPlugin::cleanup(Application &app) { cleanup(app._scene); }
 
 void NetworkPlugin::build(Scene &scene)
 {
-    _config = scene.getResource<NetworkConfig>();
+    auto const &config = scene.getResource<NetworkConfig>();
     std::optional<Endpoint> server;
-    if (_config.role == NetRole::Client) {
+    if (config.role == NetRole::Client) {
         Endpoint endpoint{};
-        scene.addResource<UdpSocket>(UdpSocket::bindClient(_config.host, _config.port, endpoint));
+        scene.addResource<UdpSocket>(UdpSocket::bindClient(config.host, config.port, endpoint));
         server = endpoint;
     } else {
-        scene.addResource<UdpSocket>(UdpSocket::bindServer(_config.port, _config.host));
+        scene.addResource<UdpSocket>(UdpSocket::bindServer(config.port, config.host));
     }
-    scene.addResource<NetTransport>(_config, server);
+    scene.addResource<NetTransport>(config, server);
     scene.addResource<Events<PeerConnected>>();
     scene.addResource<Events<PeerDisconnected>>();
     scene.addResource<Events<NetMessage>>();
@@ -49,7 +49,7 @@ void NetworkPlugin::cleanup(Scene &scene)
     auto &transport = scene.getResource<NetTransport>();
 
     // A client's only peer is the server, id 0; disconnect(0) also abandons a handshake
-    if (_config.role == NetRole::Client) {
+    if (scene.getResource<NetworkConfig>().role == NetRole::Client) {
         if (transport.state() != ConnectionState::Disconnected)
             transport.disconnect(0);
     } else {
