@@ -7,6 +7,7 @@
 
 #include "RayLibRenderer.hpp"
 #include "EngineError.hpp"
+#include "PluginApi.hpp"
 #include <functional>
 #include <variant>
 
@@ -111,3 +112,5 @@ void RayLibRenderer::unloadTextures()
     }
     _textures.clear();
 }
+
+PLUGIN_EXPORT IPlugin *createPlugin() { return new RayLibRenderer(); }

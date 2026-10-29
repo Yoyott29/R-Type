@@ -11,11 +11,9 @@
 #include "NetReceiveSystem.hpp"
 #include "NetSendSystem.hpp"
 #include "NetTransport.hpp"
+#include "PluginApi.hpp"
 #include "UdpSocket.hpp"
 #include <optional>
-#include <utility>
-
-NetworkPlugin::NetworkPlugin(NetworkConfig config) : _config(std::move(config)) {}
 
 void NetworkPlugin::build(Application &app) { build(app._scene); }
 
@@ -23,6 +21,7 @@ void NetworkPlugin::cleanup(Application &app) { cleanup(app._scene); }
 
 void NetworkPlugin::build(Scene &scene)
 {
+    _config = scene.getResource<NetworkConfig>();
     std::optional<Endpoint> server;
     if (_config.role == NetRole::Client) {
         Endpoint endpoint{};
@@ -59,3 +58,5 @@ void NetworkPlugin::cleanup(Scene &scene)
     }
     flushToSocket(transport, scene.getResource<UdpSocket>());
 }
+
+PLUGIN_EXPORT IPlugin *createPlugin() { return new NetworkPlugin(); }

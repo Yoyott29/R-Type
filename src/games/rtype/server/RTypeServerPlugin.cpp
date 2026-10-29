@@ -14,6 +14,7 @@
 #include "NetTransport.hpp"
 #include "PlayerId.hpp"
 #include "PlayerInputSystem.hpp"
+#include "PluginApi.hpp"
 #include "Position.hpp"
 #include "PrefabsManager.hpp"
 #include "ScriptSystem.hpp"
@@ -129,3 +130,5 @@ void RTypeServerPlugin::build(Application &app)
 }
 
 void RTypeServerPlugin::cleanup(Application &) { std::cout << "Closing server\n" << std::flush; }
+
+PLUGIN_EXPORT IPlugin *createPlugin() { return new RTypeServerPlugin(); }
