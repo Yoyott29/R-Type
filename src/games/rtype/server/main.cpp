@@ -7,10 +7,6 @@
 
 #include "Application.hpp"
 #include "NetworkConfig.hpp"
-#include "NetworkPlugin.hpp"
-#include "Physics.hpp"
-#include "RTypeMessages.hpp"
-#include "RTypeServerPlugin.hpp"
 #include "ServerLoop.hpp"
 #include "rtype_protocol.hpp"
 #include <asio.hpp>
@@ -18,9 +14,11 @@
 #include <cstring>
 #include <exception>
 #include <iostream>
-#include <memory>
 #include <optional>
 #include <string>
+
+// Loaded in this order from the plugins folder next to the executable
+static constexpr char const *PLUGINS[] = {"Physics", "Network", "RTypeServer"};
 
 static std::optional<uint16_t> parsePort(const char *arg)
 {
@@ -79,9 +77,9 @@ int main(int argc, char **argv)
         return 84;
     try {
         Application app;
-        app.addPlugin(std::make_shared<Physics>());
-        app.addPlugin(std::make_shared<NetworkPlugin>(NetworkConfig::server(port, ip)));
-        app.addPlugin(std::make_shared<RTypeServerPlugin>());
+        app._scene.addResource<NetworkConfig>(NetworkConfig::server(port, ip));
+        for (char const *plugin : PLUGINS)
+            app.addPlugin(plugin);
         std::cout << "Server listening on ip : " << ip << '\n';
         std::cout << "Server listening on port : " << port << '\n';
         installStopSignals();

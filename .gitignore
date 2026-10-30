@@ -4,6 +4,11 @@
 /r-type_server.exe
 /r-type_client.exe
 
+# Engine and plugin libraries
+/*.so
+/*.dll
+/plugins/
+
 # Build directories
 /build/
 /build-windows/

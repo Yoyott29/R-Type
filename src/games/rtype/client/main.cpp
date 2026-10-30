@@ -6,18 +6,17 @@
 */
 
 #include "Application.hpp"
-#include "NetworkPlugin.hpp"
-#include "Physics.hpp"
-#include "RTypeClientPlugin.hpp"
-#include "RayLibRenderer.hpp"
+#include "NetworkConfig.hpp"
 #include "rtype_protocol.hpp"
 #include <asio.hpp>
 #include <charconv>
 #include <cstring>
 #include <iostream>
-#include <memory>
 #include <optional>
 #include <string>
+
+// Loaded in this order from the plugins folder next to the executable
+static constexpr char const *PLUGINS[] = {"RayLibRenderer", "Physics", "Network", "RTypeClient"};
 
 static std::optional<uint16_t> parsePort(const char *arg)
 {
@@ -70,10 +69,9 @@ int main(int argc, char **argv)
         return 84;
     try {
         Application application;
-        application.addPlugin(std::make_shared<RayLibRenderer>());
-        application.addPlugin(std::make_shared<Physics>());
-        application.addPlugin(std::make_shared<NetworkPlugin>(NetworkConfig::client(ip, port)));
-        application.addPlugin(std::make_shared<RTypeClientPlugin>(ip, port));
+        application._scene.addResource<NetworkConfig>(NetworkConfig::client(ip, port));
+        for (char const *plugin : PLUGINS)
+            application.addPlugin(plugin);
         std::cout << "Connecting to " << ip << ":" << port << "\n" << std::flush;
         application.run();
     } catch (std::exception const &error) {

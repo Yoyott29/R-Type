@@ -93,3 +93,12 @@ class OutOfRangeEntityError : public EngineError
   public:
     OutOfRangeEntityError() : EngineError("Entity out of range") {}
 };
+
+class PluginLoadError : public EngineError
+{
+  public:
+    PluginLoadError(std::string const &plugin, std::string const &reason)
+        : EngineError("Could not load the plugin " + plugin + ": " + reason)
+    {
+    }
+};

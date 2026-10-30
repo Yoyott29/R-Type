@@ -9,6 +9,7 @@
 #include "Collider2D.hpp"
 #include "Collider2DSystem.hpp"
 #include "MovementSystem.hpp"
+#include "PluginApi.hpp"
 #include "Position.hpp"
 #include "Velocity.hpp"
 
@@ -38,3 +39,5 @@ void Physics::cleanup(Application &app)
     (void)app;
     // Cleanup logic for the Physics plugin
 }
+
+PLUGIN_EXPORT IPlugin *createPlugin() { return new Physics(); }

@@ -15,8 +15,8 @@
 #include <raylib.h>
 #include <string>
 #include <unordered_map>
-#define WINDOW_WIDTH 1920
-#define WINDOW_HEIGHT 1080
+#define WORLD_WIDTH 1920
+#define WORLD_HEIGHT 1080
 #define WINDOW_TITLE "R-Type"
 
 class RayLibRenderer : public IPlugin, public IRenderer

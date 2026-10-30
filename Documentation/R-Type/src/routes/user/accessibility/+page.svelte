@@ -31,7 +31,7 @@
 <h3 class="mt-4 font-semibold">Missing</h3>
 <ul class="mt-2 max-w-[100ch] list-disc space-y-1.5 pl-6 leading-7">
 	<li>The four ships have the same shape and differ only by color (green, blue, magenta, red). Green and red are hard to tell apart for color-blind players: a number or a shape per player is planned.</li>
-	<li>The window is fixed to 1920 by 1080 and cannot be zoomed or scaled.</li>
+	<li>The window size is chosen at startup to fit the monitor, up to 1920 by 1080, and cannot be resized or zoomed while playing.</li>
 	<li>No sound cues for blind or low-vision players, and no volume or subtitle settings once sound is added.</li>
 	<li>The stars always scroll in the background; there is no option to turn them off.</li>
 </ul>
