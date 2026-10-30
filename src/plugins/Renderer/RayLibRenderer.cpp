@@ -48,11 +48,7 @@ void RayLibRenderer::build(Application &app)
     SetTargetFPS(60);
 }
 
-void RayLibRenderer::cleanup(Application &app)
-{
-    (void)app;
-    //   Cleanup logic for the RayLibRenderer plugin
-}
+void RayLibRenderer::cleanup(Application &app) { (void)app; }
 
 void RayLibRenderer::beginFrame()
 {

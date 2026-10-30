@@ -17,8 +17,8 @@ bool seqNewer(std::uint16_t a, std::uint16_t b);
 // Incoming packet counters since the last takeStats()
 struct ConnectionStats {
     std::uint32_t received = 0;
-    std::uint32_t missing = 0;   // seq gaps not (yet) filled
-    std::uint32_t late = 0;      // arrived out of order
+    std::uint32_t missing = 0; // seq gaps not (yet) filled
+    std::uint32_t late = 0;    // arrived out of order
     std::uint32_t duplicate = 0;
 };
 
