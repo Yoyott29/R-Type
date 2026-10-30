@@ -157,7 +157,7 @@ PostUpdate       RenderSystem (draws the frame)`;
 		the systems each plugin registers.
 	</li>
 	<li>
-		<strong class="font-semibold">RayLibRenderer</strong> opens the 1920 x 1080 window, registers
+		<strong class="font-semibold">RayLibRenderer</strong> opens the window (up to 1920 x 1080, fitted to the monitor), registers
 		{@render c('Sprite')}, {@render c('GetInput')} and {@render c('RenderSystem')}.
 		<strong class="font-semibold">Physics</strong> registers {@render c('Velocity')},
 		{@render c('Collider2D')}, {@render c('MovementSystem')} and {@render c('Collider2DSystem')}.
