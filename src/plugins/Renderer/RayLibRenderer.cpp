@@ -21,9 +21,7 @@ static void fitWindowToMonitor()
     int const monitorWidth = GetMonitorWidth(monitor);
     int const monitorHeight = GetMonitorHeight(monitor);
     Vector2 const monitorPosition = GetMonitorPosition(monitor);
-    float const scale =
-        std::min({1.0f, monitorWidth * WINDOW_MONITOR_USAGE / WORLD_WIDTH,
-                  monitorHeight * WINDOW_MONITOR_USAGE / WORLD_HEIGHT});
+    float const scale = std::min({1.0f, monitorWidth * WINDOW_MONITOR_USAGE / WORLD_WIDTH, monitorHeight * WINDOW_MONITOR_USAGE / WORLD_HEIGHT});
     int const width = static_cast<int>(WORLD_WIDTH * scale);
     int const height = static_cast<int>(WORLD_HEIGHT * scale);
 
@@ -68,11 +66,7 @@ void RayLibRenderer::build(Application &app)
     SetTargetFPS(60);
 }
 
-void RayLibRenderer::cleanup(Application &app)
-{
-    (void)app;
-    //   Cleanup logic for the RayLibRenderer plugin
-}
+void RayLibRenderer::cleanup(Application &app) { (void)app; }
 
 void RayLibRenderer::beginFrame()
 {
