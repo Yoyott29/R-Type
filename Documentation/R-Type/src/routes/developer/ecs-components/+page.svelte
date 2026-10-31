@@ -47,15 +47,21 @@ struct Sprite {
     ColorRGBA color;
     int drawOrder = 0;          // smaller is drawn first
     std::string texturePath;    // empty: drawn as a plain shape
+};
+
+struct SoundEffect {
+    std::string path;
+    bool play = false;          // set to true to play the sound once
 };`;
 
 	const registerExample = `// client: Application constructor, then each plugin's build() in the order of main.cpp
 _scene.registerComponent<Position>();       // ComponentType 0 (Application)
 _scene.registerComponent<Script>();         // ComponentType 1 (Application)
-app._scene.registerComponent<Sprite>();     // ComponentType 2 (RayLibRenderer::build)
-app._scene.registerComponent<Velocity>();   // ComponentType 3 (Physics::build)
-app._scene.registerComponent<Collider2D>(); // ComponentType 4 (Physics::build)
-scene.registerComponent<Type>();            // ComponentType 5 (RTypeClientPlugin::build)`;
+app._scene.registerComponent<Sprite>();      // ComponentType 2 (RayLibRenderer::build)
+app._scene.registerComponent<SoundEffect>(); // ComponentType 3 (RayLibRenderer::build)
+app._scene.registerComponent<Velocity>();    // ComponentType 4 (Physics::build)
+app._scene.registerComponent<Collider2D>();  // ComponentType 5 (Physics::build)
+scene.registerComponent<Type>();             // ComponentType 6 (RTypeClientPlugin::build)`;
 
 	const useExample = `scene.addComponent(player, Position{0.0f, 200.0f});
 
@@ -191,7 +197,17 @@ Entity enemy = _prefabs.InstantiatePrefab("Enemy", _scene); // createEntity() + 
 		stretched to that size, otherwise the shape is filled with {@render c('color')}.
 		{@render c('drawOrder')} decides what is drawn on top.
 	</li>
+	<li>
+		{@render c('SoundEffect')} (client only): a sound attached to the entity. Nothing plays until a
+		system or a script sets {@render c('play')} to true, then the {@render c('SoundSystem')} plays
+		{@render c('path')} once and sets {@render c('play')} back to false.
+	</li>
 </ul>
+<p class="mt-3 max-w-[100ch] leading-7">
+	The background music is not a component: it does not belong to an entity, so it is the
+	{@render c('BackgroundMusic')} resource ({@render c('src/plugins/Renderer/resources/SoundManager.hpp')}).
+	A game that wants music adds it with {@render c('addResource<BackgroundMusic>')}.
+</p>
 <p class="mt-3 max-w-[100ch] leading-7">
 	{@render c('src/plugins/Network/components/Socket.hpp')} is stored as a resource
 	({@render c('addResource<Socket>')}), not as a component.

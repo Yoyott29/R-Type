@@ -11,7 +11,9 @@
 #include "IRenderer.hpp"
 #include "KeyboardInput.hpp"
 #include "RenderSystem.hpp"
+#include "SoundSystem.hpp"
 #include "Sprite.hpp"
+#include <optional>
 #include <raylib.h>
 #include <string>
 #include <unordered_map>
@@ -31,10 +33,18 @@ class RayLibRenderer : public IPlugin, public IRenderer
     void clearBackground() override;
     void drawSprite(Position const &position, Sprite const &sprite) override;
     void endFrame() override;
+    void playSound(std::string const &path) override;
+    void playMusic(std::string const &path) override;
+    void stopMusic() override;
 
   private:
     std::unordered_map<std::string, Texture2D> _textures;
+    std::unordered_map<std::string, Sound> _sounds;
+    std::optional<Music> _music;
 
     Texture2D &getTexture(std::string const &path);
     void unloadTextures();
+    Sound &getSound(std::string const &path);
+    void unloadSounds();
+    void unloadMusic();
 };
