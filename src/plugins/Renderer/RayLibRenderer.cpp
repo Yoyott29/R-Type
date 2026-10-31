@@ -8,11 +8,16 @@
 #include "RayLibRenderer.hpp"
 #include "EngineError.hpp"
 #include <functional>
+#include <iostream>
 #include <variant>
 
 RayLibRenderer::~RayLibRenderer()
 {
     unloadTextures();
+    unloadSounds();
+    unloadMusic();
+    if (IsAudioDeviceReady())
+        CloseAudioDevice();
     if (IsWindowReady())
         CloseWindow();
 }
@@ -40,6 +45,7 @@ void RayLibRenderer::build(Application &app)
     InitWindow(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE);
     if (!IsWindowReady())
         throw EngineError("Could not open the window");
+    InitAudioDevice();
     SetTargetFPS(60);
 }
 
@@ -49,7 +55,12 @@ void RayLibRenderer::cleanup(Application &app)
     //   Cleanup logic for the RayLibRenderer plugin
 }
 
-void RayLibRenderer::beginFrame() { BeginDrawing(); }
+void RayLibRenderer::beginFrame()
+{
+    if (_music)
+        UpdateMusicStream(*_music);
+    BeginDrawing();
+}
 
 void RayLibRenderer::clearBackground() { ClearBackground({0, 0, 0, 255}); }
 
@@ -110,4 +121,59 @@ void RayLibRenderer::unloadTextures()
             UnloadTexture(texture);
     }
     _textures.clear();
+}
+
+void RayLibRenderer::playSound(std::string const &path)
+{
+    if (!IsAudioDeviceReady())
+        return;
+    PlaySound(getSound(path));
+}
+
+Sound &RayLibRenderer::getSound(std::string const &path)
+{
+    auto [iterator, inserted] = _sounds.try_emplace(path);
+    if (inserted) {
+        iterator->second = LoadSound(path.c_str());
+        if (!IsSoundValid(iterator->second)) {
+            _sounds.erase(iterator);
+            throw FileNotFound(path);
+        }
+    }
+    return iterator->second;
+}
+
+void RayLibRenderer::unloadSounds()
+{
+    for (auto &[path, sound] : _sounds) {
+        (void)path;
+        UnloadSound(sound);
+    }
+    _sounds.clear();
+}
+
+void RayLibRenderer::playMusic(std::string const &path)
+{
+    if (!IsAudioDeviceReady())
+        return;
+    unloadMusic();
+
+    Music music = LoadMusicStream(path.c_str());
+    if (!IsMusicValid(music)) {
+        std::cerr << "Could not load the music " << path << '\n';
+        return;
+    }
+    _music = music;
+    PlayMusicStream(*_music);
+}
+
+void RayLibRenderer::stopMusic() { unloadMusic(); }
+
+void RayLibRenderer::unloadMusic()
+{
+    if (!_music)
+        return;
+    StopMusicStream(*_music);
+    UnloadMusicStream(*_music);
+    _music.reset();
 }
