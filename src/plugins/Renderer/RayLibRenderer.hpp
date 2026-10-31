@@ -11,6 +11,7 @@
 #include "IRenderer.hpp"
 #include "KeyboardInput.hpp"
 #include "RenderSystem.hpp"
+#include "SoundSystem.hpp"
 #include "Sprite.hpp"
 #include <optional>
 #include <raylib.h>

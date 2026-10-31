@@ -28,10 +28,16 @@ void RayLibRenderer::build(Application &app)
 
     // register components
     app._scene.registerComponent<Sprite>();
+    app._scene.registerComponent<SoundEffect>();
 
     // Register the GetInput system and add the KeyboardInput resource
     app._scene.addResource<KeyboardInput>();
     app._scene.registerSystem<GetInput>(PrepUpdate);
+
+    app._scene.registerSystem<SoundSystem>(PostUpdate);
+    ComponentSet soundRequirements;
+    soundRequirements.set(app._scene.getComponentType<SoundEffect>());
+    app._scene.setSystemComponentSet<SoundSystem>(soundRequirements);
 
     // Register the render system
     auto renderSystem = app._scene.registerSystem<RenderSystem>(PostUpdate);
