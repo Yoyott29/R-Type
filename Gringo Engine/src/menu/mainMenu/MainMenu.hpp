@@ -10,14 +10,16 @@
 
 #include "AMenu.hpp"
 
-class MainMenu : public AMenu {
-    public:
-        MainMenu(IRenderer& renderer);
-        ~MainMenu() override = default;
+class MainMenu : public AMenu
+{
+  public:
+    MainMenu(IRenderer &renderer);
+    ~MainMenu() override = default;
 
-    protected:
-        void initTexts() override;
-        void initButtons() override;
+  protected:
+    void initTexts() override;
+    void initButtons() override;
+    void initRectangles() override;
 };
 
 #endif /* !MAINMENU_HPP_ */

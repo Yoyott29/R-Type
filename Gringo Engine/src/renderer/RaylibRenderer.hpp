@@ -21,10 +21,16 @@ class RaylibRenderer : public IRenderer {
     void clearScreen(ColorRGBA color) override;
     void startDrawing() override;
     void endDrawing() override;
+    bool shouldClose() const override;
 
 
     // Getters
     Position getTextSize(const std::string& text, int fontSize) override;
+    Position getMousePosition() const override;
+    bool isMouseButtonPressed(MouseButtons button) const override;
+    bool isMouseButtonDown(MouseButtons button) const override;
+    bool isKeyPressed(KeyboardKeys key) const override;
+    int getNextCharacter() const override;
 
     // Drawing functions
     void drawRectangle(Position pos, int width, int height, ColorRGBA color) override;

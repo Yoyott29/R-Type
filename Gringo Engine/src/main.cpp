@@ -18,7 +18,7 @@ int main(void)
 
     std::unique_ptr<AMenu> currentMenu = std::make_unique<MainMenu>(renderer);
 
-    while (!WindowShouldClose() && currentMenu->isRunning()) {
+    while (!renderer.shouldClose() && currentMenu->isRunning()) {
         renderer.startDrawing();
         renderer.clearScreen(ColorRGBA{0, 0, 0, 255});
         currentMenu->update();

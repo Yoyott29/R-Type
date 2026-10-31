@@ -19,9 +19,15 @@ class IRenderer
       virtual void clearScreen(ColorRGBA color) = 0;
       virtual void startDrawing() = 0;
       virtual void endDrawing() = 0;
+      virtual bool shouldClose() const = 0;
 
       // Getters
       virtual Position getTextSize(const std::string& text, int fontSize) = 0;
+      virtual Position getMousePosition() const = 0;
+      virtual bool isMouseButtonPressed(MouseButtons button) const = 0;
+      virtual bool isMouseButtonDown(MouseButtons button) const = 0;
+      virtual bool isKeyPressed(KeyboardKeys key) const = 0;
+      virtual int getNextCharacter() const = 0;
 
       // Drawing functions
       virtual void drawRectangle(Position pos, int width, int height, ColorRGBA color) = 0;

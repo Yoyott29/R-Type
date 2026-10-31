@@ -10,19 +10,21 @@
 
 #include "AMenu.hpp"
 
-class TemplateMenu : public AMenu {
-    public:
-        TemplateMenu(IRenderer& renderer);
-        ~TemplateMenu() override = default;
+class TemplateMenu : public AMenu
+{
+  public:
+    TemplateMenu(IRenderer &renderer);
+    ~TemplateMenu() override = default;
 
-        std::string getTemplate() const { return _template; }
-        void setTemplate(const std::string& templateName) { _template = templateName; }
+    std::string getTemplate() const { return _template; }
+    void setTemplate(const std::string &templateName) { _template = templateName; }
 
-    protected:
-        void initTexts() override;
-        void initButtons() override;
+  protected:
+    void initTexts() override;
+    void initButtons() override;
+    void initRectangles() override;
 
-        std::string _template;
+    std::string _template;
 };
 
 #endif /* !TemplateMENU_HPP_ */

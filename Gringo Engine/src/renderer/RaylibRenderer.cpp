@@ -17,8 +17,9 @@ void RaylibRenderer::initWindow(int width, int height, const std::string& title)
 {
     SetTraceLogLevel(LOG_NONE);
     InitWindow(width, height, title.c_str());
+    ToggleFullscreen();
     SetTargetFPS(60);
-    _font = LoadFontEx("Assets/Font.otf", 60, nullptr, 0);
+    _font = LoadFontEx("Assets/Font.ttf", 60, nullptr, 0);
 }
 
 
@@ -37,12 +38,41 @@ void RaylibRenderer::endDrawing()
     EndDrawing();
 }
 
+bool RaylibRenderer::shouldClose() const
+{
+    return WindowShouldClose();
+}
 
 Position RaylibRenderer::getTextSize(const std::string& text, int fontSize)
 {
     Vector2 textSize = MeasureTextEx(_font, text.c_str(), static_cast<float>(fontSize), 0);
 
     return {textSize.x, textSize.y};
+}
+
+Position RaylibRenderer::getMousePosition() const
+{
+    return {static_cast<float>(GetMouseX()), static_cast<float>(GetMouseY())};
+}
+
+bool RaylibRenderer::isMouseButtonPressed(MouseButtons button) const
+{
+    return IsMouseButtonPressed(static_cast<int>(button));
+}
+
+bool RaylibRenderer::isMouseButtonDown(MouseButtons button) const
+{
+    return IsMouseButtonDown(static_cast<int>(button));
+}
+
+bool RaylibRenderer::isKeyPressed(KeyboardKeys key) const
+{
+    return IsKeyPressed(static_cast<int>(key));
+}
+
+int RaylibRenderer::getNextCharacter() const
+{
+    return GetCharPressed();
 }
 
 void RaylibRenderer::drawRectangle(Position pos, int width, int height, ColorRGBA color)

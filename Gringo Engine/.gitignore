@@ -1,2 +1,29 @@
-Gringo
-build/
+# Binaries
+/r-type_server
+/r-type_client
+/r-type_server.exe
+/r-type_client.exe
+/TEST
+
+# Build directories
+/build/
+/build-windows/
+
+# CPM download cache
+/.cpm-cache/
+
+# Local / deployment files
+.vercel
+.env*
+
+# VsCode settings
+.vscode/
+
+#Other
+*.txt
+!Documentation/R-Type/src/routes/robots.txt/
+*.zip
+
+# Local test scripts
+/tests/send_inputs.sh
+/tests/server.sh
