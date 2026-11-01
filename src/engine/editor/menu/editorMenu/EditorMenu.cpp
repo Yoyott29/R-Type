@@ -160,9 +160,9 @@ void EditorMenu::initButtons()
         },
         BUTTON_COLOR2, BUTTON_COLOR3, TEXT_COLOR);
 
-    addButton("Build", {backCenterX - backButtonWidth - buttonSpacing, topBarCenterY},
-              backButtonWidth, buttonHeight, 22, [this]() { buildProject(); }, BUTTON_COLOR2,
-              BUTTON_COLOR3, TEXT_COLOR);
+    addButton(
+        "Build", {backCenterX - backButtonWidth - buttonSpacing, topBarCenterY}, backButtonWidth,
+        buttonHeight, 22, [this]() { buildProject(); }, BUTTON_COLOR2, BUTTON_COLOR3, TEXT_COLOR);
 
     float navY = WINDOW_HEIGHT - TOP_BAR_HEIGHT - buttonHeight / 2.0f;
 

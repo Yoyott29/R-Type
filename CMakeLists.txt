@@ -349,6 +349,7 @@ if(BUILD_GRINGO)
     # rtype_engine gives the editor Application, PluginLoader and the ECS headers
     # (ComponentDescriptor.hpp, Position.hpp, ColorRGBA.hpp)
     target_link_libraries(Gringo PRIVATE rtype_engine raylib nlohmann_json::nlohmann_json)
+
     # The editor lists the components of every plugin found in plugins/: build the ones that exist
     add_dependencies(Gringo plugin_renderer plugin_physics)
 

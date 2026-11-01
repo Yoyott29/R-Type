@@ -14,17 +14,12 @@ nlohmann::json Parser::serializeComponents(const std::vector<Component> &compone
     for (const auto &component : components) {
         nlohmann::json propertiesJson = nlohmann::json::array();
         for (const auto &property : component.properties) {
-            propertiesJson.push_back({
-                {"id", property.id},
-                {"name", property.name},
-                {"value", property.value},
-                {"type", static_cast<int>(property.type)}
-            });
+            propertiesJson.push_back({{"id", property.id},
+                                      {"name", property.name},
+                                      {"value", property.value},
+                                      {"type", static_cast<int>(property.type)}});
         }
-        componentsJson.push_back({
-            {"name", component.name},
-            {"properties", propertiesJson}
-        });
+        componentsJson.push_back({{"name", component.name}, {"properties", propertiesJson}});
     }
     return componentsJson;
 }
@@ -37,7 +32,8 @@ std::vector<Component> Parser::deserializeComponents(const nlohmann::json &json)
         Component component;
         component.name = componentJson.value("name", "");
 
-        for (const auto &propertyJson : componentJson.value("properties", nlohmann::json::array())) {
+        for (const auto &propertyJson :
+             componentJson.value("properties", nlohmann::json::array())) {
             Property property;
             property.id = propertyJson.value("id", 0);
             property.name = propertyJson.value("name", "");
@@ -58,18 +54,14 @@ void Parser::saveFile(const std::string &filePath, const SceneObjects &sceneObje
     root["prefabs"] = nlohmann::json::array();
 
     for (const auto &entity : sceneObjects._entities) {
-        root["entities"].push_back({
-            {"id", entity.id},
-            {"name", entity.name},
-            {"components", serializeComponents(entity.components)}
-        });
+        root["entities"].push_back({{"id", entity.id},
+                                    {"name", entity.name},
+                                    {"components", serializeComponents(entity.components)}});
     }
     for (const auto &prefab : sceneObjects._prefabs) {
-        root["prefabs"].push_back({
-            {"id", prefab.id},
-            {"name", prefab.name},
-            {"components", serializeComponents(prefab.components)}
-        });
+        root["prefabs"].push_back({{"id", prefab.id},
+                                   {"name", prefab.name},
+                                   {"components", serializeComponents(prefab.components)}});
     }
 
     std::filesystem::path fileName = filePath;
@@ -117,7 +109,7 @@ SceneObjects Parser::loadFile(const std::string &filePath)
     }
 
     result.projectName = root.value("projectName", filePath);
-    
+
     for (const auto &entityJson : root.value("entities", nlohmann::json::array())) {
         Entity entity;
         entity.id = entityJson.value("id", 0);
