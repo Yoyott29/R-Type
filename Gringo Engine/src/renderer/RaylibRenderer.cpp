@@ -15,6 +15,7 @@ RaylibRenderer::~RaylibRenderer()
 
 void RaylibRenderer::initWindow(int width, int height, const std::string& title)
 {
+    SetExitKey(KEY_NULL);
     SetTraceLogLevel(LOG_NONE);
     InitWindow(width, height, title.c_str());
     ToggleFullscreen();

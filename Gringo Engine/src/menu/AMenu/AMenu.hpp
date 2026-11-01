@@ -20,6 +20,15 @@
 #define BUTTON_COLOR4 ColorRGBA{22, 24, 29, 255}
 #define BUTTON_COLOR5 ColorRGBA{12, 13, 17, 255}
 
+enum class MenuType {
+    None,
+    MainMenu,
+    TemplateMenu,
+    NameMenu,
+    EditorMenu,
+    LoadMenu
+};
+
 class AMenu
 {
   public:
@@ -28,7 +37,8 @@ class AMenu
 
     virtual void update();
     bool isRunning() const { return _isRunning; }
-    const std::string &getSwitchMenu() const { return _switchMenu; }
+    MenuType getSwitchMenu() const { return _switchMenu; }
+    MenuType getCurrentMenu() const { return _currentMenu; }
 
   protected:
     virtual void initTexts() = 0;
@@ -61,7 +71,8 @@ class AMenu
     std::map<std::string, UiRectangle> _rectangles;
     bool _isRunning;
     IRenderer &_renderer;
-    std::string _switchMenu;
+    MenuType _switchMenu = MenuType::None;
+    MenuType _currentMenu = MenuType::None;
 
     std::string _pressedButtonName;
 };

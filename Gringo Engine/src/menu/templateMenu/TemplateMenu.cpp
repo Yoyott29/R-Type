@@ -9,6 +9,7 @@
 
 TemplateMenu::TemplateMenu(IRenderer &renderer) : AMenu(renderer), _template("default")
 {
+    _currentMenu = MenuType::TemplateMenu;
     initTexts();
     initButtons();
 }
@@ -23,33 +24,33 @@ void TemplateMenu::initButtons()
     addButton(
         "2D", {450, 400}, 300, 100, 30,
         [this]() {
-            _switchMenu = "EditorMenu";
+            _switchMenu = MenuType::NameMenu;
             setTemplate("2D");
         },
         BUTTON_COLOR1, BUTTON_COLOR3, TEXT_COLOR);
+    // addButton(
+    //     "Multiplayer 2D", {790, 400}, 300, 100, 30,
+    //     [this]() {
+    //         _switchMenu = MenuType::NameMenu;
+    //         setTemplate("Multiplayer 2D");
+    //     },
+    //     BUTTON_COLOR1, BUTTON_COLOR3, TEXT_COLOR);
+    // addButton(
+    //     "Platformer 2D", {1130, 400}, 300, 100, 30,
+    //     [this]() {
+    //         _switchMenu = MenuType::NameMenu;
+    //         setTemplate("Platformer 2D");
+    //     },
+    //     BUTTON_COLOR1, BUTTON_COLOR3, TEXT_COLOR);
+    // addButton(
+    //     "Endless Runner 2D", {1470, 400}, 300, 100, 30,
+    //     [this]() {
+    //         _switchMenu = MenuType::NameMenu;
+    //         setTemplate("Endless Runner 2D");
+    //     },
+    //     BUTTON_COLOR1, BUTTON_COLOR3, TEXT_COLOR);
     addButton(
-        "Multiplayer 2D", {790, 400}, 300, 100, 30,
-        [this]() {
-            _switchMenu = "EditorMenu";
-            setTemplate("Multiplayer 2D");
-        },
-        BUTTON_COLOR1, BUTTON_COLOR3, TEXT_COLOR);
-    addButton(
-        "Platformer 2D", {1130, 400}, 300, 100, 30,
-        [this]() {
-            _switchMenu = "EditorMenu";
-            setTemplate("Platformer 2D");
-        },
-        BUTTON_COLOR1, BUTTON_COLOR3, TEXT_COLOR);
-    addButton(
-        "Endless Runner 2D", {1470, 400}, 300, 100, 30,
-        [this]() {
-            _switchMenu = "EditorMenu";
-            setTemplate("Endless Runner 2D");
-        },
-        BUTTON_COLOR1, BUTTON_COLOR3, TEXT_COLOR);
-    addButton(
-        "Back", {1800, 50}, 200, 50, 20, [this]() { _switchMenu = "MainMenu"; }, BUTTON_COLOR1,
+        "Back", {1800, 50}, 200, 50, 20, [this]() { _switchMenu = MenuType::MainMenu; }, BUTTON_COLOR1,
         BUTTON_COLOR3, TEXT_COLOR);
 }
 

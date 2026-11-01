@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 #include "iostream"
+#include "Parser.hpp"
 
 #ifndef EDITORMENU_HPP_
 #define EDITORMENU_HPP_
@@ -30,29 +31,8 @@
 
 #define ITEMS_PER_PAGE 15
 
-#define COMPONENT_LIST = {"Sprite", "Collider", "Script"}
-#define COMPONENT_COLS = {COLORGBA{255, 0, 0, 255}, COLORRGBA{0, 255, 0, 255}, COLORRGBA{0, 0, 255, 255}}
-
-enum class valueType {
-    Int,
-    Float,
-    String,
-    Bool,
-    Color,
-    Shape,
-};    
-struct Property {
-    int id;
-    std::string name;
-    std::string value;
-    valueType type;
-};
-
-struct Component {
-    std::string name;
-    std::vector<Property> properties;
-    ColorRGBA color;
-};    
+#define SAVED_MESSAGE_FRAMES 180
+   
 
 enum class ObjectType {
     Entity,
@@ -62,7 +42,6 @@ enum class ObjectType {
 struct EditingText {
     std::string name;
 
-    std::string objectComponent;
     std::string objectProperty;
     bool editingName = false;
 
@@ -76,38 +55,31 @@ struct EditingText {
     int fontSize;
     std::string text;
     ColorRGBA color;
+
     bool active = false;
-};
-
-struct Entity {
-    int id;
-    std::string name;
-    std::vector<Component> components;
-};
-
-struct Prefab {
-    int id;
-    std::string name;
-    std::vector<Component> components;
 };
 
 
 class EditorMenu : public AMenu
 {
   public:
-    EditorMenu(IRenderer &renderer, std::string templateName);
-    ~EditorMenu() override = default;
+    EditorMenu(IRenderer &renderer, std::string templateName, std::string projectName, Parser &parser, SceneObjects sceneObjects);
+    ~EditorMenu() override;
 
     void update() override;
+    void saveProject();
+    void showPanel(const std::string &text);
 
     //INITIALIZATION
 
     void initTexts() override;
     void initButtons() override;
     void initRectangles() override;
-    void initPrefabs();
-    void initEntities();
+    Component createComponent(std::string componentName, std::vector<std::string> values = {});
+    void initPrefabs(SceneObjects sceneObjects);
+    void initEntities(SceneObjects sceneObjects);
     void initComponentTemplates();
+
 
     //ADDING AND REMOVING ENTITIES AND PREFABS
 
@@ -117,9 +89,11 @@ class EditorMenu : public AMenu
     void editPrefabName(int prefabId,  std::string &newName);
     void editObject(ObjectType objectType, int objectId);
 
-    void applyCurrentEdit();
     std::string getObjectName(ObjectType type, int id);
     std::string getObjectButtonName(ObjectType type, int id);
+    std::string cleanNumber(std::string text);
+    void applyCurrentEdit();
+    
 
     void refreshObjectList(ObjectType type);
     void changePage(ObjectType type, int delta);
@@ -131,6 +105,7 @@ class EditorMenu : public AMenu
 
     void updateObjectHeader();
     void changeComponentPage(int delta);
+    ColorRGBA getComponentColor(const std::string &name);
     
     void clearDisplayedComponents();
     void createComponents(std::vector<Component> components, ObjectType objectType, int objectId);
@@ -152,6 +127,8 @@ class EditorMenu : public AMenu
 
   private:
     std::string _template;
+    std::string _projectName;
+    Parser &_parser;
     std::vector<Component> _componentTemplates;
 
     std::vector<Entity> _entities;
@@ -165,8 +142,6 @@ class EditorMenu : public AMenu
     std::vector<std::string> _componentsRectangleNames;
     std::vector<std::string> _componentsButtonNames;
 
-    int _entityNumber = 0;
-    int _prefabNumber = 0;
     std::vector<std::string> _entityListNames;
     std::vector<std::string> _prefabListNames;
 
@@ -178,11 +153,9 @@ class EditorMenu : public AMenu
 
     std::vector<std::string> _pickerButtonNames;
 
-    bool _newComponentSelection = false;
-
-    bool editingName = false;
-
     bool _deleteObject = false;
+
+    int _savedMessageFrames = 0;
 
     std::vector<std::pair<Shape, std::string>> _shapeOptions = {
         {Shape::BoxShape, "Box"},
@@ -205,6 +178,14 @@ class EditorMenu : public AMenu
         {"Gray", {128, 128, 128, 255}},
         {"Black", {0, 0, 0, 255}},
         {"Transparent", {0, 0, 0, 0}},
+    };
+
+    std::map<std::string, ColorRGBA> _componentColors = {
+        {"Position", {58, 53, 63, 255}},
+        {"Velocity", {51, 59, 63, 255}},
+        {"Sprite",   {51, 56, 70, 255}},
+        {"Collider", {58, 57, 61, 255}},
+        {"Script",   {56, 53, 69, 255}},
     };
     
 };

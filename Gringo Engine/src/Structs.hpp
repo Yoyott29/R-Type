@@ -8,16 +8,14 @@
 #pragma once
 #include <functional>
 #include <string>
+#include <vector>
 
 struct Position {
     float x;
     float y;
 };
 
-enum class InputMouseButton {
-    Left
-};
-
+// Objects and Components structs
 
 struct ColorRGBA {
     unsigned char r;
@@ -25,6 +23,50 @@ struct ColorRGBA {
     unsigned char b;
     unsigned char a;
 };
+
+enum class valueType {
+    Int,
+    Float,
+    String,
+    Bool,
+    Color,
+    Shape,
+};   
+
+struct Property {
+    int id;
+    std::string name;
+    std::string value;
+    valueType type;
+};
+
+struct Component {
+    std::string name;
+    std::vector<Property> properties;
+    ColorRGBA color;
+};  
+struct Entity {
+    int id;
+    std::string name;
+    std::vector<Component> components;
+};
+
+struct Prefab {
+    int id;
+    std::string name;
+    std::vector<Component> components;
+};
+
+
+struct SceneObjects {
+    std::string projectName;
+    std::vector<Entity> _entities;
+    std::vector<Prefab> _prefabs;
+};
+
+
+
+// UI structs
 
 enum class Shape {
     BoxShape,
@@ -59,6 +101,10 @@ struct Button {
     Text text;
     std::function<void()> onClick;
 };
+
+
+
+// Keyboard keys enum
 
 enum class KeyboardKeys {
     Null                = 0,        // Key: NULL, used for no key pressed

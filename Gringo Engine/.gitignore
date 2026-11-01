@@ -8,6 +8,7 @@
 # Build directories
 /build/
 /build-windows/
+/gringo files/
 
 # CPM download cache
 /.cpm-cache/

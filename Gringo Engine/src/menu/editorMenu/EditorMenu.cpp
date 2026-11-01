@@ -9,20 +9,33 @@
 #include <algorithm>
 #include <utility>
 
-EditorMenu::EditorMenu(IRenderer &renderer, std::string templateName)
-    : AMenu(renderer), _template(templateName)
+EditorMenu::EditorMenu(IRenderer &renderer, std::string templateName, std::string projectName, Parser &parser, SceneObjects sceneObjects)
+    : AMenu(renderer), _template(templateName), _projectName(projectName), _parser(parser)
 {
-    initPrefabs();
-    initEntities();
+    _currentMenu = MenuType::EditorMenu;
+
+    if (_projectName.empty())
+        _projectName = sceneObjects.projectName;
+
+    initComponentTemplates();
+    initPrefabs(sceneObjects);
+    initEntities(sceneObjects);
 
     initTexts();
     initButtons();
     initRectangles();
-    initComponentTemplates();
 
-    _entityNumber = static_cast<int>(_entities.size());
-    _prefabNumber = static_cast<int>(_prefabs.size());
 }
+
+EditorMenu::~EditorMenu()
+{
+    try {
+        applyCurrentEdit();
+        _parser.saveFile(_projectName + ".gringo", SceneObjects{_projectName, _entities, _prefabs});
+    } catch (...) {
+    }
+}
+
 
 void EditorMenu::update()
 {
@@ -44,8 +57,43 @@ void EditorMenu::update()
                 unSelectButton(it->second);
         }
     }
+
+    if (_savedMessageFrames > 0 )
+    {
+        _savedMessageFrames -= 1;
+        if (_savedMessageFrames == 0)
+            removeText("Saved");
+    }
 }
 
+void EditorMenu::saveProject()
+{
+    applyCurrentEdit();
+    _parser.saveFile(_projectName + ".gringo", SceneObjects{_projectName, _entities, _prefabs});
+
+    const std::string message = "File saved...";
+    const Button &saveButton = _buttons.at("Save Project");
+    float textWidth = _renderer.getTextSize(message, 20).x;
+    float x = saveButton.rectangle.position.x - saveButton.rectangle.width / 2.0f - 20.0f - textWidth / 2.0f;
+
+    removeText("Saved");
+    unSelectButton(_buttons.at("Save Project"));
+    addText("Saved", {x, saveButton.rectangle.position.y}, 20, message, TEXT_COLOR);
+    _savedMessageFrames = SAVED_MESSAGE_FRAMES;
+}
+
+void EditorMenu::showPanel(const std::string &text)
+{
+    applyCurrentEdit();
+    clearDisplayedComponents();
+    removeText("PanelText");
+
+    if (text == "Settings") {
+        addText("PanelText", {WINDOW_WIDTH / 2.0f, WINDOW_HEIGHT / 2.0f}, 40, "Settings panel is not implemented yet.", TEXT_COLOR);
+    } else if (text == "Plugins") {
+        addText("PanelText", {WINDOW_WIDTH / 2.0f, WINDOW_HEIGHT / 2.0f}, 40, "Plugins panel is not implemented yet.", TEXT_COLOR);
+    }
+}
 
 //--------------------------------------------------------------------------------------------------------------------------------
 // INITIALIZATION
@@ -58,6 +106,7 @@ void EditorMenu::initTexts()
     addText("Prefabs", {WINDOW_WIDTH - 200, TOP_BAR_HEIGHT + 32}, 40, "Prefabs", TEXT_COLOR);
     addText("Entity Page", {200, WINDOW_HEIGHT - TOP_BAR_HEIGHT - 20}, 20, "1", TEXT_COLOR);
     addText("Prefab Page", {WINDOW_WIDTH - 200, WINDOW_HEIGHT - TOP_BAR_HEIGHT - 20}, 20, "1", TEXT_COLOR);
+    addText("Project Name", {WINDOW_WIDTH / 2.0f, WINDOW_HEIGHT - TOP_BAR_HEIGHT / 2.0f}, 20, _projectName, TEXT_COLOR);
 }
 
 void EditorMenu::initButtons()
@@ -73,14 +122,14 @@ void EditorMenu::initButtons()
     float backCenterX = WINDOW_WIDTH - sideMargin - backButtonWidth / 2.0f;
 
     // top bar buttons
-    addButton("Settings", {settingsCenterX, topBarCenterY}, buttonWidth, buttonHeight, 22, nullptr,
+    addButton("Settings", {settingsCenterX, topBarCenterY}, buttonWidth, buttonHeight, 22, [this]() { showPanel("Settings"); },
               BUTTON_COLOR2, BUTTON_COLOR3, TEXT_COLOR);
-    addButton("Plugins", {pluginsCenterX, topBarCenterY}, buttonWidth, buttonHeight, 22, nullptr,
+    addButton("Plugins", {pluginsCenterX, topBarCenterY}, buttonWidth, buttonHeight, 22, [this]() { showPanel("Plugins"); },
               BUTTON_COLOR2, BUTTON_COLOR3, TEXT_COLOR);
               
     addButton(
         "Back", {backCenterX, topBarCenterY}, backButtonWidth, buttonHeight, 22,
-        [this]() { _switchMenu = "TemplateMenu"; }, BUTTON_COLOR2, BUTTON_COLOR3, TEXT_COLOR);
+        [this]() { _template.empty() ? _switchMenu = MenuType::LoadMenu : _switchMenu = MenuType::TemplateMenu; saveProject(); }, BUTTON_COLOR2, BUTTON_COLOR3, TEXT_COLOR);
 
     addButton("Build", {backCenterX - backButtonWidth - buttonSpacing, topBarCenterY},
               backButtonWidth, buttonHeight, 22, nullptr, BUTTON_COLOR2, BUTTON_COLOR3, TEXT_COLOR);
@@ -96,7 +145,7 @@ void EditorMenu::initButtons()
               [this]() { changePage(ObjectType::Prefab, -1); }, BUTTON_COLOR4, BUTTON_COLOR5, TEXT_COLOR, "<");
     addButton("Next Prefab Page", {WINDOW_WIDTH - 130.0f, navY}, SIDEBAR_WIDTH / 6, buttonHeight / 2.0f, 18,
               [this]() { changePage(ObjectType::Prefab, 1); }, BUTTON_COLOR4, BUTTON_COLOR5, TEXT_COLOR, ">");
-    addButton("Save Project", {backCenterX, WINDOW_HEIGHT - TOP_BAR_HEIGHT/2.0f}, 150, 40, 20, nullptr,
+    addButton("Save Project", {backCenterX, WINDOW_HEIGHT - TOP_BAR_HEIGHT/2.0f}, 150, 40, 20, [this]() { saveProject(); },
               BUTTON_COLOR2, BUTTON_COLOR3, TEXT_COLOR);
 
     refreshObjectList(ObjectType::Entity);
@@ -127,57 +176,55 @@ void EditorMenu::initRectangles()
                  4, ColorRGBA{12, 13, 17, 255});
 }
 
-void EditorMenu::initPrefabs()
+Component EditorMenu::createComponent(std::string componentName, std::vector<std::string> values)
 {
-    Component position = {"Position", {{0, "PositionX", "0", valueType::Float}, {1, "PositionY", "0", valueType::Float}}, ColorRGBA{58, 53, 63, 255}};
-    Component sprite = {"Sprite", {{0, "Width", "32", valueType::Float}, {1, "Height", "32", valueType::Float}, {2, "TexturePath", "default.png", valueType::String}, {3, "Layer", "1", valueType::Float}, {4, "Color", "Transparent", valueType::Color}}, ColorRGBA{51, 56, 70, 255}};
-    Component collider = {"Collider", {{0, "Shape", "Box", valueType::Shape}, {1, "Width", "32", valueType::Float}, {2, "Height", "32", valueType::Float}, {3, "IsTrigger", "False", valueType::Bool}}, ColorRGBA{58, 57, 61, 255}};
+    for (const Component &componentTemplate : _componentTemplates) {
+        if (componentTemplate.name != componentName)
+            continue;
+    
+        Component component = componentTemplate;
 
-    Component enemyVelocity = {"Velocity", {{0, "Dx", "-5", valueType::Float}, {1, "Dy", "0", valueType::Float}}, ColorRGBA{51, 59, 63, 255}};
-    Component enemyScript = {"Script", {{0, "Path", "script.hpp", valueType::String}}, ColorRGBA{56, 53, 69, 255}};
+        for (int index = 0; index < static_cast<int>(values.size()) && index < static_cast<int>(component.properties.size()); ++index)
+            component.properties[index].value = values[index];
 
-    Component asteroidVelocity = {"Velocity", {{0, "Dx", "-2", valueType::Float}, {1, "Dy", "1", valueType::Float}}, ColorRGBA{51, 59, 63, 255}};
-    Component asteroidCollider = {"Collider", {{0, "Shape", "Circle", valueType::Shape}, {1, "Width", "32", valueType::Float}, {2, "Height", "32", valueType::Float}, {3, "IsTrigger", "False", valueType::Bool}}, ColorRGBA{58, 57, 61, 255}};
-    Component asteroidScript = {"Script", {{0, "Path", "script.hpp", valueType::String}}, ColorRGBA{56, 53, 69, 255}};
+        return component;
+    }
 
-    Component bulletVelocity = {"Velocity", {{0, "Dx", "10", valueType::Float}, {1, "Dy", "0", valueType::Float}}, ColorRGBA{51, 59, 63, 255}};
-    Component bulletCollider = {"Collider", {{0, "Shape", "Box", valueType::Shape}, {1, "Width", "8", valueType::Float}, {2, "Height", "8", valueType::Float}, {3, "IsTrigger", "True", valueType::Bool}}, ColorRGBA{58, 57, 61, 255}};
-
-    _prefabs = {
-        {0, "EnemyShip", {position, enemyVelocity, sprite, collider, enemyScript}},
-        {1, "Asteroid", {position, asteroidVelocity, sprite, asteroidCollider, asteroidScript}},
-        {2, "Bullet", {position, bulletVelocity, sprite, bulletCollider}}
-    };
+    return Component{componentName, {}, getComponentColor(componentName)};
 }
 
-void EditorMenu::initEntities()
+void EditorMenu::initPrefabs(SceneObjects sceneObjects)
 {
-    Component sprite = {"Sprite", {{0, "Width", "32", valueType::Float}, {1, "Height", "32", valueType::Float}, {2, "TexturePath", "default.png", valueType::String}, {3, "Layer", "1", valueType::Float}, {4, "Color", "Transparent", valueType::Color}}, ColorRGBA{51, 56, 70, 255}};
-    Component collider = {"Collider", {{0, "Shape", "Box", valueType::Shape}, {1, "Width", "32", valueType::Float}, {2, "Height", "32", valueType::Float}, {3, "IsTrigger", "False", valueType::Bool}}, ColorRGBA{58, 57, 61, 255}};
+    if (!sceneObjects._prefabs.empty()) {
+        _prefabs = sceneObjects._prefabs;
 
-    Component playerPosition = {"Position", {{0, "PositionX", "100", valueType::Float}, {1, "PositionY", "300", valueType::Float}}, ColorRGBA{58, 53, 63, 255}};
-    Component playerVelocity = {"Velocity", {{0, "Dx", "0", valueType::Float}, {1, "Dy", "0", valueType::Float}}, ColorRGBA{51, 59, 63, 255}};
-    Component playerScript = {"Script", {{0, "Path", "script.hpp", valueType::String}}, ColorRGBA{56, 53, 69, 255}};
+        for (Prefab &prefab : _prefabs) {
+            for (Component &component : prefab.components)
+                component.color = getComponentColor(component.name);
+        }
+        return;
+    }
+}
 
-    Component enemyPosition = {"Position", {{0, "PositionX", "900", valueType::Float}, {1, "PositionY", "200", valueType::Float}}, ColorRGBA{58, 53, 63, 255}};
-    Component enemyVelocity = {"Velocity", {{0, "Dx", "-3", valueType::Float}, {1, "Dy", "0", valueType::Float}}, ColorRGBA{51, 59, 63, 255}};
-    Component enemyScript = {"Script", {{0, "Path", "script.hpp", valueType::String}}, ColorRGBA{56, 53, 69, 255}};
+void EditorMenu::initEntities(SceneObjects sceneObjects)
+{
+    if (!sceneObjects._entities.empty()) {
+        _entities = sceneObjects._entities;
 
-    Component bulletPosition = {"Position", {{0, "PositionX", "132", valueType::Float}, {1, "PositionY", "300", valueType::Float}}, ColorRGBA{58, 53, 63, 255}};
-    Component bulletVelocity = {"Velocity", {{0, "Dx", "10", valueType::Float}, {1, "Dy", "0", valueType::Float}}, ColorRGBA{51, 59, 63, 255}};
-    Component bulletCollider = {"Collider", {{0, "Shape", "Box", valueType::Shape}, {1, "Width", "8", valueType::Float}, {2, "Height", "8", valueType::Float}, {3, "IsTrigger", "True", valueType::Bool}}, ColorRGBA{58, 57, 61, 255}};
+        for (Entity &entity : _entities) {
+            for (Component &component : entity.components)
+                component.color = getComponentColor(component.name);
+        }
+        return;
+    }
 
-    Component asteroidPosition = {"Position", {{0, "PositionX", "700", valueType::Float}, {1, "PositionY", "450", valueType::Float}}, ColorRGBA{58, 53, 63, 255}};
-    Component asteroidVelocity = {"Velocity", {{0, "Dx", "-2", valueType::Float}, {1, "Dy", "0", valueType::Float}}, ColorRGBA{51, 59, 63, 255}};
-    Component asteroidSprite = {"Sprite", {{0, "Width", "64", valueType::Float}, {1, "Height", "64", valueType::Float}, {2, "TexturePath", "default.png", valueType::String}, {3, "Layer", "1", valueType::Float}, {4, "Color", "Transparent", valueType::Color}}, ColorRGBA{51, 56, 70, 255}};
-    Component asteroidCollider = {"Collider", {{0, "Shape", "Circle", valueType::Shape}, {1, "Width", "64", valueType::Float}, {2, "Height", "64", valueType::Float}, {3, "IsTrigger", "False", valueType::Bool}}, ColorRGBA{58, 57, 61, 255}};
-    Component asteroidScript = {"Script", {{0, "Path", "script.hpp", valueType::String}}, ColorRGBA{56, 53, 69, 255}};
+    if (_template != "2D")
+        return;
 
     _entities = {
-        {0, "Player1", {playerPosition, playerVelocity, sprite, collider, playerScript}},
-        {1, "Enemy1", {enemyPosition, enemyVelocity, sprite, collider, enemyScript}},
-        {2, "Bullet1", {bulletPosition, bulletVelocity, sprite, bulletCollider}},
-        {3, "Asteroid1", {asteroidPosition, asteroidVelocity, asteroidSprite, asteroidCollider, asteroidScript}}
+        {0, "Player", {
+            createComponent("Position", {"100", "300"}),
+            createComponent("Sprite")}}
     };
 }
 
@@ -194,10 +241,10 @@ void EditorMenu::initComponentTemplates()
     };
 
     std::vector<Property> spriteProperties = {
-        {0, "Width", "32", valueType::Float},
-        {1, "Height", "32", valueType::Float},
+        {0, "Width", "32", valueType::Int},
+        {1, "Height", "32", valueType::Int},
         {2, "TexturePath", "default.png", valueType::String},
-        {3, "Layer", "1", valueType::Float},
+        {3, "Layer", "1", valueType::Int},
         {4, "Color", "Transparent", valueType::Color}
     };
 
@@ -214,11 +261,11 @@ void EditorMenu::initComponentTemplates()
 
 
 
-    Component position = {"Position", positionProperties, ColorRGBA{58, 53, 63, 255}};
-    Component velocity = {"Velocity", velocityProperties, ColorRGBA{51, 59, 63, 255}};
-    Component sprite = {"Sprite", spriteProperties, ColorRGBA{51, 56, 70, 255}};
-    Component collider = {"Collider", colliderProperties, ColorRGBA{58, 57, 61, 255}};
-    Component script = {"Script", scriptProperties, ColorRGBA{56, 53, 69, 255}};
+    Component position = {"Position", positionProperties, getComponentColor("Position")};
+    Component velocity = {"Velocity", velocityProperties, getComponentColor("Velocity")};
+    Component sprite = {"Sprite", spriteProperties, getComponentColor("Sprite")};
+    Component collider = {"Collider", colliderProperties, getComponentColor("Collider")};
+    Component script = {"Script", scriptProperties, getComponentColor("Script")};
 
     _componentTemplates = {position, velocity, sprite, collider, script};
 }
@@ -233,7 +280,6 @@ void EditorMenu::addNewEntity()
 
     int newId = _entities.empty() ? 1 : _entities.back().id + 1;
     _entities.push_back({newId, "Entity" + std::to_string(newId), {}});
-    _entityNumber++;
 
     _currentEntityPage = static_cast<int>((_entities.size() - 1) / ITEMS_PER_PAGE);
     refreshObjectList(ObjectType::Entity);
@@ -245,7 +291,6 @@ void EditorMenu::addNewPrefab()
 
     int newId = _prefabs.empty() ? 1 : _prefabs.back().id + 1;
     _prefabs.push_back({newId, "Prefab" + std::to_string(newId), {}});
-    _prefabNumber++;
 
     _currentPrefabPage = static_cast<int>((_prefabs.size() - 1) / ITEMS_PER_PAGE);
     refreshObjectList(ObjectType::Prefab);
@@ -313,21 +358,43 @@ std::string EditorMenu::getObjectButtonName(ObjectType type, int id)
     return (type == ObjectType::Entity ? "Entity_" : "Prefab_") + std::to_string(id);
 }
 
+std::string EditorMenu::cleanNumber(std::string text)
+{
+    if (!text.empty() && text.back() == '.')
+        text.pop_back();
+
+    bool hasMinusSign = !text.empty() && text.front() == '-';
+    int digitsStart = hasMinusSign ? 1 : 0;
+
+    if (static_cast<int>(text.size()) > digitsStart && text[digitsStart] == '.')
+        text.insert(digitsStart, "0");
+
+    if (text.empty() || text == "-")
+        return "0";
+
+    return text;
+}
+
 void EditorMenu::applyCurrentEdit()
 {
     if (!_currentlyUpdatedProperty.active)
         return;
 
-    if (_currentlyUpdatedProperty.text.empty()) {
-        if (_currentlyUpdatedProperty.editingName)
-            _currentlyUpdatedProperty.text =
-                (_selectedObjectType == ObjectType::Entity ? "Entity" : "Prefab") + std::to_string(_selectedObjectId);
-        else
-            _currentlyUpdatedProperty.text = "0";
+    std::string &currentText = _currentlyUpdatedProperty.text;
+    valueType type = _currentlyUpdatedProperty.type;
 
-        setButtonText(_currentlyUpdatedProperty.name, _currentlyUpdatedProperty.text);
-        updateObjectProperty();
+   
+    if (_currentlyUpdatedProperty.editingName) {
+        if (currentText.empty())
+            _currentlyUpdatedProperty.text = (_selectedObjectType == ObjectType::Entity ? "Entity" : "Prefab") + std::to_string(_selectedObjectId);
     }
+    else if (type == valueType::Int || type == valueType::Float) 
+        currentText = cleanNumber(currentText);
+    else if (currentText.empty())
+        currentText = "0";
+
+    setButtonText(_currentlyUpdatedProperty.name, currentText);
+    updateObjectProperty();
     _currentlyUpdatedProperty.active = false;
     _currentlyUpdatedProperty.editingName = false;
 }
@@ -445,11 +512,9 @@ void EditorMenu::deleteSelectedObject()
     if (type == ObjectType::Entity) {
         _entities.erase(std::remove_if(_entities.begin(), _entities.end(),
                         [id]( Entity &e) { return e.id == id; }), _entities.end());
-        _entityNumber = static_cast<int>(_entities.size());
     } else {
         _prefabs.erase(std::remove_if(_prefabs.begin(), _prefabs.end(),
                        [id]( Prefab &p) { return p.id == id; }), _prefabs.end());
-        _prefabNumber = static_cast<int>(_prefabs.size());
     }
 
     _selectedObjectId = -1;
@@ -472,6 +537,7 @@ void EditorMenu::updateObjectHeader()
 
 void EditorMenu::clearDisplayedComponents()
 {
+    removeText("PanelText");
     _currentlyUpdatedProperty.active = false;
     _deleteObject = false;
     for ( std::string &textName : _componentsTextNames)
@@ -485,6 +551,13 @@ void EditorMenu::clearDisplayedComponents()
     _componentsRectangleNames.clear();
     _componentsButtonNames.clear();
     _pickerButtonNames.clear();
+}
+
+ColorRGBA EditorMenu::getComponentColor(const std::string &name)
+{
+    auto componentColor = _componentColors.find(name);
+
+    return (componentColor != _componentColors.end()) ? componentColor->second : ColorRGBA{58, 57, 61, 255};
 }
 
 void EditorMenu::createComponents(std::vector<Component> components, ObjectType objectType, int objectId)
