@@ -32,6 +32,8 @@ void Application::addPlugin(const std::shared_ptr<IPlugin> &plugin)
     plugin->build(*this);
 }
 
+void Application::addPlugin(std::string const &name) { addPlugin(_loader.load(name)); }
+
 void Application::run()
 {
     using Clock = std::chrono::steady_clock;

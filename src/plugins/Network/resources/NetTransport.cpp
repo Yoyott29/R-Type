@@ -209,8 +209,9 @@ void NetTransport::logStats(TimePoint now)
             continue;
         ConnectionStats const stats = peer.connection.takeStats();
         std::uint32_t const expected = stats.received + stats.missing;
-        float const loss = expected == 0 ? 0.0f : 100.0f * static_cast<float>(stats.missing) /
-                                                      static_cast<float>(expected);
+        float const loss = expected == 0 ? 0.0f
+                                         : 100.0f * static_cast<float>(stats.missing) /
+                                               static_cast<float>(expected);
         std::cerr << "NetworkPlugin: peer " << peer.id << " | "
                   << static_cast<int>(static_cast<float>(stats.received) / seconds)
                   << " pkt/s | loss " << loss << "% (" << stats.missing << " missing) | late "

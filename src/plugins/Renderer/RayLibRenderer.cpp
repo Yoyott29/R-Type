@@ -7,6 +7,8 @@
 
 #include "RayLibRenderer.hpp"
 #include "EngineError.hpp"
+#include "PluginApi.hpp"
+#include <algorithm>
 #include <functional>
 #include <iostream>
 #include <variant>
@@ -48,24 +50,29 @@ void RayLibRenderer::build(Application &app)
 
     // raylib inits
     SetTraceLogLevel(LOG_NONE);
-    InitWindow(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE);
+    // raylib centers the window with unsigned sizes: a window taller than the monitor work area
+    // (1920x1080 on a 1080p monitor) would open off-screen, so start small and grow it afterwards
+    InitWindow(WORLD_WIDTH / 2, WORLD_HEIGHT / 2, WINDOW_TITLE);
     if (!IsWindowReady())
         throw EngineError("Could not open the window");
+    ToggleBorderlessWindowed();
     InitAudioDevice();
     SetTargetFPS(60);
 }
 
-void RayLibRenderer::cleanup(Application &app)
-{
-    (void)app;
-    //   Cleanup logic for the RayLibRenderer plugin
-}
+void RayLibRenderer::cleanup(Application &app) { (void)app; }
 
 void RayLibRenderer::beginFrame()
 {
-    if (_music)
+   if (_music)
         UpdateMusicStream(*_music);
+    // The game always draws in WORLD_WIDTH x WORLD_HEIGHT coordinates, whatever the window size
+    float const zoom = std::min(static_cast<float>(GetScreenWidth()) / WORLD_WIDTH,
+                                static_cast<float>(GetScreenHeight()) / WORLD_HEIGHT);
+    Vector2 const offset = {(static_cast<float>(GetScreenWidth()) - WORLD_WIDTH * zoom) / 2.0f,
+                            (static_cast<float>(GetScreenHeight()) - WORLD_HEIGHT * zoom) / 2.0f};
     BeginDrawing();
+    BeginMode2D({offset, {0.0f, 0.0f}, 0.0f, zoom});
 }
 
 void RayLibRenderer::clearBackground() { ClearBackground({0, 0, 0, 255}); }
@@ -104,7 +111,11 @@ void RayLibRenderer::drawSprite(Position const &position, Sprite const &sprite)
                 {sprite.color.r, sprite.color.g, sprite.color.b, sprite.color.a});
 }
 
-void RayLibRenderer::endFrame() { EndDrawing(); }
+void RayLibRenderer::endFrame()
+{
+    EndMode2D();
+    EndDrawing();
+}
 
 Texture2D &RayLibRenderer::getTexture(std::string const &path)
 {
@@ -183,3 +194,4 @@ void RayLibRenderer::unloadMusic()
     UnloadMusicStream(*_music);
     _music.reset();
 }
+PLUGIN_EXPORT IPlugin *createPlugin() { return new RayLibRenderer(); }

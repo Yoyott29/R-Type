@@ -8,24 +8,24 @@
 #include "RTypeClientPlugin.hpp"
 #include "ClientNetSystem.hpp"
 #include "ClientSession.hpp"
+#include "NetworkConfig.hpp"
+#include "PluginApi.hpp"
 #include "SendInputSystem.hpp"
 #include "SoundManager.hpp"
 #include "Type.hpp"
-#include <utility>
-
-RTypeClientPlugin::RTypeClientPlugin(std::string serverAddress, std::uint16_t serverPort)
-    : _server(std::move(serverAddress) + ":" + std::to_string(serverPort))
-{
-}
+#include <string>
 
 void RTypeClientPlugin::build(Application &app)
 {
     Scene &scene = app._scene;
     scene.registerComponent<Type>();
-    scene.addResource<ClientSession>().server = _server;
+    auto const &config = scene.getResource<NetworkConfig>();
+    scene.addResource<ClientSession>().server = config.host + ":" + std::to_string(config.port);
     scene.addResource<BackgroundMusic>().path = "Assets/Music/stage1.mp3";
     scene.registerSystem<ClientNetSystem>(PrepUpdate);
     scene.registerSystem<SendInputSystem>(Update);
 }
 
 void RTypeClientPlugin::cleanup(Application &) {}
+
+PLUGIN_EXPORT IPlugin *createPlugin() { return new RTypeClientPlugin(); }

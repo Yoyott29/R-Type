@@ -6,6 +6,7 @@
 */
 
 #pragma once
+#include "PluginLoader.hpp"
 #include "PrefabsManager.hpp"
 #include "Scene.hpp"
 #include <cstdint>
@@ -21,10 +22,13 @@ class Application
     Application();
     void run();
     void addPlugin(const std::shared_ptr<IPlugin> &plugin);
+    // Loads plugins/<name>.so (.dll on Windows) next to the executable and adds it
+    void addPlugin(std::string const &name);
 
     Scene _scene;
 
   private:
+    PluginLoader _loader;
     std::vector<std::shared_ptr<IPlugin>> _plugins;
 };
 
