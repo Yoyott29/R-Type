@@ -1,0 +1,76 @@
+{
+    "entities": [
+        {
+            "components": [
+                {
+                    "name": "Position",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "PositionX",
+                            "type": 1,
+                            "value": "100"
+                        },
+                        {
+                            "id": 1,
+                            "name": "PositionY",
+                            "type": 1,
+                            "value": "300"
+                        }
+                    ]
+                },
+                {
+                    "name": "Sprite",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Shape",
+                            "type": 5,
+                            "value": "Box"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Width",
+                            "type": 1,
+                            "value": "32"
+                        },
+                        {
+                            "id": 2,
+                            "name": "Height",
+                            "type": 1,
+                            "value": "32"
+                        },
+                        {
+                            "id": 3,
+                            "name": "Radius",
+                            "type": 1,
+                            "value": "16"
+                        },
+                        {
+                            "id": 4,
+                            "name": "Color",
+                            "type": 4,
+                            "value": "White"
+                        },
+                        {
+                            "id": 5,
+                            "name": "DrawOrder",
+                            "type": 0,
+                            "value": "0"
+                        },
+                        {
+                            "id": 6,
+                            "name": "TexturePath",
+                            "type": 2,
+                            "value": "default.png"
+                        }
+                    ]
+                }
+            ],
+            "id": 0,
+            "name": "Player"
+        }
+    ],
+    "prefabs": [],
+    "projectName": "OK"
+}

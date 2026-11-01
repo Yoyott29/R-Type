@@ -24,13 +24,16 @@ RayLibRenderer::~RayLibRenderer()
         CloseWindow();
 }
 
+void RayLibRenderer::registerComponents(Scene &scene)
+{
+    // register components
+    scene.registerComponent<Sprite>();
+    scene.registerComponent<SoundEffect>();
+}
+
 void RayLibRenderer::build(Application &app)
 {
     app._scene.addResource<std::reference_wrapper<IRenderer>>(*this);
-
-    // register components
-    app._scene.registerComponent<Sprite>();
-    app._scene.registerComponent<SoundEffect>();
 
     // Register the GetInput system and add the KeyboardInput resource
     app._scene.addResource<KeyboardInput>();
@@ -64,7 +67,7 @@ void RayLibRenderer::cleanup(Application &app) { (void)app; }
 
 void RayLibRenderer::beginFrame()
 {
-   if (_music)
+    if (_music)
         UpdateMusicStream(*_music);
     // The game always draws in WORLD_WIDTH x WORLD_HEIGHT coordinates, whatever the window size
     float const zoom = std::min(static_cast<float>(GetScreenWidth()) / WORLD_WIDTH,
