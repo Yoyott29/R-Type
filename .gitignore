@@ -3,6 +3,7 @@
 /r-type_client
 /r-type_server.exe
 /r-type_client.exe
+/Gringo
 
 # Engine and plugin libraries
 /*.so

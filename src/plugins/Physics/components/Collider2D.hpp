@@ -6,6 +6,7 @@
 */
 
 #pragma once
+#include "ComponentDescriptor.hpp"
 #include "Entity.hpp"
 #include "Shape.hpp"
 #include <cstdint>
@@ -19,4 +20,22 @@ struct Collider2D {
     std::function<void(Entity, Entity)> onCollision;
     std::uint32_t layer = 1;
     std::uint32_t mask = 0xFFFFFFFF;
+};
+
+template <> struct ComponentDescription<Collider2D> {
+    static constexpr bool isDescribed = true;
+
+    static ComponentDescriptor describe()
+    {
+        return {"Collider2D",
+                {
+                    {"Shape", valueType::Shape, "Box"},
+                    {"Width", valueType::Float, "32"},
+                    {"Height", valueType::Float, "32"},
+                    {"Radius", valueType::Float, "16"},
+                    {"Layer", valueType::Int, "1"},
+                    {"Mask", valueType::Int, "4294967295"},
+                },
+                {58, 57, 61, 255}};
+    }
 };

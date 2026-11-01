@@ -13,6 +13,7 @@ class Physics : public IPlugin
   public:
     Physics() = default;
     ~Physics() = default;
+    void registerComponents(Scene &scene) override;
     void build(Application &app) override;
     void cleanup(Application &app) override;
 };

@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2026
 ** R-Type
 ** File description:
-** Renderer interface
+** Game renderer interface
 */
 
 #pragma once

@@ -24,13 +24,16 @@ RayLibRenderer::~RayLibRenderer()
         CloseWindow();
 }
 
+void RayLibRenderer::registerComponents(Scene &scene)
+{
+    // register components
+    scene.registerComponent<Sprite>();
+    scene.registerComponent<SoundEffect>();
+}
+
 void RayLibRenderer::build(Application &app)
 {
     app._scene.addResource<std::reference_wrapper<IRenderer>>(*this);
-
-    // register components
-    app._scene.registerComponent<Sprite>();
-    app._scene.registerComponent<SoundEffect>();
 
     // Register the GetInput system and add the KeyboardInput resource
     app._scene.addResource<KeyboardInput>();
@@ -50,12 +53,9 @@ void RayLibRenderer::build(Application &app)
 
     // raylib inits
     SetTraceLogLevel(LOG_NONE);
-    // raylib centers the window with unsigned sizes: a window taller than the monitor work area
-    // (1920x1080 on a 1080p monitor) would open off-screen, so start small and grow it afterwards
-    InitWindow(WORLD_WIDTH / 2, WORLD_HEIGHT / 2, WINDOW_TITLE);
+    InitWindow(WORLD_WIDTH, WORLD_HEIGHT, WINDOW_TITLE);
     if (!IsWindowReady())
         throw EngineError("Could not open the window");
-    ToggleBorderlessWindowed();
     InitAudioDevice();
     SetTargetFPS(60);
 }
@@ -64,7 +64,7 @@ void RayLibRenderer::cleanup(Application &app) { (void)app; }
 
 void RayLibRenderer::beginFrame()
 {
-   if (_music)
+    if (_music)
         UpdateMusicStream(*_music);
     // The game always draws in WORLD_WIDTH x WORLD_HEIGHT coordinates, whatever the window size
     float const zoom = std::min(static_cast<float>(GetScreenWidth()) / WORLD_WIDTH,

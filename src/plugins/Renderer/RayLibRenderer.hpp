@@ -26,6 +26,7 @@ class RayLibRenderer : public IPlugin, public IRenderer
   public:
     RayLibRenderer() = default;
     ~RayLibRenderer();
+    void registerComponents(Scene &scene) override;
     void build(Application &app) override;
     void cleanup(Application &app) override;
 
