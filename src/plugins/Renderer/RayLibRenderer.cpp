@@ -10,11 +10,16 @@
 #include "PluginApi.hpp"
 #include <algorithm>
 #include <functional>
+#include <iostream>
 #include <variant>
 
 RayLibRenderer::~RayLibRenderer()
 {
     unloadTextures();
+    unloadSounds();
+    unloadMusic();
+    if (IsAudioDeviceReady())
+        CloseAudioDevice();
     if (IsWindowReady())
         CloseWindow();
 }
@@ -25,10 +30,16 @@ void RayLibRenderer::build(Application &app)
 
     // register components
     app._scene.registerComponent<Sprite>();
+    app._scene.registerComponent<SoundEffect>();
 
     // Register the GetInput system and add the KeyboardInput resource
     app._scene.addResource<KeyboardInput>();
     app._scene.registerSystem<GetInput>(PrepUpdate);
+
+    app._scene.registerSystem<SoundSystem>(PostUpdate);
+    ComponentSet soundRequirements;
+    soundRequirements.set(app._scene.getComponentType<SoundEffect>());
+    app._scene.setSystemComponentSet<SoundSystem>(soundRequirements);
 
     // Register the render system
     auto renderSystem = app._scene.registerSystem<RenderSystem>(PostUpdate);
@@ -45,6 +56,7 @@ void RayLibRenderer::build(Application &app)
     if (!IsWindowReady())
         throw EngineError("Could not open the window");
     ToggleBorderlessWindowed();
+    InitAudioDevice();
     SetTargetFPS(60);
 }
 
@@ -52,6 +64,8 @@ void RayLibRenderer::cleanup(Application &app) { (void)app; }
 
 void RayLibRenderer::beginFrame()
 {
+   if (_music)
+        UpdateMusicStream(*_music);
     // The game always draws in WORLD_WIDTH x WORLD_HEIGHT coordinates, whatever the window size
     float const zoom = std::min(static_cast<float>(GetScreenWidth()) / WORLD_WIDTH,
                                 static_cast<float>(GetScreenHeight()) / WORLD_HEIGHT);
@@ -126,4 +140,58 @@ void RayLibRenderer::unloadTextures()
     _textures.clear();
 }
 
+void RayLibRenderer::playSound(std::string const &path)
+{
+    if (!IsAudioDeviceReady())
+        return;
+    PlaySound(getSound(path));
+}
+
+Sound &RayLibRenderer::getSound(std::string const &path)
+{
+    auto [iterator, inserted] = _sounds.try_emplace(path);
+    if (inserted) {
+        iterator->second = LoadSound(path.c_str());
+        if (!IsSoundValid(iterator->second)) {
+            _sounds.erase(iterator);
+            throw FileNotFound(path);
+        }
+    }
+    return iterator->second;
+}
+
+void RayLibRenderer::unloadSounds()
+{
+    for (auto &[path, sound] : _sounds) {
+        (void)path;
+        UnloadSound(sound);
+    }
+    _sounds.clear();
+}
+
+void RayLibRenderer::playMusic(std::string const &path)
+{
+    if (!IsAudioDeviceReady())
+        return;
+    unloadMusic();
+
+    Music music = LoadMusicStream(path.c_str());
+    if (!IsMusicValid(music)) {
+        std::cerr << "Could not load the music " << path << '\n';
+        return;
+    }
+    _music = music;
+    PlayMusicStream(*_music);
+}
+
+void RayLibRenderer::stopMusic() { unloadMusic(); }
+
+void RayLibRenderer::unloadMusic()
+{
+    if (!_music)
+        return;
+    StopMusicStream(*_music);
+    UnloadMusicStream(*_music);
+    _music.reset();
+}
 PLUGIN_EXPORT IPlugin *createPlugin() { return new RayLibRenderer(); }

@@ -14,7 +14,8 @@ class System
 MovementSystem    Position + Velocity      no              yes             no
 Collider2DSystem  Position + Collider2D    no              yes             no
 ScriptSystem      Script                   no              yes             yes
-RenderSystem      Position + Sprite        yes             -               -`;
+RenderSystem      Position + Sprite        yes             -               -
+SoundSystem       SoundEffect              yes             -               -`;
 
 	const setupExample = `// Physics::build(Application &app)
 app._scene.registerSystem<MovementSystem>(FixedUpdate);
@@ -61,7 +62,7 @@ while (_scene.getResource<AppAlive>().alive) {
 };
 
 // Application constructor
-addPlugin(std::make_shared<RayLibRenderer>()); // GetInput, RenderSystem
+addPlugin(std::make_shared<RayLibRenderer>()); // GetInput, RenderSystem, SoundSystem
 addPlugin(std::make_shared<Physics>());        // MovementSystem, Collider2DSystem
 addPlugin(std::make_shared<Client>(serverAddress, serverPort)); // TryConnect, SendInput, ReadSocket`;
 
@@ -254,6 +255,14 @@ _scene.setSystemComponentSet<OffScreenSystem>(offScreenRequirements);`;
 		{@render c('Sprite::drawOrder')} (a stable sort, smallest first) and draws each one at its
 		position, so it never calls raylib directly. This sort keeps the stars (draw order -1) behind
 		everything else.
+	</li>
+	<li>
+		<strong class="font-semibold">SoundSystem</strong> ({@render c('src/plugins/Renderer/systems')},
+		{@render c('PostUpdate')}, {@render c('SoundEffect')}): plays the music of the
+		{@render c('BackgroundMusic')} resource when the game adds one (it changes track when
+		{@render c('path')} changes and stops when {@render c('enabled')} is false or the resource is
+		removed), then plays every {@render c('SoundEffect')} whose {@render c('play')} is true. Like the
+		{@render c('RenderSystem')}, it only goes through {@render c('IRenderer')}.
 	</li>
 </ul>
 <p class="mt-3 max-w-[100ch] leading-7">

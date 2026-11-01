@@ -11,6 +11,7 @@
 #include "NetworkConfig.hpp"
 #include "PluginApi.hpp"
 #include "SendInputSystem.hpp"
+#include "SoundManager.hpp"
 #include "Type.hpp"
 #include <string>
 
@@ -20,6 +21,7 @@ void RTypeClientPlugin::build(Application &app)
     scene.registerComponent<Type>();
     auto const &config = scene.getResource<NetworkConfig>();
     scene.addResource<ClientSession>().server = config.host + ":" + std::to_string(config.port);
+    scene.addResource<BackgroundMusic>().path = "Assets/Music/stage1.mp3";
     scene.registerSystem<ClientNetSystem>(PrepUpdate);
     scene.registerSystem<SendInputSystem>(Update);
 }
