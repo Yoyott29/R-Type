@@ -8,6 +8,7 @@
 #pragma once
 #include "Position.hpp"
 #include "Sprite.hpp"
+#include <string>
 
 class IRenderer
 {
@@ -18,4 +19,7 @@ class IRenderer
     virtual void clearBackground() = 0;
     virtual void drawSprite(Position const &position, Sprite const &sprite) = 0;
     virtual void endFrame() = 0;
+    virtual void playSound(std::string const &path) = 0;
+    virtual void playMusic(std::string const &path) = 0;
+    virtual void stopMusic() = 0;
 };

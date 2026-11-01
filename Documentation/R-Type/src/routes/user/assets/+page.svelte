@@ -26,3 +26,11 @@
 </ol>
 <p class="mt-3 max-w-[100ch] leading-7">A texture is drawn centred on the entity position and stretched to the size of its sprite. Entities are drawn by increasing draw order, so stars (draw order -1) stay behind everything else.</p>
 <p class="mt-3 max-w-[100ch] leading-7">Missing files raise <code>FileNotFound</code> when the renderer loads them, and the client stops with <code>Fatal error: File not found: ...</code>. Linux paths are case-sensitive.</p>
+<h2 class="mt-9 text-lg font-semibold">Music and sound effects</h2>
+<ul class="mt-3 max-w-[100ch] list-disc space-y-1.5 pl-6 leading-7">
+	<li>The client plays <code>Assets/Music/stage1.mp3</code> in a loop, declared in <code>RTypeClientPlugin::build</code> with the <code>BackgroundMusic</code> resource. This file is not in the repository: add it locally.</li>
+	<li>A missing music file does not stop the client: it prints <code>Could not load the music ...</code> and the game runs without music.</li>
+	<li>Sound effects (<code>SoundEffect</code> component) are loaded once and cached, like textures. A missing sound effect raises <code>FileNotFound</code>.</li>
+	<li>MP3, OGG and WAV are supported. Prefer OGG for music.</li>
+	<li>Only add audio files that you are allowed to redistribute, and credit their author on this page.</li>
+</ul>

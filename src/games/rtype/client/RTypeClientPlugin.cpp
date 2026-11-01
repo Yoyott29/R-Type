@@ -9,6 +9,7 @@
 #include "ClientNetSystem.hpp"
 #include "ClientSession.hpp"
 #include "SendInputSystem.hpp"
+#include "SoundManager.hpp"
 #include "Type.hpp"
 #include <utility>
 
@@ -22,6 +23,7 @@ void RTypeClientPlugin::build(Application &app)
     Scene &scene = app._scene;
     scene.registerComponent<Type>();
     scene.addResource<ClientSession>().server = _server;
+    scene.addResource<BackgroundMusic>().path = "Assets/Music/stage1.mp3";
     scene.registerSystem<ClientNetSystem>(PrepUpdate);
     scene.registerSystem<SendInputSystem>(Update);
 }
