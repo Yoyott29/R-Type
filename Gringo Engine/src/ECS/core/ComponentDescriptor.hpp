@@ -10,6 +10,8 @@
 #include <string>
 #include <vector>
 
+#define NO_SCRIPT "NONE"
+
 enum class valueType {
     Int,
     Float,
@@ -18,6 +20,7 @@ enum class valueType {
     Color,
     Shape,
     Mask,
+    Script,
 };
 
 struct PropertyDescriptor {

@@ -58,8 +58,10 @@ std::set<std::string> ProjectBuilder::collectScripts(const SceneObjects &sceneOb
     std::set<std::string> scripts;
     const auto collect = [&scripts](const std::vector<Component> &components) {
         for (const Component &component : components) {
-            if (component.name == "Script" && !scriptPath(component).empty())
+            if (component.name == "Script" && !scriptPath(component).empty() &&
+                scriptPath(component) != NO_SCRIPT)
                 scripts.insert(scriptPath(component));
+            scripts.insert(scriptPath(component));
         }
     };
     for (const Entity &entity : sceneObjects._entities)
@@ -70,7 +72,7 @@ std::set<std::string> ProjectBuilder::collectScripts(const SceneObjects &sceneOb
 }
 
 bool ProjectBuilder::hasComponent(const SceneObjects &sceneObjects,
-                                   std::initializer_list<const char *> names)
+                                  std::initializer_list<const char *> names)
 {
     const auto contains = [&names](const std::vector<Component> &components) {
         for (const Component &component : components)
@@ -180,7 +182,8 @@ void ProjectBuilder::writeGeneratedMain(const std::filesystem::path &sourcePath,
     if (usesPrefabs)
         source << "        application._scene.addResource<PrefabsManager>();\n";
     if (usesNetwork)
-        source << "        application._scene.addResource<NetworkConfig>(NetworkConfig::client(ip, port));\n";
+        source << "        application._scene.addResource<NetworkConfig>(NetworkConfig::client(ip, "
+                  "port));\n";
     for (const std::string &plugin : sceneObjects.activePlugins)
         source << "        application.addPlugin(" << cppStringLiteral(plugin) << ");\n";
     if (!scripts.empty())
@@ -190,7 +193,8 @@ void ProjectBuilder::writeGeneratedMain(const std::filesystem::path &sourcePath,
                << "        application._scene.setSystemComponentSet<ScriptSystem>(requirements);\n";
     source << "        std::ifstream file(projectPath);\n"
            << "        if (!file)\n"
-           << "            throw std::runtime_error(\"Could not open project file: \" + projectPath);\n"
+           << "            throw std::runtime_error(\"Could not open project file: \" + "
+              "projectPath);\n"
            << "        nlohmann::json root;\n"
            << "        file >> root;\n"
            << "        Scene &scene = application._scene;\n"
@@ -207,13 +211,16 @@ void ProjectBuilder::writeGeneratedMain(const std::filesystem::path &sourcePath,
                << "                    for (const auto &property : component.value(\"properties\", "
                   "nlohmann::json::array()))\n"
                << "                        if (property.value(\"name\", \"\") == \"Path\")\n"
-               << "                            path = property.value(\"value\", \"\");\n";
+               << "                            path = property.value(\"value\", \"\");\n"
+               << "                    if (path == \"" << NO_SCRIPT << "\")\n"
+               << "                        continue;\n";
         bool firstScript = true;
         for (const std::string &script : scripts) {
             source << "                    " << (firstScript ? "if" : "else if")
                    << " (path == " << '"' << script << '"' << ")\n"
                    << "                        scene.addComponent(entity, "
-                      "Script{std::make_shared<" << className(script) << ">(), false});\n";
+                      "Script{std::make_shared<"
+                   << className(script) << ">(), false});\n";
             firstScript = false;
         }
         source << "                    else\n"
@@ -240,14 +247,15 @@ void ProjectBuilder::writeGeneratedMain(const std::filesystem::path &sourcePath,
             source << "                    " << (firstScript ? "if" : "else if")
                    << " (path == " << '"' << script << '"' << ")\n"
                    << "                        prefab.addComponent("
-                      "Script{std::make_shared<" << className(script) << ">(), false});\n";
+                      "Script{std::make_shared<"
+                   << className(script) << ">(), false});\n";
             firstScript = false;
         }
         source << "                    else\n"
                << "                        throw std::runtime_error(\"Unknown script: \" + path);\n"
                << "                } else\n";
     }
-    source     << "                    components.addToPrefab(prefab, scene, component);\n"
+    source << "                    components.addToPrefab(prefab, scene, component);\n"
            << "            }\n"
            << "            application._scene.getResource<PrefabsManager>().createPrefab("
               "prefabData.value(\"name\", \"\"), prefab);\n"
@@ -288,8 +296,8 @@ std::string ProjectBuilder::build(const std::string &projectPath, const SceneObj
 
     if (hasComponent(sceneObjects, {"Sprite", "SoundEffect"}) || scriptsUseRenderer) {
         if (!usesRenderer)
-            throw std::runtime_error(
-                "Cannot build project: RayLibRenderer must be active for renderer components or scripts");
+            throw std::runtime_error("Cannot build project: RayLibRenderer must be active for "
+                                     "renderer components or scripts");
     }
     if (hasComponent(sceneObjects, {"Velocity", "Collider2D"}) || scriptsUsePhysics) {
         if (!usesPhysics)
@@ -325,29 +333,25 @@ std::string ProjectBuilder::build(const std::string &projectPath, const SceneObj
     writeGeneratedMain(generatedSource, projectFile, projectFolder, sceneObjects);
 
     const std::filesystem::path workingDirectory = std::filesystem::current_path();
-    const std::filesystem::path engineDirectory =
-        workingDirectory / "Gringo Engine";
+    const std::filesystem::path engineDirectory = workingDirectory / "Gringo Engine";
     const std::filesystem::path resolvedEngineDirectory =
         std::filesystem::is_directory(engineDirectory) ? engineDirectory : workingDirectory;
-    const std::filesystem::path buildDirectory =
-        projectFolder / "build";
+    const std::filesystem::path buildDirectory = projectFolder / "build";
     std::string command =
         "cmake -S " + shellQuote(resolvedEngineDirectory.string()) + " -B " +
-        shellQuote(buildDirectory.string()) + " "
+        shellQuote(buildDirectory.string()) +
+        " "
         "-DGRINGO_GAME_TARGET=" +
-        shellQuote(target) + " -DGRINGO_GAME_OUTPUT_DIR=" +
-        shellQuote(projectFolder.string()) + " -DGRINGO_GAME_SOURCE=" +
-        shellQuote(generatedSource.string()) +
+        shellQuote(target) + " -DGRINGO_GAME_OUTPUT_DIR=" + shellQuote(projectFolder.string()) +
+        " -DGRINGO_GAME_SOURCE=" + shellQuote(generatedSource.string()) +
         " -DGRINGO_GAME_SCRIPT_DIR=" + shellQuote((projectFolder / "scripts").string()) +
-        " -DGRINGO_GAME_USE_RENDERER=" +
-        std::string(usesRenderer ? "ON" : "OFF") +
-        " -DGRINGO_GAME_USE_PHYSICS=" +
-        std::string(usesPhysics ? "ON" : "OFF") +
+        " -DGRINGO_GAME_USE_RENDERER=" + std::string(usesRenderer ? "ON" : "OFF") +
+        " -DGRINGO_GAME_USE_PHYSICS=" + std::string(usesPhysics ? "ON" : "OFF") +
         " -DGRINGO_GAME_USE_NETWORK=" + std::string(usesNetwork ? "ON" : "OFF") +
         " -DGRINGO_GAME_NETWORK_PLUGIN=" + shellQuote(sceneObjects.network.plugin) +
         " && cmake --build " + shellQuote(buildDirectory.string()) + " --target " +
-        shellQuote(target) + " && cmake -S " + shellQuote(resolvedEngineDirectory.string()) + " -B " +
-        shellQuote(buildDirectory.string()) +
+        shellQuote(target) + " && cmake -S " + shellQuote(resolvedEngineDirectory.string()) +
+        " -B " + shellQuote(buildDirectory.string()) +
         " -U GRINGO_GAME_TARGET"
         " -U GRINGO_GAME_OUTPUT_DIR"
         " -U GRINGO_GAME_SOURCE"

@@ -15,9 +15,9 @@ EditorMenu::EditorMenu(IEditorRenderer &renderer, std::string templateName, std:
                        const std::vector<ComponentDescriptor> &componentDescriptors)
     : AMenu(renderer), _template(templateName), _projectName(projectName), _parser(parser),
       _componentDescriptors(componentDescriptors), _projectFilePath(sceneObjects.projectFilePath),
-      _network(sceneObjects.network),
-      _activePlugins(sceneObjects.activePlugins), _availablePlugins(PluginLoader{}.listNames()),
-      _objects(*this), _components(*this), _properties(*this)
+      _network(sceneObjects.network), _activePlugins(sceneObjects.activePlugins),
+      _availablePlugins(PluginLoader{}.listNames()), _objects(*this), _components(*this),
+      _properties(*this)
 {
     _currentMenu = MenuType::EditorMenu;
 
@@ -140,16 +140,13 @@ void EditorMenu::saveProject()
     _savedMessageFrames = SAVED_MESSAGE_FRAMES;
 }
 
-std::string EditorMenu::getBuiltProjectPath() const
-{
-    return _projectFilePath.string();
-}
+std::string EditorMenu::getBuiltProjectPath() const { return _projectFilePath.string(); }
 
 void EditorMenu::buildProject()
 {
     _properties.applyCurrentEdit();
-    const SceneObjects sceneObjects{_projectName, _entities, _prefabs, _network, _activePlugins,
-                                   _projectFilePath};
+    const SceneObjects sceneObjects{_projectName, _entities,      _prefabs,
+                                    _network,     _activePlugins, _projectFilePath};
     _parser.saveFile(_projectName + ".gringo", sceneObjects);
     _projectFilePath = _parser.getLastSavedPath();
     _switchMenu = MenuType::Build;

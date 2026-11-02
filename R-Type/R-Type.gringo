@@ -8,7 +8,7 @@
                         {
                             "id": 0,
                             "name": "Path",
-                            "type": 2,
+                            "type": 7,
                             "value": "EnemySpawnerScript.hpp"
                         }
                     ]
@@ -25,14 +25,31 @@
                         {
                             "id": 0,
                             "name": "Path",
-                            "type": 2,
-                            "value": "SpaceSpawnerScript.hpp"
+                            "type": 7,
+                            "value": "EnemyScript.hpp"
                         }
                     ]
                 }
             ],
             "id": 1,
             "name": "StarsSpawner"
+        },
+        {
+            "components": [
+                {
+                    "name": "Script",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Path",
+                            "type": 7,
+                            "value": "EnemySpawnerScript.hpp"
+                        }
+                    ]
+                }
+            ],
+            "id": 2,
+            "name": "Entity2"
         }
     ],
     "network": {
@@ -176,8 +193,8 @@
                         {
                             "id": 0,
                             "name": "Path",
-                            "type": 2,
-                            "value": "DestroyOffScreenScript.hpp"
+                            "type": 7,
+                            "value": "No Scripts Available"
                         }
                     ]
                 },
@@ -187,8 +204,8 @@
                         {
                             "id": 0,
                             "name": "Path",
-                            "type": 2,
-                            "value": "EnemyScript.hpp"
+                            "type": 7,
+                            "value": "No Scripts Available"
                         }
                     ]
                 }
@@ -326,8 +343,8 @@
                         {
                             "id": 0,
                             "name": "Path",
-                            "type": 2,
-                            "value": "DestroyOffScreenScript.hpp"
+                            "type": 7,
+                            "value": "No Scripts Available"
                         }
                     ]
                 },
@@ -337,8 +354,8 @@
                         {
                             "id": 0,
                             "name": "Path",
-                            "type": 2,
-                            "value": "EnemyScript.hpp"
+                            "type": 7,
+                            "value": "No Scripts Available"
                         }
                     ]
                 }
@@ -435,8 +452,8 @@
                         {
                             "id": 0,
                             "name": "Path",
-                            "type": 2,
-                            "value": "DestroyOffScreenScript.hpp"
+                            "type": 7,
+                            "value": "No Scripts Available"
                         }
                     ]
                 }

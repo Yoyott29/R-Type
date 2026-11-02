@@ -76,10 +76,9 @@ void Parser::saveFile(const std::string &, const SceneObjects &sceneObjects)
     }
 
     const std::filesystem::path requestedPath =
-        sceneObjects.projectFilePath.empty()
-            ? executableDirectory() / sceneObjects.projectName /
-                  (sceneObjects.projectName + ".gringo")
-            : sceneObjects.projectFilePath;
+        sceneObjects.projectFilePath.empty() ? executableDirectory() / sceneObjects.projectName /
+                                                   (sceneObjects.projectName + ".gringo")
+                                             : sceneObjects.projectFilePath;
     const std::filesystem::path gamePath =
         requestedPath.extension() == ".gringo"
             ? requestedPath
@@ -165,8 +164,8 @@ std::vector<std::string> Parser::getSavedFiles()
     std::vector<std::string> savedFiles;
 
     const std::filesystem::path currentDirectory = std::filesystem::current_path();
-    const std::array<std::filesystem::path, 2> searchRoots = {
-        currentDirectory, currentDirectory.parent_path()};
+    const std::array<std::filesystem::path, 2> searchRoots = {currentDirectory,
+                                                              currentDirectory.parent_path()};
     std::set<std::string> discoveredFiles;
 
     const auto addProjectFile = [&](const std::filesystem::path &projectFile) {
@@ -192,8 +191,7 @@ std::vector<std::string> Parser::getSavedFiles()
                 continue;
 
             for (const auto &projectFile : std::filesystem::directory_iterator(entry.path())) {
-                if (projectFile.is_regular_file() &&
-                    projectFile.path().extension() == ".gringo") {
+                if (projectFile.is_regular_file() && projectFile.path().extension() == ".gringo") {
                     addProjectFile(projectFile.path());
                 }
             }
@@ -218,4 +216,18 @@ std::filesystem::path Parser::executableDirectory()
     buffer[static_cast<std::size_t>(length)] = '\0';
     return std::filesystem::path(buffer.data()).parent_path();
 #endif
+}
+
+std::filesystem::path Parser::getProjectFolder(const std::filesystem::path &projectFilePath,
+                                               const std::string &projectName)
+{
+    const std::filesystem::path requestedPath =
+        projectFilePath.empty() ? executableDirectory() / projectName / (projectName + ".gringo")
+                                : projectFilePath;
+    const std::filesystem::path gamePath =
+        requestedPath.extension() == ".gringo"
+            ? requestedPath
+            : requestedPath / (requestedPath.filename().string() + ".gringo");
+
+    return gamePath.parent_path();
 }

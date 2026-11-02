@@ -25,6 +25,8 @@ class Parser
     SceneObjects loadFile(const std::string &filePath);
     std::vector<std::string> getSavedFiles();
     const std::filesystem::path &getLastSavedPath() const { return _lastSavedPath; }
+    static std::filesystem::path getProjectFolder(const std::filesystem::path &projectFilePath,
+                                                  const std::string &projectName);
 
   private:
     static nlohmann::json serializeComponents(const std::vector<Component> &components);
