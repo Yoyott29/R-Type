@@ -5,16 +5,17 @@
 /r-type_client.exe
 
 # Engine and plugin libraries
-/*.so
+*.so
 /*.dll
 /plugins/
 
 # Build directories
 /build/
+R-Type/build/
 /build-windows/
 
 # CPM download cache
-/.cpm-cache/
+*.cpm-cache/
 
 # Local / deployment files
 .vercel

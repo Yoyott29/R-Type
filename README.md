@@ -96,12 +96,62 @@ CMake must report 3.28 or higher.
 
 Run all commands from the repository root. The first command configures CMake and downloads raylib and Asio (an internet connection is required the first time). The second compiles the project.
 
-On Linux:
+On Linux, build the standalone Gringo Engine/editor with:
 
 ```sh
-cmake -B build
-cmake --build build
+cmake -S "Gringo Engine" -B "Gringo Engine/build"
+cmake --build "Gringo Engine/build" --target Gringo
 ```
+
+The root build scripts provide separate commands for the engine/editor and the
+mandatory R-Type executables:
+
+```bash
+./Gringo\ Engine/build_engine.sh
+./build_rtype.sh
+```
+
+`Gringo Engine/build_engine.sh` builds the standalone `Gringo` editor in `Gringo Engine/build/` without the mandatory
+R-Type targets. `build_rtype.sh` configures the root CMake project and builds
+both `r-type_client` and `r-type_server`.
+
+The repository layout is:
+
+```text
+Gringo Engine/   standalone engine and editor, with its own CMake/CPM setup
+├── src/
+│   ├── ECS/
+│   ├── editor/
+│   ├── runtime/
+│   └── plugins/
+R-Type/          mandatory R-Type game
+Gringo Engine/plugins/  runtime plugin libraries
+```
+
+Projects created with the Gringo editor are saved directly in the repository
+root. A project named `MyGame` uses this structure:
+
+```text
+MyGame/
+├── MyGame.gringo
+├── main.cpp
+├── assets/
+└── scripts/
+```
+
+### Custom plugin components
+
+A plugin should register its component and its `.gringo` deserializer together.
+The deserializer receives the target scene, entity, and component JSON:
+
+```cpp
+scene.registerComponent<MyComponent>(
+    [](Scene &scene, Entity entity, const nlohmann::json &data) {
+        scene.addComponent(entity, MyComponent{/* read data.properties */});
+    });
+```
+
+Only components from active plugins are available in the editor component picker.
 
 Start the server in one terminal, then one client per player (up to 4) in separate terminals:
 
@@ -151,6 +201,26 @@ Then start one client per player in separate PowerShell windows:
 The executables are generated at the repository root. Run them from there, so that the textures in `Assets/` are found. Linux and Windows builds use the same protocol, so they are meant to play together once the Windows build is tested.
 
 To run the tests (Linux): `./tests/tests.sh`.
+
+## Network plugins for Gringo projects
+
+A generated Gringo game can enable the generic UDP transport and select its own
+game-specific network plugin in its `.gringo` project file:
+
+```json
+{
+    "network": {
+        "enabled": true,
+        "plugin": "MyGameNetwork"
+    }
+}
+```
+
+`Network` provides the transport, socket, connection, and network event systems.
+The plugin named by `network.plugin` is loaded afterwards and can register the
+game-specific messages and systems. For example, R-Type uses
+`"plugin": "RTypeClient"`. The plugin shared library must be available in the
+`plugins/` directory next to the executable.
 
 ## Documentation
 
