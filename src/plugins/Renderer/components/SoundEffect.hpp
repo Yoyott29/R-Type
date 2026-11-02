@@ -24,6 +24,7 @@ template <> struct ComponentDescription<SoundEffect> {
                     {"Path", valueType::String, "sound.wav"},
                     {"Play", valueType::Bool, "False"},
                 },
-                {70, 53, 48, 255}};
+                {70, 53, 48, 255},
+                ""};
     }
 };

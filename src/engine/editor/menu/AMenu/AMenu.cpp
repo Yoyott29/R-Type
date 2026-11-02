@@ -23,8 +23,9 @@ void AMenu::addButton(const std::string &name, Position center, int width, int h
 {
     if (text.empty())
         text = name;
-    _buttons.emplace(name, Button{UiRectangle{center, width, height, buttonColor}, hoveredColor,
-                                  false, true, Text{center, fontSize, text, textColor, true}, onClick});
+    _buttons.emplace(name,
+                     Button{UiRectangle{center, width, height, buttonColor}, hoveredColor, false,
+                            true, Text{center, fontSize, text, textColor, true}, onClick});
 }
 
 void AMenu::addRectangle(const std::string &name, Position center, int width, int height,
@@ -51,8 +52,7 @@ void AMenu::handleButtons()
 
         bool mouseOver = mousePosition.x >= left &&
                          mousePosition.x <= left + button.rectangle.width &&
-                         mousePosition.y >= top &&
-                         mousePosition.y <= top + button.rectangle.height;
+                         mousePosition.y >= top && mousePosition.y <= top + button.rectangle.height;
 
         bool clicked = button.enabled && mouseOver && mousePressed;
 
@@ -63,7 +63,7 @@ void AMenu::handleButtons()
 
         if (clicked && button.onClick)
             clickedButtons.push_back(name);
-        
+
         ColorRGBA buttonColor = checkHoveredButton(button);
         _renderer.drawRectangle(button.rectangle.position, button.rectangle.width,
                                 button.rectangle.height, buttonColor);
@@ -129,7 +129,6 @@ void AMenu::setButtonText(const std::string &buttonName, const std::string &newT
     buttonIterator->second.text.text = newText;
 }
 
-
 bool AMenu::isMouseOver(const UiRectangle &rectangle)
 {
     float left = rectangle.position.x - rectangle.width / 2.0f;
@@ -146,12 +145,11 @@ bool AMenu::isMouseOver(const UiRectangle &rectangle)
 ColorRGBA AMenu::checkHoveredButton(Button &button)
 {
     if (!button.enabled)
-        return {80, 80, 80, 255};
+        return BUTTON_DISABLED_COLOR;
     if (isMouseOver(button.rectangle) || button.ispressed)
         return button.hoveredColor;
     return button.rectangle.color;
 }
-
 
 void AMenu::update()
 {

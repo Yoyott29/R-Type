@@ -159,7 +159,11 @@ void EditorObjects::refreshObjectList(ObjectType type)
          std::string objectButton = getObjectButtonName(type, id);
 
         _editor.addButton(objectButton, {mainX, y}, objectButtonWidth, buttonHeight, 20,
-                  [this, type, id]() { _editor._components.createComponents(_editor._components.getObjectComponents(type, id), type, id); },
+                  [this, type, id]() {
+                      _editor.closePluginPanel();
+                      _editor._components.createComponents(
+                          _editor._components.getObjectComponents(type, id), type, id);
+                  },
                   BUTTON_COLOR1, BUTTON_COLOR2, TEXT_COLOR, items[i].second);
 
         listNames.push_back(objectButton);

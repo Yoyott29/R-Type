@@ -103,6 +103,31 @@ cmake -B build
 cmake --build build
 ```
 
+The root build scripts provide separate commands for the engine/editor and the
+mandatory R-Type executables:
+
+```bash
+./build_engine.sh
+./build_rtype.sh
+```
+
+`build_engine.sh` builds `Gringo` without the R-Type targets. `build_rtype.sh`
+builds both `r-type_client` and `r-type_server` without the editor.
+
+### Custom plugin components
+
+A plugin should register its component and its `.gringo` deserializer together.
+The deserializer receives the target scene, entity, and component JSON:
+
+```cpp
+scene.registerComponent<MyComponent>(
+    [](Scene &scene, Entity entity, const nlohmann::json &data) {
+        scene.addComponent(entity, MyComponent{/* read data.properties */});
+    });
+```
+
+Only components from active plugins are available in the editor component picker.
+
 Start the server in one terminal, then one client per player (up to 4) in separate terminals:
 
 ```sh

@@ -23,6 +23,7 @@ template <> struct ComponentDescription<Velocity> {
                     {"Dx", valueType::Float, "0"},
                     {"Dy", valueType::Float, "0"},
                 },
-                {51, 59, 63, 255}};
+                {51, 59, 63, 255},
+                ""};
     }
 };

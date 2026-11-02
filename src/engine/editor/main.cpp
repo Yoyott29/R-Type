@@ -49,6 +49,8 @@ int main(void)
                 if (current == MenuType::NameMenu) {
                     sceneObjects = SceneObjects{};
                     projectName = static_cast<NameMenu *>(currentMenu.get())->getProjectName();
+                    if (templateName == "2D")
+                        sceneObjects.activePlugins = {"RayLibRenderer"};
                 } else if (current == MenuType::LoadMenu) {
                     sceneObjects = static_cast<LoadMenu *>(currentMenu.get())->getSceneObjects();
                     projectName = sceneObjects.projectName;
@@ -63,8 +65,8 @@ int main(void)
             else if (next == MenuType::Build) {
                 const auto *editorMenu = static_cast<EditorMenu *>(currentMenu.get());
                 const std::string projectPath = editorMenu->getBuiltProjectPath();
-                ProjectBuilder::build(projectPath, editorMenu->getSceneObjects());
                 renderer.close();
+                ProjectBuilder::build(projectPath, editorMenu->getSceneObjects());
                 return 0;
             }
         }

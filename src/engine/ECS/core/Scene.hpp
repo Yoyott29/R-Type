@@ -35,6 +35,7 @@ class Scene
     }
 
     template <typename Component>
+    // Plugins can provide this callback to deserialize their components from .gringo data.
     void registerComponent(ComponentManager::ComponentDeserializer deserializer)
     {
         _componentManager->registerComponent<Component>(std::move(deserializer));

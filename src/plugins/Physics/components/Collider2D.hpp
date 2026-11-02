@@ -34,8 +34,9 @@ template <> struct ComponentDescription<Collider2D> {
                     {"Height", valueType::Float, "32"},
                     {"Radius", valueType::Float, "16"},
                     {"Layer", valueType::Int, "1"},
-                    {"Mask", valueType::Int, "4294967295"},
+                    {"TypeCollisions", valueType::Mask, "All layers"},
                 },
-                {58, 57, 61, 255}};
+                {58, 57, 61, 255},
+                ""};
     }
 };

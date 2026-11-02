@@ -39,7 +39,8 @@ template <> struct ComponentDescription<Script> {
                 {
                     {"Path", valueType::String, "script.hpp"},
                 },
-                {56, 53, 69, 255}};
+                {56, 53, 69, 255},
+                ""};
     }
 };
 

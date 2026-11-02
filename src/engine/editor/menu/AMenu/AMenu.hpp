@@ -19,16 +19,9 @@
 #define BUTTON_COLOR3 ColorRGBA{32, 34, 42, 255}
 #define BUTTON_COLOR4 ColorRGBA{22, 24, 29, 255}
 #define BUTTON_COLOR5 ColorRGBA{12, 13, 17, 255}
+#define BUTTON_DISABLED_COLOR ColorRGBA{10, 10, 10, 255}
 
-enum class MenuType {
-    None,
-    MainMenu,
-    TemplateMenu,
-    NameMenu,
-    EditorMenu,
-    LoadMenu,
-    Build
-};
+enum class MenuType { None, MainMenu, TemplateMenu, NameMenu, EditorMenu, LoadMenu, Build };
 
 class AMenu
 {
@@ -49,7 +42,8 @@ class AMenu
     void addText(const std::string &name, Position pos, int fontSize, const std::string &text,
                  ColorRGBA color = ColorRGBA{255, 255, 255, 255});
     void addButton(const std::string &name, Position center, int width, int height, int fontSize,
-                   std::function<void()> onClick, ColorRGBA buttonColor, ColorRGBA hoveredColor, ColorRGBA textColor, std::string text = "");
+                   std::function<void()> onClick, ColorRGBA buttonColor, ColorRGBA hoveredColor,
+                   ColorRGBA textColor, std::string text = "");
     void addRectangle(const std::string &name, Position center, int width, int height,
                       ColorRGBA color, int drawOrder = 0);
 
@@ -67,7 +61,7 @@ class AMenu
     virtual void drawTexts() const;
     virtual void handleButtons();
     virtual void drawRectangles() const;
-    
+
     std::map<std::string, Button> _buttons;
     std::map<std::string, Text> _texts;
     std::map<std::string, UiRectangle> _rectangles;

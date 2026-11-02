@@ -23,6 +23,7 @@ template <> struct ComponentDescription<Position> {
                     {"PositionX", valueType::Float, "0"},
                     {"PositionY", valueType::Float, "0"},
                 },
-                {58, 53, 63, 255}};
+                {58, 53, 63, 255},
+                ""};
     }
 };

@@ -112,3 +112,8 @@ std::vector<std::string> PluginLoader::listNames() const
     }
     return names;
 }
+
+bool PluginLoader::isAvailable(std::string const &name) const
+{
+    return std::filesystem::is_regular_file(_directory / (name + LIBRARY_SUFFIX));
+}

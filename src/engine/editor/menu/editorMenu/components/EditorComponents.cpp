@@ -228,6 +228,23 @@ void EditorComponents::openComponentPicker()
 
     std::vector<Component> available;
     for ( Component &componentTemplate : _editor._componentTemplates) {
+        const auto descriptor = std::find_if(
+            _editor._componentDescriptors.begin(), _editor._componentDescriptors.end(),
+            [&componentTemplate](const ComponentDescriptor &candidate) {
+                return candidate.name == componentTemplate.name;
+            });
+        std::string requiredPlugin =
+            descriptor != _editor._componentDescriptors.end() ? descriptor->plugin : "";
+        if (requiredPlugin.empty()) {
+            if (componentTemplate.name == "Velocity" || componentTemplate.name == "Collider2D")
+                requiredPlugin = "Physics";
+            else if (componentTemplate.name == "Sprite" ||
+                     componentTemplate.name == "SoundEffect")
+                requiredPlugin = "RayLibRenderer";
+        }
+        if (!requiredPlugin.empty() && !_editor.hasActivePlugin(requiredPlugin))
+            continue;
+
         bool alreadyAdded = std::any_of(currentComponents.begin(), currentComponents.end(),
             [&componentTemplate]( Component &existing) { return existing.name == componentTemplate.name; });
 

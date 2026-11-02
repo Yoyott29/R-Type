@@ -103,7 +103,13 @@ void EditorMenu::updateBuildButton()
             return hasComponent(prefab.components, {"Velocity", "Collider2D"});
         });
     const bool networkRequired = _network.enabled;
-    const bool valid = (!rendererRequired || hasActivePlugin("RayLibRenderer")) &&
+    const bool pluginsAvailable =
+        std::all_of(_activePlugins.begin(), _activePlugins.end(), [this](const std::string &plugin) {
+            return std::find(_availablePlugins.begin(), _availablePlugins.end(), plugin) !=
+                   _availablePlugins.end();
+        });
+    const bool valid = pluginsAvailable &&
+                       (!rendererRequired || hasActivePlugin("RayLibRenderer")) &&
                        (!physicsRequired || hasActivePlugin("Physics")) &&
                        (!networkRequired || hasActivePlugin("Network")) &&
                        (_network.plugin.empty() || hasActivePlugin(_network.plugin));
@@ -148,8 +154,11 @@ void EditorMenu::showPanel(const std::string &text)
     _properties.applyCurrentEdit();
     _components.clearDisplayedComponents();
     removeText("PanelText");
-    for (const std::string &plugin : _availablePlugins)
+    for (const std::string &plugin : _availablePlugins) {
         removeButton("Plugin_" + plugin);
+        removeButton("PluginToggle_" + plugin);
+        removeText("PluginLabel_" + plugin);
+    }
 
     if (text == "Settings") {
         addText("PanelText", {WINDOW_WIDTH / 2.0f, WINDOW_HEIGHT / 2.0f}, 40,
@@ -160,12 +169,23 @@ void EditorMenu::showPanel(const std::string &text)
         for (const std::string &plugin : _availablePlugins) {
             const bool active = std::find(_activePlugins.begin(), _activePlugins.end(), plugin) !=
                                 _activePlugins.end();
-            const std::string buttonName = "Plugin_" + plugin;
-            addButton(buttonName, {WINDOW_WIDTH / 2.0f, y}, 420, 50, 22,
+            addText("PluginLabel_" + plugin, {WINDOW_WIDTH / 2.0f - 180.0f, y}, 22, plugin,
+                    TEXT_COLOR);
+            addButton("PluginToggle_" + plugin, {WINDOW_WIDTH / 2.0f + 150.0f, y}, 100, 42, 18,
                       [this, plugin]() { togglePlugin(plugin); }, active ? BUTTON_COLOR2 : BUTTON_COLOR1,
-                      BUTTON_COLOR3, TEXT_COLOR, plugin + (active ? " [active]" : ""));
+                      BUTTON_COLOR3, TEXT_COLOR, active ? "ON" : "OFF");
             y += 65;
         }
+    }
+}
+
+void EditorMenu::closePluginPanel()
+{
+    removeText("PanelText");
+    for (const std::string &plugin : _availablePlugins) {
+        removeButton("Plugin_" + plugin);
+        removeButton("PluginToggle_" + plugin);
+        removeText("PluginLabel_" + plugin);
     }
 }
 
@@ -176,6 +196,7 @@ void EditorMenu::togglePlugin(const std::string &plugin)
         _activePlugins.push_back(plugin);
     else
         _activePlugins.erase(iterator);
+    initComponentTemplates();
     showPanel("Plugins");
 }
 

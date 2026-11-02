@@ -76,6 +76,7 @@ class EditorMenu : public AMenu
         return {_projectName, _entities, _prefabs, _network, _activePlugins};
     }
     void showPanel(const std::string &text);
+    void closePluginPanel();
     void togglePlugin(const std::string &plugin);
     void updateBuildButton();
     bool hasActivePlugin(const std::string &plugin) const;

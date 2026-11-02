@@ -1,4 +1,5 @@
 #include "ProjectBuilder.hpp"
+#include "PluginLoader.hpp"
 #include <algorithm>
 #include <cctype>
 #include <cstdlib>
@@ -278,6 +279,12 @@ std::string ProjectBuilder::build(const std::string &projectPath, const SceneObj
         scriptsInclude(projectFolder, scripts, {"KeyboardInput.hpp", "SoundManager.hpp"});
     const bool scriptsUsePhysics =
         scriptsInclude(projectFolder, scripts, {"Collider2D.hpp", "Velocity.hpp"});
+    const PluginLoader pluginLoader;
+    for (const std::string &plugin : sceneObjects.activePlugins) {
+        if (!pluginLoader.isAvailable(plugin))
+            throw std::runtime_error("Cannot build project: active plugin \"" + plugin +
+                                     "\" is not available");
+    }
 
     if (hasComponent(sceneObjects, {"Sprite", "SoundEffect"}) || scriptsUseRenderer) {
         if (!usesRenderer)

@@ -8,9 +8,9 @@
 #include "Sprite.hpp"
 #include "SoundEffect.hpp"
 #endif
-#include "Velocity.hpp"
 #include <cstdint>
 #include <filesystem>
+#include <limits>
 #include <stdexcept>
 #include <unordered_map>
 
@@ -32,6 +32,26 @@ float floatValue(const nlohmann::json &component, const std::string &name, float
 int intValue(const nlohmann::json &component, const std::string &name, int fallback)
 {
     return std::stoi(value(component, name, std::to_string(fallback)));
+}
+
+std::uint32_t maskValue(const nlohmann::json &component)
+{
+    std::string text = value(component, "TypeCollisions", "");
+    if (text.empty())
+        text = value(component, "Mask", "All layers");
+    if (text == "All" || text == "All layers")
+        return std::numeric_limits<std::uint32_t>::max();
+    if (text == "None")
+        return 0;
+    try {
+        std::size_t parsed = 0;
+        const unsigned long long result = std::stoull(text, &parsed, 0);
+        if (parsed != text.size() || result > std::numeric_limits<std::uint32_t>::max())
+            throw std::invalid_argument("invalid collision mask");
+        return static_cast<std::uint32_t>(result);
+    } catch (const std::exception &) {
+        throw std::invalid_argument("Invalid collision mask: " + text);
+    }
 }
 
 bool boolValue(const nlohmann::json &component, const std::string &name, bool fallback)
@@ -80,8 +100,7 @@ ProjectComponentManager::ProjectComponentManager(Scene &scene,
                 collider.shape = BoxShape{floatValue(data, "Width", 32.0f),
                                           floatValue(data, "Height", 32.0f)};
             collider.layer = static_cast<std::uint32_t>(intValue(data, "Layer", 1));
-            collider.mask =
-                static_cast<std::uint32_t>(std::stoull(value(data, "Mask", "4294967295")));
+            collider.mask = maskValue(data);
             target.addComponent(entity, collider);
         });
 #endif

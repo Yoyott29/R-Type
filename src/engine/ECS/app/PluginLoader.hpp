@@ -27,6 +27,7 @@ class PluginLoader
 
     // Lists the names of the plugins in the directory, without the .so or .dll extension
     std::vector<std::string> listNames() const;
+    bool isAvailable(std::string const &name) const;
 
   private:
     std::filesystem::path _directory;

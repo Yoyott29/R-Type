@@ -17,6 +17,7 @@ enum class valueType {
     Bool,
     Color,
     Shape,
+    Mask,
 };
 
 struct PropertyDescriptor {
@@ -29,6 +30,7 @@ struct ComponentDescriptor {
     std::string name;
     std::vector<PropertyDescriptor> properties;
     ColorRGBA color{58, 57, 61, 255};
+    std::string plugin;
 };
 
 template <typename Component> struct ComponentDescription {

@@ -34,6 +34,7 @@ template <> struct ComponentDescription<Sprite> {
                     {"DrawOrder", valueType::Int, "0"},
                     {"TexturePath", valueType::String, "default.png"},
                 },
-                {51, 56, 70, 255}};
+                {51, 56, 70, 255},
+                ""};
     }
 };
