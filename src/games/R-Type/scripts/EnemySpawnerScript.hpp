@@ -12,12 +12,12 @@
 class EnemySpawnerScript : public GringoEntityScript
 {
   public:
-    EnemySpawnerScript(PrefabsManager &prefabs);
+    EnemySpawnerScript();
+    explicit EnemySpawnerScript(PrefabsManager &) : EnemySpawnerScript() {}
     void onStart(Scene &scene, Entity &entity) override;
     void onUpdate(Scene &scene, Entity &entity) override;
 
   private:
-    PrefabsManager &_prefabs;
     float _spawnTimer = 0.0f;
     float _waveTimer = 0.0f;
     int _enemyCount = 0;
@@ -26,7 +26,7 @@ class EnemySpawnerScript : public GringoEntityScript
     float _waveY = 0.0f;
 };
 
-inline EnemySpawnerScript::EnemySpawnerScript(PrefabsManager &prefabs) : _prefabs(prefabs)
+inline EnemySpawnerScript::EnemySpawnerScript()
 {
     std::srand(static_cast<unsigned int>(std::time(nullptr)));
     _waveDelay = static_cast<float>(std::rand() % 10) * 0.1f + 0.5f;
@@ -50,7 +50,9 @@ inline void EnemySpawnerScript::onUpdate(Scene &scene, Entity &)
     if (_spawnTimer < 0.2f)
         return;
 
-    Entity enemy = _prefabs.InstantiatePrefab(_waveType == 2 ? "Enemy2" : "Enemy", scene);
+    Entity enemy =
+        scene.getResource<PrefabsManager>().InstantiatePrefab(_waveType == 2 ? "Enemy2" : "Enemy",
+                                                              scene);
     scene.getComponent<Position>(enemy).y = _waveY;
     _spawnTimer = 0.0f;
     --_enemyCount;

@@ -58,6 +58,7 @@ class AMenu
     void removeRectangle(const std::string &name) { _rectangles.erase(name); }
 
     void setButtonText(const std::string &Name, const std::string &newText);
+    void setButtonEnabled(const std::string &name, bool enabled);
     void unSelectButton(Button &button);
 
     bool isMouseOver(const UiRectangle &rectangle);

@@ -39,10 +39,17 @@ struct Prefab {
     std::vector<Component> components;
 };
 
+struct NetworkSettings {
+    bool enabled = false;
+    std::string plugin;
+};
+
 struct SceneObjects {
     std::string projectName;
     std::vector<Entity> _entities;
     std::vector<Prefab> _prefabs;
+    NetworkSettings network;
+    std::vector<std::string> activePlugins;
 };
 
 // UI structs
@@ -77,6 +84,7 @@ struct Button {
     UiRectangle rectangle;
     ColorRGBA hoveredColor;
     bool ispressed = false;
+    bool enabled = true;
     Text text;
     std::function<void()> onClick;
 };

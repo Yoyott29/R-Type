@@ -11,6 +11,7 @@
 #include "EditorObjects.hpp"
 #include "EditorProperties.hpp"
 #include "Parser.hpp"
+#include "PluginLoader.hpp"
 #include "iostream"
 #include <map>
 #include <string>
@@ -70,8 +71,14 @@ class EditorMenu : public AMenu
     void saveProject();
     void buildProject();
     std::string getBuiltProjectPath() const;
-    SceneObjects getSceneObjects() const { return {_projectName, _entities, _prefabs}; }
+    SceneObjects getSceneObjects() const
+    {
+        return {_projectName, _entities, _prefabs, _network, _activePlugins};
+    }
     void showPanel(const std::string &text);
+    void togglePlugin(const std::string &plugin);
+    void updateBuildButton();
+    bool hasActivePlugin(const std::string &plugin) const;
 
     // INITIALIZATION
 
@@ -97,6 +104,9 @@ class EditorMenu : public AMenu
 
     std::vector<Entity> _entities;
     std::vector<Prefab> _prefabs;
+    NetworkSettings _network;
+    std::vector<std::string> _activePlugins;
+    std::vector<std::string> _availablePlugins;
 
     int _currentEntityPage = 0;
     int _currentPrefabPage = 0;

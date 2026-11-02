@@ -13,7 +13,7 @@
 #include "ProjectBuilder.hpp"
 #include "RaylibRenderer.hpp"
 #include "TemplateMenu.hpp"
-#include <cstdlib>
+#include <iostream>
 #include <memory>
 
 int main(void)
@@ -30,44 +30,48 @@ int main(void)
 
     std::unique_ptr<AMenu> currentMenu = std::make_unique<MainMenu>(renderer);
 
-    while (!renderer.shouldClose() && currentMenu->isRunning()) {
-        renderer.startDrawing();
-        renderer.clearScreen(ColorRGBA{0, 0, 0, 255});
-        currentMenu->update();
-        renderer.endDrawing();
+    try {
+        while (!renderer.shouldClose() && currentMenu->isRunning()) {
+            renderer.startDrawing();
+            renderer.clearScreen(ColorRGBA{0, 0, 0, 255});
+            currentMenu->update();
+            renderer.endDrawing();
 
-        const MenuType next = currentMenu->getSwitchMenu();
-        const MenuType current = currentMenu->getCurrentMenu();
+            const MenuType next = currentMenu->getSwitchMenu();
+            const MenuType current = currentMenu->getCurrentMenu();
 
-        if (next == MenuType::TemplateMenu)
-            currentMenu = std::make_unique<TemplateMenu>(renderer);
-        else if (next == MenuType::NameMenu) {
-            templateName = static_cast<TemplateMenu *>(currentMenu.get())->getTemplate();
-            currentMenu = std::make_unique<NameMenu>(renderer, templateName);
-        } else if (next == MenuType::EditorMenu) {
-            if (current == MenuType::NameMenu) {
-                sceneObjects = SceneObjects{};
-                projectName = static_cast<NameMenu *>(currentMenu.get())->getProjectName();
-            } else if (current == MenuType::LoadMenu) {
-                sceneObjects = static_cast<LoadMenu *>(currentMenu.get())->getSceneObjects();
-                projectName = sceneObjects.projectName;
-            }
-            currentMenu =
-                std::make_unique<EditorMenu>(renderer, templateName, projectName, parser,
-                                             sceneObjects, componentCatalog.getDescriptors());
-        } else if (next == MenuType::MainMenu)
-            currentMenu = std::make_unique<MainMenu>(renderer);
-        else if (next == MenuType::LoadMenu)
-            currentMenu = std::make_unique<LoadMenu>(renderer, parser);
-        else if (next == MenuType::Build) {
-            const auto *editorMenu = static_cast<EditorMenu *>(currentMenu.get());
-            const std::string projectPath = editorMenu->getBuiltProjectPath();
-            const std::string executable =
+            if (next == MenuType::TemplateMenu)
+                currentMenu = std::make_unique<TemplateMenu>(renderer);
+            else if (next == MenuType::NameMenu) {
+                templateName = static_cast<TemplateMenu *>(currentMenu.get())->getTemplate();
+                currentMenu = std::make_unique<NameMenu>(renderer, templateName);
+            } else if (next == MenuType::EditorMenu) {
+                if (current == MenuType::NameMenu) {
+                    sceneObjects = SceneObjects{};
+                    projectName = static_cast<NameMenu *>(currentMenu.get())->getProjectName();
+                } else if (current == MenuType::LoadMenu) {
+                    sceneObjects = static_cast<LoadMenu *>(currentMenu.get())->getSceneObjects();
+                    projectName = sceneObjects.projectName;
+                }
+                currentMenu =
+                    std::make_unique<EditorMenu>(renderer, templateName, projectName, parser,
+                                                 sceneObjects, componentCatalog.getDescriptors());
+            } else if (next == MenuType::MainMenu)
+                currentMenu = std::make_unique<MainMenu>(renderer);
+            else if (next == MenuType::LoadMenu)
+                currentMenu = std::make_unique<LoadMenu>(renderer, parser);
+            else if (next == MenuType::Build) {
+                const auto *editorMenu = static_cast<EditorMenu *>(currentMenu.get());
+                const std::string projectPath = editorMenu->getBuiltProjectPath();
                 ProjectBuilder::build(projectPath, editorMenu->getSceneObjects());
-            currentMenu.reset();
-            renderer.close();
-            return std::system(("./" + executable + " \"" + projectPath + "\"").c_str());
+                renderer.close();
+                return 0;
+            }
         }
+    } catch (const std::exception &error) {
+        std::cerr << "Editor error: " << error.what() << '\n';
+        renderer.close();
+        return 84;
     }
     return 0;
 }

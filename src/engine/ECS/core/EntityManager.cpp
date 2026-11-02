@@ -30,6 +30,8 @@ void EntityManager::destroyEntity(Entity entity)
 {
     if (entity >= MAX_ENTITIES)
         throw EntityLimitError();
+    if (!isAlive(entity))
+        throw OutOfRangeEntityError();
 
     _componentSets[entity].reset();
     _availableEntities.push(entity);
@@ -37,17 +39,27 @@ void EntityManager::destroyEntity(Entity entity)
     _alive.reset(entity);
 }
 
+std::vector<Entity> EntityManager::getLivingEntities() const
+{
+    std::vector<Entity> entities;
+    entities.reserve(_livingEntityCount);
+    for (Entity entity = 0; entity < MAX_ENTITIES; entity++)
+        if (isAlive(entity))
+            entities.push_back(entity);
+    return entities;
+}
+
 void EntityManager::setupComponentSet(Entity entity, ComponentSet componentSet)
 {
-    if (entity >= MAX_ENTITIES)
-        throw EntityLimitError();
+    if (!isAlive(entity))
+        throw OutOfRangeEntityError();
 
     _componentSets[entity] = componentSet;
 }
 
 ComponentSet EntityManager::getComponentSet(Entity entity) const
 {
-    if (entity >= MAX_ENTITIES)
+    if (!isAlive(entity))
         throw OutOfRangeEntityError();
 
     return _componentSets[entity];

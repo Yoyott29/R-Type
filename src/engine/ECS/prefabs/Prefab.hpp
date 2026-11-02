@@ -22,6 +22,12 @@ class Prefab
         return *this;
     }
 
+    Prefab &addComponent(std::function<void(Scene &, Entity)> initializer)
+    {
+        _components.push_back(std::move(initializer));
+        return *this;
+    }
+
     Entity instantiate(Scene &scene) const;
 
   private:

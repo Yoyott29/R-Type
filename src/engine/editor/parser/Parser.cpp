@@ -50,6 +50,9 @@ void Parser::saveFile(const std::string &filePath, const SceneObjects &sceneObje
 {
     nlohmann::json root;
     root["projectName"] = sceneObjects.projectName;
+    root["network"] = {{"enabled", sceneObjects.network.enabled},
+                       {"plugin", sceneObjects.network.plugin}};
+    root["plugins"] = sceneObjects.activePlugins;
     root["entities"] = nlohmann::json::array();
     root["prefabs"] = nlohmann::json::array();
 
@@ -109,6 +112,10 @@ SceneObjects Parser::loadFile(const std::string &filePath)
     }
 
     result.projectName = root.value("projectName", filePath);
+    const auto network = root.value("network", nlohmann::json::object());
+    result.network.enabled = network.value("enabled", false);
+    result.network.plugin = network.value("plugin", "");
+    result.activePlugins = root.value("plugins", std::vector<std::string>{});
 
     for (const auto &entityJson : root.value("entities", nlohmann::json::array())) {
         Entity entity;

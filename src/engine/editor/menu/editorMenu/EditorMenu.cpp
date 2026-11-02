@@ -14,7 +14,9 @@ EditorMenu::EditorMenu(IEditorRenderer &renderer, std::string templateName, std:
                        Parser &parser, SceneObjects sceneObjects,
                        const std::vector<ComponentDescriptor> &componentDescriptors)
     : AMenu(renderer), _template(templateName), _projectName(projectName), _parser(parser),
-      _componentDescriptors(componentDescriptors), _objects(*this), _components(*this),
+      _network(sceneObjects.network), _componentDescriptors(componentDescriptors),
+      _activePlugins(sceneObjects.activePlugins), _availablePlugins(PluginLoader{}.listNames()),
+      _objects(*this), _components(*this),
       _properties(*this)
 {
     _currentMenu = MenuType::EditorMenu;
@@ -35,13 +37,15 @@ EditorMenu::~EditorMenu()
 {
     try {
         _properties.applyCurrentEdit();
-        _parser.saveFile(_projectName + ".gringo", SceneObjects{_projectName, _entities, _prefabs});
+        _parser.saveFile(_projectName + ".gringo",
+                         SceneObjects{_projectName, _entities, _prefabs, _network, _activePlugins});
     } catch (...) {
     }
 }
 
 void EditorMenu::update()
 {
+    updateBuildButton();
     drawRectangles();
     drawTexts();
     handleButtons();
@@ -69,10 +73,49 @@ void EditorMenu::update()
     _objects.updateMoveHighlight();
 }
 
+bool EditorMenu::hasActivePlugin(const std::string &plugin) const
+{
+    return std::find(_activePlugins.begin(), _activePlugins.end(), plugin) !=
+           _activePlugins.end();
+}
+
+void EditorMenu::updateBuildButton()
+{
+    const auto hasComponent = [](const std::vector<Component> &components,
+                                 std::initializer_list<const char *> names) {
+        return std::any_of(components.begin(), components.end(), [&names](const Component &component) {
+            return std::any_of(names.begin(), names.end(),
+                               [&component](const char *name) { return component.name == name; });
+        });
+    };
+    const bool rendererRequired =
+        std::any_of(_entities.begin(), _entities.end(), [&hasComponent](const Entity &entity) {
+            return hasComponent(entity.components, {"Sprite", "SoundEffect"});
+        }) ||
+        std::any_of(_prefabs.begin(), _prefabs.end(), [&hasComponent](const Prefab &prefab) {
+            return hasComponent(prefab.components, {"Sprite", "SoundEffect"});
+        });
+    const bool physicsRequired =
+        std::any_of(_entities.begin(), _entities.end(), [&hasComponent](const Entity &entity) {
+            return hasComponent(entity.components, {"Velocity", "Collider2D"});
+        }) ||
+        std::any_of(_prefabs.begin(), _prefabs.end(), [&hasComponent](const Prefab &prefab) {
+            return hasComponent(prefab.components, {"Velocity", "Collider2D"});
+        });
+    const bool networkRequired = _network.enabled;
+    const bool valid = (!rendererRequired || hasActivePlugin("RayLibRenderer")) &&
+                       (!physicsRequired || hasActivePlugin("Physics")) &&
+                       (!networkRequired || hasActivePlugin("Network")) &&
+                       (_network.plugin.empty() || hasActivePlugin(_network.plugin));
+    setButtonEnabled("Build", valid);
+}
+
 void EditorMenu::saveProject()
 {
     _properties.applyCurrentEdit();
-    _parser.saveFile(_projectName + ".gringo", SceneObjects{_projectName, _entities, _prefabs});
+    _parser.saveFile(_projectName + ".gringo",
+                     SceneObjects{_projectName, _entities, _prefabs, _network,
+                                  _activePlugins});
 
     const std::string message = "File saved...";
     const Button &saveButton = _buttons.at("Save Project");
@@ -94,7 +137,7 @@ std::string EditorMenu::getBuiltProjectPath() const
 void EditorMenu::buildProject()
 {
     _properties.applyCurrentEdit();
-    const SceneObjects sceneObjects{_projectName, _entities, _prefabs};
+    const SceneObjects sceneObjects{_projectName, _entities, _prefabs, _network, _activePlugins};
     _parser.saveFile(_projectName + ".gringo", sceneObjects);
     _switchMenu = MenuType::Build;
     _isRunning = false;
@@ -105,14 +148,35 @@ void EditorMenu::showPanel(const std::string &text)
     _properties.applyCurrentEdit();
     _components.clearDisplayedComponents();
     removeText("PanelText");
+    for (const std::string &plugin : _availablePlugins)
+        removeButton("Plugin_" + plugin);
 
     if (text == "Settings") {
         addText("PanelText", {WINDOW_WIDTH / 2.0f, WINDOW_HEIGHT / 2.0f}, 40,
                 "Settings panel is not implemented yet.", TEXT_COLOR);
     } else if (text == "Plugins") {
-        addText("PanelText", {WINDOW_WIDTH / 2.0f, WINDOW_HEIGHT / 2.0f}, 40,
-                "Plugins panel is not implemented yet.", TEXT_COLOR);
+        addText("PanelText", {WINDOW_WIDTH / 2.0f, 130}, 40, "Active plugins", TEXT_COLOR);
+        float y = 220;
+        for (const std::string &plugin : _availablePlugins) {
+            const bool active = std::find(_activePlugins.begin(), _activePlugins.end(), plugin) !=
+                                _activePlugins.end();
+            const std::string buttonName = "Plugin_" + plugin;
+            addButton(buttonName, {WINDOW_WIDTH / 2.0f, y}, 420, 50, 22,
+                      [this, plugin]() { togglePlugin(plugin); }, active ? BUTTON_COLOR2 : BUTTON_COLOR1,
+                      BUTTON_COLOR3, TEXT_COLOR, plugin + (active ? " [active]" : ""));
+            y += 65;
+        }
     }
+}
+
+void EditorMenu::togglePlugin(const std::string &plugin)
+{
+    auto iterator = std::find(_activePlugins.begin(), _activePlugins.end(), plugin);
+    if (iterator == _activePlugins.end())
+        _activePlugins.push_back(plugin);
+    else
+        _activePlugins.erase(iterator);
+    showPanel("Plugins");
 }
 
 //--------------------------------------------------------------------------------------------------------------------------------

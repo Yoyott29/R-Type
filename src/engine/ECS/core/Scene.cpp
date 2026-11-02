@@ -6,6 +6,7 @@
 */
 
 #include "Scene.hpp"
+#include "nlohmann/json.hpp"
 
 Scene::Scene()
     : _entityManager(std::make_unique<EntityManager>()),
@@ -30,6 +31,22 @@ void Scene::destroyEntity(Entity entity)
 }
 
 void Scene::runSchedule(ScheduleLabel label) { _systemManager->runSchedule(label, *this); }
+
+void Scene::addComponentFromJson(Entity entity, const nlohmann::json &component)
+{
+    validateEntity(entity);
+    _componentManager->addComponentFromJson(*this, entity, component);
+    ComponentSet componentSet = _entityManager->getComponentSet(entity);
+    componentSet.set(_componentManager->getComponentTypeByName(component.value("name", "")));
+    _entityManager->setupComponentSet(entity, componentSet);
+    _systemManager->entityComponentSetChanged(entity, componentSet);
+}
+
+std::function<void(Scene &, Entity)>
+Scene::componentInitializer(const nlohmann::json &component) const
+{
+    return _componentManager->componentInitializer(component);
+}
 
 void Scene::flushDestroyQueue()
 {

@@ -152,6 +152,26 @@ The executables are generated at the repository root. Run them from there, so th
 
 To run the tests (Linux): `./tests/tests.sh`.
 
+## Network plugins for Gringo projects
+
+A generated Gringo game can enable the generic UDP transport and select its own
+game-specific network plugin in its `.gringo` project file:
+
+```json
+{
+    "network": {
+        "enabled": true,
+        "plugin": "MyGameNetwork"
+    }
+}
+```
+
+`Network` provides the transport, socket, connection, and network event systems.
+The plugin named by `network.plugin` is loaded afterwards and can register the
+game-specific messages and systems. For example, R-Type uses
+`"plugin": "RTypeClient"`. The plugin shared library must be available in the
+`plugins/` directory next to the executable.
+
 ## Documentation
 
 Read the full project documentation on the [R-Type documentation website](https://r-type-project-documentation.vercel.app/).

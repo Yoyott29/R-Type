@@ -22,6 +22,7 @@ class EntityManager
     void setupComponentSet(Entity entity, ComponentSet componentSet);
     ComponentSet getComponentSet(Entity entity) const;
     bool isAlive(Entity entity) const;
+    std::vector<Entity> getLivingEntities() const;
 
   private:
     std::queue<Entity> _availableEntities = {};

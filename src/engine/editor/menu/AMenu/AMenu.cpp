@@ -24,7 +24,7 @@ void AMenu::addButton(const std::string &name, Position center, int width, int h
     if (text.empty())
         text = name;
     _buttons.emplace(name, Button{UiRectangle{center, width, height, buttonColor}, hoveredColor,
-                                  false, Text{center, fontSize, text, textColor, true}, onClick});
+                                  false, true, Text{center, fontSize, text, textColor, true}, onClick});
 }
 
 void AMenu::addRectangle(const std::string &name, Position center, int width, int height,
@@ -54,7 +54,7 @@ void AMenu::handleButtons()
                          mousePosition.y >= top &&
                          mousePosition.y <= top + button.rectangle.height;
 
-        bool clicked = mouseOver && mousePressed;
+        bool clicked = button.enabled && mouseOver && mousePressed;
 
         if (clicked)
             _pressedButtonName = name;
@@ -90,6 +90,13 @@ void AMenu::unSelectButton(Button &button)
             return;
         }
     }
+}
+
+void AMenu::setButtonEnabled(const std::string &name, bool enabled)
+{
+    auto iterator = _buttons.find(name);
+    if (iterator != _buttons.end())
+        iterator->second.enabled = enabled;
 }
 
 void AMenu::drawRectangles() const
@@ -138,6 +145,8 @@ bool AMenu::isMouseOver(const UiRectangle &rectangle)
 
 ColorRGBA AMenu::checkHoveredButton(Button &button)
 {
+    if (!button.enabled)
+        return {80, 80, 80, 255};
     if (isMouseOver(button.rectangle) || button.ispressed)
         return button.hoveredColor;
     return button.rectangle.color;

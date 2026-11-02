@@ -1,46 +1,47 @@
 #include "ProjectComponentManager.hpp"
+#ifdef GRINGO_USE_PHYSICS
 #include "Collider2D.hpp"
+#include "Velocity.hpp"
+#endif
 #include "Position.hpp"
-#include "SoundEffect.hpp"
+#ifdef GRINGO_USE_RENDERER
 #include "Sprite.hpp"
+#include "SoundEffect.hpp"
+#endif
 #include "Velocity.hpp"
 #include <cstdint>
 #include <filesystem>
-#include <iostream>
+#include <stdexcept>
 #include <unordered_map>
 
-std::string ProjectComponentManager::propertyValue(const nlohmann::json &component,
-                                                   const std::string &name,
-                                                   const std::string &fallback)
+namespace {
+std::string value(const nlohmann::json &component, const std::string &name,
+                  const std::string &fallback)
 {
-    for (const auto &property : component.value("properties", nlohmann::json::array())) {
+    for (const auto &property : component.value("properties", nlohmann::json::array()))
         if (property.value("name", "") == name)
             return property.value("value", fallback);
-    }
     return fallback;
 }
 
-float ProjectComponentManager::floatProperty(const nlohmann::json &component,
-                                             const std::string &name, float fallback)
+float floatValue(const nlohmann::json &component, const std::string &name, float fallback)
 {
-    return std::stof(propertyValue(component, name, std::to_string(fallback)));
+    return std::stof(value(component, name, std::to_string(fallback)));
 }
 
-int ProjectComponentManager::intProperty(const nlohmann::json &component, const std::string &name,
-                                         int fallback)
+int intValue(const nlohmann::json &component, const std::string &name, int fallback)
 {
-    return std::stoi(propertyValue(component, name, std::to_string(fallback)));
+    return std::stoi(value(component, name, std::to_string(fallback)));
 }
 
-bool ProjectComponentManager::boolProperty(const nlohmann::json &component, const std::string &name,
-                                           bool fallback)
+bool boolValue(const nlohmann::json &component, const std::string &name, bool fallback)
 {
-    const std::string value = propertyValue(component, name, fallback ? "True" : "False");
-    return value == "True" || value == "true" || value == "1";
+    const std::string result = value(component, name, fallback ? "True" : "False");
+    return result == "True" || result == "true" || result == "1";
 }
 
-ColorRGBA ProjectComponentManager::colorProperty(const nlohmann::json &component,
-                                                 const std::string &name, ColorRGBA fallback)
+ColorRGBA colorValue(const nlohmann::json &component, const std::string &name,
+                     ColorRGBA fallback)
 {
     static const std::unordered_map<std::string, ColorRGBA> colors = {
         {"Red", {255, 0, 0, 255}},       {"Orange", {255, 165, 0, 255}},
@@ -52,70 +53,87 @@ ColorRGBA ProjectComponentManager::colorProperty(const nlohmann::json &component
         {"Gray", {128, 128, 128, 255}},  {"Black", {0, 0, 0, 255}},
         {"Transparent", {0, 0, 0, 0}},
     };
+    auto iterator = colors.find(value(component, name, ""));
+    return iterator == colors.end() ? fallback : iterator->second;
+}
+}
 
-    const auto color = colors.find(propertyValue(component, name, ""));
-    return color != colors.end() ? color->second : fallback;
+ProjectComponentManager::ProjectComponentManager(Scene &scene,
+                                                 std::filesystem::path projectFolder)
+    : _projectFolder(std::move(projectFolder))
+{
+    scene.registerComponent<Position>([](Scene &target, Entity entity, const nlohmann::json &data) {
+        target.addComponent(entity, Position{floatValue(data, "PositionX", 0.0f),
+                                             floatValue(data, "PositionY", 0.0f)});
+    });
+#ifdef GRINGO_USE_PHYSICS
+    scene.registerComponent<Velocity>([](Scene &target, Entity entity, const nlohmann::json &data) {
+        target.addComponent(entity,
+                            Velocity{floatValue(data, "Dx", 0.0f), floatValue(data, "Dy", 0.0f)});
+    });
+    scene.registerComponent<Collider2D>(
+        [](Scene &target, Entity entity, const nlohmann::json &data) {
+            Collider2D collider;
+            if (value(data, "Shape", "Box") == "Circle")
+                collider.shape = CircleShape{floatValue(data, "Radius", 16.0f)};
+            else
+                collider.shape = BoxShape{floatValue(data, "Width", 32.0f),
+                                          floatValue(data, "Height", 32.0f)};
+            collider.layer = static_cast<std::uint32_t>(intValue(data, "Layer", 1));
+            collider.mask =
+                static_cast<std::uint32_t>(std::stoull(value(data, "Mask", "4294967295")));
+            target.addComponent(entity, collider);
+        });
+#endif
+#ifdef GRINGO_USE_RENDERER
+    scene.registerComponent<Sprite>([this](Scene &target, Entity entity,
+                                           const nlohmann::json &data) {
+        Sprite sprite;
+        if (value(data, "Shape", "Box") == "Circle")
+            sprite.shape = CircleShape{floatValue(data, "Radius", 16.0f)};
+        else
+            sprite.shape = BoxShape{floatValue(data, "Width", 32.0f),
+                                    floatValue(data, "Height", 32.0f)};
+        sprite.drawOrder = intValue(data, "DrawOrder", 0);
+        const std::string texture = value(data, "TexturePath", "");
+        sprite.texturePath = texture == "default.png"
+                                 ? ""
+                                 : assetPath(texture);
+        sprite.color = colorValue(data, "Color", {255, 255, 255, 255});
+        target.addComponent(entity, sprite);
+    });
+    scene.registerComponent<SoundEffect>([this](Scene &target, Entity entity,
+                                                const nlohmann::json &data) {
+        target.addComponent(entity,
+                            SoundEffect{assetPath(value(data, "Path", "sound.wav")),
+                                        boolValue(data, "Play", false)});
+    });
+#endif
+}
+
+void ProjectComponentManager::addToScene(Scene &scene, Entity entity,
+                                         const nlohmann::json &component) const
+{
+    if (component.value("name", "") == "Script")
+        return;
+    scene.addComponentFromJson(entity, component);
+}
+
+void ProjectComponentManager::addToPrefab(Prefab &prefab, Scene &scene,
+                                          const nlohmann::json &component) const
+{
+    if (component.value("name", "") == "Script")
+        return;
+    prefab.addComponent(scene.componentInitializer(component));
 }
 
 std::string ProjectComponentManager::assetPath(const std::string &path) const
 {
     if (path.empty() || std::filesystem::path(path).is_absolute())
         return path;
-
     std::filesystem::path relativePath = path;
     if (relativePath.begin() != relativePath.end() &&
         (*relativePath.begin() == "assets" || *relativePath.begin() == "Assets"))
         relativePath = relativePath.lexically_relative(*relativePath.begin());
-
     return (_projectFolder / "assets" / relativePath).string();
-}
-
-void ProjectComponentManager::addToScene(Scene &scene, Entity entity,
-                                         const nlohmann::json &component) const
-{
-    const std::string name = component.value("name", "");
-
-    if (name == "Position") {
-        scene.addComponent(entity, Position{floatProperty(component, "PositionX", 0.0f),
-                                            floatProperty(component, "PositionY", 0.0f)});
-    } else if (name == "Velocity") {
-        scene.addComponent(entity, Velocity{floatProperty(component, "Dx", 0.0f),
-                                            floatProperty(component, "Dy", 0.0f)});
-    } else if (name == "Sprite") {
-        Sprite sprite;
-        if (propertyValue(component, "Shape", "Box") == "Circle")
-            sprite.shape = CircleShape{floatProperty(component, "Radius", 16.0f)};
-        else
-            sprite.shape = BoxShape{floatProperty(component, "Width", 32.0f),
-                                    floatProperty(component, "Height", 32.0f)};
-        sprite.drawOrder = intProperty(component, "DrawOrder", 0);
-        const std::string texturePath = propertyValue(component, "TexturePath", "");
-        if (texturePath == "default.png")
-            sprite.texturePath.clear();
-        else
-            sprite.texturePath = assetPath(texturePath);
-        sprite.color = colorProperty(component, "Color", {255, 255, 255, 255});
-        scene.addComponent(entity, sprite);
-    } else if (name == "Collider2D") {
-        Collider2D collider;
-        if (propertyValue(component, "Shape", "Box") == "Circle")
-            collider.shape = CircleShape{floatProperty(component, "Radius", 16.0f)};
-        else
-            collider.shape = BoxShape{floatProperty(component, "Width", 32.0f),
-                                      floatProperty(component, "Height", 32.0f)};
-        collider.layer = static_cast<std::uint32_t>(intProperty(component, "Layer", 1));
-        collider.mask =
-            static_cast<std::uint32_t>(std::stoull(propertyValue(component, "Mask", "4294967295")));
-        scene.addComponent(entity, collider);
-    } else if (name == "SoundEffect") {
-        scene.addComponent(entity,
-                           SoundEffect{assetPath(propertyValue(component, "Path", "sound.wav")),
-                                       boolProperty(component, "Play", false)});
-    } else if (name == "Script") {
-        std::cerr << "Script path resolves from " << (_projectFolder / "scripts").string()
-                  << ", but runtime script loading is not implemented: "
-                  << propertyValue(component, "Path", "script.hpp") << '\n';
-    } else {
-        std::cerr << "Unsupported component in project: " << name << '\n';
-    }
 }

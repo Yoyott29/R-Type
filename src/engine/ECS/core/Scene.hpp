@@ -34,6 +34,12 @@ class Scene
         _componentManager->registerComponent<Component>();
     }
 
+    template <typename Component>
+    void registerComponent(ComponentManager::ComponentDeserializer deserializer)
+    {
+        _componentManager->registerComponent<Component>(std::move(deserializer));
+    }
+
     const std::vector<ComponentDescriptor> &getComponentDescriptors() const
     {
         return _componentManager->getDescriptors();
@@ -41,6 +47,7 @@ class Scene
 
     template <typename Component> void addComponent(Entity entity, Component component)
     {
+        validateEntity(entity);
         _componentManager->addComponent<Component>(entity, component);
 
         ComponentSet componentSet = _entityManager->getComponentSet(entity);
@@ -52,6 +59,7 @@ class Scene
 
     template <typename Component> void removeComponent(Entity entity)
     {
+        validateEntity(entity);
         _componentManager->removeComponent<Component>(entity);
 
         ComponentSet componentSet = _entityManager->getComponentSet(entity);
@@ -63,22 +71,42 @@ class Scene
 
     template <typename Component> Component &getComponent(Entity entity)
     {
+        validateEntity(entity);
         return _componentManager->getComponent<Component>(entity);
     }
 
     template <typename Component> Component &getComponent(Entity entity, std::size_t componentIndex)
     {
+        validateEntity(entity);
         return _componentManager->getComponent<Component>(entity, componentIndex);
     }
 
     template <typename Component> std::size_t getComponentCount(Entity entity)
     {
+        validateEntity(entity);
         return _componentManager->getComponentCount<Component>(entity);
     }
 
     template <typename Component> std::vector<Component> &getComponents(Entity entity)
     {
+        validateEntity(entity);
         return _componentManager->getComponents<Component>(entity);
+    }
+
+    void addComponentFromJson(Entity entity, const nlohmann::json &component);
+    std::function<void(Scene &, Entity)>
+    componentInitializer(const nlohmann::json &component) const;
+
+    template <typename... Components> std::vector<Entity> view() const
+    {
+        std::vector<Entity> result;
+        const auto entities = _entityManager->getLivingEntities();
+        for (Entity entity : entities) {
+            const ComponentSet components = _entityManager->getComponentSet(entity);
+            if ((components & componentSet<Components...>()) == componentSet<Components...>())
+                result.push_back(entity);
+        }
+        return result;
     }
 
     template <typename SystemType>
@@ -97,7 +125,7 @@ class Scene
         _systemManager->removeSystem<SystemType>();
     }
 
-    template <typename Component> ComponentType getComponentType()
+    template <typename Component> ComponentType getComponentType() const
     {
         return _componentManager->getComponentType<Component>();
     }
@@ -125,6 +153,26 @@ class Scene
     }
 
   private:
+    void validateEntity(Entity entity) const
+    {
+        if (!_entityManager->isAlive(entity))
+            throw OutOfRangeEntityError();
+    }
+
+    template <typename Component> ComponentSet componentSet() const
+    {
+        ComponentSet result;
+        result.set(_componentManager->getComponentType<Component>());
+        return result;
+    }
+
+    template <typename Component, typename Next, typename... Rest>
+    ComponentSet componentSet() const
+    {
+        ComponentSet result = componentSet<Next, Rest...>();
+        result.set(_componentManager->getComponentType<Component>());
+        return result;
+    }
     std::unique_ptr<EntityManager> _entityManager;
     std::unique_ptr<ComponentManager> _componentManager;
     std::unique_ptr<SystemManager> _systemManager;

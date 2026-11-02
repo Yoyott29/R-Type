@@ -83,7 +83,7 @@ if(BUILD_RTYPE)
     endif()
 endif()
 
-if(BUILD_GRINGO)
+if(BUILD_GRINGO OR BUILD_RTYPE)
     CPMAddPackage(
         NAME nlohmann_json
         GITHUB_REPOSITORY nlohmann/json
@@ -101,6 +101,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 add_library(rtype_engine SHARED
     src/engine/ECS/app/Application.cpp
     src/engine/ECS/app/PluginLoader.cpp
+    src/engine/ECS/core/ComponentManager.cpp
     src/engine/ECS/core/Scene.cpp
     src/engine/ECS/core/TickTimeManager.cpp
     src/engine/ECS/core/EntityManager.cpp
@@ -121,7 +122,7 @@ target_include_directories(rtype_engine PUBLIC
     src/engine/ECS/resources
 )
 
-target_link_libraries(rtype_engine PRIVATE ${CMAKE_DL_LIBS})
+target_link_libraries(rtype_engine PUBLIC nlohmann_json::nlohmann_json PRIVATE ${CMAKE_DL_LIBS})
 
 # Asio and PluginLoader pull in windows.h, whose GDI/USER declarations (Rectangle, CloseWindow,
 # LoadImage, SendInput...) clash with raylib and our own names. PUBLIC: every target links the engine
@@ -258,15 +259,30 @@ if(BUILD_RTYPE)
     # ---- Client ----
 
     add_executable(${PROJECT_NAME}
-        src/games/R-Type/network/client/main.cpp
+        src/games/R-Type/main.cpp
+        src/engine/runtime/ProjectComponentManager.cpp
     )
 
     target_include_directories(${PROJECT_NAME} PRIVATE
+        src/engine/runtime
         src/games/R-Type/network/common
+        src/games/R-Type/scripts
         src/plugins/Network
+        src/plugins/Physics/components
+        src/plugins/Renderer/components
+        src/plugins/Renderer/resources
     )
 
-    target_link_libraries(${PROJECT_NAME} PRIVATE rtype_engine asio)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE
+        GRINGO_USE_PHYSICS
+        GRINGO_USE_RENDERER
+    )
+
+    target_link_libraries(${PROJECT_NAME} PRIVATE
+        rtype_engine
+        asio
+        nlohmann_json::nlohmann_json
+    )
 
     # The executables only load the plugins at runtime: build them too, so they are next to the binaries
     add_dependencies(${PROJECT_NAME} plugin_renderer plugin_physics plugin_network plugin_rtype_client)
@@ -301,7 +317,7 @@ endif()
 # Gringo editor (BUILD_GRINGO): ./gringo
 # ============================================================
 
-if(BUILD_GRINGO)
+if(BUILD_GRINGO OR BUILD_RTYPE)
     file(GLOB_RECURSE GRINGO_SOURCES CONFIGURE_DEPENDS src/engine/editor/*.cpp)
 
     add_executable(Gringo ${GRINGO_SOURCES})
@@ -314,15 +330,41 @@ if(BUILD_GRINGO)
         )
         target_include_directories(${GRINGO_GAME_TARGET} PRIVATE
             src/engine/runtime
-            src/plugins/Renderer/resources
-            src/plugins/Physics/components
-            src/plugins/Renderer/components
             ${GRINGO_GAME_SCRIPT_DIR}
         )
+        if(GRINGO_GAME_USE_RENDERER)
+            target_include_directories(${GRINGO_GAME_TARGET} PRIVATE
+                src/plugins/Renderer/resources
+                src/plugins/Renderer/components
+            )
+            target_compile_definitions(${GRINGO_GAME_TARGET} PRIVATE GRINGO_USE_RENDERER)
+        endif()
+        if(GRINGO_GAME_USE_PHYSICS)
+            target_include_directories(${GRINGO_GAME_TARGET} PRIVATE src/plugins/Physics/components)
+            target_compile_definitions(${GRINGO_GAME_TARGET} PRIVATE GRINGO_USE_PHYSICS)
+        endif()
+        if(GRINGO_GAME_USE_NETWORK)
+            target_include_directories(${GRINGO_GAME_TARGET} PRIVATE
+                src/plugins/Network
+                src/games/R-Type/network/common
+            )
+        endif()
         target_link_libraries(${GRINGO_GAME_TARGET} PRIVATE
             rtype_engine nlohmann_json::nlohmann_json
         )
-        add_dependencies(${GRINGO_GAME_TARGET} plugin_renderer plugin_physics)
+        if(GRINGO_GAME_USE_RENDERER)
+            add_dependencies(${GRINGO_GAME_TARGET} plugin_renderer)
+        endif()
+        if(GRINGO_GAME_USE_PHYSICS)
+            add_dependencies(${GRINGO_GAME_TARGET} plugin_physics)
+        endif()
+        if(GRINGO_GAME_USE_NETWORK)
+            target_link_libraries(${GRINGO_GAME_TARGET} PRIVATE asio)
+            add_dependencies(${GRINGO_GAME_TARGET} plugin_network)
+            if(GRINGO_GAME_NETWORK_PLUGIN STREQUAL "RTypeClient")
+                add_dependencies(${GRINGO_GAME_TARGET} plugin_rtype_client)
+            endif()
+        endif()
     endif()
 
     target_include_directories(Gringo PRIVATE

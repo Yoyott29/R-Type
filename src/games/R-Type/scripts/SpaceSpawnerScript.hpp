@@ -11,18 +11,25 @@
 class SpaceSpawnerScript : public GringoEntityScript
 {
   public:
-    SpaceSpawnerScript(PrefabsManager &prefabs);
+    SpaceSpawnerScript();
+    explicit SpaceSpawnerScript(PrefabsManager &) : SpaceSpawnerScript() {}
     void onStart(Scene &scene, Entity &entity) override;
     void onUpdate(Scene &scene, Entity &entity) override;
 
   private:
-    PrefabsManager &_prefabs;
     float _spawnTimer = 0.0f;
 };
 
-inline SpaceSpawnerScript::SpaceSpawnerScript(PrefabsManager &prefabs) : _prefabs(prefabs) {}
+inline SpaceSpawnerScript::SpaceSpawnerScript() {}
 
-inline void SpaceSpawnerScript::onStart(Scene &, Entity &) {}
+inline void SpaceSpawnerScript::onStart(Scene &scene, Entity &)
+{
+    for (int i = 0; i < 20; ++i) {
+        Entity space = scene.getResource<PrefabsManager>().InstantiatePrefab("Star", scene);
+        scene.getComponent<Position>(space).x = static_cast<float>(std::rand() % 1920);
+        scene.getComponent<Position>(space).y = static_cast<float>(std::rand() % 1080);
+    }
+}
 
 inline void SpaceSpawnerScript::onUpdate(Scene &scene, Entity &)
 {
@@ -30,7 +37,7 @@ inline void SpaceSpawnerScript::onUpdate(Scene &scene, Entity &)
     if (_spawnTimer < 0.5f)
         return;
 
-    Entity space = _prefabs.InstantiatePrefab("Star", scene);
+    Entity space = scene.getResource<PrefabsManager>().InstantiatePrefab("Star", scene);
     scene.getComponent<Position>(space).y = static_cast<float>(std::rand() % 1080);
     _spawnTimer = 0.0f;
 }
