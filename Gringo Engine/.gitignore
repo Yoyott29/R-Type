@@ -1,0 +1,14 @@
+# Build artifacts
+/build/
+/Gringo
+/Gringo.exe
+/*.so
+/*.dll
+/plugins/
+
+# CPM dependency cache
+*/build/
+/.cpm-cache/
+
+# Project files
+!/CMakeLists.txt

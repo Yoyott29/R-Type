@@ -96,23 +96,48 @@ CMake must report 3.28 or higher.
 
 Run all commands from the repository root. The first command configures CMake and downloads raylib and Asio (an internet connection is required the first time). The second compiles the project.
 
-On Linux:
+On Linux, build the standalone Gringo Engine/editor with:
 
 ```sh
-cmake -B build
-cmake --build build
+cmake -S "Gringo Engine" -B "Gringo Engine/build"
+cmake --build "Gringo Engine/build" --target Gringo
 ```
 
 The root build scripts provide separate commands for the engine/editor and the
 mandatory R-Type executables:
 
 ```bash
-./build_engine.sh
+./Gringo\ Engine/build_engine.sh
 ./build_rtype.sh
 ```
 
-`build_engine.sh` builds `Gringo` without the R-Type targets. `build_rtype.sh`
-builds both `r-type_client` and `r-type_server` without the editor.
+`Gringo Engine/build_engine.sh` builds the standalone `Gringo` editor in `Gringo Engine/build/` without the mandatory
+R-Type targets. `build_rtype.sh` configures the root CMake project and builds
+both `r-type_client` and `r-type_server`.
+
+The repository layout is:
+
+```text
+Gringo Engine/   standalone engine and editor, with its own CMake/CPM setup
+├── src/
+│   ├── ECS/
+│   ├── editor/
+│   ├── runtime/
+│   └── plugins/
+R-Type/          mandatory R-Type game
+Gringo Engine/plugins/  runtime plugin libraries
+```
+
+Projects created with the Gringo editor are saved directly in the repository
+root. A project named `MyGame` uses this structure:
+
+```text
+MyGame/
+├── MyGame.gringo
+├── main.cpp
+├── assets/
+└── scripts/
+```
 
 ### Custom plugin components
 
