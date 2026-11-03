@@ -24,7 +24,9 @@ void Plugin2D::registerComponents(Scene &scene)
                                     ComponentJson::floatValue(data, "Height", 32.0f)};
         sprite.drawOrder = ComponentJson::intValue(data, "DrawOrder", 0);
         const std::string texture = ComponentJson::value(data, "TexturePath", "");
-        sprite.texturePath = texture == "default.png" ? "" : ProjectAssets::resolve(target, texture);
+        // No file chosen: the shape is drawn in its color ("default.png" in older projects)
+        const bool noTexture = texture.empty() || texture == NO_FILE || texture == "default.png";
+        sprite.texturePath = noTexture ? "" : ProjectAssets::resolve(target, texture);
         sprite.color = ComponentJson::colorValue(data, "Color", {255, 255, 255, 255});
         target.addComponent(entity, sprite);
     });

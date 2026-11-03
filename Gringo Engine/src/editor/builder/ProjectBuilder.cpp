@@ -70,6 +70,136 @@ std::set<std::string> ProjectBuilder::collectScripts(const SceneObjects &sceneOb
     return scripts;
 }
 
+std::vector<std::string>
+ProjectBuilder::missingFiles(const SceneObjects &sceneObjects,
+                             const std::filesystem::path &projectFolder,
+                             const std::vector<ComponentDescriptor> &descriptors)
+{
+    std::vector<std::string> missing;
+    const auto check = [&](const std::string &kind, const std::string &object,
+                           const std::vector<Component> &components) {
+        for (const Component &component : components) {
+            const auto descriptor = std::find_if(
+                descriptors.begin(), descriptors.end(),
+                [&component](const ComponentDescriptor &candidate) {
+                    return candidate.name == component.name;
+                });
+            if (descriptor == descriptors.end())
+                continue;
+            for (const Property &property : component.properties) {
+                const auto setting = std::find_if(
+                    descriptor->properties.begin(), descriptor->properties.end(),
+                    [&property](const PropertyDescriptor &candidate) {
+                        return candidate.name == property.name;
+                    });
+                if (setting == descriptor->properties.end() || setting->type != valueType::File ||
+                    setting->options.empty())
+                    continue;
+                // No file chosen ("default.png" is how older projects said it)
+                if (property.value.empty() || property.value == NO_FILE ||
+                    property.value == "default.png")
+                    continue;
+                // "assets/Player.png" and "Player.png" both mean <project>/assets/Player.png
+                const std::string &folder = setting->options.front();
+                std::filesystem::path relative = property.value;
+                if (relative.begin() != relative.end() && *relative.begin() == folder)
+                    relative = relative.lexically_relative(*relative.begin());
+                const std::filesystem::path file = std::filesystem::path(folder) / relative;
+                if (!std::filesystem::is_regular_file(projectFolder / file))
+                    missing.push_back("Impossible to build " + sceneObjects.projectName +
+                                      ": missing asset: " + file.generic_string() + " (" + kind +
+                                      " " + object + ", " + component.name + "." +
+                                      property.name + ")");
+            }
+        }
+    };
+    for (const Entity &entity : sceneObjects._entities)
+        check("entity", entity.name, entity.components);
+    for (const Prefab &prefab : sceneObjects._prefabs)
+        check("prefab", prefab.name, prefab.components);
+    return missing;
+}
+
+int ProjectBuilder::parentIdOf(const std::vector<Component> &components)
+{
+    for (const Component &component : components) {
+        if (component.name != "ChildOf")
+            continue;
+        for (const Property &property : component.properties)
+            if (property.name == "Parent") {
+                try {
+                    return std::stoi(property.value);
+                } catch (const std::exception &) {
+                    return -1;
+                }
+            }
+    }
+    return -1;
+}
+
+std::vector<std::string> ProjectBuilder::hierarchyErrors(const SceneObjects &sceneObjects)
+{
+    std::vector<std::string> errors;
+    const std::string prefix = "Impossible to build " + sceneObjects.projectName + ": ";
+    const auto hasChildOf = [](const std::vector<Component> &components) {
+        return std::any_of(components.begin(), components.end(),
+                           [](const Component &component) { return component.name == "ChildOf"; });
+    };
+    const auto entityWithId = [&sceneObjects](int id) {
+        return std::find_if(sceneObjects._entities.begin(), sceneObjects._entities.end(),
+                            [id](const Entity &entity) { return entity.id == id; });
+    };
+
+    for (const Entity &entity : sceneObjects._entities) {
+        if (!hasChildOf(entity.components))
+            continue;
+        const std::string name = "entity " + entity.name + " [" + std::to_string(entity.id) + "]";
+        const int parentId = parentIdOf(entity.components);
+        if (parentId == entity.id) {
+            errors.push_back(prefix + name + " is its own parent");
+            continue;
+        }
+        if (entityWithId(parentId) == sceneObjects._entities.end()) {
+            errors.push_back(prefix + name + " is ChildOf unknown entity " +
+                             std::to_string(parentId));
+            continue;
+        }
+        // Goes up the parents: coming back to this entity means a loop
+        int current = parentId;
+        for (std::size_t steps = 0; steps < sceneObjects._entities.size(); ++steps) {
+            auto parent = entityWithId(current);
+            if (parent == sceneObjects._entities.end() || !hasChildOf(parent->components))
+                break;
+            current = parentIdOf(parent->components);
+            if (current == entity.id) {
+                errors.push_back(prefix + name + " is in a ChildOf loop");
+                break;
+            }
+        }
+    }
+    // A prefab can be the child of a scene entity
+    for (const Prefab &prefab : sceneObjects._prefabs) {
+        if (!hasChildOf(prefab.components))
+            continue;
+        const int parentId = parentIdOf(prefab.components);
+        if (entityWithId(parentId) == sceneObjects._entities.end())
+            errors.push_back(prefix + "prefab " + prefab.name + " is ChildOf unknown entity " +
+                             std::to_string(parentId));
+    }
+    return errors;
+}
+
+std::vector<std::string>
+ProjectBuilder::buildErrors(const SceneObjects &sceneObjects,
+                            const std::filesystem::path &projectFolder,
+                            const std::vector<ComponentDescriptor> &descriptors)
+{
+    std::vector<std::string> errors = missingFiles(sceneObjects, projectFolder, descriptors);
+    for (std::string &error : hierarchyErrors(sceneObjects))
+        errors.push_back(std::move(error));
+    return errors;
+}
+
 void ProjectBuilder::requireRenderer(const SceneObjects &sceneObjects)
 {
     if (sceneObjects.renderer.empty())
@@ -107,13 +237,13 @@ void ProjectBuilder::requireComponentPlugins(const SceneObjects &sceneObjects,
 
 bool ProjectBuilder::scriptsInclude(const std::filesystem::path &projectFolder,
                                     const std::set<std::string> &scripts,
-                                    std::initializer_list<const char *> headers)
+                                    std::initializer_list<std::string> headers)
 {
     for (const std::string &script : scripts) {
         std::ifstream input(projectFolder / "scripts" / script);
         const std::string source((std::istreambuf_iterator<char>(input)),
                                  std::istreambuf_iterator<char>());
-        for (const char *header : headers)
+        for (const std::string &header : headers)
             if (source.find(std::string{"#include \""} + header + '"') != std::string::npos)
                 return true;
     }
@@ -141,7 +271,8 @@ void ProjectBuilder::writeGeneratedMain(const std::filesystem::path &sourcePath,
            << "#include <iostream>\n"
            << "#include <memory>\n"
            << "#include <stdexcept>\n"
-           << "#include <string>\n";
+           << "#include <string>\n"
+           << "#include <vector>\n";
     if (usesPrefabs)
         source << "#include \"Prefab.hpp\"\n"
                << "#include \"PrefabsManager.hpp\"\n";
@@ -165,7 +296,7 @@ void ProjectBuilder::writeGeneratedMain(const std::filesystem::path &sourcePath,
               "projectPath.string());\n"
            << "        nlohmann::json root;\n"
            << "        file >> root;\n"
-           << "        Application application(argc, argv);\n"
+           << "        Application application(std::vector<std::string>(argv + 1, argv + argc));\n"
            << "        Scene &scene = application._scene;\n"
            << "        scene.addResource<ProjectSettings>(ProjectSettings::fromJson(\n"
            << "            root.value(\"pluginSettings\", nlohmann::json::object())));\n";
@@ -192,6 +323,7 @@ void ProjectBuilder::writeGeneratedMain(const std::filesystem::path &sourcePath,
            << "        for (const auto &entityData : root.value(\"entities\", "
               "nlohmann::json::array())) {\n"
            << "            Entity entity = scene.createEntity();\n"
+           << "            components.addEntityId(scene, entityData.value(\"id\", -1), entity);\n"
            << "            for (const auto &component : entityData.value(\"components\", "
               "nlohmann::json::array())) {\n";
     if (!scripts.empty()) {
@@ -222,6 +354,7 @@ void ProjectBuilder::writeGeneratedMain(const std::filesystem::path &sourcePath,
     source << "                    components.addToScene(scene, entity, component);\n"
            << "            }\n"
            << "        }\n"
+           << "        components.linkChildren(scene);\n"
            << "        for (const auto &prefabData : root.value(\"prefabs\", "
               "nlohmann::json::array())) {\n"
            << "            Prefab prefab;\n"
@@ -282,6 +415,14 @@ std::string ProjectBuilder::build(const std::string &projectPath, const SceneObj
     // the include directories of its active plugins
     requireComponentPlugins(sceneObjects, descriptors);
     requireRenderer(sceneObjects);
+    // Checked before writing or compiling anything
+    const std::vector<std::string> missing = buildErrors(sceneObjects, projectFolder, descriptors);
+    if (!missing.empty()) {
+        std::string message;
+        for (const std::string &line : missing)
+            message += (message.empty() ? "" : "\n") + line;
+        throw std::runtime_error(message);
+    }
 
     std::filesystem::create_directories(projectFolder);
     for (const std::string &script : scripts) {

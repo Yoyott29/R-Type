@@ -33,6 +33,8 @@ class EditorComponents
     void closeComponentPicker();
     void addComponentToSelectedObject(const Component &componentToAdd);
     void deleteComponent(int index);
+    // Redraws the entity list when a ChildOf was added or removed (its button moves in the tree)
+    void refreshTreeIfChildOf(const std::string &componentName);
 
   private:
     EditorMenu &_editor;

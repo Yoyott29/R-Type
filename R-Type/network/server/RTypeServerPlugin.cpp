@@ -50,7 +50,7 @@ void createPrefabs(Scene &scene, PrefabsManager &prefabs)
                      .addComponent(Type{EntType::ENEMY})
                      .addComponent(Position{2000.0f, 0.0f})
                      .addComponent(Velocity{-500.0f, 0.0f})
-                     .addComponent(Collider2D{BoxShape{40.0f, 60.0f}, nullptr, rtype_layers::ENEMY,
+                     .addComponent(Collider2D{BoxShape{40.0f, 60.0f}, {}, rtype_layers::ENEMY,
                                               rtype_layers::PLAYER | rtype_layers::PLAYER_BULLET})
                      .addComponent(Script{std::make_shared<DestroyOffScreenScript>()})
                      .addComponent(Script{std::make_shared<EnemyScript>()}));
@@ -59,7 +59,7 @@ void createPrefabs(Scene &scene, PrefabsManager &prefabs)
                       .addComponent(Type{EntType::ENEMY, rtype_protocol::ENEMY_VARIANT_2})
                       .addComponent(Position{2000.0f, 0.0f})
                       .addComponent(Velocity{-500.0f, 0.0f})
-                      .addComponent(Collider2D{BoxShape{40.0f, 60.0f}, nullptr, rtype_layers::ENEMY,
+                      .addComponent(Collider2D{BoxShape{40.0f, 60.0f}, {}, rtype_layers::ENEMY,
                                                rtype_layers::PLAYER | rtype_layers::PLAYER_BULLET})
                       .addComponent(Script{std::make_shared<DestroyOffScreenScript>()})
                       .addComponent(Script{std::make_shared<EnemyScript>()}));

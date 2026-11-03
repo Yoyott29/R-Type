@@ -1,5 +1,7 @@
 #include "ProjectComponentManager.hpp"
+#include "ChildOf.hpp"
 #include "ComponentJson.hpp"
+#include "HierarchySystem.hpp"
 #include "Position.hpp"
 #include "PluginLoader.hpp"
 #include "ProjectAssets.hpp"
@@ -15,6 +17,35 @@ ProjectComponentManager::ProjectComponentManager(Scene &scene,
         target.addComponent(entity, Position{ComponentJson::floatValue(data, "PositionX", 0.0f),
                                              ComponentJson::floatValue(data, "PositionY", 0.0f)});
     });
+    scene.addResource<EditorEntityIds>();
+    // A parent loaded after its child is found later, by linkChildren. A prefab instantiated
+    // during the game finds its parent (a scene entity) right away
+    scene.registerComponent<ChildOf>([](Scene &target, Entity entity, const nlohmann::json &data) {
+        ChildOf link;
+        link.parentId = ComponentJson::intValue(data, "Parent", -1);
+        const auto &ids = target.getResource<EditorEntityIds>().entities;
+        auto parent = ids.find(link.parentId);
+        if (parent != ids.end())
+            link.parent = parent->second;
+        target.addComponent(entity, link);
+    });
+}
+
+void ProjectComponentManager::addEntityId(Scene &scene, int editorId, Entity entity) const
+{
+    scene.getResource<EditorEntityIds>().entities[editorId] = entity;
+}
+
+void ProjectComponentManager::linkChildren(Scene &scene) const
+{
+    const auto &ids = scene.getResource<EditorEntityIds>().entities;
+    for (Entity child : scene.view<ChildOf>()) {
+        ChildOf &link = scene.getComponent<ChildOf>(child);
+        auto parent = ids.find(link.parentId);
+        if (link.parent == NO_PARENT && parent != ids.end())
+            link.parent = parent->second;
+    }
+    HierarchySystem::followParents(scene);
 }
 
 std::filesystem::path ProjectComponentManager::findProjectFile(const std::string &fileName)

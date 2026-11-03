@@ -23,7 +23,7 @@ class Application
   public:
     Application();
     // Keeps the arguments (without the program name) in the CommandLine resource
-    Application(int argc, char **argv);
+    explicit Application(std::vector<std::string> arguments);
     // Throws if a plugin needs a renderer and none is set, then runs until AppAlive is false or
     // the window is closed
     void run();
@@ -33,7 +33,7 @@ class Application
     // Loads a renderer from Gringo Engine/renderers, opens its window and adds it to the scene.
     // Call it before adding the plugins that use it
     void setRenderer(std::string const &name, std::string const &windowTitle);
-    bool hasRenderer() const { return _renderer != nullptr; }
+    bool hasRenderer() const { return static_cast<bool>(_renderer); }
 
     Scene _scene;
 

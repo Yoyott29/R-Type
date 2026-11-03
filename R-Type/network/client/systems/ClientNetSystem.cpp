@@ -29,7 +29,7 @@ std::array<std::string, rtype_protocol::MAX_PLAYERS> const PLAYER_TEXTURES = {{
     "assets/PlayerRed.png",
 }};
 
-constexpr ColorRGBA WHITE_COLOR{255, 255, 255, 255};
+const ColorRGBA WHITE_COLOR{255, 255, 255, 255};
 
 // The server only sends what an entity is: its look is decided here
 Sprite spriteForType(SnapshotEntity const &snapshot)
@@ -81,7 +81,7 @@ void applySnapshots(Scene &scene, ClientSession &session,
                 createEntity(scene, entity);
 }
 
-char const *disconnectText(DisconnectReason reason)
+std::string disconnectText(DisconnectReason reason)
 {
     switch (reason) {
     case DisconnectReason::Remote:

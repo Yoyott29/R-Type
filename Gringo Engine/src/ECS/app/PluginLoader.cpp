@@ -18,7 +18,7 @@
 namespace
 {
 #if defined(_WIN32)
-constexpr char const *LIBRARY_SUFFIX = ".dll";
+const std::string LIBRARY_SUFFIX = ".dll";
 
 std::string lastError() { return "error code " + std::to_string(GetLastError()); }
 
@@ -55,7 +55,7 @@ std::filesystem::path libraryOf(void *address)
 
 std::filesystem::path executablePath() { return modulePath(nullptr); }
 #else
-constexpr char const *LIBRARY_SUFFIX = ".so";
+const std::string LIBRARY_SUFFIX = ".so";
 
 std::string lastError()
 {

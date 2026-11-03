@@ -35,7 +35,7 @@ Endpoint toEndpoint(udp::endpoint const &endpoint)
     return Endpoint{endpoint.address().to_v4().to_uint(), endpoint.port()};
 }
 
-void logOnce(bool &flag, char const *what, asio::error_code const &ec)
+void logOnce(bool &flag, std::string const &what, asio::error_code const &ec)
 {
     if (flag)
         return;

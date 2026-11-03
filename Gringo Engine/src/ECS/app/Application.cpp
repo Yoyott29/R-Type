@@ -7,6 +7,8 @@
 
 #include "Application.hpp"
 #include "AppAlive.hpp"
+#include "ChildOf.hpp"
+#include "HierarchySystem.hpp"
 #include "CommandLine.hpp"
 #include "ProjectSettings.hpp"
 #include "EngineError.hpp"
@@ -14,27 +16,29 @@
 #include "Time.hpp"
 #include <algorithm>
 #include <chrono>
+#include <utility>
 #include <functional>
 
 #define WORLD_WIDTH 1920
 #define WORLD_HEIGHT 1080
 #define MAX_FRAME_TIME 0.25f
 
-static constexpr ColorRGBA BACKGROUND_COLOR{0, 0, 0, 255};
+static const ColorRGBA BACKGROUND_COLOR{0, 0, 0, 255};
 
 Application::Application()
 {
     // setup basic components and resources
     _scene.registerComponent<Position>();
+    _scene.registerComponent<ChildOf>();
+    _scene.registerSystem<HierarchySystem>(Update);
     _scene.addResource<AppAlive>();
     _scene.addResource<CommandLine>();
     _scene.addResource<ProjectSettings>();
 }
 
-Application::Application(int argc, char **argv) : Application()
+Application::Application(std::vector<std::string> arguments) : Application()
 {
-    for (int index = 1; index < argc; ++index)
-        _scene.getResource<CommandLine>().arguments.emplace_back(argv[index]);
+    _scene.getResource<CommandLine>().arguments = std::move(arguments);
 }
 
 void Application::addPlugin(const std::shared_ptr<IPlugin> &plugin) { addPlugin(plugin, ""); }

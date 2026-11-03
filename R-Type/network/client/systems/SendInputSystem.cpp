@@ -14,7 +14,7 @@
 
 namespace
 {
-constexpr PeerId SERVER_PEER = 0;
+const PeerId SERVER_PEER = 0;
 
 std::uint8_t buttonsOf(KeyboardInput const &keyboard)
 {

@@ -73,8 +73,12 @@ void AMenu::handleButtons()
 
     for (const std::string &buttonName : clickedButtons) {
         auto buttonIterator = _buttons.find(buttonName);
-        if (buttonIterator != _buttons.end() && buttonIterator->second.onClick)
-            buttonIterator->second.onClick();
+        if (buttonIterator == _buttons.end() || !buttonIterator->second.onClick)
+            continue;
+        // A copy: the action may remove its own button (a picker closing, a list being redrawn),
+        // which would free the action while it is still running
+        const std::function<void()> action = buttonIterator->second.onClick;
+        action();
     }
 }
 
@@ -109,7 +113,8 @@ void AMenu::drawRectangles() const
         sortedRectangles.push_back(std::cref(rectangle));
 
     // Lowest draw order first
-    std::sort(sortedRectangles.begin(), sortedRectangles.end(),
+    // Stable: rectangles with the same draw order keep one order, whatever is added or removed
+    std::stable_sort(sortedRectangles.begin(), sortedRectangles.end(),
               [](const UiRectangle &left, const UiRectangle &right) {
                   return left.drawOrder < right.drawOrder;
               });

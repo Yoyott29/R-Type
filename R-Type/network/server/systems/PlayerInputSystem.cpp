@@ -15,9 +15,9 @@
 
 namespace
 {
-constexpr float PLAYER_SPEED = 400.0f;
-constexpr float SHOOT_COOLDOWN = 0.2f;
-constexpr float BULLET_OFFSET_X = 50.0f;
+const float PLAYER_SPEED = 400.0f;
+const float SHOOT_COOLDOWN = 0.2f;
+const float BULLET_OFFSET_X = 50.0f;
 } // namespace
 
 void PlayerInputSystem::update(Scene &scene)

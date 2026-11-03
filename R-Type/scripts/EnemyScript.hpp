@@ -20,8 +20,8 @@ inline void EnemyScript::onUpdate(Scene &scene, Entity &entity)
 {
     Position &position = scene.getComponent<Position>(entity);
     Velocity &velocity = scene.getComponent<Velocity>(entity);
-    constexpr float amplitude = 3.0f;
-    constexpr float sineSpeed = 0.01f;
+    const float amplitude = 3.0f;
+    const float sineSpeed = 0.01f;
 
     position.y += amplitude * std::sin(sineSpeed * position.x);
     velocity.dy = amplitude * sineSpeed * std::cos(sineSpeed * position.x);

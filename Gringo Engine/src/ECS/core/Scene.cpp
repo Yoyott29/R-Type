@@ -6,6 +6,7 @@
 */
 
 #include "Scene.hpp"
+#include "ChildOf.hpp"
 #include "nlohmann/json.hpp"
 
 Scene::Scene()
@@ -28,6 +29,13 @@ void Scene::destroyEntity(Entity entity)
     _entityManager->destroyEntity(entity);
     _componentManager->entityDestroyed(entity);
     _systemManager->entityDestroyed(entity);
+
+    // Its children go with it, and theirs with them. Done right away, so a new entity reusing
+    // this id cannot become their parent
+    if (_componentManager->isRegistered<ChildOf>())
+        for (Entity child : view<ChildOf>())
+            if (getComponent<ChildOf>(child).parent == entity)
+                destroyEntity(child);
 }
 
 void Scene::runSchedule(ScheduleLabel label) { _systemManager->runSchedule(label, *this); }

@@ -7,7 +7,7 @@
 #include "Script.hpp"
 #include "Time.hpp"
 #include <cstdlib>
-#include <ctime>
+#include <chrono>
 
 inline const std::vector<std::string> EnemySpawnerScript_params = {"Prefab", "Wave"};
 
@@ -30,7 +30,8 @@ class EnemySpawnerScript : public GringoEntityScript
 
 inline EnemySpawnerScript::EnemySpawnerScript()
 {
-    std::srand(static_cast<unsigned int>(std::time(nullptr)));
+    std::srand(static_cast<unsigned int>(
+        std::chrono::system_clock::now().time_since_epoch().count()));
     _waveDelay = static_cast<float>(std::rand() % 10) * 0.1f + 0.5f;
 }
 
