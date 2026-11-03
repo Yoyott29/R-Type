@@ -10,6 +10,18 @@
                             "name": "Path",
                             "type": 7,
                             "value": "EnemySpawnerScript.hpp"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Prefab",
+                            "type": 2,
+                            "value": "0"
+                        },
+                        {
+                            "id": 2,
+                            "name": "Wave",
+                            "type": 2,
+                            "value": "0"
                         }
                     ]
                 }
@@ -26,30 +38,13 @@
                             "id": 0,
                             "name": "Path",
                             "type": 7,
-                            "value": "EnemyScript.hpp"
+                            "value": "SpaceSpawnerScript.hpp"
                         }
                     ]
                 }
             ],
             "id": 1,
             "name": "StarsSpawner"
-        },
-        {
-            "components": [
-                {
-                    "name": "Script",
-                    "properties": [
-                        {
-                            "id": 0,
-                            "name": "Path",
-                            "type": 7,
-                            "value": "EnemySpawnerScript.hpp"
-                        }
-                    ]
-                }
-            ],
-            "id": 2,
-            "name": "Entity2"
         }
     ],
     "network": {

@@ -61,7 +61,6 @@ std::set<std::string> ProjectBuilder::collectScripts(const SceneObjects &sceneOb
             if (component.name == "Script" && !scriptPath(component).empty() &&
                 scriptPath(component) != NO_SCRIPT)
                 scripts.insert(scriptPath(component));
-            scripts.insert(scriptPath(component));
         }
     };
     for (const Entity &entity : sceneObjects._entities)
@@ -197,8 +196,20 @@ void ProjectBuilder::writeGeneratedMain(const std::filesystem::path &sourcePath,
               "projectPath);\n"
            << "        nlohmann::json root;\n"
            << "        file >> root;\n"
-           << "        Scene &scene = application._scene;\n"
-           << "        ProjectComponentManager components(scene, "
+           << "        Scene &scene = application._scene;\n";
+    if (!scripts.empty())
+        source << "        const auto applyParameters = [](const "
+                  "std::shared_ptr<GringoEntityScript> &script,\n"
+               << "                                        const nlohmann::json &component) {\n"
+               << "            for (const auto &property : component.value(\"properties\", "
+                  "nlohmann::json::array())) {\n"
+               << "                const std::string name = property.value(\"name\", \"\");\n"
+               << "                if (name != \"Path\")\n"
+               << "                    script->setParameter(name, property.value(\"value\", "
+                  "\"\"));\n"
+               << "            }\n"
+               << "        };\n";
+    source << "        ProjectComponentManager components(scene, "
               "std::filesystem::path(projectPath).parent_path());\n"
            << "        for (const auto &entityData : root.value(\"entities\", "
               "nlohmann::json::array())) {\n"
@@ -217,10 +228,13 @@ void ProjectBuilder::writeGeneratedMain(const std::filesystem::path &sourcePath,
         bool firstScript = true;
         for (const std::string &script : scripts) {
             source << "                    " << (firstScript ? "if" : "else if")
-                   << " (path == " << '"' << script << '"' << ")\n"
-                   << "                        scene.addComponent(entity, "
-                      "Script{std::make_shared<"
-                   << className(script) << ">(), false});\n";
+                   << " (path == " << '"' << script << '"' << ") {\n"
+                   << "                        auto instance = std::make_shared<"
+                   << className(script) << ">();\n"
+                   << "                        applyParameters(instance, component);\n"
+                   << "                        scene.addComponent(entity, Script{instance, "
+                      "false});\n"
+                   << "                    }\n";
             firstScript = false;
         }
         source << "                    else\n"
@@ -245,10 +259,12 @@ void ProjectBuilder::writeGeneratedMain(const std::filesystem::path &sourcePath,
         bool firstScript = true;
         for (const std::string &script : scripts) {
             source << "                    " << (firstScript ? "if" : "else if")
-                   << " (path == " << '"' << script << '"' << ")\n"
-                   << "                        prefab.addComponent("
-                      "Script{std::make_shared<"
-                   << className(script) << ">(), false});\n";
+                   << " (path == " << '"' << script << '"' << ") {\n"
+                   << "                        auto instance = std::make_shared<"
+                   << className(script) << ">();\n"
+                   << "                        applyParameters(instance, component);\n"
+                   << "                        prefab.addComponent(Script{instance, false});\n"
+                   << "                    }\n";
             firstScript = false;
         }
         source << "                    else\n"

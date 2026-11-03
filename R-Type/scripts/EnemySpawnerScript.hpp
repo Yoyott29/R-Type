@@ -9,6 +9,8 @@
 #include <cstdlib>
 #include <ctime>
 
+inline const std::vector<std::string> EnemySpawnerScript_params = {"Prefab", "Wave"};
+
 class EnemySpawnerScript : public GringoEntityScript
 {
   public:
@@ -50,9 +52,8 @@ inline void EnemySpawnerScript::onUpdate(Scene &scene, Entity &)
     if (_spawnTimer < 0.2f)
         return;
 
-    Entity enemy =
-        scene.getResource<PrefabsManager>().InstantiatePrefab(_waveType == 2 ? "Enemy2" : "Enemy",
-                                                              scene);
+    Entity enemy = scene.getResource<PrefabsManager>().InstantiatePrefab(
+        _waveType == 2 ? "Enemy2" : "Enemy", scene);
     scene.getComponent<Position>(enemy).y = _waveY;
     _spawnTimer = 0.0f;
     --_enemyCount;

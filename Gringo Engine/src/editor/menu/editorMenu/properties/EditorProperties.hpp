@@ -35,6 +35,7 @@ class EditorProperties
     std::string nextColorName(std::string current);
     std::string nextScriptName(std::string current);
     std::vector<std::string> getScriptNames();
+    void applyScriptParameters(Component &component, const std::string &scriptName);
 
     std::string cleanNumber(std::string text);
     void applyCurrentEdit();

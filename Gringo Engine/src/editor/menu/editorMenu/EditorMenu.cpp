@@ -395,7 +395,16 @@ void EditorMenu::syncComponentWithTemplate(Component &component)
                     syncedProperty.value = savedProperty.value;
             }
         }
+        std::vector<Property> savedProperties = component.properties;
         component.properties = syncedProperties;
+        if (component.name == "Script" && !component.properties.empty()) {
+            _properties.applyScriptParameters(component, component.properties.front().value);
+            for (Property &parameter : component.properties)
+                for (const Property &savedProperty : savedProperties)
+                    if (parameter.name == savedProperty.name)
+                        parameter.value = savedProperty.value;
+        }
+
         return;
     }
 }

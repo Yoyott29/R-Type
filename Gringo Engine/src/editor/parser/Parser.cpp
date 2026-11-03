@@ -231,3 +231,38 @@ std::filesystem::path Parser::getProjectFolder(const std::filesystem::path &proj
 
     return gamePath.parent_path();
 }
+
+std::vector<Property> Parser::readScriptParameters(const std::filesystem::path &scriptFile)
+{
+    std::vector<Property> parameters;
+    std::ifstream input(scriptFile);
+
+    // The line to find starts with e.g. "PlayerScript_params"
+    const std::string marker = scriptFile.stem().string() + "_params";
+    std::string line;
+
+    while (std::getline(input, line)) {
+        if (line.find(marker) == std::string::npos)
+            continue;
+
+        // Take what is between { and } on that line
+        std::size_t open = line.find('{');
+        std::size_t close = line.find('}', open);
+        if (open == std::string::npos || close == std::string::npos)
+            return parameters;
+
+        // Split on commas, then drop spaces and quotes from each name
+        std::istringstream names(line.substr(open + 1, close - open - 1));
+        std::string name;
+        while (std::getline(names, name, ',')) {
+            name.erase(std::remove_if(
+                           name.begin(), name.end(),
+                           [](char c) { return c == ' ' || c == '\t' || c == '"' || c == '\r'; }),
+                       name.end());
+            if (!name.empty())
+                parameters.push_back({0, name, "0", valueType::String}); // id set by the caller
+        }
+        break; // first matching line only
+    }
+    return parameters;
+}

@@ -221,21 +221,6 @@ void EditorProperties::cycleColor(const std::string &propertyValueName, ObjectTy
     showNewValue(propertyValueName, storedValue);
 }
 
-void EditorProperties::cycleScript(const std::string &propertyValueName, ObjectType objectType,
-                                   int objectId, int componentIndex, int propertyId)
-{
-    applyCurrentEdit();
-
-    if (!isPropertyValid(objectType, objectId, componentIndex, propertyId))
-        return;
-
-    std::string &storedValue = getStoredValue(objectType, objectId, componentIndex, propertyId);
-
-    storedValue = nextScriptName(storedValue);
-
-    showNewValue(propertyValueName, storedValue);
-}
-
 void EditorProperties::updateObjectProperty()
 {
     if (_editor._currentlyUpdatedProperty.editingName) {
@@ -434,4 +419,41 @@ std::string EditorProperties::nextScriptName(std::string current)
     }
 
     return scriptNames.front();
+}
+
+void EditorProperties::cycleScript(const std::string &, ObjectType objectType, int objectId,
+                                   int componentIndex, int propertyId)
+{
+    applyCurrentEdit();
+
+    if (!isPropertyValid(objectType, objectId, componentIndex, propertyId))
+        return;
+
+    std::string scriptName =
+        nextScriptName(getStoredValue(objectType, objectId, componentIndex, propertyId));
+    Component &component =
+        _editor._components.getObjectComponents(objectType, objectId)[componentIndex];
+
+    component.properties[propertyId].value = scriptName;
+    applyScriptParameters(component, scriptName);
+
+    _editor._components.createComponents(
+        _editor._components.getObjectComponents(objectType, objectId), objectType, objectId);
+}
+
+void EditorProperties::applyScriptParameters(Component &component, const std::string &scriptName)
+{
+    component.properties.erase(component.properties.begin() + 1, component.properties.end());
+
+    if (scriptName == NO_SCRIPT)
+        return;
+
+    std::filesystem::path scriptFile =
+        Parser::getProjectFolder(_editor._projectFilePath, _editor._projectName) / "scripts" /
+        scriptName;
+
+    for (Property &parameter : Parser::readScriptParameters(scriptFile)) {
+        parameter.id = static_cast<int>(component.properties.size());
+        component.properties.push_back(std::move(parameter));
+    }
 }

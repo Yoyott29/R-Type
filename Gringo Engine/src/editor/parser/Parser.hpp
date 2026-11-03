@@ -27,6 +27,7 @@ class Parser
     const std::filesystem::path &getLastSavedPath() const { return _lastSavedPath; }
     static std::filesystem::path getProjectFolder(const std::filesystem::path &projectFilePath,
                                                   const std::string &projectName);
+    static std::vector<Property> readScriptParameters(const std::filesystem::path &scriptFile);
 
   private:
     static nlohmann::json serializeComponents(const std::vector<Component> &components);
