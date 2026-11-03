@@ -153,14 +153,16 @@ void ProjectBuilder::writeGeneratedMain(const std::filesystem::path &sourcePath,
 
     // Nothing plugin-specific here: plugins read their settings (ProjectSettings) and the
     // arguments they understand (CommandLine), e.g. Network's "[host] port"
+    // The .gringo is found next to the executable, so the project folder can be moved
     source << "\nint main(int argc, char **argv)\n{\n"
-           << "    const std::string projectPath = " << cppStringLiteral(projectFile.string())
-           << ";\n"
            << "    try {\n"
+           << "        const std::filesystem::path projectPath =\n"
+           << "            ProjectComponentManager::findProjectFile("
+           << cppStringLiteral(projectFile.filename().string()) << ");\n"
            << "        std::ifstream file(projectPath);\n"
            << "        if (!file)\n"
            << "            throw std::runtime_error(\"Could not open project file: \" + "
-              "projectPath);\n"
+              "projectPath.string());\n"
            << "        nlohmann::json root;\n"
            << "        file >> root;\n"
            << "        Application application(argc, argv);\n"
@@ -186,8 +188,7 @@ void ProjectBuilder::writeGeneratedMain(const std::filesystem::path &sourcePath,
                   "\"\"));\n"
                << "            }\n"
                << "        };\n";
-    source << "        ProjectComponentManager components(scene, "
-              "std::filesystem::path(projectPath).parent_path());\n"
+    source << "        ProjectComponentManager components(scene, projectPath.parent_path());\n"
            << "        for (const auto &entityData : root.value(\"entities\", "
               "nlohmann::json::array())) {\n"
            << "            Entity entity = scene.createEntity();\n"

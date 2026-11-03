@@ -91,6 +91,8 @@ std::filesystem::path libraryKey(std::filesystem::path const &path)
 }
 } // namespace
 
+std::filesystem::path PluginLoader::executableDirectory() { return executablePath().parent_path(); }
+
 PluginLoader::PluginLoader(std::string const &folder, std::filesystem::path directory)
     : _directory(directory.empty() ? [&] {
           const std::filesystem::path executableDirectory = executablePath().parent_path();

@@ -40,6 +40,9 @@ class PluginLoader
     std::vector<std::string> listNames() const;
     bool isAvailable(std::string const &name) const;
 
+    // Folder of the running executable (the game, the editor...)
+    static std::filesystem::path executableDirectory();
+
     // Called by Plugin<T> and Renderer<T> while their library opens. Always returns true
     static bool registerPlugin(PluginFactory create);
     static bool registerRenderer(RendererFactory create);

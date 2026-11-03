@@ -18,11 +18,12 @@
 
 int main(int argc, char **argv)
 {
-    const std::string projectPath = "/home/yoyott/Desktop/Epitech/Tek3/Semestre1/ING/R-Type-Mirror/R-Type/R-Type.gringo";
     try {
+        const std::filesystem::path projectPath =
+            ProjectComponentManager::findProjectFile("R-Type.gringo");
         std::ifstream file(projectPath);
         if (!file)
-            throw std::runtime_error("Could not open project file: " + projectPath);
+            throw std::runtime_error("Could not open project file: " + projectPath.string());
         nlohmann::json root;
         file >> root;
         Application application(argc, argv);
@@ -37,7 +38,7 @@ int main(int argc, char **argv)
         application.addPlugin("Physics");
         application.addPlugin("Network");
         application.addPlugin("RTypeClient");
-        ProjectComponentManager components(scene, std::filesystem::path(projectPath).parent_path());
+        ProjectComponentManager components(scene, projectPath.parent_path());
         for (const auto &entityData : root.value("entities", nlohmann::json::array())) {
             Entity entity = scene.createEntity();
             for (const auto &component : entityData.value("components", nlohmann::json::array())) {
