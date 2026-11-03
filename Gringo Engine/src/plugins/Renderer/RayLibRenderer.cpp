@@ -72,6 +72,9 @@ void RayLibRenderer::build(Application &app)
     renderRequirements.set(app._scene.getComponentType<Sprite>());
     app._scene.setSystemComponentSet<RenderSystem>(renderRequirements);
 
+    // Ends the frame after the Overlay systems (UI) drew on top of the world
+    app._scene.registerSystem<DisplaySystem>(Display);
+
     // raylib inits
     SetTraceLogLevel(LOG_NONE);
     InitWindow(WORLD_WIDTH, WORLD_HEIGHT, WINDOW_TITLE);
@@ -130,6 +133,13 @@ void RayLibRenderer::drawSprite(Position const &position, Sprite const &sprite)
     CircleShape const &circle = std::get<CircleShape>(sprite.shape);
     DrawCircleV({position.x, position.y}, circle.radius,
                 {sprite.color.r, sprite.color.g, sprite.color.b, sprite.color.a});
+}
+
+void RayLibRenderer::drawText(float x, float y, std::string const &text, int fontSize,
+                              ColorRGBA color)
+{
+    DrawText(text.c_str(), static_cast<int>(x), static_cast<int>(y), fontSize,
+             {color.r, color.g, color.b, color.a});
 }
 
 void RayLibRenderer::endFrame()

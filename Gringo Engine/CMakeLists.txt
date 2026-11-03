@@ -99,6 +99,8 @@ set(Renderer_PLUGIN_NAME RayLibRenderer)
 set(Renderer_PRIVATE_LIBRARIES raylib)
 set(Renderer_SYSTEM_INCLUDES "${raylib_SOURCE_DIR}/src")
 set(Network_PUBLIC_LIBRARIES asio)
+# UI draws through the renderer (IRenderer.hpp)
+set(UI_PRIVATE_LIBRARIES plugin_RayLibRenderer)
 
 # gringo_add_plugins(<plugins source dir> <engine target> <output dir>) creates plugin_<name> for
 # each plugin and sets GRINGO_PLUGIN_TARGETS in the caller scope

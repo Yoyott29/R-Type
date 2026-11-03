@@ -57,6 +57,8 @@ void Application::run()
         }
         _scene.runSchedule(Update);
         _scene.runSchedule(PostUpdate);
+        _scene.runSchedule(Overlay);
+        _scene.runSchedule(Display);
     }
 
     for (auto &plugin : _plugins)

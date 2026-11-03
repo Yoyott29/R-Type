@@ -25,5 +25,4 @@ void RenderSystem::update(Scene &scene)
         Sprite const &sprite = scene.getComponent<Sprite>(entity);
         renderer.drawSprite(position, sprite);
     }
-    renderer.endFrame();
 }

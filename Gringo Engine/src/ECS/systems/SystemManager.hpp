@@ -15,7 +15,9 @@
 #include <unordered_map>
 #include <vector>
 
-enum ScheduleLabel { PrepUpdate, StateTransition, FixedUpdate, Update, PostUpdate };
+// Run in this order every frame. PostUpdate opens the frame and draws the world (RenderSystem),
+// Overlay draws on top of it (UI), Display shows the frame (DisplaySystem)
+enum ScheduleLabel { PrepUpdate, StateTransition, FixedUpdate, Update, PostUpdate, Overlay, Display };
 
 class SystemManager
 {

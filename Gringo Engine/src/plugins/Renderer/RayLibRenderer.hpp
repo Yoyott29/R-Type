@@ -10,6 +10,7 @@
 #include "GetInput.hpp"
 #include "IRenderer.hpp"
 #include "KeyboardInput.hpp"
+#include "DisplaySystem.hpp"
 #include "RenderSystem.hpp"
 #include "SoundSystem.hpp"
 #include "Sprite.hpp"
@@ -33,6 +34,8 @@ class RayLibRenderer : public IPlugin, public IRenderer
     void beginFrame() override;
     void clearBackground() override;
     void drawSprite(Position const &position, Sprite const &sprite) override;
+    void drawText(float x, float y, std::string const &text, int fontSize,
+                  ColorRGBA color) override;
     void endFrame() override;
     void playSound(std::string const &path) override;
     void playMusic(std::string const &path) override;
