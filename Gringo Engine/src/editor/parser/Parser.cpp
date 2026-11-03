@@ -6,6 +6,7 @@
 */
 
 #include "Parser.hpp"
+#include <algorithm>
 #include <array>
 #include <set>
 #ifdef _WIN32
@@ -58,9 +59,9 @@ void Parser::saveFile(const std::string &, const SceneObjects &sceneObjects)
 {
     nlohmann::json root;
     root["projectName"] = sceneObjects.projectName;
-    root["network"] = {{"enabled", sceneObjects.network.enabled},
-                       {"plugin", sceneObjects.network.plugin}};
+    root["pluginSettings"] = sceneObjects.pluginSettings;
     root["plugins"] = sceneObjects.activePlugins;
+    root["renderer"] = sceneObjects.renderer;
     root["entities"] = nlohmann::json::array();
     root["prefabs"] = nlohmann::json::array();
 
@@ -135,10 +136,10 @@ SceneObjects Parser::loadFile(const std::string &filePath)
 
     result.projectName = root.value("projectName", filePath);
     result.projectFilePath = std::filesystem::absolute(gamePath).lexically_normal();
-    const auto network = root.value("network", nlohmann::json::object());
-    result.network.enabled = network.value("enabled", false);
-    result.network.plugin = network.value("plugin", "");
+    result.pluginSettings =
+        root.value("pluginSettings", std::map<std::string, std::map<std::string, std::string>>{});
     result.activePlugins = root.value("plugins", std::vector<std::string>{});
+    result.renderer = root.value("renderer", "");
 
     for (const auto &entityJson : root.value("entities", nlohmann::json::array())) {
         Entity entity;

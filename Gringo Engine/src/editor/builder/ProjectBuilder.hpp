@@ -20,6 +20,8 @@ class ProjectBuilder
     static std::string scriptPath(const Component &component);
     static std::string className(const std::string &path);
     static std::set<std::string> collectScripts(const SceneObjects &sceneObjects);
+    // The project has a renderer, and it is in Gringo Engine/renderers
+    static void requireRenderer(const SceneObjects &sceneObjects);
     static void requireComponentPlugins(const SceneObjects &sceneObjects,
                                         const std::vector<ComponentDescriptor> &descriptors);
     static bool scriptsInclude(const std::filesystem::path &projectFolder,

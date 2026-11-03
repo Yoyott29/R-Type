@@ -11,6 +11,7 @@
 #include "Position.hpp"
 #include <filesystem>
 #include <functional>
+#include <map>
 #include <string>
 #include <vector>
 
@@ -21,6 +22,9 @@ struct Property {
     std::string name;
     std::string value;
     valueType type;
+    // Choice: the values to cycle through. File: {folder, extension}. Not saved in .gringo
+    // files, copied from the component's descriptor
+    std::vector<std::string> options = {};
 };
 
 struct Component {
@@ -40,26 +44,19 @@ struct Prefab {
     std::vector<Component> components;
 };
 
-struct NetworkSettings {
-    bool enabled = false;
-    std::string plugin;
-};
-
 struct SceneObjects {
     std::string projectName;
     std::vector<Entity> _entities;
     std::vector<Prefab> _prefabs;
-    NetworkSettings network;
     std::vector<std::string> activePlugins;
     std::filesystem::path projectFilePath;
+    // Name of the renderer in Gringo Engine/renderers: every project has one
+    std::string renderer;
+    // Settings of each plugin, {"Network": {"Port": "4242"}}, see IPlugin::settings
+    std::map<std::string, std::map<std::string, std::string>> pluginSettings;
 };
 
 // UI structs
-
-enum class Shape {
-    BoxShape,
-    CircleShape,
-};
 
 inline bool operator==(const ColorRGBA &left, const ColorRGBA &right)
 {

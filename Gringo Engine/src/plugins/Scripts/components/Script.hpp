@@ -39,7 +39,7 @@ template <> struct ComponentDescription<Script> {
     {
         return {"Script",
                 {
-                    {"Path", valueType::Script, NO_SCRIPT},
+                    {"Path", valueType::File, NO_FILE, {"scripts", ".hpp"}},
                 },
                 {56, 53, 69, 255},
                 ""};

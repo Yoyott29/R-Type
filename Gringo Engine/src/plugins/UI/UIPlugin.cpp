@@ -7,7 +7,6 @@
 
 #include "UIPlugin.hpp"
 #include "ComponentJson.hpp"
-#include "PluginApi.hpp"
 #include "Position.hpp"
 #include "TextSystem.hpp"
 #include "UIText.hpp"
@@ -34,5 +33,3 @@ void UIPlugin::build(Application &app)
 }
 
 void UIPlugin::cleanup(Application &app) { (void)app; }
-
-PLUGIN_EXPORT IPlugin *createPlugin() { return new UIPlugin(); }

@@ -31,10 +31,12 @@ class EditorProperties
     bool isCharacterAllowed(char character, valueType type, std::string &currentContent,
                             int cursorIndex);
 
-    std::string nextShapeName(std::string current);
     std::string nextColorName(std::string current);
-    std::string nextScriptName(std::string current);
-    std::vector<std::string> getScriptNames();
+    // The value after current in options, the first one if current is not there
+    static std::string nextOption(const std::vector<std::string> &options,
+                                  const std::string &current);
+    // The project files of a File property: NO_FILE then <project>/<folder>/*<extension>
+    std::vector<std::string> getProjectFiles(const std::vector<std::string> &options);
     void applyScriptParameters(Component &component, const std::string &scriptName);
 
     std::string cleanNumber(std::string text);
@@ -45,14 +47,14 @@ class EditorProperties
                         Position buttonPosition, float fontSize, ObjectType objectType,
                         int objectId, int componentIndex, const std::string &propertyName,
                         int propertyId);
-    void cycleShape(const std::string &propertyValueName, ObjectType objectType, int objectId,
-                    int componentIndex, int propertyId);
+    void cycleChoice(const std::string &propertyValueName, ObjectType objectType, int objectId,
+                     int componentIndex, int propertyId);
     void toggleBool(const std::string &propertyValueName, ObjectType objectType, int objectId,
                     int componentIndex, int propertyId);
     void cycleColor(const std::string &propertyValueName, ObjectType objectType, int objectId,
                     int componentIndex, int propertyId);
-    void cycleScript(const std::string &propertyValueName, ObjectType objectType, int objectId,
-                     int componentIndex, int propertyId);
+    void cycleFile(const std::string &propertyValueName, ObjectType objectType, int objectId,
+                   int componentIndex, int propertyId);
 
     bool isPropertyValid(ObjectType objectType, int objectId, int componentIndex, int propertyId);
     std::string &getStoredValue(ObjectType objectType, int objectId, int componentIndex,
@@ -60,11 +62,6 @@ class EditorProperties
     void showNewValue(const std::string &propertyValueName, const std::string &newValue);
 
     EditorMenu &_editor;
-
-    std::vector<std::pair<Shape, std::string>> _shapeOptions = {
-        {Shape::BoxShape, "Box"},
-        {Shape::CircleShape, "Circle"},
-    };
 
     std::vector<std::pair<std::string, ColorRGBA>> _colorOptions = {
         {"Red", {255, 0, 0, 255}},       {"Orange", {255, 165, 0, 255}},

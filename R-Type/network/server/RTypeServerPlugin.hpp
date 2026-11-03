@@ -8,7 +8,7 @@
 #pragma once
 #include "Application.hpp"
 
-class RTypeServerPlugin : public IPlugin
+class RTypeServerPlugin : public Plugin<RTypeServerPlugin>
 {
   public:
     void registerComponents(Scene &scene) override;

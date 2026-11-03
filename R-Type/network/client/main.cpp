@@ -16,7 +16,7 @@
 #include <string>
 
 // Loaded in this order from the plugins folder next to the executable
-static constexpr char const *PLUGINS[] = {"RayLibRenderer", "Physics", "Network", "RTypeClient"};
+static constexpr char const *PLUGINS[] = {"2D", "InputHandler", "Physics", "Network", "RTypeClient"};
 
 static std::optional<uint16_t> parsePort(const char *arg)
 {
@@ -70,6 +70,7 @@ int main(int argc, char **argv)
     try {
         Application application;
         application._scene.addResource<NetworkConfig>(NetworkConfig::client(ip, port));
+        application.setRenderer("RaylibRenderer", "R-Type");
         for (char const *plugin : PLUGINS)
             application.addPlugin(plugin);
         std::cout << "Connecting to " << ip << ":" << port << "\n" << std::flush;

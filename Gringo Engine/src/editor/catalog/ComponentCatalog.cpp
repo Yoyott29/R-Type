@@ -13,9 +13,11 @@
 
 ComponentCatalog::ComponentCatalog()
 {
-    // The application registers the engine components (Position, Script) in its constructor
+    // The application registers the engine components (Position, Script) in its constructor: copy
+    // them now, before the plugins add theirs (they have no plugin, they are always available)
     Application application;
     PluginLoader pluginLoader;
+    _descriptors = application._scene.getComponentDescriptors();
 
     for (const std::string &pluginName : pluginLoader.listNames()) {
         try {
@@ -30,13 +32,10 @@ ComponentCatalog::ComponentCatalog()
                 descriptor.plugin = pluginName;
                 _descriptors.push_back(std::move(descriptor));
             }
+            _pluginSettings[pluginName] = plugin->settings();
             _loadedPlugins.push_back(plugin);
         } catch (const std::exception &error) {
             std::cerr << "Skipping plugin " << pluginName << ": " << error.what() << std::endl;
         }
     }
-
-    // Copy the descriptors, the application is destroyed at the end of this constructor
-    const auto &coreDescriptors = application._scene.getComponentDescriptors();
-    _descriptors.insert(_descriptors.begin(), coreDescriptors.begin(), coreDescriptors.end());
 }

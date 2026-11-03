@@ -52,10 +52,10 @@
         "plugin": "RTypeClient"
     },
     "plugins": [
-        "RayLibRenderer",
         "Physics",
         "RTypeClient",
-        "Network"
+        "Network",
+        "Audio"
     ],
     "prefabs": [
         {
@@ -457,5 +457,6 @@
             "name": "Star"
         }
     ],
-    "projectName": "R-Type"
+    "projectName": "R-Type",
+    "renderer": "RaylibRenderer"
 }

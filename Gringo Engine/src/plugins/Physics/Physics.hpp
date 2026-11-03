@@ -10,7 +10,7 @@
 #include <cstdint>
 #include <nlohmann/json_fwd.hpp>
 
-class Physics : public IPlugin
+class Physics : public Plugin<Physics>
 {
   public:
     Physics() = default;

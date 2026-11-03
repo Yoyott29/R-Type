@@ -5,6 +5,8 @@
 /*.so
 /*.dll
 /plugins/
+/renderers/
+/Square/
 
 # CPM dependency cache
 */build/

@@ -7,7 +7,7 @@
 #include "Script.hpp"
 #include "Shape.hpp"
 #include "Time.hpp"
-#ifdef GRINGO_USE_RENDERER
+#ifdef GRINGO_USE_INPUTHANDLER
 #include "KeyboardInput.hpp"
 #endif
 
@@ -36,7 +36,7 @@ inline void PlayerScript::onUpdate(Scene &scene, Entity &entity)
 {
     Position &position = scene.getComponent<Position>(entity);
     Collider2D &collider = scene.getComponent<Collider2D>(entity);
-#ifdef GRINGO_USE_RENDERER
+#ifdef GRINGO_USE_INPUTHANDLER
     const KeyboardInput &keyboard = scene.getResource<KeyboardInput>();
 #endif
     float offsetX = std::holds_alternative<BoxShape>(collider.shape)
@@ -46,7 +46,7 @@ inline void PlayerScript::onUpdate(Scene &scene, Entity &entity)
                         ? std::get<BoxShape>(collider.shape).height / 2.0f
                         : std::get<CircleShape>(collider.shape).radius;
 
-#ifdef GRINGO_USE_RENDERER
+#ifdef GRINGO_USE_INPUTHANDLER
     if (keyboard.isDown(Key::Up) || keyboard.isDown(Key::Z))
         position.y -= _speed * FIXED_DELTA_TIME;
     if (keyboard.isDown(Key::Down) || keyboard.isDown(Key::S))

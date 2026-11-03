@@ -8,10 +8,11 @@
 #pragma once
 #include "Application.hpp"
 
-class UIPlugin : public IPlugin
+class UIPlugin : public Plugin<UIPlugin>
 {
   public:
     void registerComponents(Scene &scene) override;
     void build(Application &app) override;
     void cleanup(Application &app) override;
+    bool requiresRenderer() const override { return true; }
 };

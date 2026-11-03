@@ -66,7 +66,8 @@ void EditorProperties::createProperties(Component &component, int componentIndex
     int propertyIndex = 0;
     std::string prefix = component.name + "_" + std::to_string(componentIndex) + "_";
 
-    for (auto &[propertyId, propertyName, propertyValue, propertyType] : component.properties) {
+    for (auto &[propertyId, propertyName, propertyValue, propertyType, propertyOptions] :
+         component.properties) {
 
         std::string propertyTextName = prefix + propertyName + "_Text";
         std::string propertyValueName = prefix + propertyName + "_Value";
@@ -79,8 +80,8 @@ void EditorProperties::createProperties(Component &component, int componentIndex
                       buttonPosition, propertyFontSize, objectType, objectId, componentIndex,
                       propertyName, propertyId);
 
-        if (propertyType == valueType::Shape)
-            onClick = std::bind(&EditorProperties::cycleShape, this, propertyValueName, objectType,
+        if (propertyType == valueType::Choice)
+            onClick = std::bind(&EditorProperties::cycleChoice, this, propertyValueName, objectType,
                                 objectId, componentIndex, propertyId);
         else if (propertyType == valueType::Bool)
             onClick = std::bind(&EditorProperties::toggleBool, this, propertyValueName, objectType,
@@ -88,8 +89,8 @@ void EditorProperties::createProperties(Component &component, int componentIndex
         else if (propertyType == valueType::Color)
             onClick = std::bind(&EditorProperties::cycleColor, this, propertyValueName, objectType,
                                 objectId, componentIndex, propertyId);
-        else if (propertyType == valueType::Script)
-            onClick = std::bind(&EditorProperties::cycleScript, this, propertyValueName, objectType,
+        else if (propertyType == valueType::File)
+            onClick = std::bind(&EditorProperties::cycleFile, this, propertyValueName, objectType,
                                 objectId, componentIndex, propertyId);
 
         ColorRGBA rowColor = (propertyIndex % 2 == 0) ? BUTTON_COLOR2 : BUTTON_COLOR1;
@@ -176,17 +177,18 @@ void EditorProperties::selectProperty(const std::string &propertyValueName, valu
     _editor._currentlyUpdatedProperty.blinkFrames = 0;
 }
 
-void EditorProperties::cycleShape(const std::string &propertyValueName, ObjectType objectType,
-                                  int objectId, int componentIndex, int propertyId)
+void EditorProperties::cycleChoice(const std::string &propertyValueName, ObjectType objectType,
+                                   int objectId, int componentIndex, int propertyId)
 {
     applyCurrentEdit();
 
     if (!isPropertyValid(objectType, objectId, componentIndex, propertyId))
         return;
 
-    std::string &storedValue = getStoredValue(objectType, objectId, componentIndex, propertyId);
-
-    storedValue = nextShapeName(storedValue);
+    Property &property = _editor._components.getObjectComponents(objectType, objectId)[componentIndex]
+                             .properties[propertyId];
+    property.value = nextOption(property.options, property.value);
+    const std::string &storedValue = property.value;
 
     showNewValue(propertyValueName, storedValue);
 }
@@ -239,7 +241,7 @@ void EditorProperties::updateObjectProperty()
 
     if (index < 0 || index >= static_cast<int>(components.size()))
         return;
-    for (auto &[id, name, value, type] : components[index].properties) {
+    for (auto &[id, name, value, type, options] : components[index].properties) {
         if (name == _editor._currentlyUpdatedProperty.objectProperty) {
             value = _editor._currentlyUpdatedProperty.text;
             _editor.setButtonText(_editor._currentlyUpdatedProperty.name, value);
@@ -360,15 +362,15 @@ void EditorProperties::drawTextCursor()
                                     label.color);
 }
 
-std::string EditorProperties::nextShapeName(std::string current)
+std::string EditorProperties::nextOption(const std::vector<std::string> &options,
+                                         const std::string &current)
 {
-    int shapeCount = static_cast<int>(_shapeOptions.size());
-
-    for (int i = 0; i < shapeCount; ++i) {
-        if (_shapeOptions[i].second == current)
-            return _shapeOptions[(i + 1) % shapeCount].second;
-    }
-    return _shapeOptions.front().second;
+    if (options.empty())
+        return current;
+    auto iterator = std::find(options.begin(), options.end(), current);
+    if (iterator == options.end() || std::next(iterator) == options.end())
+        return options.front();
+    return *std::next(iterator);
 }
 
 std::string EditorProperties::nextColorName(std::string current)
@@ -382,60 +384,37 @@ std::string EditorProperties::nextColorName(std::string current)
     return _colorOptions.front().first;
 }
 
-std::vector<std::string> EditorProperties::getScriptNames()
+std::vector<std::string> EditorProperties::getProjectFiles(const std::vector<std::string> &options)
 {
-    std::vector<std::string> scriptNames;
-
-    std::filesystem::path projectFolder =
-        Parser::getProjectFolder(_editor._projectFilePath, _editor._projectName);
-    std::filesystem::path scriptsFolder = projectFolder / "scripts";
-
-    if (!std::filesystem::is_directory(scriptsFolder))
-        return scriptNames;
-
-    for (const auto &entry : std::filesystem::directory_iterator(scriptsFolder)) {
-        if (!entry.is_regular_file())
-            continue;
-
-        if (entry.path().extension() != ".hpp")
-            continue;
-
-        scriptNames.push_back(entry.path().filename().string());
+    std::vector<std::string> files;
+    if (options.size() >= 2) {
+        const std::filesystem::path folder =
+            Parser::getProjectFolder(_editor._projectFilePath, _editor._projectName) / options[0];
+        std::error_code error;
+        for (const auto &entry : std::filesystem::directory_iterator(folder, error))
+            if (entry.is_regular_file() && entry.path().extension() == options[1])
+                files.push_back(entry.path().filename().string());
+        std::sort(files.begin(), files.end());
     }
-
-    std::sort(scriptNames.begin(), scriptNames.end());
-    return scriptNames;
+    files.insert(files.begin(), NO_FILE);
+    return files;
 }
 
-std::string EditorProperties::nextScriptName(std::string current)
-{
-    std::vector<std::string> scriptNames = getScriptNames();
-    scriptNames.insert(scriptNames.begin(), NO_SCRIPT);
-    int scriptCount = static_cast<int>(scriptNames.size());
-
-    for (int i = 0; i < scriptCount; ++i) {
-        if (scriptNames[i] == current)
-            return scriptNames[(i + 1) % scriptCount];
-    }
-
-    return scriptNames.front();
-}
-
-void EditorProperties::cycleScript(const std::string &, ObjectType objectType, int objectId,
-                                   int componentIndex, int propertyId)
+void EditorProperties::cycleFile(const std::string &, ObjectType objectType, int objectId,
+                                 int componentIndex, int propertyId)
 {
     applyCurrentEdit();
 
     if (!isPropertyValid(objectType, objectId, componentIndex, propertyId))
         return;
 
-    std::string scriptName =
-        nextScriptName(getStoredValue(objectType, objectId, componentIndex, propertyId));
     Component &component =
         _editor._components.getObjectComponents(objectType, objectId)[componentIndex];
-
-    component.properties[propertyId].value = scriptName;
-    applyScriptParameters(component, scriptName);
+    Property &property = component.properties[propertyId];
+    property.value = nextOption(getProjectFiles(property.options), property.value);
+    // A script file can declare parameters: they become properties of its Script component
+    if (component.name == "Script")
+        applyScriptParameters(component, property.value);
 
     _editor._components.createComponents(
         _editor._components.getObjectComponents(objectType, objectId), objectType, objectId);
@@ -445,7 +424,7 @@ void EditorProperties::applyScriptParameters(Component &component, const std::st
 {
     component.properties.erase(component.properties.begin() + 1, component.properties.end());
 
-    if (scriptName == NO_SCRIPT)
+    if (scriptName == NO_FILE)
         return;
 
     std::filesystem::path scriptFile =

@@ -9,7 +9,6 @@
 #include "ComponentManager.hpp"
 #include "EntityManager.hpp"
 #include "ResourceManager.hpp"
-#include "Script.hpp"
 #include "SystemManager.hpp"
 #include <memory>
 #include <type_traits>

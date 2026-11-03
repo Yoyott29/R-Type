@@ -14,10 +14,9 @@
 #include "NetTransport.hpp"
 #include "PlayerId.hpp"
 #include "PlayerInputSystem.hpp"
-#include "PluginApi.hpp"
 #include "Position.hpp"
 #include "PrefabsManager.hpp"
-#include "ScriptSystem.hpp"
+#include "Script.hpp"
 #include "ServerNetSystem.hpp"
 #include "ServerPlayers.hpp"
 #include "SnapshotSystem.hpp"
@@ -120,10 +119,6 @@ void RTypeServerPlugin::build(Application &app)
     scene.registerSystem<ServerNetSystem>(PrepUpdate);
 
     scene.registerSystem<PlayerInputSystem>(FixedUpdate);
-    scene.registerSystem<ScriptSystem>(FixedUpdate);
-    ComponentSet scriptRequirements;
-    scriptRequirements.set(scene.getComponentType<Script>());
-    scene.setSystemComponentSet<ScriptSystem>(scriptRequirements);
 
     scene.registerSystem<SnapshotSystem>(Update);
     ComponentSet snapshotRequirements;
@@ -135,5 +130,3 @@ void RTypeServerPlugin::build(Application &app)
 }
 
 void RTypeServerPlugin::cleanup(Application &) { std::cout << "Closing server\n" << std::flush; }
-
-PLUGIN_EXPORT IPlugin *createPlugin() { return new RTypeServerPlugin(); }

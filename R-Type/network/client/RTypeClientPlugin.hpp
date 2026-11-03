@@ -10,7 +10,7 @@
 
 // Client game layer: sends the inputs and draws the snapshots. Add it after the renderer (Sprite,
 // KeyboardInput) and the NetworkPlugin
-class RTypeClientPlugin : public IPlugin
+class RTypeClientPlugin : public Plugin<RTypeClientPlugin>
 {
   public:
     void registerComponents(Scene &scene) override;

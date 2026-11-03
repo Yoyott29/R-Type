@@ -29,12 +29,12 @@ template <> struct ComponentDescription<Collider2D> {
     {
         return {"Collider2D",
                 {
-                    {"Shape", valueType::Shape, "Box"},
+                    {"Shape", valueType::Choice, "Box", {"Box", "Circle"}},
                     {"Width", valueType::Float, "32"},
                     {"Height", valueType::Float, "32"},
                     {"Radius", valueType::Float, "16"},
                     {"Layer", valueType::Int, "1"},
-                    {"TypeCollisions", valueType::Mask, "All layers"},
+                    {"TypeCollisions", valueType::String, "All layers"},
                 },
                 {58, 57, 61, 255},
                 ""};

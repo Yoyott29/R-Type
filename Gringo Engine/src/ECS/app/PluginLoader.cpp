@@ -7,7 +7,6 @@
 
 #include "PluginLoader.hpp"
 #include "EngineError.hpp"
-#include "PluginApi.hpp"
 #include <utility>
 
 #if defined(_WIN32)
@@ -29,24 +28,32 @@ void *openLibrary(std::filesystem::path const &path)
     return LoadLibraryExW(path.c_str(), nullptr, LOAD_WITH_ALTERED_SEARCH_PATH);
 }
 
-void *findSymbol(void *library, char const *name)
-{
-    return reinterpret_cast<void *>(GetProcAddress(static_cast<HMODULE>(library), name));
-}
-
-std::filesystem::path executablePath()
+std::filesystem::path modulePath(HMODULE module)
 {
     std::wstring buffer(MAX_PATH, L'\0');
     DWORD length = 0;
 
-    while ((length = GetModuleFileNameW(nullptr, buffer.data(),
-                                        static_cast<DWORD>(buffer.size()))) == buffer.size())
+    while ((length = GetModuleFileNameW(module, buffer.data(), static_cast<DWORD>(buffer.size()))) ==
+           buffer.size())
         buffer.resize(buffer.size() * 2);
     if (length == 0)
-        throw EngineError("Could not find the executable path: " + lastError());
+        throw EngineError("Could not find a module path: " + lastError());
     buffer.resize(length);
     return buffer;
 }
+
+// The file of the library a function's code is in
+std::filesystem::path libraryOf(void *address)
+{
+    HMODULE module = nullptr;
+    if (!GetModuleHandleExW(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS |
+                                GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,
+                            reinterpret_cast<LPCWSTR>(address), &module))
+        throw EngineError("Could not find the library of a plugin: " + lastError());
+    return modulePath(module);
+}
+
+std::filesystem::path executablePath() { return modulePath(nullptr); }
 #else
 constexpr char const *LIBRARY_SUFFIX = ".so";
 
@@ -58,7 +65,14 @@ std::string lastError()
 
 void *openLibrary(std::filesystem::path const &path) { return dlopen(path.c_str(), RTLD_NOW); }
 
-void *findSymbol(void *library, char const *name) { return dlsym(library, name); }
+// The file of the library a function's code is in
+std::filesystem::path libraryOf(void *address)
+{
+    Dl_info info{};
+    if (dladdr(address, &info) == 0 || !info.dli_fname)
+        throw EngineError("Could not find the library of a plugin");
+    return info.dli_fname;
+}
 
 std::filesystem::path executablePath()
 {
@@ -70,17 +84,22 @@ std::filesystem::path executablePath()
     return path;
 }
 #endif
+
+std::filesystem::path libraryKey(std::filesystem::path const &path)
+{
+    return std::filesystem::weakly_canonical(std::filesystem::absolute(path));
+}
 } // namespace
 
-PluginLoader::PluginLoader(std::filesystem::path directory)
+PluginLoader::PluginLoader(std::string const &folder, std::filesystem::path directory)
     : _directory(directory.empty() ? [&] {
           const std::filesystem::path executableDirectory = executablePath().parent_path();
-          const std::filesystem::path localPlugins = executableDirectory / "plugins";
-          const std::filesystem::path parentPlugins = executableDirectory.parent_path() / "plugins";
+          const std::filesystem::path localPlugins = executableDirectory / folder;
+          const std::filesystem::path parentPlugins = executableDirectory.parent_path() / folder;
           const std::filesystem::path siblingEnginePlugins =
-              executableDirectory / "Gringo Engine" / "plugins";
+              executableDirectory / "Gringo Engine" / folder;
           const std::filesystem::path enginePlugins =
-              executableDirectory.parent_path() / "Gringo Engine" / "plugins";
+              executableDirectory.parent_path() / "Gringo Engine" / folder;
           if (std::filesystem::is_directory(localPlugins))
               return localPlugins;
           if (std::filesystem::is_directory(parentPlugins))
@@ -95,22 +114,56 @@ PluginLoader::PluginLoader(std::filesystem::path directory)
 {
 }
 
+std::map<std::filesystem::path, PluginLoader::PluginFactory> &PluginLoader::pluginFactories()
+{
+    static std::map<std::filesystem::path, PluginFactory> factories;
+    return factories;
+}
+
+std::map<std::filesystem::path, PluginLoader::RendererFactory> &PluginLoader::rendererFactories()
+{
+    static std::map<std::filesystem::path, RendererFactory> factories;
+    return factories;
+}
+
+bool PluginLoader::registerPlugin(PluginFactory create)
+{
+    pluginFactories()[libraryKey(libraryOf(reinterpret_cast<void *>(create)))] = create;
+    return true;
+}
+
+bool PluginLoader::registerRenderer(RendererFactory create)
+{
+    rendererFactories()[libraryKey(libraryOf(reinterpret_cast<void *>(create)))] = create;
+    return true;
+}
+
+std::filesystem::path PluginLoader::open(std::string const &name) const
+{
+    const std::filesystem::path path = _directory / (name + LIBRARY_SUFFIX);
+
+    // Opening it runs its Plugin<T> / Renderer<T> registration (once, even if opened again)
+    if (!openLibrary(std::filesystem::absolute(path)))
+        throw PluginLoadError(name, lastError());
+    return libraryKey(path);
+}
+
 std::shared_ptr<IPlugin> PluginLoader::load(std::string const &name) const
 {
-    std::filesystem::path const path =
-        std::filesystem::absolute(_directory / (name + LIBRARY_SUFFIX));
+    const std::filesystem::path library = open(name);
+    auto factory = pluginFactories().find(library);
+    if (factory == pluginFactories().end())
+        throw PluginLoadError(name, "no class deriving from Plugin<T> in " + library.string());
+    return factory->second();
+}
 
-    void *library = openLibrary(path);
-    if (!library)
-        throw PluginLoadError(name, lastError());
-
-    auto create = reinterpret_cast<CreatePluginFunction>(findSymbol(library, PLUGIN_ENTRY_POINT));
-    if (!create)
-        throw PluginLoadError(name, "no " PLUGIN_ENTRY_POINT " entry point in " + path.string());
-    std::shared_ptr<IPlugin> plugin(create());
-    if (!plugin)
-        throw PluginLoadError(name, PLUGIN_ENTRY_POINT " returned no plugin");
-    return plugin;
+std::shared_ptr<IRenderer> PluginLoader::loadRenderer(std::string const &name) const
+{
+    const std::filesystem::path library = open(name);
+    auto factory = rendererFactories().find(library);
+    if (factory == rendererFactories().end())
+        throw PluginLoadError(name, "no class deriving from Renderer<T> in " + library.string());
+    return factory->second();
 }
 
 std::vector<std::string> PluginLoader::listNames() const
