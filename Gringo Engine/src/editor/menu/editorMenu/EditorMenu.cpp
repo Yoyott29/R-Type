@@ -81,40 +81,31 @@ bool EditorMenu::hasActivePlugin(const std::string &plugin) const
 
 void EditorMenu::updateBuildButton()
 {
-    const auto hasComponent = [](const std::vector<Component> &components,
-                                 std::initializer_list<const char *> names) {
-        return std::any_of(
-            components.begin(), components.end(), [&names](const Component &component) {
-                return std::any_of(names.begin(), names.end(), [&component](const char *name) {
-                    return component.name == name;
+    // Every component needs the plugin that registered it (descriptor.plugin, empty for the engine)
+    const auto pluginsActiveFor = [this](const std::vector<Component> &components) {
+        return std::all_of(components.begin(), components.end(), [this](const Component &component) {
+            const auto descriptor = std::find_if(
+                _componentDescriptors.begin(), _componentDescriptors.end(),
+                [&component](const ComponentDescriptor &candidate) {
+                    return candidate.name == component.name;
                 });
-            });
+            if (descriptor == _componentDescriptors.end())
+                return false;
+            return descriptor->plugin.empty() || hasActivePlugin(descriptor->plugin);
+        });
     };
-    const bool rendererRequired =
-        std::any_of(_entities.begin(), _entities.end(),
-                    [&hasComponent](const Entity &entity) {
-                        return hasComponent(entity.components, {"Sprite", "SoundEffect"});
-                    }) ||
-        std::any_of(_prefabs.begin(), _prefabs.end(), [&hasComponent](const Prefab &prefab) {
-            return hasComponent(prefab.components, {"Sprite", "SoundEffect"});
-        });
-    const bool physicsRequired =
-        std::any_of(_entities.begin(), _entities.end(),
-                    [&hasComponent](const Entity &entity) {
-                        return hasComponent(entity.components, {"Velocity", "Collider2D"});
-                    }) ||
-        std::any_of(_prefabs.begin(), _prefabs.end(), [&hasComponent](const Prefab &prefab) {
-            return hasComponent(prefab.components, {"Velocity", "Collider2D"});
-        });
+    const bool componentsValid =
+        std::all_of(_entities.begin(), _entities.end(),
+                    [&](const Entity &entity) { return pluginsActiveFor(entity.components); }) &&
+        std::all_of(_prefabs.begin(), _prefabs.end(),
+                    [&](const Prefab &prefab) { return pluginsActiveFor(prefab.components); });
     const bool networkRequired = _network.enabled;
     const bool pluginsAvailable = std::all_of(
         _activePlugins.begin(), _activePlugins.end(), [this](const std::string &plugin) {
             return std::find(_availablePlugins.begin(), _availablePlugins.end(), plugin) !=
                    _availablePlugins.end();
         });
-    const bool valid = pluginsAvailable &&
-                       (!rendererRequired || hasActivePlugin("RayLibRenderer")) &&
-                       (!physicsRequired || hasActivePlugin("Physics")) &&
+    const bool valid = pluginsAvailable && componentsValid &&
                        (!networkRequired || hasActivePlugin("Network")) &&
                        (_network.plugin.empty() || hasActivePlugin(_network.plugin));
     setButtonEnabled("Build", valid);

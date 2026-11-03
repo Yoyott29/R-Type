@@ -66,7 +66,8 @@ int main(void)
                 const auto *editorMenu = static_cast<EditorMenu *>(currentMenu.get());
                 const std::string projectPath = editorMenu->getBuiltProjectPath();
                 renderer.close();
-                ProjectBuilder::build(projectPath, editorMenu->getSceneObjects());
+                ProjectBuilder::build(projectPath, editorMenu->getSceneObjects(),
+                                      componentCatalog.getDescriptors());
                 return 0;
             }
         }

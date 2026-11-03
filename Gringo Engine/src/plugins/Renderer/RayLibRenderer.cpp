@@ -8,6 +8,8 @@
 #include "RayLibRenderer.hpp"
 #include "EngineError.hpp"
 #include "PluginApi.hpp"
+#include "ComponentJson.hpp"
+#include "ProjectAssets.hpp"
 #include <algorithm>
 #include <functional>
 #include <iostream>
@@ -26,9 +28,28 @@ RayLibRenderer::~RayLibRenderer()
 
 void RayLibRenderer::registerComponents(Scene &scene)
 {
-    // register components
-    scene.registerComponent<Sprite>();
-    scene.registerComponent<SoundEffect>();
+    // register components, with how to read them from a .gringo file
+    scene.registerComponent<Sprite>([](Scene &target, Entity entity, const nlohmann::json &data) {
+        Sprite sprite;
+        if (ComponentJson::value(data, "Shape", "Box") == "Circle")
+            sprite.shape = CircleShape{ComponentJson::floatValue(data, "Radius", 16.0f)};
+        else
+            sprite.shape = BoxShape{ComponentJson::floatValue(data, "Width", 32.0f),
+                                    ComponentJson::floatValue(data, "Height", 32.0f)};
+        sprite.drawOrder = ComponentJson::intValue(data, "DrawOrder", 0);
+        const std::string texture = ComponentJson::value(data, "TexturePath", "");
+        sprite.texturePath = texture == "default.png" ? "" : ProjectAssets::resolve(target, texture);
+        sprite.color = ComponentJson::colorValue(data, "Color", {255, 255, 255, 255});
+        target.addComponent(entity, sprite);
+    });
+    scene.registerComponent<SoundEffect>(
+        [](Scene &target, Entity entity, const nlohmann::json &data) {
+            target.addComponent(
+                entity,
+                SoundEffect{ProjectAssets::resolve(
+                                target, ComponentJson::value(data, "Path", "sound.wav")),
+                            ComponentJson::boolValue(data, "Play", false)});
+        });
 }
 
 void RayLibRenderer::build(Application &app)

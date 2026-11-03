@@ -70,23 +70,30 @@ std::set<std::string> ProjectBuilder::collectScripts(const SceneObjects &sceneOb
     return scripts;
 }
 
-bool ProjectBuilder::hasComponent(const SceneObjects &sceneObjects,
-                                  std::initializer_list<const char *> names)
+void ProjectBuilder::requireComponentPlugins(const SceneObjects &sceneObjects,
+                                             const std::vector<ComponentDescriptor> &descriptors)
 {
-    const auto contains = [&names](const std::vector<Component> &components) {
-        for (const Component &component : components)
-            for (const char *name : names)
-                if (component.name == name)
-                    return true;
-        return false;
+    const auto check = [&](const std::vector<Component> &components) {
+        for (const Component &component : components) {
+            const auto descriptor = std::find_if(
+                descriptors.begin(), descriptors.end(),
+                [&component](const ComponentDescriptor &candidate) {
+                    return candidate.name == component.name;
+                });
+            if (descriptor == descriptors.end())
+                throw std::runtime_error("Cannot build project: no available plugin provides the "
+                                         "component \"" + component.name + "\"");
+            if (!descriptor->plugin.empty() &&
+                std::find(sceneObjects.activePlugins.begin(), sceneObjects.activePlugins.end(),
+                          descriptor->plugin) == sceneObjects.activePlugins.end())
+                throw std::runtime_error("Cannot build project: " + descriptor->plugin +
+                                         " must be active for the component " + component.name);
+        }
     };
     for (const Entity &entity : sceneObjects._entities)
-        if (contains(entity.components))
-            return true;
+        check(entity.components);
     for (const Prefab &prefab : sceneObjects._prefabs)
-        if (contains(prefab.components))
-            return true;
-    return false;
+        check(prefab.components);
 }
 
 bool ProjectBuilder::scriptsInclude(const std::filesystem::path &projectFolder,
@@ -285,7 +292,8 @@ void ProjectBuilder::writeGeneratedMain(const std::filesystem::path &sourcePath,
            << "}\n";
 }
 
-std::string ProjectBuilder::build(const std::string &projectPath, const SceneObjects &sceneObjects)
+std::string ProjectBuilder::build(const std::string &projectPath, const SceneObjects &sceneObjects,
+                                  const std::vector<ComponentDescriptor> &descriptors)
 {
     const std::filesystem::path projectFile(projectPath);
     const std::filesystem::path projectFolder = projectFile.parent_path();
@@ -296,13 +304,7 @@ std::string ProjectBuilder::build(const std::string &projectPath, const SceneObj
         return std::find(sceneObjects.activePlugins.begin(), sceneObjects.activePlugins.end(),
                          name) != sceneObjects.activePlugins.end();
     };
-    const bool usesRenderer = hasPlugin("RayLibRenderer");
-    const bool usesPhysics = hasPlugin("Physics");
     const bool usesNetwork = hasPlugin("Network");
-    const bool scriptsUseRenderer =
-        scriptsInclude(projectFolder, scripts, {"KeyboardInput.hpp", "SoundManager.hpp"});
-    const bool scriptsUsePhysics =
-        scriptsInclude(projectFolder, scripts, {"Collider2D.hpp", "Velocity.hpp"});
     const PluginLoader pluginLoader;
     for (const std::string &plugin : sceneObjects.activePlugins) {
         if (!pluginLoader.isAvailable(plugin))
@@ -310,16 +312,9 @@ std::string ProjectBuilder::build(const std::string &projectPath, const SceneObj
                                      "\" is not available");
     }
 
-    if (hasComponent(sceneObjects, {"Sprite", "SoundEffect"}) || scriptsUseRenderer) {
-        if (!usesRenderer)
-            throw std::runtime_error("Cannot build project: RayLibRenderer must be active for "
-                                     "renderer components or scripts");
-    }
-    if (hasComponent(sceneObjects, {"Velocity", "Collider2D"}) || scriptsUsePhysics) {
-        if (!usesPhysics)
-            throw std::runtime_error(
-                "Cannot build project: Physics must be active for physics components or scripts");
-    }
+    // A script including the header of an inactive plugin fails to compile: the game only gets
+    // the include directories of its active plugins
+    requireComponentPlugins(sceneObjects, descriptors);
     if (sceneObjects.network.enabled && !usesNetwork)
         throw std::runtime_error(
             "Cannot build project: Network must be active when networking is enabled");
@@ -353,6 +348,10 @@ std::string ProjectBuilder::build(const std::string &projectPath, const SceneObj
     const std::filesystem::path resolvedEngineDirectory =
         std::filesystem::is_directory(engineDirectory) ? engineDirectory : workingDirectory;
     const std::filesystem::path buildDirectory = projectFolder / "build";
+    // CMake list of the active plugins: "RayLibRenderer;Physics"
+    std::string pluginList;
+    for (const std::string &plugin : sceneObjects.activePlugins)
+        pluginList += (pluginList.empty() ? "" : ";") + plugin;
     std::string command =
         "cmake -S " + shellQuote(resolvedEngineDirectory.string()) + " -B " +
         shellQuote(buildDirectory.string()) +
@@ -361,10 +360,7 @@ std::string ProjectBuilder::build(const std::string &projectPath, const SceneObj
         shellQuote(target) + " -DGRINGO_GAME_OUTPUT_DIR=" + shellQuote(projectFolder.string()) +
         " -DGRINGO_GAME_SOURCE=" + shellQuote(generatedSource.string()) +
         " -DGRINGO_GAME_SCRIPT_DIR=" + shellQuote((projectFolder / "scripts").string()) +
-        " -DGRINGO_GAME_USE_RENDERER=" + std::string(usesRenderer ? "ON" : "OFF") +
-        " -DGRINGO_GAME_USE_PHYSICS=" + std::string(usesPhysics ? "ON" : "OFF") +
-        " -DGRINGO_GAME_USE_NETWORK=" + std::string(usesNetwork ? "ON" : "OFF") +
-        " -DGRINGO_GAME_NETWORK_PLUGIN=" + shellQuote(sceneObjects.network.plugin) +
+        " -DGRINGO_GAME_PLUGINS=" + shellQuote(pluginList) +
         " && cmake --build " + shellQuote(buildDirectory.string()) + " --target " +
         shellQuote(target) + " && cmake -S " + shellQuote(resolvedEngineDirectory.string()) +
         " -B " + shellQuote(buildDirectory.string()) +
@@ -372,9 +368,7 @@ std::string ProjectBuilder::build(const std::string &projectPath, const SceneObj
         " -U GRINGO_GAME_OUTPUT_DIR"
         " -U GRINGO_GAME_SOURCE"
         " -U GRINGO_GAME_SCRIPT_DIR"
-        " -U GRINGO_GAME_USE_RENDERER"
-        " -U GRINGO_GAME_USE_PHYSICS";
-    command += " -U GRINGO_GAME_USE_NETWORK -U GRINGO_GAME_NETWORK_PLUGIN";
+        " -U GRINGO_GAME_PLUGINS";
     if (std::system(command.c_str()) != 0)
         throw std::runtime_error("Failed to build project executable: " + target);
 
