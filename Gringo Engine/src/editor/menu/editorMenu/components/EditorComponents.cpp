@@ -233,15 +233,9 @@ void EditorComponents::openComponentPicker()
             [&componentTemplate](const ComponentDescriptor &candidate) {
                 return candidate.name == componentTemplate.name;
             });
-        std::string requiredPlugin =
+        // Components of a plugin are only offered while that plugin is active
+        const std::string requiredPlugin =
             descriptor != _editor._componentDescriptors.end() ? descriptor->plugin : "";
-        if (requiredPlugin.empty()) {
-            if (componentTemplate.name == "Velocity" || componentTemplate.name == "Collider2D")
-                requiredPlugin = "Physics";
-            else if (componentTemplate.name == "Sprite" ||
-                     componentTemplate.name == "SoundEffect")
-                requiredPlugin = "RayLibRenderer";
-        }
         if (!requiredPlugin.empty() && !_editor.hasActivePlugin(requiredPlugin))
             continue;
 

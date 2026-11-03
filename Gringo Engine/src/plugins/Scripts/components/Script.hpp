@@ -12,6 +12,7 @@
 #include "ComponentPool.hpp"
 #include "Entity.hpp"
 #include <memory>
+#include <string>
 
 class Scene;
 
@@ -21,6 +22,7 @@ class GringoEntityScript
     virtual ~GringoEntityScript() = default;
     virtual void onStart(Scene &scene, Entity &entity) = 0;
     virtual void onUpdate(Scene &scene, Entity &entity) = 0;
+    virtual void setParameter(const std::string &, const std::string &) {}
 };
 
 struct Script {
@@ -37,7 +39,7 @@ template <> struct ComponentDescription<Script> {
     {
         return {"Script",
                 {
-                    {"Path", valueType::String, "script.hpp"},
+                    {"Path", valueType::File, NO_FILE, {"scripts", ".hpp"}},
                 },
                 {56, 53, 69, 255},
                 ""};

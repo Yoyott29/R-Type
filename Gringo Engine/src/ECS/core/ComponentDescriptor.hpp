@@ -10,20 +10,28 @@
 #include <string>
 #include <vector>
 
+// Value of a File property when no file is chosen
+#define NO_FILE "NONE"
+
+// How the editor edits a property. The numbers are saved in .gringo files
 enum class valueType {
-    Int,
-    Float,
-    String,
-    Bool,
-    Color,
-    Shape,
-    Mask,
+    Int = 0,
+    Float = 1,
+    String = 2,
+    Bool = 3,
+    Color = 4,
+    // One of PropertyDescriptor::options, e.g. {"Box", "Circle"}
+    Choice = 5,
+    // A file of the project: options = {folder, extension}, e.g. {"scripts", ".hpp"}
+    File = 7,
 };
 
+// One editable value: a component property, or a plugin setting (IPlugin::settings)
 struct PropertyDescriptor {
     std::string name;
     valueType type;
     std::string defaultValue;
+    std::vector<std::string> options = {};
 };
 
 struct ComponentDescriptor {

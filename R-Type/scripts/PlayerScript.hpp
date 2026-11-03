@@ -7,16 +7,28 @@
 #include "Script.hpp"
 #include "Shape.hpp"
 #include "Time.hpp"
-#ifdef GRINGO_USE_RENDERER
+#ifdef GRINGO_USE_INPUTHANDLER
 #include "KeyboardInput.hpp"
 #endif
+
+inline const std::vector<std::string> PlayerScript_params = {"speed", "health"};
 
 class PlayerScript : public GringoEntityScript
 {
   public:
     void onStart(Scene &scene, Entity &entity) override;
     void onUpdate(Scene &scene, Entity &entity) override;
+    void setParameter(const std::string &name, const std::string &value) override;
+
+  private:
+    float _speed;
 };
+
+inline void PlayerScript::setParameter(const std::string &name, const std::string &value)
+{
+    if (name == "speed")
+        _speed = std::stof(value);
+}
 
 inline void PlayerScript::onStart(Scene &, Entity &) {}
 
@@ -24,7 +36,7 @@ inline void PlayerScript::onUpdate(Scene &scene, Entity &entity)
 {
     Position &position = scene.getComponent<Position>(entity);
     Collider2D &collider = scene.getComponent<Collider2D>(entity);
-#ifdef GRINGO_USE_RENDERER
+#ifdef GRINGO_USE_INPUTHANDLER
     const KeyboardInput &keyboard = scene.getResource<KeyboardInput>();
 #endif
     float offsetX = std::holds_alternative<BoxShape>(collider.shape)
@@ -34,16 +46,15 @@ inline void PlayerScript::onUpdate(Scene &scene, Entity &entity)
                         ? std::get<BoxShape>(collider.shape).height / 2.0f
                         : std::get<CircleShape>(collider.shape).radius;
 
-#ifdef GRINGO_USE_RENDERER
-    constexpr float speed = 420.0f;
+#ifdef GRINGO_USE_INPUTHANDLER
     if (keyboard.isDown(Key::Up) || keyboard.isDown(Key::Z))
-        position.y -= speed * FIXED_DELTA_TIME;
+        position.y -= _speed * FIXED_DELTA_TIME;
     if (keyboard.isDown(Key::Down) || keyboard.isDown(Key::S))
-        position.y += speed * FIXED_DELTA_TIME;
+        position.y += _speed * FIXED_DELTA_TIME;
     if (keyboard.isDown(Key::Left) || keyboard.isDown(Key::Q))
-        position.x -= speed * FIXED_DELTA_TIME;
+        position.x -= _speed * FIXED_DELTA_TIME;
     if (keyboard.isDown(Key::Right) || keyboard.isDown(Key::D))
-        position.x += speed * FIXED_DELTA_TIME;
+        position.x += _speed * FIXED_DELTA_TIME;
 #endif
 
     if (position.x - offsetX < 0.0f)

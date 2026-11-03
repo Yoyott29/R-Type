@@ -8,8 +8,20 @@
                         {
                             "id": 0,
                             "name": "Path",
-                            "type": 2,
+                            "type": 7,
                             "value": "EnemySpawnerScript.hpp"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Prefab",
+                            "type": 2,
+                            "value": "0"
+                        },
+                        {
+                            "id": 2,
+                            "name": "Wave",
+                            "type": 2,
+                            "value": "0"
                         }
                     ]
                 }
@@ -25,7 +37,7 @@
                         {
                             "id": 0,
                             "name": "Path",
-                            "type": 2,
+                            "type": 7,
                             "value": "SpaceSpawnerScript.hpp"
                         }
                     ]
@@ -40,10 +52,10 @@
         "plugin": "RTypeClient"
     },
     "plugins": [
-        "RayLibRenderer",
         "Physics",
         "RTypeClient",
-        "Network"
+        "Network",
+        "Audio"
     ],
     "prefabs": [
         {
@@ -176,8 +188,8 @@
                         {
                             "id": 0,
                             "name": "Path",
-                            "type": 2,
-                            "value": "DestroyOffScreenScript.hpp"
+                            "type": 7,
+                            "value": "No Scripts Available"
                         }
                     ]
                 },
@@ -187,8 +199,8 @@
                         {
                             "id": 0,
                             "name": "Path",
-                            "type": 2,
-                            "value": "EnemyScript.hpp"
+                            "type": 7,
+                            "value": "No Scripts Available"
                         }
                     ]
                 }
@@ -326,8 +338,8 @@
                         {
                             "id": 0,
                             "name": "Path",
-                            "type": 2,
-                            "value": "DestroyOffScreenScript.hpp"
+                            "type": 7,
+                            "value": "No Scripts Available"
                         }
                     ]
                 },
@@ -337,8 +349,8 @@
                         {
                             "id": 0,
                             "name": "Path",
-                            "type": 2,
-                            "value": "EnemyScript.hpp"
+                            "type": 7,
+                            "value": "No Scripts Available"
                         }
                     ]
                 }
@@ -435,8 +447,8 @@
                         {
                             "id": 0,
                             "name": "Path",
-                            "type": 2,
-                            "value": "DestroyOffScreenScript.hpp"
+                            "type": 7,
+                            "value": "No Scripts Available"
                         }
                     ]
                 }
@@ -445,5 +457,6 @@
             "name": "Star"
         }
     ],
-    "projectName": "R-Type"
+    "projectName": "R-Type",
+    "renderer": "RaylibRenderer"
 }

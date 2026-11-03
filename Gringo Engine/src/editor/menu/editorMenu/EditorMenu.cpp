@@ -12,18 +12,31 @@
 
 EditorMenu::EditorMenu(IEditorRenderer &renderer, std::string templateName, std::string projectName,
                        Parser &parser, SceneObjects sceneObjects,
-                       const std::vector<ComponentDescriptor> &componentDescriptors)
+                       const std::vector<ComponentDescriptor> &componentDescriptors,
+                       const std::map<std::string, std::vector<PropertyDescriptor>>
+                           &pluginSettingDescriptors)
     : AMenu(renderer), _template(templateName), _projectName(projectName), _parser(parser),
       _componentDescriptors(componentDescriptors), _projectFilePath(sceneObjects.projectFilePath),
-      _network(sceneObjects.network),
-      _activePlugins(sceneObjects.activePlugins), _availablePlugins(PluginLoader{}.listNames()),
-      _objects(*this), _components(*this), _properties(*this)
+      _activePlugins(sceneObjects.activePlugins),
+      _availablePlugins(PluginLoader{}.listNames()), _projectRenderer(sceneObjects.renderer),
+      _availableRenderers(PluginLoader{"renderers"}.listNames()),
+      _pluginSettings(sceneObjects.pluginSettings),
+      _pluginSettingDescriptors(pluginSettingDescriptors), _objects(*this), _components(*this),
+      _properties(*this)
 {
     _currentMenu = MenuType::EditorMenu;
 
     if (_projectName.empty())
         _projectName = sceneObjects.projectName;
+    // A project always has a renderer: one saved without gets the default (RaylibRenderer if
+    // there, otherwise the first one)
+    if (_projectRenderer.empty() && !_availableRenderers.empty()) {
+        const bool hasRaylib = std::find(_availableRenderers.begin(), _availableRenderers.end(),
+                                         "RaylibRenderer") != _availableRenderers.end();
+        _projectRenderer = hasRaylib ? "RaylibRenderer" : _availableRenderers.front();
+    }
 
+    fillDefaultPluginSettings();
     initComponentTemplates();
     initPrefabs(sceneObjects);
     initEntities(sceneObjects);
@@ -38,8 +51,7 @@ EditorMenu::~EditorMenu()
     try {
         _properties.applyCurrentEdit();
         _parser.saveFile(_projectName + ".gringo",
-                         SceneObjects{_projectName, _entities, _prefabs, _network, _activePlugins,
-                                      _projectFilePath});
+                         getSceneObjects());
     } catch (...) {
     }
 }
@@ -52,6 +64,7 @@ void EditorMenu::update()
     handleButtons();
     _properties.manageInputs();
     _properties.drawTextCursor();
+    updateSettingEdit();
 
     if (_renderer.isKeyPressed(KeyboardKeys::KEY_ENTER) && _currentlyUpdatedProperty.active) {
         std::string editedButton = _currentlyUpdatedProperty.name;
@@ -81,42 +94,33 @@ bool EditorMenu::hasActivePlugin(const std::string &plugin) const
 
 void EditorMenu::updateBuildButton()
 {
-    const auto hasComponent = [](const std::vector<Component> &components,
-                                 std::initializer_list<const char *> names) {
-        return std::any_of(
-            components.begin(), components.end(), [&names](const Component &component) {
-                return std::any_of(names.begin(), names.end(), [&component](const char *name) {
-                    return component.name == name;
+    // Every component needs the plugin that registered it (descriptor.plugin, empty for the engine)
+    const auto pluginsActiveFor = [this](const std::vector<Component> &components) {
+        return std::all_of(components.begin(), components.end(), [this](const Component &component) {
+            const auto descriptor = std::find_if(
+                _componentDescriptors.begin(), _componentDescriptors.end(),
+                [&component](const ComponentDescriptor &candidate) {
+                    return candidate.name == component.name;
                 });
-            });
+            if (descriptor == _componentDescriptors.end())
+                return false;
+            return descriptor->plugin.empty() || hasActivePlugin(descriptor->plugin);
+        });
     };
-    const bool rendererRequired =
-        std::any_of(_entities.begin(), _entities.end(),
-                    [&hasComponent](const Entity &entity) {
-                        return hasComponent(entity.components, {"Sprite", "SoundEffect"});
-                    }) ||
-        std::any_of(_prefabs.begin(), _prefabs.end(), [&hasComponent](const Prefab &prefab) {
-            return hasComponent(prefab.components, {"Sprite", "SoundEffect"});
-        });
-    const bool physicsRequired =
-        std::any_of(_entities.begin(), _entities.end(),
-                    [&hasComponent](const Entity &entity) {
-                        return hasComponent(entity.components, {"Velocity", "Collider2D"});
-                    }) ||
-        std::any_of(_prefabs.begin(), _prefabs.end(), [&hasComponent](const Prefab &prefab) {
-            return hasComponent(prefab.components, {"Velocity", "Collider2D"});
-        });
-    const bool networkRequired = _network.enabled;
+    const bool componentsValid =
+        std::all_of(_entities.begin(), _entities.end(),
+                    [&](const Entity &entity) { return pluginsActiveFor(entity.components); }) &&
+        std::all_of(_prefabs.begin(), _prefabs.end(),
+                    [&](const Prefab &prefab) { return pluginsActiveFor(prefab.components); });
     const bool pluginsAvailable = std::all_of(
         _activePlugins.begin(), _activePlugins.end(), [this](const std::string &plugin) {
             return std::find(_availablePlugins.begin(), _availablePlugins.end(), plugin) !=
                    _availablePlugins.end();
         });
-    const bool valid = pluginsAvailable &&
-                       (!rendererRequired || hasActivePlugin("RayLibRenderer")) &&
-                       (!physicsRequired || hasActivePlugin("Physics")) &&
-                       (!networkRequired || hasActivePlugin("Network")) &&
-                       (_network.plugin.empty() || hasActivePlugin(_network.plugin));
+    // The project's renderer must be one of Gringo Engine/renderers
+    const bool rendererValid = std::find(_availableRenderers.begin(), _availableRenderers.end(),
+                                         _projectRenderer) != _availableRenderers.end();
+    const bool valid = pluginsAvailable && componentsValid && rendererValid;
     setButtonEnabled("Build", valid);
 }
 
@@ -124,8 +128,7 @@ void EditorMenu::saveProject()
 {
     _properties.applyCurrentEdit();
     _parser.saveFile(_projectName + ".gringo",
-                     SceneObjects{_projectName, _entities, _prefabs, _network, _activePlugins,
-                                  _projectFilePath});
+                     getSceneObjects());
     _projectFilePath = _parser.getLastSavedPath();
 
     const std::string message = "File saved...";
@@ -140,36 +143,64 @@ void EditorMenu::saveProject()
     _savedMessageFrames = SAVED_MESSAGE_FRAMES;
 }
 
-std::string EditorMenu::getBuiltProjectPath() const
-{
-    return _projectFilePath.string();
-}
+std::string EditorMenu::getBuiltProjectPath() const { return _projectFilePath.string(); }
 
 void EditorMenu::buildProject()
 {
     _properties.applyCurrentEdit();
-    const SceneObjects sceneObjects{_projectName, _entities, _prefabs, _network, _activePlugins,
-                                   _projectFilePath};
+    const SceneObjects sceneObjects = getSceneObjects();
     _parser.saveFile(_projectName + ".gringo", sceneObjects);
     _projectFilePath = _parser.getLastSavedPath();
     _switchMenu = MenuType::Build;
     _isRunning = false;
 }
 
-void EditorMenu::showPanel(const std::string &text)
+void EditorMenu::clearPanel()
 {
-    _properties.applyCurrentEdit();
-    _components.clearDisplayedComponents();
+    commitSettingEdit();
     removeText("PanelText");
     for (const std::string &plugin : _availablePlugins) {
         removeButton("Plugin_" + plugin);
         removeButton("PluginToggle_" + plugin);
         removeText("PluginLabel_" + plugin);
     }
+    removeButton("RendererSelect_None");
+    removeText("RendererLabel_None");
+    for (const std::string &renderer : _availableRenderers) {
+        removeButton("RendererSelect_" + renderer);
+        removeText("RendererLabel_" + renderer);
+    }
+    for (const std::string &name : _settingButtonNames)
+        removeButton(name);
+    for (const std::string &name : _settingTextNames)
+        removeText(name);
+    _settingButtonNames.clear();
+    _settingTextNames.clear();
+}
+
+void EditorMenu::showPanel(const std::string &text)
+{
+    _properties.applyCurrentEdit();
+    _components.clearDisplayedComponents();
+    clearPanel();
 
     if (text == "Settings") {
-        addText("PanelText", {WINDOW_WIDTH / 2.0f, WINDOW_HEIGHT / 2.0f}, 40,
-                "Settings panel is not implemented yet.", TEXT_COLOR);
+        // Renderer of the project: one of Gringo Engine/renderers, never none
+        addText("PanelText", {WINDOW_WIDTH / 2.0f, 130}, 40, "Renderer", TEXT_COLOR);
+        float y = 220;
+        for (const std::string &choice : _availableRenderers) {
+            const std::string &renderer = choice;
+            const bool selected = renderer == _projectRenderer;
+            addText("RendererLabel_" + choice, {WINDOW_WIDTH / 2.0f - 180.0f, y}, 22, choice,
+                    TEXT_COLOR);
+            addButton(
+                "RendererSelect_" + choice, {WINDOW_WIDTH / 2.0f + 150.0f, y}, 140, 42, 18,
+                [this, renderer]() { selectRenderer(renderer); },
+                selected ? BUTTON_COLOR2 : BUTTON_COLOR1, BUTTON_COLOR3, TEXT_COLOR,
+                selected ? "SELECTED" : "USE");
+            y += 65;
+        }
+        addPluginSettingRows(y);
     } else if (text == "Plugins") {
         addText("PanelText", {WINDOW_WIDTH / 2.0f, 130}, 40, "Active plugins", TEXT_COLOR);
         float y = 220;
@@ -187,14 +218,106 @@ void EditorMenu::showPanel(const std::string &text)
     }
 }
 
-void EditorMenu::closePluginPanel()
+void EditorMenu::closePluginPanel() { clearPanel(); }
+
+void EditorMenu::addPluginSettingRows(float &y)
 {
-    removeText("PanelText");
-    for (const std::string &plugin : _availablePlugins) {
-        removeButton("Plugin_" + plugin);
-        removeButton("PluginToggle_" + plugin);
-        removeText("PluginLabel_" + plugin);
+    // One section per active plugin declaring settings (IPlugin::settings)
+    for (const std::string &plugin : _activePlugins) {
+        auto descriptors = _pluginSettingDescriptors.find(plugin);
+        if (descriptors == _pluginSettingDescriptors.end() || descriptors->second.empty())
+            continue;
+        y += 25;
+        const std::string header = "SettingHeader_" + plugin;
+        addText(header, {WINDOW_WIDTH / 2.0f, y}, 30, plugin + " settings", TEXT_COLOR);
+        _settingTextNames.push_back(header);
+        y += 60;
+        for (const PropertyDescriptor &setting : descriptors->second) {
+            const std::string id = plugin + "_" + setting.name;
+            const bool editing = _settingEdit.active && _settingEdit.plugin == plugin &&
+                                 _settingEdit.key == setting.name;
+            const std::string value =
+                editing ? _settingEdit.text + "_" : _pluginSettings[plugin][setting.name];
+            addText("SettingLabel_" + id, {WINDOW_WIDTH / 2.0f - 180.0f, y}, 22, setting.name,
+                    TEXT_COLOR);
+            addButton(
+                "SettingValue_" + id, {WINDOW_WIDTH / 2.0f + 150.0f, y}, 260, 42, 18,
+                [this, plugin, setting]() { editPluginSetting(plugin, setting); },
+                editing ? BUTTON_COLOR2 : BUTTON_COLOR1, BUTTON_COLOR3, TEXT_COLOR, value);
+            _settingTextNames.push_back("SettingLabel_" + id);
+            _settingButtonNames.push_back("SettingValue_" + id);
+            y += 55;
+        }
     }
+}
+
+void EditorMenu::editPluginSetting(const std::string &plugin, const PropertyDescriptor &setting)
+{
+    commitSettingEdit();
+    std::string &value = _pluginSettings[plugin][setting.name];
+
+    // Values with a fixed set cycle on click, the others are typed
+    if (setting.type == valueType::Choice)
+        value = EditorProperties::nextOption(setting.options, value);
+    else if (setting.type == valueType::Bool)
+        value = value == "True" ? "False" : "True";
+    else if (setting.type == valueType::Color)
+        value = _properties.nextColorName(value);
+    else if (setting.type == valueType::File)
+        value = EditorProperties::nextOption(_properties.getProjectFiles(setting.options), value);
+    else
+        _settingEdit = {true, plugin, setting.name, value, setting.type};
+    showPanel("Settings");
+}
+
+void EditorMenu::updateSettingEdit()
+{
+    if (!_settingEdit.active)
+        return;
+    std::string &text = _settingEdit.text;
+    for (int character = _renderer.getNextCharacter(); character > 0;
+         character = _renderer.getNextCharacter()) {
+        const bool digit = character >= '0' && character <= '9';
+        const bool allowed =
+            _settingEdit.type == valueType::String ? character >= 32 && character <= 126
+            : _settingEdit.type == valueType::Float ? digit || character == '-' || character == '.'
+                                                     : digit || character == '-';
+        if (allowed && text.size() < 64)
+            text += static_cast<char>(character);
+    }
+    if (_renderer.isKeyPressed(KeyboardKeys::KEY_BACKSPACE) && !text.empty())
+        text.pop_back();
+    if (_renderer.isKeyPressed(KeyboardKeys::KEY_ENTER)) {
+        commitSettingEdit();
+        showPanel("Settings");
+        return;
+    }
+    setButtonText("SettingValue_" + _settingEdit.plugin + "_" + _settingEdit.key, text + "_");
+}
+
+void EditorMenu::commitSettingEdit()
+{
+    if (!_settingEdit.active)
+        return;
+    _settingEdit.active = false;
+    _pluginSettings[_settingEdit.plugin][_settingEdit.key] = _settingEdit.text;
+}
+
+void EditorMenu::fillDefaultPluginSettings()
+{
+    for (const std::string &plugin : _activePlugins) {
+        auto descriptors = _pluginSettingDescriptors.find(plugin);
+        if (descriptors == _pluginSettingDescriptors.end())
+            continue;
+        for (const PropertyDescriptor &setting : descriptors->second)
+            _pluginSettings[plugin].try_emplace(setting.name, setting.defaultValue);
+    }
+}
+
+void EditorMenu::selectRenderer(const std::string &renderer)
+{
+    _projectRenderer = renderer;
+    showPanel("Settings");
 }
 
 void EditorMenu::togglePlugin(const std::string &plugin)
@@ -204,6 +327,7 @@ void EditorMenu::togglePlugin(const std::string &plugin)
         _activePlugins.push_back(plugin);
     else
         _activePlugins.erase(iterator);
+    fillDefaultPluginSettings();
     initComponentTemplates();
     showPanel("Plugins");
 }
@@ -376,7 +500,8 @@ void EditorMenu::initComponentTemplates()
         for (const PropertyDescriptor &propertyDescriptor : componentDescriptor.properties) {
             componentTemplate.properties.push_back({propertyId, propertyDescriptor.name,
                                                     propertyDescriptor.defaultValue,
-                                                    propertyDescriptor.type});
+                                                    propertyDescriptor.type,
+                                                    propertyDescriptor.options});
             propertyId++;
         }
         _componentTemplates.push_back(componentTemplate);
@@ -398,7 +523,16 @@ void EditorMenu::syncComponentWithTemplate(Component &component)
                     syncedProperty.value = savedProperty.value;
             }
         }
+        std::vector<Property> savedProperties = component.properties;
         component.properties = syncedProperties;
+        if (component.name == "Script" && !component.properties.empty()) {
+            _properties.applyScriptParameters(component, component.properties.front().value);
+            for (Property &parameter : component.properties)
+                for (const Property &savedProperty : savedProperties)
+                    if (parameter.name == savedProperty.name)
+                        parameter.value = savedProperty.value;
+        }
+
         return;
     }
 }

@@ -18,7 +18,7 @@
 #include <string>
 
 // Loaded in this order from the plugins folder next to the executable
-static constexpr char const *PLUGINS[] = {"Physics", "Network", "RTypeServer"};
+static constexpr char const *PLUGINS[] = {"Physics", "Network", "Scripts", "RTypeServer"};
 
 static std::optional<uint16_t> parsePort(const char *arg)
 {

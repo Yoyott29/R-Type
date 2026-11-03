@@ -65,7 +65,9 @@ class EditorMenu : public AMenu
   public:
     EditorMenu(IEditorRenderer &renderer, std::string templateName, std::string projectName,
                Parser &parser, SceneObjects sceneObjects,
-               const std::vector<ComponentDescriptor> &componentDescriptors);
+               const std::vector<ComponentDescriptor> &componentDescriptors,
+               const std::map<std::string, std::vector<PropertyDescriptor>>
+                   &pluginSettingDescriptors);
     ~EditorMenu() override;
 
     void update() override;
@@ -74,13 +76,27 @@ class EditorMenu : public AMenu
     std::string getBuiltProjectPath() const;
     SceneObjects getSceneObjects() const
     {
-        return {_projectName, _entities, _prefabs, _network, _activePlugins, _projectFilePath};
+        return {_projectName,     _entities,        _prefabs,       _activePlugins,
+                _projectFilePath, _projectRenderer, _pluginSettings};
     }
     void showPanel(const std::string &text);
     void closePluginPanel();
     void togglePlugin(const std::string &plugin);
     void updateBuildButton();
     bool hasActivePlugin(const std::string &plugin) const;
+    // Settings panel: switches the project to another renderer (a project always has one)
+    void selectRenderer(const std::string &renderer);
+    // Removes everything the Settings and Plugins panels added
+    void clearPanel();
+    // Settings panel: a section per active plugin with settings, a row per setting
+    void addPluginSettingRows(float &y);
+    // Click on a setting: cycles Choice/Bool/Color/File values, starts typing the others
+    void editPluginSetting(const std::string &plugin, const PropertyDescriptor &setting);
+    // Keyboard while a setting is typed: Enter keeps it
+    void updateSettingEdit();
+    void commitSettingEdit();
+    // Every active plugin gets its default settings when the project does not set them
+    void fillDefaultPluginSettings();
 
     // INITIALIZATION
 
@@ -107,9 +123,22 @@ class EditorMenu : public AMenu
     std::vector<Entity> _entities;
     std::vector<Prefab> _prefabs;
     std::filesystem::path _projectFilePath;
-    NetworkSettings _network;
     std::vector<std::string> _activePlugins;
     std::vector<std::string> _availablePlugins;
+    // Not _renderer: AMenu::_renderer is the editor's own window
+    std::string _projectRenderer;
+    std::vector<std::string> _availableRenderers;
+    std::map<std::string, std::map<std::string, std::string>> _pluginSettings;
+    const std::map<std::string, std::vector<PropertyDescriptor>> &_pluginSettingDescriptors;
+    struct SettingEdit {
+        bool active = false;
+        std::string plugin;
+        std::string key;
+        std::string text;
+        valueType type = valueType::String;
+    } _settingEdit;
+    std::vector<std::string> _settingButtonNames;
+    std::vector<std::string> _settingTextNames;
 
     int _currentEntityPage = 0;
     int _currentPrefabPage = 0;

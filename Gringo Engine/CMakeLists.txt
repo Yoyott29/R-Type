@@ -15,6 +15,7 @@ set(CMAKE_INSTALL_RPATH "\$ORIGIN")
 
 set(GRINGO_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}")
 set(GRINGO_PLUGIN_DIRECTORY "${GRINGO_OUTPUT_DIRECTORY}/plugins")
+set(GRINGO_RENDERER_DIRECTORY "${GRINGO_OUTPUT_DIRECTORY}/renderers")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${GRINGO_OUTPUT_DIRECTORY}")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${GRINGO_OUTPUT_DIRECTORY}")
 
@@ -72,14 +73,13 @@ add_library(gringo_engine SHARED
     src/ECS/core/TickTimeManager.cpp
     src/ECS/core/EntityManager.cpp
     src/ECS/systems/SystemManager.cpp
-    src/ECS/systems/ScriptSystem.cpp
     src/ECS/prefabs/Prefab.cpp
     src/ECS/prefabs/PrefabsManager.cpp
 )
 
 target_include_directories(gringo_engine PUBLIC
     src/ECS/app src/ECS/core src/ECS/errors src/ECS/prefabs src/ECS/systems
-    src/ECS/components src/ECS/input src/ECS/resources
+    src/ECS/components src/ECS/input src/ECS/resources src/renderers
 )
 target_link_libraries(gringo_engine PUBLIC nlohmann_json::nlohmann_json PRIVATE ${CMAKE_DL_LIBS})
 target_compile_definitions(gringo_engine PUBLIC
@@ -87,52 +87,94 @@ target_compile_definitions(gringo_engine PUBLIC
 )
 set_target_properties(gringo_engine PROPERTIES WINDOWS_EXPORT_ALL_SYMBOLS ON)
 
-function(add_gringo_plugin target name)
-    add_library(${target} SHARED ${ARGN})
-    set_target_properties(${target} PROPERTIES
-        OUTPUT_NAME "${name}"
-        PREFIX ""
-        LIBRARY_OUTPUT_DIRECTORY "${GRINGO_PLUGIN_DIRECTORY}"
-        RUNTIME_OUTPUT_DIRECTORY "${GRINGO_PLUGIN_DIRECTORY}"
-        INSTALL_RPATH "\$ORIGIN;\$ORIGIN/.."
-    )
-    target_link_libraries(${target} PUBLIC gringo_engine)
+# Every folder of src/plugins is one plugin, and every folder of src/renderers one renderer:
+# all its .cpp files are compiled into plugins/<Folder>.so (renderers/<Folder>.so), every folder
+# holding a .hpp is an include directory. A new plugin or renderer needs nothing in this file:
+# every renderer gets the graphics libraries (raylib), every plugin the networking one (asio).
+# A static library a target does not use adds nothing to it
+
+# gringo_add_plugins(<source dir> <engine target> <output dir> <prefix>
+#                    [PUBLIC_LIBRARIES ...] [PRIVATE_LIBRARIES ...] [SYSTEM_INCLUDES ...])
+# creates <prefix>_<Folder> for each folder and appends the targets to GRINGO_PLUGIN_TARGETS
+function(gringo_add_plugins plugins_directory engine output_directory prefix)
+    cmake_parse_arguments(ARG "" "" "PUBLIC_LIBRARIES;PRIVATE_LIBRARIES;SYSTEM_INCLUDES" ${ARGN})
+    file(GLOB plugin_directories LIST_DIRECTORIES true "${plugins_directory}/*")
+    list(SORT plugin_directories)
+    set(targets "")
+
+    foreach(directory IN LISTS plugin_directories)
+        if(NOT IS_DIRECTORY "${directory}")
+            continue()
+        endif()
+        get_filename_component(name "${directory}" NAME)
+
+        file(GLOB_RECURSE sources CONFIGURE_DEPENDS "${directory}/*.cpp")
+        if(NOT sources)
+            message(WARNING "Gringo ${prefix} ${name} has no .cpp file: skipped")
+            continue()
+        endif()
+        file(GLOB_RECURSE headers CONFIGURE_DEPENDS "${directory}/*.hpp")
+        set(include_directories "${directory}")
+        foreach(header IN LISTS headers)
+            get_filename_component(header_directory "${header}" DIRECTORY)
+            list(APPEND include_directories "${header_directory}")
+        endforeach()
+        list(REMOVE_DUPLICATES include_directories)
+
+        set(target "${prefix}_${name}")
+        add_library(${target} SHARED ${sources})
+        set_target_properties(${target} PROPERTIES
+            OUTPUT_NAME "${name}"
+            PREFIX ""
+            LIBRARY_OUTPUT_DIRECTORY "${output_directory}"
+            RUNTIME_OUTPUT_DIRECTORY "${output_directory}"
+            INSTALL_RPATH "\$ORIGIN;\$ORIGIN/.."
+            # Lets another plugin link this one and call its functions (e.g. Network)
+            WINDOWS_EXPORT_ALL_SYMBOLS ON
+        )
+        set_property(TARGET ${target} PROPERTY GRINGO_PUBLIC_LIBRARIES ${ARG_PUBLIC_LIBRARIES})
+        target_include_directories(${target} PUBLIC ${include_directories})
+        if(ARG_SYSTEM_INCLUDES)
+            target_include_directories(${target} SYSTEM PRIVATE ${ARG_SYSTEM_INCLUDES})
+        endif()
+        target_link_libraries(${target}
+            PUBLIC ${engine} ${ARG_PUBLIC_LIBRARIES}
+            PRIVATE ${ARG_PRIVATE_LIBRARIES}
+        )
+        list(APPEND targets "${target}")
+    endforeach()
+
+    set(GRINGO_PLUGIN_TARGETS ${GRINGO_PLUGIN_TARGETS} ${targets} PARENT_SCOPE)
 endfunction()
 
-add_gringo_plugin(plugin_renderer RayLibRenderer
-    src/plugins/Renderer/RayLibRenderer.cpp
-    src/plugins/Renderer/systems/RenderSystem.cpp
-)
-target_include_directories(plugin_renderer PUBLIC
-    src/plugins/Renderer src/plugins/Renderer/components
-    src/plugins/Renderer/resources src/plugins/Renderer/systems
-)
-target_include_directories(plugin_renderer SYSTEM PUBLIC "${raylib_SOURCE_DIR}/src")
-target_link_libraries(plugin_renderer PRIVATE raylib)
+# gringo_use_plugins(<target> <plugin names...>) gives an executable the headers of the plugins it
+# uses (it still loads them at runtime), builds them with it and defines GRINGO_USE_<NAME>.
+# Names that are not engine plugins (game plugins) are skipped
+function(gringo_use_plugins target)
+    foreach(name IN LISTS ARGN)
+        if(NOT TARGET plugin_${name})
+            message(STATUS "${target}: ${name} is not an engine plugin, loaded at runtime only")
+            continue()
+        endif()
+        target_include_directories(${target} PRIVATE
+            $<TARGET_PROPERTY:plugin_${name},INTERFACE_INCLUDE_DIRECTORIES>
+        )
+        get_property(libraries TARGET plugin_${name} PROPERTY GRINGO_PUBLIC_LIBRARIES)
+        if(libraries)
+            target_link_libraries(${target} PRIVATE ${libraries})
+        endif()
+        string(MAKE_C_IDENTIFIER "${name}" define)
+        string(TOUPPER "${define}" define)
+        target_compile_definitions(${target} PRIVATE GRINGO_USE_${define})
+        add_dependencies(${target} plugin_${name})
+    endforeach()
+endfunction()
 
-add_gringo_plugin(plugin_physics Physics
-    src/plugins/Physics/Physics.cpp
-    src/plugins/Physics/systems/Collider2DSystem.cpp
-    src/plugins/Physics/systems/MovementSystem.cpp
-)
-target_include_directories(plugin_physics PUBLIC
-    src/plugins/Physics src/plugins/Physics/components src/plugins/Physics/systems
-)
+gringo_add_plugins("${CMAKE_CURRENT_SOURCE_DIR}/src/plugins" gringo_engine "${GRINGO_PLUGIN_DIRECTORY}" plugin
+                   PUBLIC_LIBRARIES asio)
+gringo_add_plugins("${CMAKE_CURRENT_SOURCE_DIR}/src/renderers" gringo_engine "${GRINGO_RENDERER_DIRECTORY}" renderer
+                   PRIVATE_LIBRARIES raylib SYSTEM_INCLUDES "${raylib_SOURCE_DIR}/src")
 
-add_gringo_plugin(plugin_network Network
-    src/plugins/Network/NetworkPlugin.cpp
-    src/plugins/Network/resources/NetTransport.cpp
-    src/plugins/Network/Connection.cpp
-    src/plugins/Network/Packet.cpp
-    src/plugins/Network/resources/UdpSocket.cpp
-    src/plugins/Network/systems/NetReceiveSystem.cpp
-    src/plugins/Network/systems/NetSendSystem.cpp
-)
-target_include_directories(plugin_network PUBLIC
-    src/plugins/Network src/plugins/Network/resources src/plugins/Network/systems
-)
-target_link_libraries(plugin_network PUBLIC asio)
-set_target_properties(plugin_network PROPERTIES WINDOWS_EXPORT_ALL_SYMBOLS ON)
 
 file(GLOB_RECURSE GRINGO_EDITOR_SOURCES CONFIGURE_DEPENDS src/editor/*.cpp)
 add_executable(Gringo ${GRINGO_EDITOR_SOURCES})
@@ -145,7 +187,7 @@ target_include_directories(Gringo PRIVATE
 )
 target_include_directories(Gringo SYSTEM PRIVATE "${raylib_SOURCE_DIR}/src")
 target_link_libraries(Gringo PRIVATE gringo_engine raylib nlohmann_json::nlohmann_json)
-add_dependencies(Gringo plugin_renderer plugin_physics plugin_network)
+add_dependencies(Gringo ${GRINGO_PLUGIN_TARGETS})
 
 if(DEFINED GRINGO_GAME_TARGET AND NOT "${GRINGO_GAME_TARGET}" STREQUAL "" AND
    DEFINED GRINGO_GAME_SOURCE AND NOT "${GRINGO_GAME_SOURCE}" STREQUAL "")
@@ -166,28 +208,15 @@ if(DEFINED GRINGO_GAME_TARGET AND NOT "${GRINGO_GAME_TARGET}" STREQUAL "" AND
         gringo_engine nlohmann_json::nlohmann_json
     )
 
-    if(GRINGO_GAME_USE_RENDERER)
-        target_include_directories(${GRINGO_GAME_TARGET} PRIVATE
-            src/plugins/Renderer/resources src/plugins/Renderer/components
-        )
-        target_compile_definitions(${GRINGO_GAME_TARGET} PRIVATE GRINGO_USE_RENDERER)
-        add_dependencies(${GRINGO_GAME_TARGET} plugin_renderer)
-    endif()
-    if(GRINGO_GAME_USE_PHYSICS)
-        target_include_directories(${GRINGO_GAME_TARGET} PRIVATE src/plugins/Physics/components)
-        target_compile_definitions(${GRINGO_GAME_TARGET} PRIVATE GRINGO_USE_PHYSICS)
-        add_dependencies(${GRINGO_GAME_TARGET} plugin_physics)
-    endif()
-    if(GRINGO_GAME_USE_NETWORK)
-        target_include_directories(${GRINGO_GAME_TARGET} PRIVATE src/plugins/Network)
-        target_link_libraries(${GRINGO_GAME_TARGET} PRIVATE asio)
-        add_dependencies(${GRINGO_GAME_TARGET} plugin_network)
+    # GRINGO_GAME_PLUGINS: the plugins active in the project (headers + GRINGO_USE_<NAME>)
+    gringo_use_plugins(${GRINGO_GAME_TARGET} ${GRINGO_GAME_PLUGINS})
+    # GRINGO_GAME_RENDERER: the project's renderer, loaded at runtime, built with the game
+    if(TARGET renderer_${GRINGO_GAME_RENDERER})
+        add_dependencies(${GRINGO_GAME_TARGET} renderer_${GRINGO_GAME_RENDERER})
     endif()
 endif()
 
-set(GRINGO_TARGETS
-    gringo_engine plugin_renderer plugin_physics plugin_network Gringo
-)
+set(GRINGO_TARGETS gringo_engine ${GRINGO_PLUGIN_TARGETS} Gringo)
 if(DEFINED GRINGO_GAME_TARGET AND NOT "${GRINGO_GAME_TARGET}" STREQUAL "" AND
    TARGET ${GRINGO_GAME_TARGET})
     list(APPEND GRINGO_TARGETS ${GRINGO_GAME_TARGET})

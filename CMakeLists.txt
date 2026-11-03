@@ -21,6 +21,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${GRINGO_REPOSITORY_DIR}$<0:>)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${GRINGO_REPOSITORY_DIR}$<0:>)
 set(RTYPE_PLUGIN_DIRECTORY "${GRINGO_ENGINE_DIR}/plugins$<0:>")
+set(RTYPE_RENDERER_DIRECTORY "${GRINGO_ENGINE_DIR}/renderers$<0:>")
 
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
@@ -86,7 +87,7 @@ CPMAddPackage(
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-add_library(rtype_engine SHARED
+add_library(gringo_engine SHARED
     ${GRINGO_ENGINE_DIR}/src/ECS/app/Application.cpp
     ${GRINGO_ENGINE_DIR}/src/ECS/app/PluginLoader.cpp
     ${GRINGO_ENGINE_DIR}/src/ECS/core/ComponentManager.cpp
@@ -94,12 +95,11 @@ add_library(rtype_engine SHARED
     ${GRINGO_ENGINE_DIR}/src/ECS/core/TickTimeManager.cpp
     ${GRINGO_ENGINE_DIR}/src/ECS/core/EntityManager.cpp
     ${GRINGO_ENGINE_DIR}/src/ECS/systems/SystemManager.cpp
-    ${GRINGO_ENGINE_DIR}/src/ECS/systems/ScriptSystem.cpp
     ${GRINGO_ENGINE_DIR}/src/ECS/prefabs/Prefab.cpp
     ${GRINGO_ENGINE_DIR}/src/ECS/prefabs/PrefabsManager.cpp
 )
 
-target_include_directories(rtype_engine PUBLIC
+target_include_directories(gringo_engine PUBLIC
     ${GRINGO_ENGINE_DIR}/src/ECS/app
     ${GRINGO_ENGINE_DIR}/src/ECS/core
     ${GRINGO_ENGINE_DIR}/src/ECS/errors
@@ -108,18 +108,19 @@ target_include_directories(rtype_engine PUBLIC
     ${GRINGO_ENGINE_DIR}/src/ECS/components
     ${GRINGO_ENGINE_DIR}/src/ECS/input
     ${GRINGO_ENGINE_DIR}/src/ECS/resources
+    ${GRINGO_ENGINE_DIR}/src/renderers
 )
 
-target_link_libraries(rtype_engine PUBLIC nlohmann_json::nlohmann_json PRIVATE ${CMAKE_DL_LIBS})
+target_link_libraries(gringo_engine PUBLIC nlohmann_json::nlohmann_json PRIVATE ${CMAKE_DL_LIBS})
 
 # Asio and PluginLoader pull in windows.h, whose GDI/USER declarations (Rectangle, CloseWindow,
 # LoadImage, SendInput...) clash with raylib and our own names. PUBLIC: every target links the engine
-target_compile_definitions(rtype_engine PUBLIC
+target_compile_definitions(gringo_engine PUBLIC
     "$<$<PLATFORM_ID:Windows>:NOGDI;NOUSER;WIN32_LEAN_AND_MEAN>"
 )
 
 # MSVC exports nothing from a DLL by default: export every engine function for the plugins
-set_target_properties(rtype_engine PROPERTIES
+set_target_properties(gringo_engine PROPERTIES
     WINDOWS_EXPORT_ALL_SYMBOLS ON
     LIBRARY_OUTPUT_DIRECTORY "${GRINGO_ENGINE_DIR}"
     RUNTIME_OUTPUT_DIRECTORY "${GRINGO_ENGINE_DIR}"
@@ -127,6 +128,104 @@ set_target_properties(rtype_engine PROPERTIES
 
 # ============================================================
 # Plugins (one shared library each, loaded at runtime from plugins/)
+# ============================================================
+
+# Every folder of src/plugins is one plugin, and every folder of src/renderers one renderer:
+# all its .cpp files are compiled into plugins/<Folder>.so (renderers/<Folder>.so), every folder
+# holding a .hpp is an include directory. A new plugin or renderer needs nothing in this file:
+# every renderer gets the graphics libraries (raylib), every plugin the networking one (asio).
+# A static library a target does not use adds nothing to it
+
+# gringo_add_plugins(<source dir> <engine target> <output dir> <prefix>
+#                    [PUBLIC_LIBRARIES ...] [PRIVATE_LIBRARIES ...] [SYSTEM_INCLUDES ...])
+# creates <prefix>_<Folder> for each folder and appends the targets to GRINGO_PLUGIN_TARGETS
+function(gringo_add_plugins plugins_directory engine output_directory prefix)
+    cmake_parse_arguments(ARG "" "" "PUBLIC_LIBRARIES;PRIVATE_LIBRARIES;SYSTEM_INCLUDES" ${ARGN})
+    file(GLOB plugin_directories LIST_DIRECTORIES true "${plugins_directory}/*")
+    list(SORT plugin_directories)
+    set(targets "")
+
+    foreach(directory IN LISTS plugin_directories)
+        if(NOT IS_DIRECTORY "${directory}")
+            continue()
+        endif()
+        get_filename_component(name "${directory}" NAME)
+
+        file(GLOB_RECURSE sources CONFIGURE_DEPENDS "${directory}/*.cpp")
+        if(NOT sources)
+            message(WARNING "Gringo ${prefix} ${name} has no .cpp file: skipped")
+            continue()
+        endif()
+        file(GLOB_RECURSE headers CONFIGURE_DEPENDS "${directory}/*.hpp")
+        set(include_directories "${directory}")
+        foreach(header IN LISTS headers)
+            get_filename_component(header_directory "${header}" DIRECTORY)
+            list(APPEND include_directories "${header_directory}")
+        endforeach()
+        list(REMOVE_DUPLICATES include_directories)
+
+        set(target "${prefix}_${name}")
+        add_library(${target} SHARED ${sources})
+        set_target_properties(${target} PROPERTIES
+            OUTPUT_NAME "${name}"
+            PREFIX ""
+            LIBRARY_OUTPUT_DIRECTORY "${output_directory}"
+            RUNTIME_OUTPUT_DIRECTORY "${output_directory}"
+            INSTALL_RPATH "\$ORIGIN;\$ORIGIN/.."
+            # Lets another plugin link this one and call its functions (e.g. Network)
+            WINDOWS_EXPORT_ALL_SYMBOLS ON
+        )
+        set_property(TARGET ${target} PROPERTY GRINGO_PUBLIC_LIBRARIES ${ARG_PUBLIC_LIBRARIES})
+        target_include_directories(${target} PUBLIC ${include_directories})
+        if(ARG_SYSTEM_INCLUDES)
+            target_include_directories(${target} SYSTEM PRIVATE ${ARG_SYSTEM_INCLUDES})
+        endif()
+        target_link_libraries(${target}
+            PUBLIC ${engine} ${ARG_PUBLIC_LIBRARIES}
+            PRIVATE ${ARG_PRIVATE_LIBRARIES}
+        )
+        list(APPEND targets "${target}")
+    endforeach()
+
+    set(GRINGO_PLUGIN_TARGETS ${GRINGO_PLUGIN_TARGETS} ${targets} PARENT_SCOPE)
+endfunction()
+
+# gringo_use_plugins(<target> <plugin names...>) gives an executable the headers of the plugins it
+# uses (it still loads them at runtime), builds them with it and defines GRINGO_USE_<NAME>.
+# Names that are not engine plugins (game plugins) are skipped
+function(gringo_use_plugins target)
+    foreach(name IN LISTS ARGN)
+        if(NOT TARGET plugin_${name})
+            message(STATUS "${target}: ${name} is not an engine plugin, loaded at runtime only")
+            continue()
+        endif()
+        target_include_directories(${target} PRIVATE
+            $<TARGET_PROPERTY:plugin_${name},INTERFACE_INCLUDE_DIRECTORIES>
+        )
+        get_property(libraries TARGET plugin_${name} PROPERTY GRINGO_PUBLIC_LIBRARIES)
+        if(libraries)
+            target_link_libraries(${target} PRIVATE ${libraries})
+        endif()
+        string(MAKE_C_IDENTIFIER "${name}" define)
+        string(TOUPPER "${define}" define)
+        target_compile_definitions(${target} PRIVATE GRINGO_USE_${define})
+        add_dependencies(${target} plugin_${name})
+    endforeach()
+endfunction()
+
+gringo_add_plugins("${GRINGO_ENGINE_DIR}/src/plugins" gringo_engine "${RTYPE_PLUGIN_DIRECTORY}" plugin
+                   PUBLIC_LIBRARIES asio)
+gringo_add_plugins("${GRINGO_ENGINE_DIR}/src/renderers" gringo_engine "${RTYPE_RENDERER_DIRECTORY}" renderer
+                   PRIVATE_LIBRARIES raylib SYSTEM_INCLUDES "${raylib_SOURCE_DIR}/src")
+
+
+set(RTYPE_TARGETS
+    gringo_engine
+    ${GRINGO_PLUGIN_TARGETS}
+)
+
+# ============================================================
+# R-Type game plugins, client and server
 # ============================================================
 
 # add_plugin(<target> <file name> <sources...>) builds plugins/<file name>.so (.dll on Windows)
@@ -139,72 +238,10 @@ function(add_plugin target name)
         RUNTIME_OUTPUT_DIRECTORY ${RTYPE_PLUGIN_DIRECTORY}
         INSTALL_RPATH "\$ORIGIN;\$ORIGIN/.."
     )
-    target_link_libraries(${target} PUBLIC rtype_engine)
+    target_link_libraries(${target} PUBLIC gringo_engine)
 endfunction()
 
-# Renderer and Physics are built for both the game and the editor
-add_plugin(plugin_renderer RayLibRenderer
-    ${GRINGO_ENGINE_DIR}/src/plugins/Renderer/RayLibRenderer.cpp
-    ${GRINGO_ENGINE_DIR}/src/plugins/Renderer/systems/RenderSystem.cpp
-)
-
-target_include_directories(plugin_renderer PUBLIC
-    ${GRINGO_ENGINE_DIR}/src/plugins/Renderer
-    ${GRINGO_ENGINE_DIR}/src/plugins/Renderer/components
-    ${GRINGO_ENGINE_DIR}/src/plugins/Renderer/resources
-    ${GRINGO_ENGINE_DIR}/src/plugins/Renderer/systems
-)
-
-target_include_directories(plugin_renderer SYSTEM PUBLIC
-    "${raylib_SOURCE_DIR}/src"
-)
-
-target_link_libraries(plugin_renderer PRIVATE raylib)
-
-add_plugin(plugin_physics Physics
-    ${GRINGO_ENGINE_DIR}/src/plugins/Physics/Physics.cpp
-    ${GRINGO_ENGINE_DIR}/src/plugins/Physics/systems/Collider2DSystem.cpp
-    ${GRINGO_ENGINE_DIR}/src/plugins/Physics/systems/MovementSystem.cpp
-)
-
-target_include_directories(plugin_physics PUBLIC
-    ${GRINGO_ENGINE_DIR}/src/plugins/Physics
-    ${GRINGO_ENGINE_DIR}/src/plugins/Physics/components
-    ${GRINGO_ENGINE_DIR}/src/plugins/Physics/systems
-)
-
-set(RTYPE_TARGETS
-    rtype_engine
-    plugin_renderer
-    plugin_physics
-)
-
-# ============================================================
-# R-Type network plugin, game plugins, client and server
-# ============================================================
-
 # The R-Type plugins link the Network plugin directly: they call NetTransport and Packet
-    add_plugin(plugin_network Network
-        ${GRINGO_ENGINE_DIR}/src/plugins/Network/NetworkPlugin.cpp
-        ${GRINGO_ENGINE_DIR}/src/plugins/Network/resources/NetTransport.cpp
-        ${GRINGO_ENGINE_DIR}/src/plugins/Network/Connection.cpp
-        ${GRINGO_ENGINE_DIR}/src/plugins/Network/Packet.cpp
-        ${GRINGO_ENGINE_DIR}/src/plugins/Network/resources/UdpSocket.cpp
-        ${GRINGO_ENGINE_DIR}/src/plugins/Network/systems/NetReceiveSystem.cpp
-        ${GRINGO_ENGINE_DIR}/src/plugins/Network/systems/NetSendSystem.cpp
-    )
-
-    target_include_directories(plugin_network PUBLIC
-        ${GRINGO_ENGINE_DIR}/src/plugins/Network
-        ${GRINGO_ENGINE_DIR}/src/plugins/Network/resources
-        ${GRINGO_ENGINE_DIR}/src/plugins/Network/systems
-    )
-
-    target_link_libraries(plugin_network PUBLIC asio)
-
-    # Exports NetTransport, Packet... for the R-Type plugins (the others only export createPlugin)
-    set_target_properties(plugin_network PROPERTIES WINDOWS_EXPORT_ALL_SYMBOLS ON)
-
     add_plugin(plugin_rtype_client RTypeClient
         ${GRINGO_REPOSITORY_DIR}/R-Type/network/client/RTypeClientPlugin.cpp
         ${GRINGO_REPOSITORY_DIR}/R-Type/network/client/systems/ClientNetSystem.cpp
@@ -220,13 +257,14 @@ set(RTYPE_TARGETS
         ${GRINGO_REPOSITORY_DIR}/R-Type/scripts
     )
 
-    # Only the Renderer and Physics headers (components, resources) are used, not their code
+    # Only the 2D, InputHandler and Physics headers (components, resources) are used
     target_include_directories(plugin_rtype_client PRIVATE
-        $<TARGET_PROPERTY:plugin_renderer,INTERFACE_INCLUDE_DIRECTORIES>
-        $<TARGET_PROPERTY:plugin_physics,INTERFACE_INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:plugin_2D,INTERFACE_INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:plugin_InputHandler,INTERFACE_INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:plugin_Physics,INTERFACE_INCLUDE_DIRECTORIES>
     )
 
-    target_link_libraries(plugin_rtype_client PRIVATE plugin_network)
+    target_link_libraries(plugin_rtype_client PRIVATE plugin_Network)
 
     add_plugin(plugin_rtype_server RTypeServer
         ${GRINGO_REPOSITORY_DIR}/R-Type/network/server/RTypeServerPlugin.cpp
@@ -242,10 +280,11 @@ set(RTYPE_TARGETS
         ${GRINGO_REPOSITORY_DIR}/R-Type/network/common
         ${GRINGO_REPOSITORY_DIR}/R-Type/components
         ${GRINGO_REPOSITORY_DIR}/R-Type/scripts
-        $<TARGET_PROPERTY:plugin_physics,INTERFACE_INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:plugin_Physics,INTERFACE_INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:plugin_Scripts,INTERFACE_INCLUDE_DIRECTORIES>
     )
 
-    target_link_libraries(plugin_rtype_server PRIVATE plugin_network)
+    target_link_libraries(plugin_rtype_server PRIVATE plugin_Network)
 
     # ---- Client ----
 
@@ -258,25 +297,19 @@ set(RTYPE_TARGETS
         ${GRINGO_ENGINE_DIR}/src/runtime
         ${GRINGO_REPOSITORY_DIR}/R-Type/network/common
         ${GRINGO_REPOSITORY_DIR}/R-Type/scripts
-        ${GRINGO_ENGINE_DIR}/src/plugins/Network
-        ${GRINGO_ENGINE_DIR}/src/plugins/Physics/components
-        ${GRINGO_ENGINE_DIR}/src/plugins/Renderer/components
-        ${GRINGO_ENGINE_DIR}/src/plugins/Renderer/resources
     )
 
-    target_compile_definitions(${PROJECT_NAME} PRIVATE
-        GRINGO_USE_PHYSICS
-        GRINGO_USE_RENDERER
-    )
+    # Plugin headers + GRINGO_USE_<NAME> defines, and builds them with the client
+    gringo_use_plugins(${PROJECT_NAME} 2D InputHandler Scripts Physics Network)
 
     target_link_libraries(${PROJECT_NAME} PRIVATE
-        rtype_engine
+        gringo_engine
         asio
         nlohmann_json::nlohmann_json
     )
 
     # The executables only load the plugins at runtime: build them too, so they are next to the binaries
-    add_dependencies(${PROJECT_NAME} plugin_renderer plugin_physics plugin_network plugin_rtype_client)
+    add_dependencies(${PROJECT_NAME} plugin_rtype_client renderer_RaylibRenderer)
 
     # ---- Server ----
 
@@ -288,15 +321,14 @@ set(RTYPE_TARGETS
     target_include_directories(r-type_server PRIVATE
         ${GRINGO_REPOSITORY_DIR}/R-Type/network/server
         ${GRINGO_REPOSITORY_DIR}/R-Type/network/common
-        ${GRINGO_ENGINE_DIR}/src/plugins/Network
     )
 
-    target_link_libraries(r-type_server PRIVATE rtype_engine asio)
+    target_link_libraries(r-type_server PRIVATE gringo_engine)
 
-    add_dependencies(r-type_server plugin_physics plugin_network plugin_rtype_server)
+    gringo_use_plugins(r-type_server Physics Network Scripts)
+    add_dependencies(r-type_server plugin_rtype_server)
 
     list(APPEND RTYPE_TARGETS
-        plugin_network
         plugin_rtype_client
         plugin_rtype_server
         ${PROJECT_NAME}

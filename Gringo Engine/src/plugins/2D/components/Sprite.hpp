@@ -26,7 +26,7 @@ template <> struct ComponentDescription<Sprite> {
     {
         return {"Sprite",
                 {
-                    {"Shape", valueType::Shape, "Box"},
+                    {"Shape", valueType::Choice, "Box", {"Box", "Circle"}},
                     {"Width", valueType::Float, "32"},
                     {"Height", valueType::Float, "32"},
                     {"Radius", valueType::Float, "16"},

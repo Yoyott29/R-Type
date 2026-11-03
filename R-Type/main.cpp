@@ -1,5 +1,6 @@
 #include "Application.hpp"
 #include "ProjectComponentManager.hpp"
+#include "ProjectSettings.hpp"
 #include "nlohmann/json.hpp"
 #include <filesystem>
 #include <fstream>
@@ -9,12 +10,7 @@
 #include <string>
 #include "Prefab.hpp"
 #include "PrefabsManager.hpp"
-#include "NetworkConfig.hpp"
-#include <asio.hpp>
-#include <charconv>
-#include <cstring>
-#include <optional>
-#include "ScriptSystem.hpp"
+#include "Script.hpp"
 #include "DestroyOffScreenScript.hpp"
 #include "EnemyScript.hpp"
 #include "EnemySpawnerScript.hpp"
@@ -22,46 +18,27 @@
 
 int main(int argc, char **argv)
 {
-    std::string ip = "127.0.0.1";
-    uint16_t port = 4242;
-    if (argc > 3)
-        return 84;
-    if (argc >= 2) {
-        const char *argument = argc == 3 ? argv[2] : argv[1];
-        unsigned int parsedPort = 0;
-        const char *end = argument + std::strlen(argument);
-        auto [pointer, error] = std::from_chars(argument, end, parsedPort);
-        if (error != std::errc() || pointer != end || parsedPort == 0 || parsedPort > 65535)
-            return 84;
-        port = static_cast<uint16_t>(parsedPort);
-    }
-    if (argc == 3) {
-        asio::error_code error;
-        asio::ip::make_address_v4(argv[1], error);
-        if (error)
-            return 84;
-        ip = argv[1];
-    }
-    const std::string projectPath = "/home/yoyott/Desktop/Epitech/Tek3/Semestre1/ING/R-Type-Mirror/R-Type/R-Type.gringo";
     try {
-        Application application;
-        application._scene.addResource<PrefabsManager>();
-        application._scene.addResource<NetworkConfig>(NetworkConfig::client(ip, port));
-        application.addPlugin("RayLibRenderer");
-        application.addPlugin("Physics");
-        application.addPlugin("RTypeClient");
-        application.addPlugin("Network");
-        application._scene.registerSystem<ScriptSystem>(FixedUpdate);
-        ComponentSet requirements;
-        requirements.set(application._scene.getComponentType<Script>());
-        application._scene.setSystemComponentSet<ScriptSystem>(requirements);
+        const std::filesystem::path projectPath =
+            ProjectComponentManager::findProjectFile("R-Type.gringo");
         std::ifstream file(projectPath);
         if (!file)
-            throw std::runtime_error("Could not open project file: " + projectPath);
+            throw std::runtime_error("Could not open project file: " + projectPath.string());
         nlohmann::json root;
         file >> root;
+        Application application(argc, argv);
         Scene &scene = application._scene;
-        ProjectComponentManager components(scene, std::filesystem::path(projectPath).parent_path());
+        scene.addResource<ProjectSettings>(ProjectSettings::fromJson(
+            root.value("pluginSettings", nlohmann::json::object())));
+        scene.addResource<PrefabsManager>();
+        application.setRenderer("RaylibRenderer", "R-Type");
+        application.addPlugin("2D");
+        application.addPlugin("InputHandler");
+        application.addPlugin("Scripts");
+        application.addPlugin("Physics");
+        application.addPlugin("Network");
+        application.addPlugin("RTypeClient");
+        ProjectComponentManager components(scene, projectPath.parent_path());
         for (const auto &entityData : root.value("entities", nlohmann::json::array())) {
             Entity entity = scene.createEntity();
             for (const auto &component : entityData.value("components", nlohmann::json::array())) {

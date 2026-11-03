@@ -5,11 +5,13 @@
 #include <initializer_list>
 #include <set>
 #include <string>
+#include <vector>
 
 class ProjectBuilder
 {
   public:
-    static std::string build(const std::string &projectPath, const SceneObjects &sceneObjects);
+    static std::string build(const std::string &projectPath, const SceneObjects &sceneObjects,
+                             const std::vector<ComponentDescriptor> &descriptors);
 
   private:
     static std::string shellQuote(const std::string &value);
@@ -18,8 +20,10 @@ class ProjectBuilder
     static std::string scriptPath(const Component &component);
     static std::string className(const std::string &path);
     static std::set<std::string> collectScripts(const SceneObjects &sceneObjects);
-    static bool hasComponent(const SceneObjects &sceneObjects,
-                             std::initializer_list<const char *> names);
+    // The project has a renderer, and it is in Gringo Engine/renderers
+    static void requireRenderer(const SceneObjects &sceneObjects);
+    static void requireComponentPlugins(const SceneObjects &sceneObjects,
+                                        const std::vector<ComponentDescriptor> &descriptors);
     static bool scriptsInclude(const std::filesystem::path &projectFolder,
                                const std::set<std::string> &scripts,
                                std::initializer_list<const char *> headers);

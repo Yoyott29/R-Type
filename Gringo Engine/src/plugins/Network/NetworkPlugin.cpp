@@ -6,12 +6,15 @@
 */
 
 #include "NetworkPlugin.hpp"
+#include "CommandLine.hpp"
+#include "EngineError.hpp"
+#include "ProjectSettings.hpp"
+#include <asio.hpp>
 #include "Events.hpp"
 #include "NetEvents.hpp"
 #include "NetReceiveSystem.hpp"
 #include "NetSendSystem.hpp"
 #include "NetTransport.hpp"
-#include "PluginApi.hpp"
 #include "UdpSocket.hpp"
 #include <optional>
 
@@ -19,8 +22,54 @@ void NetworkPlugin::build(Application &app) { build(app._scene); }
 
 void NetworkPlugin::cleanup(Application &app) { cleanup(app._scene); }
 
+std::vector<PropertyDescriptor> NetworkPlugin::settings() const
+{
+    return {
+        {"Role", valueType::Choice, "Client", {"Client", "Server"}},
+        {"Host", valueType::String, "127.0.0.1"},
+        {"Port", valueType::Int, "4242"},
+    };
+}
+
+std::uint16_t NetworkPlugin::parsePort(const std::string &text)
+{
+    // Digits only, so std::stoul cannot throw nor accept "-1" or " 42"
+    if (text.empty() || text.size() > 5 || text.find_first_not_of("0123456789") != std::string::npos)
+        throw EngineError("Invalid port: " + text);
+    const unsigned long port = std::stoul(text);
+    if (port == 0 || port > 65535)
+        throw EngineError("Invalid port: " + text);
+    return static_cast<std::uint16_t>(port);
+}
+
+NetworkConfig NetworkPlugin::configFromSettings(Scene &scene)
+{
+    const ProjectSettings &settings = scene.getResource<ProjectSettings>();
+    const std::vector<std::string> &arguments = scene.getResource<CommandLine>().arguments;
+    std::string host = settings.get("Network", "Host");
+    std::uint16_t port = parsePort(settings.get("Network", "Port"));
+
+    // The command line wins over the project: "port" or "host port"
+    if (arguments.size() > 2)
+        throw EngineError("Usage: [ip] port");
+    if (!arguments.empty())
+        port = parsePort(arguments.back());
+    if (arguments.size() == 2)
+        host = arguments.front();
+    asio::error_code error;
+    asio::ip::make_address_v4(host, error);
+    if (error)
+        throw EngineError("Invalid ip: " + host);
+
+    if (settings.get("Network", "Role") == "Server")
+        return NetworkConfig::server(port, host);
+    return NetworkConfig::client(host, port);
+}
+
 void NetworkPlugin::build(Scene &scene)
 {
+    if (!scene.hasResource<NetworkConfig>())
+        scene.addResource<NetworkConfig>(configFromSettings(scene));
     auto const &config = scene.getResource<NetworkConfig>();
     std::optional<Endpoint> server;
     if (config.role == NetRole::Client) {
@@ -58,5 +107,3 @@ void NetworkPlugin::cleanup(Scene &scene)
     }
     flushToSocket(transport, scene.getResource<UdpSocket>());
 }
-
-PLUGIN_EXPORT IPlugin *createPlugin() { return new NetworkPlugin(); }

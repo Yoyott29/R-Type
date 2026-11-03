@@ -6,6 +6,7 @@
 */
 
 #include "Parser.hpp"
+#include <algorithm>
 #include <array>
 #include <set>
 #ifdef _WIN32
@@ -58,9 +59,9 @@ void Parser::saveFile(const std::string &, const SceneObjects &sceneObjects)
 {
     nlohmann::json root;
     root["projectName"] = sceneObjects.projectName;
-    root["network"] = {{"enabled", sceneObjects.network.enabled},
-                       {"plugin", sceneObjects.network.plugin}};
+    root["pluginSettings"] = sceneObjects.pluginSettings;
     root["plugins"] = sceneObjects.activePlugins;
+    root["renderer"] = sceneObjects.renderer;
     root["entities"] = nlohmann::json::array();
     root["prefabs"] = nlohmann::json::array();
 
@@ -76,10 +77,9 @@ void Parser::saveFile(const std::string &, const SceneObjects &sceneObjects)
     }
 
     const std::filesystem::path requestedPath =
-        sceneObjects.projectFilePath.empty()
-            ? executableDirectory() / sceneObjects.projectName /
-                  (sceneObjects.projectName + ".gringo")
-            : sceneObjects.projectFilePath;
+        sceneObjects.projectFilePath.empty() ? executableDirectory() / sceneObjects.projectName /
+                                                   (sceneObjects.projectName + ".gringo")
+                                             : sceneObjects.projectFilePath;
     const std::filesystem::path gamePath =
         requestedPath.extension() == ".gringo"
             ? requestedPath
@@ -136,10 +136,10 @@ SceneObjects Parser::loadFile(const std::string &filePath)
 
     result.projectName = root.value("projectName", filePath);
     result.projectFilePath = std::filesystem::absolute(gamePath).lexically_normal();
-    const auto network = root.value("network", nlohmann::json::object());
-    result.network.enabled = network.value("enabled", false);
-    result.network.plugin = network.value("plugin", "");
+    result.pluginSettings =
+        root.value("pluginSettings", std::map<std::string, std::map<std::string, std::string>>{});
     result.activePlugins = root.value("plugins", std::vector<std::string>{});
+    result.renderer = root.value("renderer", "");
 
     for (const auto &entityJson : root.value("entities", nlohmann::json::array())) {
         Entity entity;
@@ -165,8 +165,8 @@ std::vector<std::string> Parser::getSavedFiles()
     std::vector<std::string> savedFiles;
 
     const std::filesystem::path currentDirectory = std::filesystem::current_path();
-    const std::array<std::filesystem::path, 2> searchRoots = {
-        currentDirectory, currentDirectory.parent_path()};
+    const std::array<std::filesystem::path, 2> searchRoots = {currentDirectory,
+                                                              currentDirectory.parent_path()};
     std::set<std::string> discoveredFiles;
 
     const auto addProjectFile = [&](const std::filesystem::path &projectFile) {
@@ -192,8 +192,7 @@ std::vector<std::string> Parser::getSavedFiles()
                 continue;
 
             for (const auto &projectFile : std::filesystem::directory_iterator(entry.path())) {
-                if (projectFile.is_regular_file() &&
-                    projectFile.path().extension() == ".gringo") {
+                if (projectFile.is_regular_file() && projectFile.path().extension() == ".gringo") {
                     addProjectFile(projectFile.path());
                 }
             }
@@ -218,4 +217,53 @@ std::filesystem::path Parser::executableDirectory()
     buffer[static_cast<std::size_t>(length)] = '\0';
     return std::filesystem::path(buffer.data()).parent_path();
 #endif
+}
+
+std::filesystem::path Parser::getProjectFolder(const std::filesystem::path &projectFilePath,
+                                               const std::string &projectName)
+{
+    const std::filesystem::path requestedPath =
+        projectFilePath.empty() ? executableDirectory() / projectName / (projectName + ".gringo")
+                                : projectFilePath;
+    const std::filesystem::path gamePath =
+        requestedPath.extension() == ".gringo"
+            ? requestedPath
+            : requestedPath / (requestedPath.filename().string() + ".gringo");
+
+    return gamePath.parent_path();
+}
+
+std::vector<Property> Parser::readScriptParameters(const std::filesystem::path &scriptFile)
+{
+    std::vector<Property> parameters;
+    std::ifstream input(scriptFile);
+
+    // The line to find starts with e.g. "PlayerScript_params"
+    const std::string marker = scriptFile.stem().string() + "_params";
+    std::string line;
+
+    while (std::getline(input, line)) {
+        if (line.find(marker) == std::string::npos)
+            continue;
+
+        // Take what is between { and } on that line
+        std::size_t open = line.find('{');
+        std::size_t close = line.find('}', open);
+        if (open == std::string::npos || close == std::string::npos)
+            return parameters;
+
+        // Split on commas, then drop spaces and quotes from each name
+        std::istringstream names(line.substr(open + 1, close - open - 1));
+        std::string name;
+        while (std::getline(names, name, ',')) {
+            name.erase(std::remove_if(
+                           name.begin(), name.end(),
+                           [](char c) { return c == ' ' || c == '\t' || c == '"' || c == '\r'; }),
+                       name.end());
+            if (!name.empty())
+                parameters.push_back({0, name, "0", valueType::String}); // id set by the caller
+        }
+        break; // first matching line only
+    }
+    return parameters;
 }

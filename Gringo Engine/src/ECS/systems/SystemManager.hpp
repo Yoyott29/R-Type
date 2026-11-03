@@ -15,7 +15,10 @@
 #include <unordered_map>
 #include <vector>
 
-enum ScheduleLabel { PrepUpdate, StateTransition, FixedUpdate, Update, PostUpdate };
+// Run in this order every frame. With a renderer, the application opens the frame after
+// PostUpdate, runs Render (the world, e.g. 2D sprites) then Overlay (on top of it, e.g. UI), and
+// shows the frame. Without a renderer, Render and Overlay do not run
+enum ScheduleLabel { PrepUpdate, StateTransition, FixedUpdate, Update, PostUpdate, Render, Overlay };
 
 class SystemManager
 {
