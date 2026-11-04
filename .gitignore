@@ -28,7 +28,8 @@ R-Type/build/
 *.txt
 !Documentation/R-Type/src/routes/robots.txt/
 *.zip
-
+Gringo Engine/.cache/*
+Gringo Engine/src/plugins/Network
 # Local test scripts
 /tests/send_inputs.sh
 /tests/server.sh

@@ -12,16 +12,16 @@
 #include "CommandLine.hpp"
 #include "ProjectSettings.hpp"
 #include "EngineError.hpp"
+#include "GameClock.hpp"
 #include "Position.hpp"
-#include "Time.hpp"
-#include <algorithm>
-#include <chrono>
+#include <thread>
 #include <utility>
 #include <functional>
 
 #define WORLD_WIDTH 1920
 #define WORLD_HEIGHT 1080
-#define MAX_FRAME_TIME 0.25f
+// After a stall, at most this many late ticks are run (0.25 s), the others are dropped
+#define MAX_CATCH_UP_TICKS 15
 
 static const ColorRGBA BACKGROUND_COLOR{0, 0, 0, 255};
 
@@ -34,6 +34,7 @@ Application::Application()
     _scene.addResource<AppAlive>();
     _scene.addResource<CommandLine>();
     _scene.addResource<ProjectSettings>();
+    _scene.addResource<GameClock>();
 }
 
 Application::Application(std::vector<std::string> arguments) : Application()
@@ -86,28 +87,27 @@ void Application::renderFrame()
 void Application::run()
 {
     checkRendererRequirements();
-    using Clock = std::chrono::steady_clock;
-    Clock::time_point previous = Clock::now();
-    float accumulator = 0.0f;
+    _clock.start();
 
     while (_scene.getResource<AppAlive>().alive) {
-        Clock::time_point now = Clock::now();
-        float frameTime =
-            std::min(std::chrono::duration<float>(now - previous).count(), MAX_FRAME_TIME);
-        previous = now;
-        accumulator += frameTime;
-
         _scene.runSchedule(PrepUpdate);
         _scene.runSchedule(StateTransition);
-        while (accumulator >= FIXED_DELTA_TIME) {
+        for (int ticks = 0; _clock.isTickDue(); ++ticks) {
+            if (ticks == MAX_CATCH_UP_TICKS) {
+                _clock.resync();
+                break;
+            }
             _scene.runSchedule(FixedUpdate);
             _scene.flushDestroyQueue();
-            accumulator -= FIXED_DELTA_TIME;
+            _clock.advance();
+            _scene.getResource<GameClock>().tick = _clock.getCurrentTick();
         }
         _scene.runSchedule(Update);
         _scene.runSchedule(PostUpdate);
         if (_renderer)
             renderFrame();
+        else
+            std::this_thread::sleep_until(_clock.getNextTickTime());
     }
 
     for (auto &plugin : _plugins)

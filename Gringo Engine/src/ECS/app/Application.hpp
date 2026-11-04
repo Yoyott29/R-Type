@@ -11,6 +11,7 @@
 #include "PluginLoader.hpp"
 #include "PrefabsManager.hpp"
 #include "Scene.hpp"
+#include "TickTimeManager.hpp"
 #include <cstdint>
 #include <memory>
 #include <string>
@@ -25,7 +26,8 @@ class Application
     // Keeps the arguments (without the program name) in the CommandLine resource
     explicit Application(std::vector<std::string> arguments);
     // Throws if a plugin needs a renderer and none is set, then runs until AppAlive is false or
-    // the window is closed
+    // the window is closed. FixedUpdate runs on the game clock (GameClock); without a renderer
+    // the loop sleeps until the next tick
     void run();
     void addPlugin(const std::shared_ptr<IPlugin> &plugin);
     // Loads a plugin from the shared Gringo Engine/plugins directory.
@@ -48,6 +50,7 @@ class Application
     std::vector<std::shared_ptr<IPlugin>> _plugins;
     std::vector<std::string> _pluginNames;
     std::shared_ptr<IRenderer> _renderer;
+    TickTimeManager _clock;
 };
 
 class IPlugin

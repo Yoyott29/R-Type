@@ -21,6 +21,7 @@ class TickTimeManager
 
     void start();
     void advance();
+    void resync();
 
     Clock::time_point getNextTickTime() const;
     bool isTickDue() const;

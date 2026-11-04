@@ -19,6 +19,13 @@ void TickTimeManager::start()
 // A appeler apres chaque tick execute
 void TickTimeManager::advance() { _currentTick++; }
 
+// Apres un gros retard : abandonne les ticks en retard, le prochain tick est dans un tick
+void TickTimeManager::resync()
+{
+    _startTime = std::chrono::time_point_cast<Clock::duration>(
+        Clock::now() - static_cast<std::int64_t>(_currentTick) * FIXED_TICK_DURATION);
+}
+
 // Calcule depuis le depart : aucune erreur d'arrondi ne s'accumule
 TickTimeManager::Clock::time_point TickTimeManager::getNextTickTime() const
 {
