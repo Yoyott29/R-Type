@@ -44,6 +44,12 @@ class IRenderer
 
     // Keyboard
     virtual bool isKeyDown(Key key) const = 0;
+
+    // Mouse
+    // Cursor position in world coordinates, so it can be compared with what is drawn
+    virtual MousePosition getMousePosition() const = 0;
+    // True only on the frame the button went down
+    virtual bool isMouseButtonPressed(Mouse button) const = 0;
 };
 
 // Base class of every renderer: class RaylibRenderer : public Renderer<RaylibRenderer>. When the
