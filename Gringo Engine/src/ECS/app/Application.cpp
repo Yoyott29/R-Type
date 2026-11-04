@@ -12,6 +12,7 @@
 #include "CommandLine.hpp"
 #include "ProjectSettings.hpp"
 #include "EngineError.hpp"
+#include "EventBus.hpp"
 #include "Position.hpp"
 #include "Time.hpp"
 #include <algorithm>
@@ -34,6 +35,7 @@ Application::Application()
     _scene.addResource<AppAlive>();
     _scene.addResource<CommandLine>();
     _scene.addResource<ProjectSettings>();
+    _scene.addResource<EventBus>();
 }
 
 Application::Application(std::vector<std::string> arguments) : Application()
