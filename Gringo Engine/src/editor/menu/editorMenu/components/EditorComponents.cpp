@@ -84,14 +84,22 @@ void EditorComponents::createComponents(std::vector<Component> components, Objec
     _editor.addRectangle("ObjectHeader_Box", {objectHeaderX, objectHeaderY}, objectHeaderWidth, objectHeaderHeight, BUTTON_COLOR4, 1);
     _editor._componentsRectangleNames.push_back("ObjectHeader_Box");
 
-    _editor.addButton("ObjectHeader_Name", {objectHeaderX, objectHeaderY}, objectHeaderWidth - 300.0f, objectHeaderHeight - 10.0f, 30,
-              nullptr, BUTTON_COLOR4, BUTTON_COLOR4, TEXT_COLOR, _editor._objects.getObjectName(objectType, objectId));
+    // Narrower than the header: Rename and the ID on the left, Up and Down on the right
+    _editor.addButton("ObjectHeader_Name", {objectHeaderX, objectHeaderY}, objectHeaderWidth - 440.0f, objectHeaderHeight - 10.0f, 30,
+              std::function<void()>{}, BUTTON_COLOR4, BUTTON_COLOR4, TEXT_COLOR, _editor._objects.getObjectName(objectType, objectId));
     _editor._componentsButtonNames.push_back("ObjectHeader_Name");
 
     _editor.addButton("ObjectHeader_Rename", {objectHeaderX - objectHeaderWidth / 2.0f + 80.0f, objectHeaderY}, 120.0f, 36.0f, 20,
               [this]() { _editor._objects.editObject(_editor._selectedObjectType, _editor._selectedObjectId); },
               BUTTON_COLOR1, BUTTON_COLOR2, TEXT_COLOR, "Rename");
     _editor._componentsButtonNames.push_back("ObjectHeader_Rename");
+
+    // The id ChildOf.Parent refers to, next to Rename. Prefabs have none to refer to
+    if (objectType == ObjectType::Entity) {
+        _editor.addText("ObjectHeader_Id", {objectHeaderX - objectHeaderWidth / 2.0f + 180.0f, objectHeaderY},
+                        20, "[" + std::to_string(objectId) + "]", TEXT_COLOR);
+        _editor._componentsTextNames.push_back("ObjectHeader_Id");
+    }
 
     _editor.addButton("ObjectHeader_Up", {objectHeaderX + objectHeaderWidth / 2.0f - 105.0f, objectHeaderY}, 60.0f, 36.0f, 18,
               [this]() { _editor._objects.moveSelectedObject(-1); },
@@ -326,6 +334,7 @@ void EditorComponents::addComponentToSelectedObject(const Component &componentTo
     currentComponents.push_back(componentToAdd);
     _editor._currentComponentPage = 9999;
     createComponents(currentComponents, _editor._selectedObjectType, _editor._selectedObjectId);
+    refreshTreeIfChildOf(componentToAdd.name);
 }
 
 std::vector<Component> &EditorComponents::getObjectComponents(ObjectType objectType, int objectId)
@@ -345,6 +354,13 @@ std::vector<Component> &EditorComponents::getObjectComponents(ObjectType objectT
     return _editor._componentTemplates;
 }
 
+void EditorComponents::refreshTreeIfChildOf(const std::string &componentName)
+{
+    // Adding or removing a ChildOf changes where the entity's button is in the list
+    if (componentName == "ChildOf" && _editor._selectedObjectType == ObjectType::Entity)
+        _editor._objects.refreshObjectList(ObjectType::Entity);
+}
+
 void EditorComponents::deleteComponent(int index)
 {
     _editor._properties.applyCurrentEdit();
@@ -354,7 +370,9 @@ void EditorComponents::deleteComponent(int index)
     if (index < 0 || static_cast<std::size_t>(index) >= components.size())
         return;
 
+    const std::string removed = components[index].name;
     components.erase(components.begin() + index);
 
     createComponents(components, _editor._selectedObjectType, _editor._selectedObjectId);
+    refreshTreeIfChildOf(removed);
 }

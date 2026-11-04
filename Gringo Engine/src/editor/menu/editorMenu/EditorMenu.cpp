@@ -8,6 +8,7 @@
 #include "EditorMenu.hpp"
 #include "ProjectBuilder.hpp"
 #include <algorithm>
+#include <iostream>
 #include <utility>
 
 EditorMenu::EditorMenu(IEditorRenderer &renderer, std::string templateName, std::string projectName,
@@ -151,6 +152,16 @@ void EditorMenu::buildProject()
     const SceneObjects sceneObjects = getSceneObjects();
     _parser.saveFile(_projectName + ".gringo", sceneObjects);
     _projectFilePath = _parser.getLastSavedPath();
+
+    // Missing scripts or assets, wrong ChildOf: nothing is compiled, the editor stays open
+    const std::vector<std::string> missing = ProjectBuilder::buildErrors(
+        sceneObjects, Parser::getProjectFolder(_projectFilePath, _projectName),
+        _componentDescriptors);
+    if (!missing.empty()) {
+        for (const std::string &line : missing)
+            std::cerr << line << std::endl;
+        return;
+    }
     _switchMenu = MenuType::Build;
     _isRunning = false;
 }
@@ -425,10 +436,11 @@ void EditorMenu::initRectangles()
                  sidebarHeight, BUTTON_COLOR3);
     addRectangle("Prefabs Sidebar", {WINDOW_WIDTH - sidebarWidth / 2.0f, sidebarCenterY},
                  sidebarWidth, sidebarHeight, BUTTON_COLOR3);
+    // Draw order 1: always on top of the sidebars they are drawn on
     addRectangle("Entities Text Underline", {200, TOP_BAR_HEIGHT + 64}, sidebarWidth, 4,
-                 ColorRGBA{12, 13, 17, 255});
+                 ColorRGBA{12, 13, 17, 255}, 1);
     addRectangle("Prefabs Text Underline", {WINDOW_WIDTH - 200, TOP_BAR_HEIGHT + 64}, sidebarWidth,
-                 4, ColorRGBA{12, 13, 17, 255});
+                 4, ColorRGBA{12, 13, 17, 255}, 1);
 }
 
 Component EditorMenu::createComponent(std::string componentName, std::vector<std::string> values)
@@ -518,8 +530,9 @@ void EditorMenu::syncComponentWithTemplate(Component &component)
 
         for (Property &syncedProperty : syncedProperties) {
             for (const Property &savedProperty : component.properties) {
-                if (savedProperty.name == syncedProperty.name &&
-                    savedProperty.type == syncedProperty.type)
+                // By name only: a property whose type changed (e.g. TexturePath, now a File)
+                // keeps its value
+                if (savedProperty.name == syncedProperty.name)
                     syncedProperty.value = savedProperty.value;
             }
         }

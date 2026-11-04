@@ -69,6 +69,15 @@ class Scene
         _systemManager->entityComponentSetChanged(entity, componentSet);
     }
 
+    // False if the entity is dead or the component type was never registered
+    template <typename Component> bool hasComponent(Entity entity) const
+    {
+        if (!_entityManager->isAlive(entity) || !_componentManager->isRegistered<Component>())
+            return false;
+        return _entityManager->getComponentSet(entity).test(
+            _componentManager->getComponentType<Component>());
+    }
+
     template <typename Component> Component &getComponent(Entity entity)
     {
         validateEntity(entity);
@@ -85,12 +94,6 @@ class Scene
     {
         validateEntity(entity);
         return _componentManager->getComponentCount<Component>(entity);
-    }
-
-    template <typename Component> std::vector<Component> &getComponents(Entity entity)
-    {
-        validateEntity(entity);
-        return _componentManager->getComponents<Component>(entity);
     }
 
     void addComponentFromJson(Entity entity, const nlohmann::json &component);

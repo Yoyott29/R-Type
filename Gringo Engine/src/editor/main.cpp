@@ -44,7 +44,7 @@ int main(void)
             if (next == MenuType::TemplateMenu)
                 currentMenu = std::make_unique<TemplateMenu>(renderer);
             else if (next == MenuType::NameMenu) {
-                templateName = static_cast<TemplateMenu *>(currentMenu.get())->getTemplate();
+                templateName = static_cast<TemplateMenu &>(*currentMenu).getTemplate();
                 currentMenu = std::make_unique<NameMenu>(renderer, templateName,
                                                          PluginLoader("renderers").listNames());
             } else if (next == MenuType::EditorMenu) {
@@ -57,7 +57,7 @@ int main(void)
                     if (templateName == "2D")
                         sceneObjects.activePlugins = {"2D"};
                 } else if (current == MenuType::LoadMenu) {
-                    sceneObjects = static_cast<LoadMenu *>(currentMenu.get())->getSceneObjects();
+                    sceneObjects = static_cast<LoadMenu &>(*currentMenu).getSceneObjects();
                     projectName = sceneObjects.projectName;
                 }
                 currentMenu =
@@ -69,10 +69,10 @@ int main(void)
             else if (next == MenuType::LoadMenu)
                 currentMenu = std::make_unique<LoadMenu>(renderer, parser);
             else if (next == MenuType::Build) {
-                const auto *editorMenu = static_cast<EditorMenu *>(currentMenu.get());
-                const std::string projectPath = editorMenu->getBuiltProjectPath();
+                const EditorMenu &editorMenu = static_cast<EditorMenu &>(*currentMenu);
+                const std::string projectPath = editorMenu.getBuiltProjectPath();
                 renderer.close();
-                ProjectBuilder::build(projectPath, editorMenu->getSceneObjects(),
+                ProjectBuilder::build(projectPath, editorMenu.getSceneObjects(),
                                       componentCatalog.getDescriptors());
                 return 0;
             }

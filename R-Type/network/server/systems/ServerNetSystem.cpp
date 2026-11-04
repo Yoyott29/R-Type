@@ -22,7 +22,7 @@
 
 namespace
 {
-constexpr std::size_t MAX_BUFFERED_INPUTS = 2;
+const std::size_t MAX_BUFFERED_INPUTS = 2;
 
 Entity spawnShip(Scene &scene, std::uint8_t slot)
 {

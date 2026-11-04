@@ -8,13 +8,18 @@
 #include "EditorObjects.hpp"
 #include "EditorMenu.hpp"
 #include <algorithm>
+#include <functional>
 #include <utility>
 
 void EditorObjects::addNewEntity()
 {
     _editor._properties.applyCurrentEdit();
 
-    int newId = _editor._entities.empty() ? 1 : _editor._entities.back().id + 1;
+    // Biggest id + 1: entities can be reordered, the last one is not always the biggest, and
+    // ChildOf needs every id to be unique
+    int newId = 1;
+    for (const Entity &entity : _editor._entities)
+        newId = std::max(newId, entity.id + 1);
     _editor._entities.push_back({newId, "Entity" + std::to_string(newId), {}});
 
     _editor._currentEntityPage = static_cast<int>((_editor._entities.size() - 1) / ITEMS_PER_PAGE);
@@ -135,13 +140,13 @@ void EditorObjects::refreshObjectList(ObjectType type)
         _editor.removeButton(listNames[i]);
     listNames.clear();
 
-    std::vector<std::pair<int, std::string>> items;
+    // Entities as a tree: each child right under its parent, one tab further per level
+    std::vector<ListItem> items;
     if (isEntity) {
-        for (std::size_t i = 0; i < _editor._entities.size(); ++i)
-            items.emplace_back(_editor._entities[i].id, _editor._entities[i].name);
+        items = entityTree();
     } else {
         for (std::size_t i = 0; i < _editor._prefabs.size(); ++i)
-            items.emplace_back(_editor._prefabs[i].id, _editor._prefabs[i].name);
+            items.push_back({_editor._prefabs[i].id, _editor._prefabs[i].name, 0});
     }
     
     page = std::clamp(page, 0, getPageCount(type) - 1);
@@ -154,17 +159,19 @@ void EditorObjects::refreshObjectList(ObjectType type)
      int end = std::min(start + ITEMS_PER_PAGE, static_cast<int>(items.size()));
 
      for (int i = start; i < end; ++i) {
-         int id = items[i].first;
+         int id = items[i].id;
          float y = firstRowY + static_cast<float>(i - start) * (buttonHeight + buttonSpacing);
          std::string objectButton = getObjectButtonName(type, id);
+         // A tab per level: the left edge moves right, the right edge stays
+         const float indent = static_cast<float>(std::min(items[i].depth, MAX_TREE_INDENTS)) * TREE_TAB;
 
-        _editor.addButton(objectButton, {mainX, y}, objectButtonWidth, buttonHeight, 20,
+        _editor.addButton(objectButton, {mainX + indent / 2.0f, y}, objectButtonWidth - indent, buttonHeight, 20,
                   [this, type, id]() {
                       _editor.closePluginPanel();
                       _editor._components.createComponents(
                           _editor._components.getObjectComponents(type, id), type, id);
                   },
-                  BUTTON_COLOR1, BUTTON_COLOR2, TEXT_COLOR, items[i].second);
+                  BUTTON_COLOR1, BUTTON_COLOR2, TEXT_COLOR, items[i].name);
 
         listNames.push_back(objectButton);
     }
@@ -199,6 +206,68 @@ void EditorObjects::refreshObjectList(ObjectType type)
         _editor.unSelectButton(_editor._buttons[nextName]);
 }
 
+
+int EditorObjects::parentIdOf(const Entity &entity)
+{
+    for (const Component &component : entity.components) {
+        if (component.name != "ChildOf")
+            continue;
+        for (const Property &property : component.properties)
+            if (property.name == "Parent") {
+                try {
+                    return std::stoi(property.value);
+                } catch (const std::exception &) {
+                    return -1;
+                }
+            }
+    }
+    return -1;
+}
+
+std::vector<EditorObjects::ListItem> EditorObjects::entityTree() const
+{
+    std::vector<ListItem> items;
+    std::vector<int> placed;
+    const auto isPlaced = [&placed](int id) {
+        return std::find(placed.begin(), placed.end(), id) != placed.end();
+    };
+    const auto exists = [this](int id) {
+        return std::any_of(_editor._entities.begin(), _editor._entities.end(),
+                           [id](const Entity &entity) { return entity.id == id; });
+    };
+    // Adds an entity then, under it, its children in list order (and theirs)
+    const std::function<void(const Entity &, int)> place = [&](const Entity &entity, int depth) {
+        placed.push_back(entity.id);
+        items.push_back({entity.id, entity.name, depth});
+        for (const Entity &child : _editor._entities)
+            if (parentIdOf(child) == entity.id && !isPlaced(child.id))
+                place(child, depth + 1);
+    };
+
+    // Roots: no parent, or a parent that does not exist
+    for (const Entity &entity : _editor._entities)
+        if (!isPlaced(entity.id) && !exists(parentIdOf(entity)))
+            place(entity, 0);
+    // Entities in a ChildOf loop have no root: shown at the top level so they can be fixed
+    for (const Entity &entity : _editor._entities)
+        if (!isPlaced(entity.id))
+            place(entity, 0);
+    return items;
+}
+
+std::vector<int> EditorObjects::familyOf(int id) const
+{
+    std::vector<int> family = {id};
+    // Grows while children of the entities already in it are found; each id once, so a ChildOf
+    // loop cannot run forever
+    for (std::size_t index = 0; index < family.size(); ++index)
+        for (const Entity &entity : _editor._entities)
+            if (parentIdOf(entity) == family[index] &&
+                std::find(family.begin(), family.end(), entity.id) == family.end())
+                family.push_back(entity.id);
+    return family;
+}
+
 void EditorObjects::deleteSelectedObject()
 {
     _editor._properties.applyCurrentEdit();
@@ -209,8 +278,13 @@ void EditorObjects::deleteSelectedObject()
     _editor._components.clearDisplayedComponents();
 
     if (type == ObjectType::Entity) {
-        _editor._entities.erase(std::remove_if(_editor._entities.begin(), _editor._entities.end(),
-                        [id]( Entity &e) { return e.id == id; }), _editor._entities.end());
+        const std::vector<int> family = familyOf(id);
+        _editor._entities.erase(
+            std::remove_if(_editor._entities.begin(), _editor._entities.end(),
+                           [&family](const Entity &e) {
+                               return std::find(family.begin(), family.end(), e.id) != family.end();
+                           }),
+            _editor._entities.end());
     } else {
         _editor._prefabs.erase(std::remove_if(_editor._prefabs.begin(), _editor._prefabs.end(),
                        [id]( Prefab &p) { return p.id == id; }), _editor._prefabs.end());

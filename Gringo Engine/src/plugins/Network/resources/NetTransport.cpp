@@ -26,9 +26,10 @@ NetTransport::NetTransport(NetworkConfig config, std::optional<Endpoint> server)
 
 void NetTransport::send(PeerId peer, std::uint16_t type, std::span<const std::byte> payload)
 {
-    Peer *target = findPeer(peer);
-    if (target == nullptr || !target->connected)
+    std::optional<std::reference_wrapper<Peer>> found = findPeer(peer);
+    if (!found || !found->get().connected)
         return;
+    Peer &target = found->get();
     if (payload.size() > MAX_PAYLOAD) {
         if (!_oversizedLogged) {
             _oversizedLogged = true;
@@ -37,7 +38,7 @@ void NetTransport::send(PeerId peer, std::uint16_t type, std::span<const std::by
         }
         return;
     }
-    target->connection.queue(type, payload);
+    target.connection.queue(type, payload);
 }
 
 void NetTransport::broadcast(std::uint16_t type, std::span<const std::byte> payload)
@@ -270,13 +271,15 @@ void NetTransport::flushPeer(Endpoint const &to, Peer &peer, TimePoint now, Send
 
 NetIncoming NetTransport::takeEvents() { return std::exchange(_events, NetIncoming{}); }
 
-NetTransport::Peer *NetTransport::findPeer(PeerId id)
+std::optional<std::reference_wrapper<NetTransport::Peer>> NetTransport::findPeer(PeerId id)
 {
     auto endpoint = _endpoints.find(id);
     if (endpoint == _endpoints.end())
-        return nullptr;
+        return std::nullopt;
     auto it = _peers.find(endpoint->second);
-    return it == _peers.end() ? nullptr : &it->second;
+    if (it == _peers.end())
+        return std::nullopt;
+    return std::ref(it->second);
 }
 
 void NetTransport::removePeer(PeerId id)

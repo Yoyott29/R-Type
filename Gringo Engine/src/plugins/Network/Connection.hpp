@@ -36,7 +36,7 @@ class Connection
     ConnectionStats takeStats();
 
   private:
-    static constexpr std::uint16_t RECEIVE_WINDOW = 32;
+    static inline const std::uint16_t RECEIVE_WINDOW = 32;
 
     NetworkConfig _config;
     TimePoint _lastSend;

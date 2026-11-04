@@ -245,6 +245,10 @@ void EditorProperties::updateObjectProperty()
         if (name == _editor._currentlyUpdatedProperty.objectProperty) {
             value = _editor._currentlyUpdatedProperty.text;
             _editor.setButtonText(_editor._currentlyUpdatedProperty.name, value);
+            // A new parent moves the entity's button in the list right away
+            if (components[index].name == "ChildOf" &&
+                _editor._selectedObjectType == ObjectType::Entity)
+                _editor._objects.refreshObjectList(ObjectType::Entity);
             return;
         }
     }
@@ -392,7 +396,9 @@ std::vector<std::string> EditorProperties::getProjectFiles(const std::vector<std
             Parser::getProjectFolder(_editor._projectFilePath, _editor._projectName) / options[0];
         std::error_code error;
         for (const auto &entry : std::filesystem::directory_iterator(folder, error))
-            if (entry.is_regular_file() && entry.path().extension() == options[1])
+            if (entry.is_regular_file() &&
+                std::find(options.begin() + 1, options.end(), entry.path().extension()) !=
+                    options.end())
                 files.push_back(entry.path().filename().string());
         std::sort(files.begin(), files.end());
     }

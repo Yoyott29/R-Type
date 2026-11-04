@@ -17,7 +17,7 @@ struct UIText {
 };
 
 template <> struct ComponentDescription<UIText> {
-    static constexpr bool isDescribed = true;
+    static inline const bool isDescribed = true;
 
     static ComponentDescriptor describe()
     {

@@ -35,7 +35,8 @@ class EditorProperties
     // The value after current in options, the first one if current is not there
     static std::string nextOption(const std::vector<std::string> &options,
                                   const std::string &current);
-    // The project files of a File property: NO_FILE then <project>/<folder>/*<extension>
+    // The project files of a File property: NO_FILE then <project>/<folder>/* with one of its
+    // extensions
     std::vector<std::string> getProjectFiles(const std::vector<std::string> &options);
     void applyScriptParameters(Component &component, const std::string &scriptName);
 

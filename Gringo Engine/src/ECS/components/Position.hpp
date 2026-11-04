@@ -14,7 +14,7 @@ struct Position {
 };
 
 template <> struct ComponentDescription<Position> {
-    static constexpr bool isDescribed = true;
+    static inline const bool isDescribed = true;
 
     static ComponentDescriptor describe()
     {

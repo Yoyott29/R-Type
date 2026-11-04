@@ -14,7 +14,7 @@ struct Velocity {
 };
 
 template <> struct ComponentDescription<Velocity> {
-    static constexpr bool isDescribed = true;
+    static inline const bool isDescribed = true;
 
     static ComponentDescriptor describe()
     {

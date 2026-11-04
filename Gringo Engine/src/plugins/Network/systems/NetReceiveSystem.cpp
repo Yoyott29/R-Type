@@ -14,7 +14,7 @@
 #include <cstddef>
 #include <utility>
 
-static constexpr std::size_t ReadBufferSize = 1500;
+static const std::size_t ReadBufferSize = 1500;
 
 void NetReceiveSystem::update(Scene &scene)
 {

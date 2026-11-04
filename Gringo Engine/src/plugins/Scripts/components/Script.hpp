@@ -33,7 +33,7 @@ struct Script {
 template <> struct AllowMultiple<Script> : std::true_type {};
 
 template <> struct ComponentDescription<Script> {
-    static constexpr bool isDescribed = true;
+    static inline const bool isDescribed = true;
 
     static ComponentDescriptor describe()
     {

@@ -73,6 +73,11 @@ class ComponentManager
         return iterator->second;
     }
 
+    template <typename Component> bool isRegistered() const
+    {
+        return _componentTypes.find(std::type_index(typeid(Component))) != _componentTypes.end();
+    }
+
     template <typename Component> ComponentType getComponentType() const
     {
         const std::type_index key(typeid(Component));
@@ -106,11 +111,6 @@ class ComponentManager
     template <typename Component> std::size_t getComponentCount(Entity entity)
     {
         return getComponentPool<Component>().count(entity);
-    }
-
-    template <typename Component> std::vector<Component *> getComponents(Entity entity)
-    {
-        return getComponentPool<Component>().getComponents(entity);
     }
 
     void entityDestroyed(Entity entity)

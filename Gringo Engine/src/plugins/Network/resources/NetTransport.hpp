@@ -58,7 +58,8 @@ class NetTransport
         bool acceptPending = false; // server: a ConnectAccepted is owed
     };
 
-    Peer *findPeer(PeerId id);
+    // The peer with this id, std::nullopt if there is none
+    std::optional<std::reference_wrapper<Peer>> findPeer(PeerId id);
     void removePeer(PeerId id);
     void sendPacket(Endpoint const &to, Packet packet, Peer &peer, TimePoint now,
                     SendFn const &sendTo);

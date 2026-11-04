@@ -9,6 +9,7 @@
 #include "Scene.hpp"
 #include "System.hpp"
 #include <cstddef>
+#include <functional>
 #include <utility>
 #include <vector>
 
@@ -29,8 +30,8 @@ template <typename Event> class Events
     // Calls callback on every event with an id >= cursor, then moves the cursor past them
     template <typename Callback> void read(std::size_t &cursor, Callback &&callback) const
     {
-        for (auto const *buffer : {&_previous, &_current})
-            for (Entry const &entry : *buffer)
+        for (std::vector<Entry> const &buffer : {std::cref(_previous), std::cref(_current)})
+            for (Entry const &entry : buffer)
                 if (entry.id >= cursor) {
                     callback(entry.event);
                     cursor = entry.id + 1;

@@ -22,7 +22,7 @@ enum class valueType {
     Color = 4,
     // One of PropertyDescriptor::options, e.g. {"Box", "Circle"}
     Choice = 5,
-    // A file of the project: options = {folder, extension}, e.g. {"scripts", ".hpp"}
+    // A file of the project: options = {folder, extensions...}, e.g. {"assets", ".png", ".jpg"}
     File = 7,
 };
 
@@ -42,5 +42,5 @@ struct ComponentDescriptor {
 };
 
 template <typename Component> struct ComponentDescription {
-    static constexpr bool isDescribed = false;
+    static inline const bool isDescribed = false;
 };

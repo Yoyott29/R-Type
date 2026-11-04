@@ -20,7 +20,7 @@ struct Sprite {
 };
 
 template <> struct ComponentDescription<Sprite> {
-    static constexpr bool isDescribed = true;
+    static inline const bool isDescribed = true;
 
     static ComponentDescriptor describe()
     {
@@ -32,7 +32,7 @@ template <> struct ComponentDescription<Sprite> {
                     {"Radius", valueType::Float, "16"},
                     {"Color", valueType::Color, "White"},
                     {"DrawOrder", valueType::Int, "0"},
-                    {"TexturePath", valueType::String, "default.png"},
+                    {"TexturePath", valueType::File, NO_FILE, {"assets", ".png", ".jpg"}},
                 },
                 {51, 56, 70, 255},
                 ""};

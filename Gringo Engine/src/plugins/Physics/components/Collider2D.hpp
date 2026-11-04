@@ -23,7 +23,7 @@ struct Collider2D {
 };
 
 template <> struct ComponentDescription<Collider2D> {
-    static constexpr bool isDescribed = true;
+    static inline const bool isDescribed = true;
 
     static ComponentDescriptor describe()
     {
