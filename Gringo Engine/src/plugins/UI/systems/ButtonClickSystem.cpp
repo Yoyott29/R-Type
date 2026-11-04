@@ -6,13 +6,12 @@
 */
 
 #include "ButtonClickSystem.hpp"
-#include "ButtonClicked.hpp"
-#include "EventBus.hpp"
 #include "IRenderer.hpp"
 #include "Position.hpp"
 #include "UIButton.hpp"
 #include <cmath>
 #include <functional>
+#include <memory>
 
 void ButtonClickSystem::update(Scene &scene)
 {
@@ -24,13 +23,16 @@ void ButtonClickSystem::update(Scene &scene)
         return;
 
     MousePosition const mouse = renderer.getMousePosition();
-    EventBus &bus = scene.getResource<EventBus>();
     for (Entity entity : _entities) {
         Position const &position = scene.getComponent<Position>(entity);
         UIButton const &button = scene.getComponent<UIButton>(entity);
         // A button is drawn centered on its position
         if (std::abs(mouse.x - position.x) <= static_cast<float>(button.width) / 2.0f &&
-            std::abs(mouse.y - position.y) <= static_cast<float>(button.height) / 2.0f)
-            bus.emit(ButtonClicked{entity});
+            std::abs(mouse.y - position.y) <= static_cast<float>(button.height) / 2.0f) {
+            // Kept alive by this copy even if onClick destroys the button
+            std::shared_ptr<IGringoButtonScript> script = button.script;
+            if (script)
+                script->onClick(scene, entity);
+        }
     }
 }

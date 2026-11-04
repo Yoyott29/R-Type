@@ -7,10 +7,8 @@
 
 #include "UIPlugin.hpp"
 #include "ButtonClickSystem.hpp"
-#include "ButtonClicked.hpp"
 #include "ButtonSystem.hpp"
 #include "ComponentJson.hpp"
-#include "EventBus.hpp"
 #include "Position.hpp"
 #include "TextSystem.hpp"
 #include "UIButton.hpp"
@@ -56,21 +54,9 @@ void UIPlugin::build(Application &app)
     buttonRequirements.set(app._scene.getComponentType<UIButton>());
     app._scene.setSystemComponentSet<ButtonSystem>(buttonRequirements);
 
-    // clicks are emitted as ButtonClicked on the EventBus, then run the button's script
+    // calls the script of the clicked buttons
     app._scene.registerSystem<ButtonClickSystem>(PrepUpdate);
     app._scene.setSystemComponentSet<ButtonClickSystem>(buttonRequirements);
-    Scene &scene = app._scene;
-    _clickSubscription =
-        scene.getResource<EventBus>().subscribe<ButtonClicked>([&scene](ButtonClicked const &click) {
-            // Kept alive by this copy even if onClick destroys the button
-            std::shared_ptr<IGringoButtonScript> script =
-                scene.getComponent<UIButton>(click.entity).script;
-            if (script)
-                script->onClick(scene, click.entity);
-        });
 }
 
-void UIPlugin::cleanup(Application &app)
-{
-    app._scene.getResource<EventBus>().unsubscribe<ButtonClicked>(_clickSubscription);
-}
+void UIPlugin::cleanup(Application &app) { (void)app; }
