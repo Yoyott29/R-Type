@@ -30,9 +30,9 @@ template <> struct ComponentDescription<Collider2D> {
         return {"Collider2D",
                 {
                     {"Shape", valueType::Choice, "Box", {"Box", "Circle"}},
-                    {"Width", valueType::Float, "32"},
-                    {"Height", valueType::Float, "32"},
-                    {"Radius", valueType::Float, "16"},
+                    {"Width", valueType::Float, "32", {}, {"Shape", "Box"}},
+                    {"Height", valueType::Float, "32", {}, {"Shape", "Box"}},
+                    {"Radius", valueType::Float, "16", {}, {"Shape", "Circle"}},
                     {"Layer", valueType::Int, "1"},
                     {"TypeCollisions", valueType::String, "All layers"},
                 },

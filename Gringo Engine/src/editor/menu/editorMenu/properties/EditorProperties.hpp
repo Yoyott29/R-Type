@@ -31,6 +31,10 @@ class EditorProperties
     bool isCharacterAllowed(char character, valueType type, std::string &currentContent,
                             int cursorIndex);
 
+    // False while the property's visibleWhen condition is not met
+    static bool isPropertyVisible(const Component &component, const Property &property);
+    static std::size_t visiblePropertyCount(const Component &component);
+
     std::string nextColorName(std::string current);
     // The value after current in options, the first one if current is not there
     static std::string nextOption(const std::vector<std::string> &options,
@@ -38,7 +42,11 @@ class EditorProperties
     // The project files of a File property: NO_FILE then <project>/<folder>/* with one of its
     // extensions
     std::vector<std::string> getProjectFiles(const std::vector<std::string> &options);
+    // Replaces the parameters after the component's own properties by the ones scriptName
+    // declares (<Script>_params)
     void applyScriptParameters(Component &component, const std::string &scriptName);
+    // A File property of the scripts folder: Script.Path, Button.Script
+    static bool isScriptFile(const Property &property);
 
     std::string cleanNumber(std::string text);
     void applyCurrentEdit();
@@ -61,6 +69,9 @@ class EditorProperties
     std::string &getStoredValue(ObjectType objectType, int objectId, int componentIndex,
                                 int propertyId);
     void showNewValue(const std::string &propertyValueName, const std::string &newValue);
+
+    // Properties of the component's descriptor, the script parameters come after them
+    std::size_t ownPropertyCount(const Component &component) const;
 
     EditorMenu &_editor;
 

@@ -513,7 +513,8 @@ void EditorMenu::initComponentTemplates()
             componentTemplate.properties.push_back({propertyId, propertyDescriptor.name,
                                                     propertyDescriptor.defaultValue,
                                                     propertyDescriptor.type,
-                                                    propertyDescriptor.options});
+                                                    propertyDescriptor.options,
+                                                    propertyDescriptor.visibleWhen});
             propertyId++;
         }
         _componentTemplates.push_back(componentTemplate);
@@ -538,8 +539,10 @@ void EditorMenu::syncComponentWithTemplate(Component &component)
         }
         std::vector<Property> savedProperties = component.properties;
         component.properties = syncedProperties;
-        if (component.name == "Script" && !component.properties.empty()) {
-            _properties.applyScriptParameters(component, component.properties.front().value);
+        const auto script = std::find_if(component.properties.begin(), component.properties.end(),
+                                         &EditorProperties::isScriptFile);
+        if (script != component.properties.end()) {
+            _properties.applyScriptParameters(component, std::string(script->value));
             for (Property &parameter : component.properties)
                 for (const Property &savedProperty : savedProperties)
                     if (parameter.name == savedProperty.name)
