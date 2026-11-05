@@ -12,6 +12,7 @@
 #include "EngineError.hpp"
 #include "Events.hpp"
 #include "LocalPeer.hpp"
+#include "MirrorSystem.hpp"
 #include "NetComponents.hpp"
 #include "NetEvents.hpp"
 #include "NetReceiveSystem.hpp"
@@ -20,6 +21,7 @@
 #include "Networked.hpp"
 #include "ProjectSettings.hpp"
 #include "Replication.hpp"
+#include "ReplicationSystem.hpp"
 #include "ReservedInbox.hpp"
 #include "SideFilterSystem.hpp"
 #include "UdpSocket.hpp"
@@ -132,6 +134,10 @@ void NetworkPlugin::build(Scene &scene)
     scene.registerSystem<EventUpdateSystem<PeerLeft>>(PrepUpdate);
     scene.registerSystem<NetReceiveSystem>(PrepUpdate);
     scene.registerSystem<SideFilterSystem>(PrepUpdate);
+    if (config.role == NetRole::Client)
+        scene.registerSystem<MirrorSystem>(PrepUpdate);
+    else
+        scene.registerSystem<ReplicationSystem>(PostUpdate);
     scene.registerSystem<NetSendSystem>(PostUpdate);
 }
 
