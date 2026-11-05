@@ -2,7 +2,7 @@
 #define PLAYERSCRIPT_HPP_
 
 #include "Collider2D.hpp"
-#include "Position.hpp"
+#include "Transform.hpp"
 #include "Scene.hpp"
 #include "Script.hpp"
 #include "Shape.hpp"
@@ -34,7 +34,7 @@ inline void PlayerScript::onStart(Scene &, Entity &) {}
 
 inline void PlayerScript::onUpdate(Scene &scene, Entity &entity)
 {
-    Position &position = scene.getComponent<Position>(entity);
+    Transform &position = scene.getComponent<Transform>(entity);
     Collider2D &collider = scene.getComponent<Collider2D>(entity);
 #ifdef GRINGO_USE_INPUTHANDLER
     const KeyboardInput &keyboard = scene.getResource<KeyboardInput>();

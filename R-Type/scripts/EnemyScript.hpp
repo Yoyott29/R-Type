@@ -1,7 +1,7 @@
 #ifndef ENEMYSCRIPT_HPP_
 #define ENEMYSCRIPT_HPP_
 
-#include "Position.hpp"
+#include "Transform.hpp"
 #include "Scene.hpp"
 #include "Script.hpp"
 #include "Velocity.hpp"
@@ -18,7 +18,7 @@ inline void EnemyScript::onStart(Scene &, Entity &) {}
 
 inline void EnemyScript::onUpdate(Scene &scene, Entity &entity)
 {
-    Position &position = scene.getComponent<Position>(entity);
+    Transform &position = scene.getComponent<Transform>(entity);
     Velocity &velocity = scene.getComponent<Velocity>(entity);
     const float amplitude = 3.0f;
     const float sineSpeed = 0.01f;

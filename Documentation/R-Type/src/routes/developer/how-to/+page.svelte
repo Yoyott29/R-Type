@@ -3,7 +3,7 @@
 _prefabs.createPrefab(
     "Turret", Prefab()
                   .addComponent(Type{EntType::ENEMY})
-                  .addComponent(Position{2000.0f, 0.0f})
+                  .addComponent(Transform{2000.0f, 0.0f})
                   .addComponent(Velocity{-150.0f, 0.0f})
                   .addComponent(Sprite{BoxShape{50.0f, 50.0f}, ColorRGBA{200, 200, 0, 255}})
                   .addComponent(Collider2D{BoxShape{50.0f, 50.0f}, nullptr})
@@ -13,7 +13,7 @@ _prefabs.createPrefab(
 
 	const spawnExample = `// anywhere the game loop runs, for example in a spawner Script
 Entity turret = _prefabs.InstantiatePrefab("Turret", _scene);
-_scene.getComponent<Position>(turret).y = 540.0f;
+_scene.getComponent<Transform>(turret).y = 540.0f;
 _entities.push_back(turret);   // only entities in _entities are sent in the snapshots`;
 
 	const textureExample = `// 1. src/common/rtype_protocol.hpp: a new variant value
@@ -111,7 +111,7 @@ addPlugin(std::make_shared<Audio>());`;
 <ol class="mt-3 max-w-[100ch] list-decimal space-y-1.5 pl-5 leading-7">
 	<li>
 		Describe it as a prefab in {@render c('GameLoop::initializePrebabs')}, with at least a
-		{@render c('Type')}, a {@render c('Position')}, a {@render c('Sprite')} (its size and color are
+		{@render c('Type')}, a {@render c('Transform')}, a {@render c('Sprite')} (its size and color are
 		sent to the clients) and a script that destroys it off screen.
 	</li>
 	<li>

@@ -65,7 +65,7 @@ replicate<Health>(scene, "Health");`;
 
 <h2 class="mt-9 text-lg font-semibold">Replicating a component</h2>
 <p class="mt-3 max-w-[100ch] leading-7">
-	{@render c('Position')} is built in. For another component, write a {@render c('NetCodec')} and
+	{@render c('Transform')} is built in. For another component, write a {@render c('NetCodec')} and
 	register it under the same name on both sides; {@render c('ChildOf')} is never replicated.
 </p>
 {@render code(codecExample)}

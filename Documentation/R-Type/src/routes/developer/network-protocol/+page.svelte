@@ -73,5 +73,5 @@ reasons     0 Timeout, 1 Remote, 2 ConnectFailed, 3 Full, 4 VersionMismatch`;
 {@render code(reservedExample)}
 <p class="mt-3 max-w-[100ch] leading-7">
 	{@render c('codecId')} is the FNV-1a 32-bit hash of the component's registered name
-	({@render c('Position')} = {@render c('0xE27F342A')}, {@render c('f32 x, f32 y')}).
+	({@render c('Transform')} = {@render c('0xAD82ABBB')}, {@render c('f32 x, y, z, scaleX, scaleY, rotation')}).
 </p>

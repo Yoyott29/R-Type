@@ -105,7 +105,7 @@ engine core           src/engine                          only the C++ standard 
 
 		<rect x="30" y="270" width="360" height="60" rx="6" fill="#121a17" stroke="#1e2b26" />
 		<text x="45" y="295" fill="#d8e4de" font-size="14" font-weight="600">Shared gameplay</text>
-		<text x="45" y="315" fill="#7f9189" font-size="12">Position, Type, Script, ScriptSystem, protocol</text>
+		<text x="45" y="315" fill="#7f9189" font-size="12">Transform, Type, Script, ScriptSystem, protocol</text>
 
 		<rect x="30" y="345" width="360" height="80" rx="6" fill="#121a17" stroke="#ff8a3d" />
 		<text x="45" y="370" fill="#d8e4de" font-size="14" font-weight="600">Engine core: Scene</text>
@@ -140,7 +140,7 @@ engine core           src/engine                          only the C++ standard 
 
 		<rect x="570" y="270" width="360" height="60" rx="6" fill="#121a17" stroke="#1e2b26" />
 		<text x="585" y="295" fill="#d8e4de" font-size="14" font-weight="600">Shared gameplay</text>
-		<text x="585" y="315" fill="#7f9189" font-size="12">Position, Type, PlayerId, Script, protocol</text>
+		<text x="585" y="315" fill="#7f9189" font-size="12">Transform, Type, PlayerId, Script, protocol</text>
 
 		<rect x="570" y="345" width="360" height="80" rx="6" fill="#121a17" stroke="#ff8a3d" />
 		<text x="585" y="370" fill="#d8e4de" font-size="14" font-weight="600">Engine core: Scene</text>

@@ -19,7 +19,7 @@
 	const constructorExample = `Application::Application(const std::string &serverAddress, uint16_t serverPort)
 {
     // setup basic components and resources
-    _scene.registerComponent<Position>();
+    _scene.registerComponent<Transform>();
     _scene.registerComponent<Script>();
     _scene.registerComponent<Type>();
     _scene.addResource<AppAlive>();
@@ -84,7 +84,7 @@ PostUpdate       RenderSystem (draws the frame)`;
 
     virtual void beginFrame() = 0;
     virtual void clearBackground() = 0;
-    virtual void drawSprite(Position const &position, Sprite const &sprite) = 0;
+    virtual void drawSprite(Transform const &position, Sprite const &sprite) = 0;
     virtual void endFrame() = 0;
 };`;
 
