@@ -38,7 +38,8 @@ ReplicationSystem::tryEncode(EntityStateMessage const &message)
         reason = error.what();
     }
     std::string const netId = std::to_string(message.netId);
-    _log("oversized" + netId, "entity " + netId + " not replicated: " + reason);
+    _log("oversized" + message.prefab,
+         message.prefab + " entity " + netId + " not replicated: " + reason);
     return std::nullopt;
 }
 

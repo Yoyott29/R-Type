@@ -16,6 +16,8 @@ inline const std::uint16_t PROTOCOL_ID = 0x4752;
 inline constexpr std::uint16_t RESERVED_TYPE_MIN = 0xFF00;
 inline const std::size_t MAX_DATAGRAM_SIZE = 1200;
 inline const std::size_t PACKET_HEADER_SIZE = 5;
+// ConnectAccepted carries the peer id
+inline const std::size_t CONNECT_ACCEPTED_BODY_SIZE = sizeof(std::uint32_t);
 inline const std::size_t MESSAGE_HEADER_SIZE = 4;
 inline const std::size_t MAX_PAYLOAD = MAX_DATAGRAM_SIZE - PACKET_HEADER_SIZE - MESSAGE_HEADER_SIZE;
 

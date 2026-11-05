@@ -1,4 +1,5 @@
 /*
+** EPITECH PROJECT, 2026
 ** Gringo Engine
 ** File description:
 ** BuildVariant

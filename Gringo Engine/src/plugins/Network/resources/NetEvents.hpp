@@ -14,6 +14,8 @@
 using PeerId = std::uint32_t;
 
 inline constexpr PeerId NO_PEER = std::numeric_limits<PeerId>::max();
+// A client's only peer
+inline constexpr PeerId SERVER_PEER = 0;
 
 enum class DisconnectReason : std::uint8_t {
     Timeout,

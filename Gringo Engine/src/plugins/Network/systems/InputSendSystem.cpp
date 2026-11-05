@@ -14,9 +14,6 @@
 #include "Packet.hpp"
 #include <limits>
 
-// A client's only peer
-static constexpr PeerId SERVER_PEER = 0;
-
 static_assert(MAX_ACTIONS <= std::numeric_limits<decltype(InputStateMessage::bits)>::digits,
               "every action must fit in the InputState bits");
 

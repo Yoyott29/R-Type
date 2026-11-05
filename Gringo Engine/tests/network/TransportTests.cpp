@@ -2,6 +2,7 @@
 #include "Events.hpp"
 #include "LocalPeer.hpp"
 #include "Loopback.hpp"
+#include "Messages.hpp"
 #include "Packet.hpp"
 #include "ReservedInbox.hpp"
 
@@ -20,10 +21,11 @@ TEST_CASE(reservedStayOutOfNetMessage)
     constexpr std::uint16_t GAME_TYPE = 1;
     auto const ENTITY_STATE = static_cast<std::uint16_t>(ReservedType::EntityState);
     NetApp server = makeServer();
-    NetApp client = connectedClient(server);
+    NetApp client = connectedClient(server, addBoxPrefab);
     auto &transport = server.scene().getResource<NetTransport>();
     transport.broadcast(GAME_TYPE, {});
-    transport.broadcastReserved(ReservedType::EntityState, {});
+    transport.broadcastReserved(ReservedType::EntityState,
+                                EntityStateMessage{0, 0, NO_PEER, BOX, {}}.encode());
 
     EventReader<NetMessage> reader;
     bool game = false;

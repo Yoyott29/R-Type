@@ -180,10 +180,10 @@ void NetworkPlugin::cleanup(Scene &scene)
         return;
     auto &transport = scene.getResource<NetTransport>();
 
-    // A client's only peer is the server, id 0; disconnect(0) also abandons a handshake
+    // A client's only peer is the server; disconnect(SERVER_PEER) also abandons a handshake
     if (scene.getResource<NetworkConfig>().role == NetRole::Client) {
         if (transport.state() != ConnectionState::Disconnected)
-            transport.disconnect(0);
+            transport.disconnect(SERVER_PEER);
     } else {
         for (PeerId peer : transport.peers())
             transport.disconnect(peer);

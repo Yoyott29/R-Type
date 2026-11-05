@@ -70,9 +70,10 @@ void NetTransport::broadcastReserved(ReservedType type, std::span<const std::byt
 
 void NetTransport::disconnect(PeerId peer)
 {
-    // A client may also abandon its handshake with disconnect(0), even before its first flush
-    bool const handshake =
-        _config.role == NetRole::Client && _state == ConnectionState::Connecting && peer == 0;
+    // A client may also abandon its handshake with disconnect(SERVER_PEER), even before its first
+    // flush
+    bool const handshake = _config.role == NetRole::Client &&
+                           _state == ConnectionState::Connecting && peer == SERVER_PEER;
     auto endpoint = _endpoints.find(peer);
     auto it = endpoint == _endpoints.end() ? _peers.end() : _peers.find(endpoint->second);
     if (!handshake && (it == _peers.end() || !it->second.connected))

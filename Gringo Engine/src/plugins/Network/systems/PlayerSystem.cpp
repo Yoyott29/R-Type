@@ -65,6 +65,9 @@ void PlayerSystem::spawnPlayer(Scene &scene, PeerId peer)
         scene.addComponent(entity, networked);
     }
     Networked &networked = scene.getComponent<Networked>(entity);
+    if (networked.mode != NetMode::Replicated)
+        _log("playerMode" + name,
+             "player prefab " + name + " is not Replicated, so it is never sent to the clients");
     if (networked.prefab.empty())
         networked.prefab = name;
     networked.owner = peer;

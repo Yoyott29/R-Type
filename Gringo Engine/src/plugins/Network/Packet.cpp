@@ -15,7 +15,7 @@ std::size_t encodedSize(WireMessage const &message)
 
 std::vector<std::byte> writePacket(Packet const &packet)
 {
-    std::size_t size = PACKET_HEADER_SIZE + 4; // largest control body
+    std::size_t size = PACKET_HEADER_SIZE + CONNECT_ACCEPTED_BODY_SIZE; // largest control body
     for (auto const &m : packet.messages)
         size += encodedSize(m);
     ByteWriter w;
@@ -64,7 +64,7 @@ static std::optional<Packet> parseBody(ByteReader &r, Packet &p)
         return std::move(p);
     }
     case PacketKind::ConnectAccepted:
-        if (r.remaining() != 4)
+        if (r.remaining() != CONNECT_ACCEPTED_BODY_SIZE)
             return std::nullopt;
         p.peerId = r.read<std::uint32_t>();
         return std::move(p);

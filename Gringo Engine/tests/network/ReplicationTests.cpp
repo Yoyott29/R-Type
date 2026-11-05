@@ -12,10 +12,6 @@
 namespace
 {
 constexpr std::uint32_t NET_ID = 1;
-const std::string BOX = "Box";
-
-void addBoxPrefab(Scene &scene) { addNetworkedPrefab(scene, BOX); }
-
 NetMessage entityState(std::uint32_t tick)
 {
     EntityStateMessage const message{tick, NET_ID, NO_PEER, BOX, {}};

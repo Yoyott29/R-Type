@@ -95,3 +95,7 @@ inline void addNetworkedPrefab(Scene &scene, std::string const &name)
     prefab.addComponent(networked);
     scene.getResource<PrefabsManager>().createPrefab(name, prefab);
 }
+
+inline const std::string BOX = "Box";
+
+inline void addBoxPrefab(Scene &scene) { addNetworkedPrefab(scene, BOX); }
