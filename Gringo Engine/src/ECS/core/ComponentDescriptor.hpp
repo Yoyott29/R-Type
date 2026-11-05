@@ -26,12 +26,20 @@ enum class valueType {
     File = 7,
 };
 
+// The editor shows a property only while another property of its component has a value, e.g.
+// {"Shape", "Box"}. An empty property name: always shown
+struct PropertyCondition {
+    std::string property;
+    std::string value;
+};
+
 // One editable value: a component property, or a plugin setting (IPlugin::settings)
 struct PropertyDescriptor {
     std::string name;
     valueType type;
     std::string defaultValue;
     std::vector<std::string> options = {};
+    PropertyCondition visibleWhen = {};
 };
 
 struct ComponentDescriptor {

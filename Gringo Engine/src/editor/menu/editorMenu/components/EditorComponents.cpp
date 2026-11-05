@@ -122,7 +122,7 @@ void EditorComponents::createComponents(std::vector<Component> components, Objec
     int countOnPage = 0;
 
     for (std::size_t index = 0; index < components.size(); ++index) {
-        float componentHeight = headerHeight + components[index].properties.size() * propertyRowHeight;
+        float componentHeight = headerHeight + EditorProperties::visiblePropertyCount(components[index]) * propertyRowHeight;
         int column = countOnPage % columnCount;
 
         if (columnTops[column] + componentHeight > bottomLimit && countOnPage > 0) {

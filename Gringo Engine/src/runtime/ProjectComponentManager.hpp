@@ -7,12 +7,22 @@
 #include <map>
 #include <set>
 #include <string>
+#include <optional>
 #include <utility>
 
 // Scene resource: the game entity created for each editor entity id (the "id" in .gringo files),
 // so ChildOf can find its parent
 struct EditorEntityIds {
     std::map<int, Entity> entities;
+
+    // The entity of an editor id, e.g. a script's "Target" parameter. Empty if there is none
+    std::optional<Entity> find(int editorId) const
+    {
+        const auto entity = entities.find(editorId);
+        if (entity == entities.end())
+            return std::nullopt;
+        return entity->second;
+    }
 };
 
 class ProjectComponentManager

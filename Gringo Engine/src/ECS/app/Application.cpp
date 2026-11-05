@@ -13,6 +13,7 @@
 #include "ProjectSettings.hpp"
 #include "EngineError.hpp"
 #include "GameClock.hpp"
+#include "EventBus.hpp"
 #include "Position.hpp"
 #include <thread>
 #include <utility>
@@ -35,6 +36,7 @@ Application::Application()
     _scene.addResource<CommandLine>();
     _scene.addResource<ProjectSettings>();
     _scene.addResource<GameClock>();
+    _scene.addResource<EventBus>();
 }
 
 Application::Application(std::vector<std::string> arguments) : Application()

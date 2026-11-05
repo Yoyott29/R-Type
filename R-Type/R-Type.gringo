@@ -47,9 +47,12 @@
             "name": "StarsSpawner"
         }
     ],
-    "network": {
-        "enabled": true,
-        "plugin": "RTypeClient"
+    "pluginSettings": {
+        "Network": {
+            "Host": "127.0.0.1",
+            "Port": "4242",
+            "Role": "Client"
+        }
     },
     "plugins": [
         "Physics",
@@ -131,7 +134,7 @@
                         {
                             "id": 5,
                             "name": "TypeCollisions",
-                            "type": 6,
+                            "type": 2,
                             "value": "All layers"
                         }
                     ]
@@ -178,7 +181,7 @@
                         {
                             "id": 6,
                             "name": "TexturePath",
-                            "type": 2,
+                            "type": 7,
                             "value": "assets/Bydos1.png"
                         }
                     ]
@@ -259,7 +262,7 @@
                         {
                             "id": 5,
                             "name": "TypeCollisions",
-                            "type": 6,
+                            "type": 2,
                             "value": "All layers"
                         }
                     ]
@@ -306,7 +309,7 @@
                         {
                             "id": 6,
                             "name": "TexturePath",
-                            "type": 2,
+                            "type": 7,
                             "value": "assets/Bydos2.png"
                         }
                     ]
@@ -393,7 +396,7 @@
                         {
                             "id": 6,
                             "name": "TexturePath",
-                            "type": 2,
+                            "type": 7,
                             "value": "default.png"
                         }
                     ]

@@ -1,0 +1,40 @@
+/*
+** EPITECH PROJECT, 2026
+** Gringo Engine
+** File description:
+** ParticleRenderSystem
+*/
+
+#include "ParticleRenderSystem.hpp"
+#include "IRenderer.hpp"
+#include "ParticleEmitter.hpp"
+#include <algorithm>
+#include <functional>
+#include <type_traits>
+#include <variant>
+
+void ParticleRenderSystem::update(Scene &scene)
+{
+    // Without the renderer plugin there is no window to draw in
+    if (!scene.hasResource<std::reference_wrapper<IRenderer>>())
+        return;
+    IRenderer &renderer = scene.getResource<std::reference_wrapper<IRenderer>>().get();
+
+    for (Entity entity : _entities) {
+        ParticleEmitter const &emitter = scene.getComponent<ParticleEmitter>(entity);
+        for (Particle const &particle : emitter.particles) {
+            ColorRGBA color = emitter.color;
+            const float remaining = emitter.lifetime > 0.0f ? particle.life / emitter.lifetime : 0.0f;
+            color.a = static_cast<decltype(color.a)>(color.a * std::clamp(remaining, 0.0f, 1.0f));
+            std::visit(
+                [&](auto const &shape) {
+                    if constexpr (std::is_same_v<std::decay_t<decltype(shape)>, CircleShape>)
+                        renderer.drawCircle(particle.x, particle.y, shape.radius, color);
+                    else
+                        renderer.drawRectangle(particle.x, particle.y, shape.width, shape.height,
+                                               color);
+                },
+                emitter.shape);
+        }
+    }
+}

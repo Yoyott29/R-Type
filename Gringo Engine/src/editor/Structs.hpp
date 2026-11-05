@@ -25,6 +25,8 @@ struct Property {
     // Choice: the values to cycle through. File: {folder, extension}. Not saved in .gringo
     // files, copied from the component's descriptor
     std::vector<std::string> options = {};
+    // Copied from the descriptor, not saved: hidden in the editor while not met
+    PropertyCondition visibleWhen = {};
 };
 
 struct Component {

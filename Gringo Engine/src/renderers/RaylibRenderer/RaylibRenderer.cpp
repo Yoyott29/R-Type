@@ -32,16 +32,20 @@ void RaylibRenderer::closeWindow()
 
 bool RaylibRenderer::isWindowOpen() const { return IsWindowReady() && !WindowShouldClose(); }
 
-void RaylibRenderer::beginFrame(ColorRGBA background)
+Camera2D RaylibRenderer::worldCamera() const
 {
-    // The game draws in a fixed world size, scaled and centered in the window whatever its size
     const float zoom = std::min(static_cast<float>(GetScreenWidth()) / _worldWidth,
                                 static_cast<float>(GetScreenHeight()) / _worldHeight);
     const Vector2 offset = {(static_cast<float>(GetScreenWidth()) - _worldWidth * zoom) / 2.0f,
                             (static_cast<float>(GetScreenHeight()) - _worldHeight * zoom) / 2.0f};
+    return {offset, {0.0f, 0.0f}, 0.0f, zoom};
+}
+
+void RaylibRenderer::beginFrame(ColorRGBA background)
+{
     BeginDrawing();
     ClearBackground(toRaylib(background));
-    BeginMode2D({offset, {0.0f, 0.0f}, 0.0f, zoom});
+    BeginMode2D(worldCamera());
 }
 
 void RaylibRenderer::endFrame()
@@ -87,6 +91,18 @@ bool RaylibRenderer::isKeyDown(Key key) const
     return key != Key::Unknown && IsKeyDown(toRaylib(key));
 }
 
+MousePosition RaylibRenderer::getMousePosition() const
+{
+    // Same transform as the drawing, reversed: window pixels back to world coordinates
+    const Vector2 world = GetScreenToWorld2D(GetMousePosition(), worldCamera());
+    return {world.x, world.y};
+}
+
+bool RaylibRenderer::isMouseButtonPressed(Mouse button) const
+{
+    return IsMouseButtonPressed(toRaylib(button));
+}
+
 Color RaylibRenderer::toRaylib(ColorRGBA color) { return {color.r, color.g, color.b, color.a}; }
 
 KeyboardKey RaylibRenderer::toRaylib(Key key)
@@ -104,6 +120,16 @@ KeyboardKey RaylibRenderer::toRaylib(Key key)
         case Key::Unknown: break;
     }
     return KEY_NULL;
+}
+
+MouseButton RaylibRenderer::toRaylib(Mouse button)
+{
+    switch (button) {
+        case Mouse::Left: return MOUSE_BUTTON_LEFT;
+        case Mouse::Right: return MOUSE_BUTTON_RIGHT;
+        case Mouse::Middle: return MOUSE_BUTTON_MIDDLE;
+    }
+    return MOUSE_BUTTON_LEFT;
 }
 
 Texture2D &RaylibRenderer::getTexture(std::string const &path)

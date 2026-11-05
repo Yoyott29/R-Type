@@ -11,6 +11,7 @@
 #include <IEditorRenderer.hpp>
 #include <functional>
 #include <map>
+#include <optional>
 #include <string>
 
 #define TEXT_COLOR ColorRGBA{170, 173, 182, 255}
@@ -43,7 +44,7 @@ class AMenu
                  ColorRGBA color = ColorRGBA{255, 255, 255, 255});
     void addButton(const std::string &name, Position center, int width, int height, int fontSize,
                    std::function<void()> onClick, ColorRGBA buttonColor, ColorRGBA hoveredColor,
-                   ColorRGBA textColor, std::string text = "");
+                   ColorRGBA textColor, std::optional<std::string> text = std::nullopt);
     void addRectangle(const std::string &name, Position center, int width, int height,
                       ColorRGBA color, int drawOrder = 0);
 

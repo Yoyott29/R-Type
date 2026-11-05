@@ -3,6 +3,7 @@
 #include "BuildVariant.hpp"
 #include "ComponentDescriptor.hpp"
 #include <filesystem>
+#include <ostream>
 #include <initializer_list>
 #include <set>
 #include <string>
@@ -47,6 +48,12 @@ class ProjectBuilder
     static std::string scriptPath(const Component &component);
     static std::string className(const std::string &path);
     static std::set<std::string> collectScripts(const SceneObjects &sceneObjects);
+    // The "Script" files of the Button components (IGringoButtonScript classes)
+    static std::set<std::string> collectButtonScripts(const SceneObjects &sceneObjects);
+    // Generated code giving the Button just read its script. assignment is the statement to
+    // write, with SCRIPT standing for the std::make_shared<Class>() of the chosen script
+    static void writeButtonScripts(std::ostream &source, const std::set<std::string> &buttonScripts,
+                                   const std::string &assignment);
     // The project has a renderer, and it is in Gringo Engine/renderers
     static void requireRenderer(const SceneObjects &sceneObjects);
     static void requireComponentPlugins(const SceneObjects &sceneObjects,

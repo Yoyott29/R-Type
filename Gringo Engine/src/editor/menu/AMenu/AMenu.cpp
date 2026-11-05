@@ -19,13 +19,13 @@ void AMenu::addText(const std::string &name, Position pos, int fontSize, const s
 
 void AMenu::addButton(const std::string &name, Position center, int width, int height, int fontSize,
                       std::function<void()> onClick, ColorRGBA buttonColor, ColorRGBA hoveredColor,
-                      ColorRGBA textColor, std::string text)
+                      ColorRGBA textColor, std::optional<std::string> text)
 {
-    if (text.empty())
-        text = name;
-    _buttons.emplace(name,
-                     Button{UiRectangle{center, width, height, buttonColor, 0}, hoveredColor, false,
-                            true, Text{center, fontSize, text, textColor, true}, onClick});
+    // No text given: the button shows its name. A given empty text stays empty
+    _buttons.emplace(name, Button{UiRectangle{center, width, height, buttonColor, 0}, hoveredColor,
+                                  false, true,
+                                  Text{center, fontSize, text.value_or(name), textColor, true},
+                                  onClick});
 }
 
 void AMenu::addRectangle(const std::string &name, Position center, int width, int height,

@@ -74,6 +74,48 @@ std::set<std::string> ProjectBuilder::collectScripts(const SceneObjects &sceneOb
     return scripts;
 }
 
+std::set<std::string> ProjectBuilder::collectButtonScripts(const SceneObjects &sceneObjects)
+{
+    std::set<std::string> scripts;
+    const auto collect = [&scripts](const std::vector<Component> &components) {
+        for (const Component &component : components) {
+            if (component.name != "Button")
+                continue;
+            for (const Property &property : component.properties)
+                if (property.name == "Script" && !property.value.empty() &&
+                    property.value != NO_FILE)
+                    scripts.insert(property.value);
+        }
+    };
+    for (const Entity &entity : sceneObjects._entities)
+        collect(entity.components);
+    for (const Prefab &prefab : sceneObjects._prefabs)
+        collect(prefab.components);
+    return scripts;
+}
+
+void ProjectBuilder::writeButtonScripts(std::ostream &source,
+                                        const std::set<std::string> &buttonScripts,
+                                        const std::string &assignment)
+{
+    if (buttonScripts.empty())
+        return;
+    source << "                    if (component.value(\"name\", \"\") == \"Button\") {\n"
+           << "                        std::string path;\n"
+           << "                        for (const auto &property : component.value(\"properties\", "
+              "nlohmann::json::array()))\n"
+           << "                            if (property.value(\"name\", \"\") == \"Script\")\n"
+           << "                                path = property.value(\"value\", \"\");\n";
+    for (const std::string &script : buttonScripts) {
+        std::string statement = assignment;
+        statement.replace(statement.find("SCRIPT"), 6,
+                          "makeButtonScript<" + className(script) + ">(component)");
+        source << "                        if (path == " << cppStringLiteral(script) << ")\n"
+               << "                            " << statement << "\n";
+    }
+    source << "                    }\n";
+}
+
 std::vector<std::string>
 ProjectBuilder::missingFiles(const SceneObjects &sceneObjects,
                              const std::filesystem::path &projectFolder,
@@ -265,8 +307,11 @@ void ProjectBuilder::writeGeneratedMain(const std::filesystem::path &sourcePath,
                                         const std::set<std::string> &ignoredComponents)
 {
     const std::set<std::string> scripts = collectScripts(sceneObjects);
+    const std::set<std::string> buttonScripts = collectButtonScripts(sceneObjects);
+    std::set<std::string> allScripts = scripts;
+    allScripts.insert(buttonScripts.begin(), buttonScripts.end());
     const bool usesPrefabs = !sceneObjects._prefabs.empty() ||
-                             scriptsInclude(projectFolder, scripts, {"PrefabsManager.hpp"});
+                             scriptsInclude(projectFolder, allScripts, {"PrefabsManager.hpp"});
     std::ofstream source(sourcePath);
     if (!source)
         throw std::runtime_error("Could not create generated source: " + sourcePath.string());
@@ -278,6 +323,7 @@ void ProjectBuilder::writeGeneratedMain(const std::filesystem::path &sourcePath,
            << "#include \"nlohmann/json.hpp\"\n"
            << "#include <filesystem>\n"
            << "#include <fstream>\n"
+           << "#include <functional>\n"
            << "#include <iostream>\n"
            << "#include <memory>\n"
            << "#include <stdexcept>\n"
@@ -286,11 +332,29 @@ void ProjectBuilder::writeGeneratedMain(const std::filesystem::path &sourcePath,
     if (usesPrefabs)
         source << "#include \"Prefab.hpp\"\n"
                << "#include \"PrefabsManager.hpp\"\n";
-    if (!scripts.empty()) {
+    if (!scripts.empty())
         source << "#include \"Script.hpp\"\n";
-        for (const std::string &script : scripts)
-            source << "#include " << '"' << script << '"' << "\n";
-    }
+    if (!buttonScripts.empty())
+        source << "#include \"UIButton.hpp\"\n";
+    for (const std::string &script : allScripts)
+        source << "#include " << '"' << script << '"' << "\n";
+
+    // A button script gets the values of its component's properties as parameters, like the
+    // entity scripts (its own properties too: it ignores the names it does not know)
+    if (!buttonScripts.empty())
+        source << "\ntemplate <typename ButtonScript>\n"
+               << "static std::shared_ptr<IGringoButtonScript> makeButtonScript(const "
+                  "nlohmann::json &component)\n"
+               << "{\n"
+               << "    auto script = std::make_shared<ButtonScript>();\n"
+               << "    for (const auto &property : component.value(\"properties\", "
+                  "nlohmann::json::array())) {\n"
+               << "        const std::string name = property.value(\"name\", \"\");\n"
+               << "        if (name != \"Script\")\n"
+               << "            script->setParameter(name, property.value(\"value\", \"\"));\n"
+               << "    }\n"
+               << "    return script;\n"
+               << "}\n";
 
     // Nothing plugin-specific here: plugins read their settings (ProjectSettings) and the
     // arguments they understand (CommandLine), e.g. Network's "[host] port"
@@ -374,9 +438,13 @@ void ProjectBuilder::writeGeneratedMain(const std::filesystem::path &sourcePath,
         }
         source << "                    else\n"
                << "                        throw std::runtime_error(\"Unknown script: \" + path);\n"
-               << "                } else\n";
-    }
-    source << "                    components.addToScene(scene, entity, component);\n"
+               << "                } else {\n";
+    } else
+        source << "                {\n";
+    source << "                    components.addToScene(scene, entity, component);\n";
+    writeButtonScripts(source, buttonScripts,
+                       "scene.getComponent<UIButton>(entity).script = SCRIPT;");
+    source << "                }\n"
            << "            }\n"
            << "        }\n"
            << "        components.linkChildren(scene);\n"
@@ -405,9 +473,16 @@ void ProjectBuilder::writeGeneratedMain(const std::filesystem::path &sourcePath,
         }
         source << "                    else\n"
                << "                        throw std::runtime_error(\"Unknown script: \" + path);\n"
-               << "                } else\n";
-    }
-    source << "                    components.addToPrefab(prefab, scene, component);\n"
+               << "                } else {\n";
+    } else
+        source << "                {\n";
+    source << "                    components.addToPrefab(prefab, scene, component);\n";
+    // Each instance of the prefab gets its own script
+    writeButtonScripts(source, buttonScripts,
+                       "prefab.addComponent(std::function<void(Scene &, Entity)>("
+                       "[component](Scene &target, Entity instance) { "
+                       "target.getComponent<UIButton>(instance).script = SCRIPT; }));");
+    source << "                }\n"
            << "            }\n"
            << "            application._scene.getResource<PrefabsManager>().createPrefab("
               "prefabData.value(\"name\", \"\"), prefab);\n"
@@ -462,6 +537,17 @@ std::string ProjectBuilder::build(const std::string &projectPath, const SceneObj
             source.find("onUpdate") == std::string::npos)
             throw std::runtime_error("Script must define onStart and onUpdate: " +
                                      scriptFile.string());
+    }
+    for (const std::string &script : collectButtonScripts(sceneObjects)) {
+        const std::filesystem::path scriptFile = projectFolder / "scripts" / script;
+        std::ifstream input(scriptFile);
+        if (!input)
+            throw std::runtime_error("Could not open button script: " + scriptFile.string());
+
+        const std::string source((std::istreambuf_iterator<char>(input)),
+                                 std::istreambuf_iterator<char>());
+        if (source.find("onClick") == std::string::npos)
+            throw std::runtime_error("Button script must define onClick: " + scriptFile.string());
     }
 
     const std::filesystem::path workingDirectory = std::filesystem::current_path();

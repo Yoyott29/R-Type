@@ -34,9 +34,15 @@ class RaylibRenderer : public Renderer<RaylibRenderer>
 
     bool isKeyDown(Key key) const override;
 
+    MousePosition getMousePosition() const override;
+    bool isMouseButtonPressed(Mouse button) const override;
+
   private:
     static Color toRaylib(ColorRGBA color);
     static KeyboardKey toRaylib(Key key);
+    static MouseButton toRaylib(Mouse button);
+    // Scales and centers the fixed world in the window, whatever its size
+    Camera2D worldCamera() const;
     // Loaded once, kept until the window closes
     Texture2D &getTexture(std::string const &path);
     void unloadTextures();

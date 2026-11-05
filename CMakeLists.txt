@@ -75,6 +75,22 @@ if(asio_ADDED)
 endif()
 
 CPMAddPackage(
+    NAME miniaudio
+    GITHUB_REPOSITORY mackron/miniaudio
+    GIT_TAG 0.11.22
+    DOWNLOAD_ONLY YES
+)
+
+if(miniaudio_ADDED)
+    add_library(miniaudio INTERFACE)
+    target_include_directories(miniaudio SYSTEM INTERFACE "${miniaudio_SOURCE_DIR}")
+    target_link_libraries(miniaudio INTERFACE Threads::Threads ${CMAKE_DL_LIBS})
+    if(UNIX)
+        target_link_libraries(miniaudio INTERFACE m)
+    endif()
+endif()
+
+CPMAddPackage(
     NAME nlohmann_json
     GITHUB_REPOSITORY nlohmann/json
     VERSION 3.11.3
@@ -214,7 +230,7 @@ function(gringo_use_plugins target)
 endfunction()
 
 gringo_add_plugins("${GRINGO_ENGINE_DIR}/src/plugins" gringo_engine "${RTYPE_PLUGIN_DIRECTORY}" plugin
-                   PUBLIC_LIBRARIES asio)
+                   PUBLIC_LIBRARIES asio miniaudio)
 gringo_add_plugins("${GRINGO_ENGINE_DIR}/src/renderers" gringo_engine "${RTYPE_RENDERER_DIRECTORY}" renderer
                    PRIVATE_LIBRARIES raylib SYSTEM_INCLUDES "${raylib_SOURCE_DIR}/src")
 
