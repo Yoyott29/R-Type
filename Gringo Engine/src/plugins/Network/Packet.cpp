@@ -15,7 +15,7 @@ std::size_t encodedSize(WireMessage const &message)
 
 std::vector<std::byte> writePacket(Packet const &packet)
 {
-    std::size_t size = PACKET_HEADER_SIZE + 2; // largest control body
+    std::size_t size = PACKET_HEADER_SIZE + 4; // largest control body
     for (auto const &m : packet.messages)
         size += encodedSize(m);
     ByteWriter w;
@@ -29,6 +29,9 @@ std::vector<std::byte> writePacket(Packet const &packet)
         break;
     case PacketKind::ConnectRejected:
         w.write(packet.reason);
+        break;
+    case PacketKind::ConnectAccepted:
+        w.write<std::uint32_t>(packet.peerId);
         break;
     case PacketKind::Data:
         for (auto const &m : packet.messages) {
@@ -60,6 +63,11 @@ static std::optional<Packet> parseBody(ByteReader &r, Packet &p)
         p.reason = static_cast<RejectReason>(reason);
         return std::move(p);
     }
+    case PacketKind::ConnectAccepted:
+        if (r.remaining() != 4)
+            return std::nullopt;
+        p.peerId = r.read<std::uint32_t>();
+        return std::move(p);
     case PacketKind::Data:
         while (r.remaining() > 0) {
             WireMessage m{r.read<std::uint16_t>(), {}};
@@ -87,7 +95,7 @@ std::optional<Packet> parsePacket(std::span<const std::byte> datagram)
         auto kind = r.read<std::uint8_t>();
         if (kind > static_cast<std::uint8_t>(PacketKind::Disconnect))
             return std::nullopt;
-        Packet p{static_cast<PacketKind>(kind), 0, 0, RejectReason::Full, {}};
+        Packet p{static_cast<PacketKind>(kind), 0, 0, RejectReason::Full, 0, {}};
         p.seq = r.read<std::uint16_t>();
         return parseBody(r, p);
     } catch (NetError const &) {

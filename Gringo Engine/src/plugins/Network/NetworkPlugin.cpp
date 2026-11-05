@@ -10,11 +10,13 @@
 #include "CommandLine.hpp"
 #include "EngineError.hpp"
 #include "Events.hpp"
+#include "LocalPeer.hpp"
 #include "NetEvents.hpp"
 #include "NetReceiveSystem.hpp"
 #include "NetSendSystem.hpp"
 #include "NetTransport.hpp"
 #include "ProjectSettings.hpp"
+#include "ReservedInbox.hpp"
 #include "UdpSocket.hpp"
 #include <asio.hpp>
 #include <optional>
@@ -100,10 +102,15 @@ void NetworkPlugin::build(Scene &scene)
     scene.addResource<Events<PeerConnected>>();
     scene.addResource<Events<PeerDisconnected>>();
     scene.addResource<Events<NetMessage>>();
+    scene.addResource<Events<PeerLeft>>();
+    scene.addResource<ReservedInbox>();
+    if (config.role == NetRole::Client)
+        scene.addResource<LocalPeer>();
 
     scene.registerSystem<EventUpdateSystem<PeerConnected>>(PrepUpdate);
     scene.registerSystem<EventUpdateSystem<PeerDisconnected>>(PrepUpdate);
     scene.registerSystem<EventUpdateSystem<NetMessage>>(PrepUpdate);
+    scene.registerSystem<EventUpdateSystem<PeerLeft>>(PrepUpdate);
     scene.registerSystem<NetReceiveSystem>(PrepUpdate);
     scene.registerSystem<NetSendSystem>(PostUpdate);
 }

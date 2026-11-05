@@ -8,6 +8,7 @@
 #include "NetTransport.hpp"
 #include <algorithm>
 #include <iostream>
+#include <string>
 
 static Packet makePacket(PacketKind kind)
 {
@@ -26,6 +27,18 @@ NetTransport::NetTransport(NetworkConfig config, std::optional<Endpoint> server)
 
 void NetTransport::send(PeerId peer, std::uint16_t type, std::span<const std::byte> payload)
 {
+    if (type >= RESERVED_TYPE_MIN)
+        throw NetError("Message type is reserved: " + std::to_string(type));
+    enqueue(peer, type, payload);
+}
+
+void NetTransport::sendReserved(PeerId peer, ReservedType type, std::span<const std::byte> payload)
+{
+    enqueue(peer, static_cast<std::uint16_t>(type), payload);
+}
+
+void NetTransport::enqueue(PeerId peer, std::uint16_t type, std::span<const std::byte> payload)
+{
     std::optional<std::reference_wrapper<Peer>> found = findPeer(peer);
     if (!found || !found->get().connected)
         return;
@@ -43,8 +56,16 @@ void NetTransport::send(PeerId peer, std::uint16_t type, std::span<const std::by
 
 void NetTransport::broadcast(std::uint16_t type, std::span<const std::byte> payload)
 {
+    if (type >= RESERVED_TYPE_MIN)
+        throw NetError("Message type is reserved: " + std::to_string(type));
     for (PeerId peer : peers())
-        send(peer, type, payload);
+        enqueue(peer, type, payload);
+}
+
+void NetTransport::broadcastReserved(ReservedType type, std::span<const std::byte> payload)
+{
+    for (PeerId peer : peers())
+        enqueue(peer, static_cast<std::uint16_t>(type), payload);
 }
 
 void NetTransport::disconnect(PeerId peer)
@@ -64,8 +85,10 @@ void NetTransport::disconnect(PeerId peer)
         }
     }
     removePeer(peer);
-    if (_config.role == NetRole::Client)
+    if (_config.role == NetRole::Client) {
         _state = ConnectionState::Disconnected;
+        _localPeer.reset();
+    }
 }
 
 std::vector<PeerId> NetTransport::peers() const
@@ -79,6 +102,8 @@ std::vector<PeerId> NetTransport::peers() const
 }
 
 ConnectionState NetTransport::state() const { return _state; }
+
+std::optional<PeerId> NetTransport::localPeer() const { return _localPeer; }
 
 void NetTransport::receive(Endpoint const &from, std::span<const std::byte> datagram, TimePoint now)
 {
@@ -136,6 +161,7 @@ void NetTransport::receiveWhileConnecting(Peer &peer, Packet const &packet, Time
         if (!peer.connection.receive(packet, now))
             return;
         peer.connected = true;
+        _localPeer = packet.peerId;
         _state = ConnectionState::Connected;
         _events.connected.push_back({peer.id});
         return;
@@ -256,7 +282,9 @@ void NetTransport::flushPeer(Endpoint const &to, Peer &peer, TimePoint now, Send
 {
     if (peer.acceptPending) {
         peer.acceptPending = false;
-        sendPacket(to, makePacket(PacketKind::ConnectAccepted), peer, now, sendTo);
+        Packet accepted = makePacket(PacketKind::ConnectAccepted);
+        accepted.peerId = peer.id;
+        sendPacket(to, std::move(accepted), peer, now, sendTo);
     }
     std::vector<WireMessage> messages = peer.connection.takeQueued();
     for (auto const &bin : packMessages(messages)) {
@@ -302,6 +330,8 @@ void NetTransport::endPeer(PeerId id, DisconnectReason reason)
 {
     _events.disconnected.push_back({id, reason});
     removePeer(id);
-    if (_config.role == NetRole::Client)
+    if (_config.role == NetRole::Client) {
         _state = ConnectionState::Disconnected;
+        _localPeer.reset();
+    }
 }
