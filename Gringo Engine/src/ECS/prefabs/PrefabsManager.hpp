@@ -20,6 +20,7 @@ class PrefabsManager
   public:
     void createPrefab(std::string const &name, Prefab const &prefab);
     Entity InstantiatePrefab(std::string const &name, Scene &scene);
+    bool hasPrefab(std::string const &name) const;
 
   protected:
   private:

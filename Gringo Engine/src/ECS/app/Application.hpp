@@ -53,6 +53,12 @@ class Application
     TickTimeManager _clock;
 };
 
+// An executable the build makes from this project, e.g. a headless one
+struct BuildVariant {
+    std::string name;
+    bool headless = false;
+};
+
 class IPlugin
 {
   public:
@@ -66,6 +72,8 @@ class IPlugin
     // Project settings of the plugin, edited in the editor's Settings panel and read in build()
     // from the ProjectSettings resource
     virtual std::vector<PropertyDescriptor> settings() const { return {}; }
+    // The executables this plugin adds to the project's build, besides the game itself
+    virtual std::vector<BuildVariant> buildVariants() const { return {}; }
 };
 
 // Base class of every plugin: class Physics : public Plugin<Physics>. When the plugin's library
