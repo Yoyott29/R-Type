@@ -17,7 +17,8 @@ void Audio::registerComponents(Scene &scene)
                                             const nlohmann::json &data) {
         AudioSource source;
         const std::string path = ComponentJson::value(data, "Path", NO_FILE);
-        source.path = (path.empty() || path == NO_FILE) ? "" : ProjectAssets::resolve(target, path);
+        if (path != NO_FILE)
+            source.path = ProjectAssets::resolve(target, path);
         source.volume = ComponentJson::intValue(data, "Volume", 100);
         source.loop = ComponentJson::boolValue(data, "Loop", false);
         target.addComponent(entity, source);
