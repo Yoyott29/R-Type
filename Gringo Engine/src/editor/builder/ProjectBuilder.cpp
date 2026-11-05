@@ -36,7 +36,10 @@ std::string ProjectBuilder::targetName(const std::string &projectName)
 {
     std::string result = "";
     for (char character : projectName)
-        result += std::isalnum(static_cast<unsigned char>(character)) ? character : '_';
+        if (std::isalnum(static_cast<unsigned char>(character)))
+            result += static_cast<char>(std::tolower(static_cast<unsigned char>(character)));
+        else
+            result += character == '-' ? '-' : '_';
     return result;
 }
 
@@ -79,19 +82,19 @@ ProjectBuilder::missingFiles(const SceneObjects &sceneObjects,
     const auto check = [&](const std::string &kind, const std::string &object,
                            const std::vector<Component> &components) {
         for (const Component &component : components) {
-            const auto descriptor = std::find_if(
-                descriptors.begin(), descriptors.end(),
-                [&component](const ComponentDescriptor &candidate) {
-                    return candidate.name == component.name;
-                });
+            const auto descriptor =
+                std::find_if(descriptors.begin(), descriptors.end(),
+                             [&component](const ComponentDescriptor &candidate) {
+                                 return candidate.name == component.name;
+                             });
             if (descriptor == descriptors.end())
                 continue;
             for (const Property &property : component.properties) {
-                const auto setting = std::find_if(
-                    descriptor->properties.begin(), descriptor->properties.end(),
-                    [&property](const PropertyDescriptor &candidate) {
-                        return candidate.name == property.name;
-                    });
+                const auto setting =
+                    std::find_if(descriptor->properties.begin(), descriptor->properties.end(),
+                                 [&property](const PropertyDescriptor &candidate) {
+                                     return candidate.name == property.name;
+                                 });
                 if (setting == descriptor->properties.end() || setting->type != valueType::File ||
                     setting->options.empty())
                     continue;
@@ -108,8 +111,8 @@ ProjectBuilder::missingFiles(const SceneObjects &sceneObjects,
                 if (!std::filesystem::is_regular_file(projectFolder / file))
                     missing.push_back("Impossible to build " + sceneObjects.projectName +
                                       ": missing asset: " + file.generic_string() + " (" + kind +
-                                      " " + object + ", " + component.name + "." +
-                                      property.name + ")");
+                                      " " + object + ", " + component.name + "." + property.name +
+                                      ")");
             }
         }
     };
@@ -203,7 +206,8 @@ ProjectBuilder::buildErrors(const SceneObjects &sceneObjects,
 void ProjectBuilder::requireRenderer(const SceneObjects &sceneObjects)
 {
     if (sceneObjects.renderer.empty())
-        throw std::runtime_error("Cannot build project: it has no renderer, choose one in Settings");
+        throw std::runtime_error(
+            "Cannot build project: it has no renderer, choose one in Settings");
     if (!PluginLoader("renderers").isAvailable(sceneObjects.renderer))
         throw std::runtime_error("Cannot build project: renderer \"" + sceneObjects.renderer +
                                  "\" is not available");
@@ -214,14 +218,15 @@ void ProjectBuilder::requireComponentPlugins(const SceneObjects &sceneObjects,
 {
     const auto check = [&](const std::vector<Component> &components) {
         for (const Component &component : components) {
-            const auto descriptor = std::find_if(
-                descriptors.begin(), descriptors.end(),
-                [&component](const ComponentDescriptor &candidate) {
-                    return candidate.name == component.name;
-                });
+            const auto descriptor =
+                std::find_if(descriptors.begin(), descriptors.end(),
+                             [&component](const ComponentDescriptor &candidate) {
+                                 return candidate.name == component.name;
+                             });
             if (descriptor == descriptors.end())
                 throw std::runtime_error("Cannot build project: no available plugin provides the "
-                                         "component \"" + component.name + "\"");
+                                         "component \"" +
+                                         component.name + "\"");
             if (!descriptor->plugin.empty() &&
                 std::find(sceneObjects.activePlugins.begin(), sceneObjects.activePlugins.end(),
                           descriptor->plugin) == sceneObjects.activePlugins.end())
@@ -303,8 +308,8 @@ void ProjectBuilder::writeGeneratedMain(const std::filesystem::path &sourcePath,
     if (usesPrefabs)
         source << "        scene.addResource<PrefabsManager>();\n";
     // The renderer opens the window, before the plugins that draw through it
-    source << "        application.setRenderer(" << cppStringLiteral(sceneObjects.renderer)
-           << ", " << cppStringLiteral(sceneObjects.projectName) << ");\n";
+    source << "        application.setRenderer(" << cppStringLiteral(sceneObjects.renderer) << ", "
+           << cppStringLiteral(sceneObjects.projectName) << ");\n";
     for (const std::string &plugin : sceneObjects.activePlugins)
         source << "        application.addPlugin(" << cppStringLiteral(plugin) << ");\n";
     if (!scripts.empty())
@@ -458,16 +463,8 @@ std::string ProjectBuilder::build(const std::string &projectPath, const SceneObj
         " -DGRINGO_GAME_SOURCE=" + shellQuote(generatedSource.string()) +
         " -DGRINGO_GAME_SCRIPT_DIR=" + shellQuote((projectFolder / "scripts").string()) +
         " -DGRINGO_GAME_PLUGINS=" + shellQuote(pluginList) +
-        " -DGRINGO_GAME_RENDERER=" + shellQuote(sceneObjects.renderer) +
-        " && cmake --build " + shellQuote(buildDirectory.string()) + " --target " +
-        shellQuote(target) + " && cmake -S " + shellQuote(resolvedEngineDirectory.string()) +
-        " -B " + shellQuote(buildDirectory.string()) +
-        " -U GRINGO_GAME_TARGET"
-        " -U GRINGO_GAME_OUTPUT_DIR"
-        " -U GRINGO_GAME_SOURCE"
-        " -U GRINGO_GAME_SCRIPT_DIR"
-        " -U GRINGO_GAME_PLUGINS"
-        " -U GRINGO_GAME_RENDERER";
+        " -DGRINGO_GAME_RENDERER=" + shellQuote(sceneObjects.renderer) + " && cmake --build " +
+        shellQuote(buildDirectory.string()) + " --target " + shellQuote(target);
     if (std::system(command.c_str()) != 0)
         throw std::runtime_error("Failed to build project executable: " + target);
 

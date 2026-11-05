@@ -5,6 +5,7 @@
 ** main
 */
 
+#include "CommandLineBuild.hpp"
 #include "ComponentCatalog.hpp"
 #include "EditorMenu.hpp"
 #include "LoadMenu.hpp"
@@ -16,9 +17,14 @@
 #include "TemplateMenu.hpp"
 #include <iostream>
 #include <memory>
+#include <string>
+#include <vector>
 
-int main(void)
+int main(int argc, char **argv)
 {
+    if (argc >= 2 && std::string(argv[1]) == "--build")
+        return buildFromCommandLine({argv + 2, argv + argc});
+
     ComponentCatalog componentCatalog;
     RaylibRenderer renderer;
     Parser parser;
@@ -60,10 +66,9 @@ int main(void)
                     sceneObjects = static_cast<LoadMenu &>(*currentMenu).getSceneObjects();
                     projectName = sceneObjects.projectName;
                 }
-                currentMenu =
-                    std::make_unique<EditorMenu>(renderer, templateName, projectName, parser,
-                                                 sceneObjects, componentCatalog.getDescriptors(),
-                                                 componentCatalog.getPluginSettings());
+                currentMenu = std::make_unique<EditorMenu>(
+                    renderer, templateName, projectName, parser, sceneObjects,
+                    componentCatalog.getDescriptors(), componentCatalog.getPluginSettings());
             } else if (next == MenuType::MainMenu)
                 currentMenu = std::make_unique<MainMenu>(renderer);
             else if (next == MenuType::LoadMenu)
