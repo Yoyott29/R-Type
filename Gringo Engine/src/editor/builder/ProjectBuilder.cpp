@@ -105,7 +105,7 @@ void ProjectBuilder::writeButtonScripts(std::ostream &source,
     for (const std::string &script : buttonScripts) {
         std::string statement = assignment;
         statement.replace(statement.find("SCRIPT"), 6,
-                          "std::make_shared<" + className(script) + ">()");
+                          "makeButtonScript<" + className(script) + ">(component)");
         source << "                        if (path == " << cppStringLiteral(script) << ")\n"
                << "                            " << statement << "\n";
     }
@@ -313,6 +313,7 @@ void ProjectBuilder::writeGeneratedMain(const std::filesystem::path &sourcePath,
            << "#include \"nlohmann/json.hpp\"\n"
            << "#include <filesystem>\n"
            << "#include <fstream>\n"
+           << "#include <functional>\n"
            << "#include <iostream>\n"
            << "#include <memory>\n"
            << "#include <stdexcept>\n"
@@ -327,6 +328,23 @@ void ProjectBuilder::writeGeneratedMain(const std::filesystem::path &sourcePath,
         source << "#include \"UIButton.hpp\"\n";
     for (const std::string &script : allScripts)
         source << "#include " << '"' << script << '"' << "\n";
+
+    // A button script gets the values of its component's properties as parameters, like the
+    // entity scripts (its own properties too: it ignores the names it does not know)
+    if (!buttonScripts.empty())
+        source << "\ntemplate <typename ButtonScript>\n"
+               << "static std::shared_ptr<IGringoButtonScript> makeButtonScript(const "
+                  "nlohmann::json &component)\n"
+               << "{\n"
+               << "    auto script = std::make_shared<ButtonScript>();\n"
+               << "    for (const auto &property : component.value(\"properties\", "
+                  "nlohmann::json::array())) {\n"
+               << "        const std::string name = property.value(\"name\", \"\");\n"
+               << "        if (name != \"Script\")\n"
+               << "            script->setParameter(name, property.value(\"value\", \"\"));\n"
+               << "    }\n"
+               << "    return script;\n"
+               << "}\n";
 
     // Nothing plugin-specific here: plugins read their settings (ProjectSettings) and the
     // arguments they understand (CommandLine), e.g. Network's "[host] port"
@@ -436,8 +454,9 @@ void ProjectBuilder::writeGeneratedMain(const std::filesystem::path &sourcePath,
     source << "                    components.addToPrefab(prefab, scene, component);\n";
     // Each instance of the prefab gets its own script
     writeButtonScripts(source, buttonScripts,
-                       "prefab.addComponent([](Scene &target, Entity instance) { "
-                       "target.getComponent<UIButton>(instance).script = SCRIPT; });");
+                       "prefab.addComponent(std::function<void(Scene &, Entity)>("
+                       "[component](Scene &target, Entity instance) { "
+                       "target.getComponent<UIButton>(instance).script = SCRIPT; }));");
     source << "                }\n"
            << "            }\n"
            << "            application._scene.getResource<PrefabsManager>().createPrefab("

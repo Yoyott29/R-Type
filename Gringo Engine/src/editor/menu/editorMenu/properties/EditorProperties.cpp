@@ -44,8 +44,7 @@ void EditorProperties::applyCurrentEdit()
                 std::to_string(_editor._selectedObjectId);
     } else if (type == valueType::Int || type == valueType::Float)
         currentText = cleanNumber(currentText);
-    else if (currentText.empty())
-        currentText = "0";
+    // A String can stay empty, e.g. a Button without text
 
     _editor.setButtonText(_editor._currentlyUpdatedProperty.name, currentText);
     updateObjectProperty();
@@ -66,8 +65,13 @@ void EditorProperties::createProperties(Component &component, int componentIndex
     int propertyIndex = 0;
     std::string prefix = component.name + "_" + std::to_string(componentIndex) + "_";
 
-    for (auto &[propertyId, propertyName, propertyValue, propertyType, propertyOptions] :
-         component.properties) {
+    for (const Property &property : component.properties) {
+        if (!isPropertyVisible(component, property))
+            continue;
+        const int propertyId = property.id;
+        const std::string &propertyName = property.name;
+        const std::string &propertyValue = property.value;
+        const valueType propertyType = property.type;
 
         std::string propertyTextName = prefix + propertyName + "_Text";
         std::string propertyValueName = prefix + propertyName + "_Value";
@@ -188,9 +192,29 @@ void EditorProperties::cycleChoice(const std::string &propertyValueName, ObjectT
     Property &property = _editor._components.getObjectComponents(objectType, objectId)[componentIndex]
                              .properties[propertyId];
     property.value = nextOption(property.options, property.value);
-    const std::string &storedValue = property.value;
+    (void)propertyValueName;
+    // Other properties can depend on this choice (Shape: Width/Height or Radius)
+    _editor._components.createComponents(
+        _editor._components.getObjectComponents(objectType, objectId), objectType, objectId);
+}
 
-    showNewValue(propertyValueName, storedValue);
+bool EditorProperties::isPropertyVisible(const Component &component, const Property &property)
+{
+    if (property.visibleWhen.property.empty())
+        return true;
+    for (const Property &other : component.properties)
+        if (other.name == property.visibleWhen.property)
+            return other.value == property.visibleWhen.value;
+    return true;
+}
+
+std::size_t EditorProperties::visiblePropertyCount(const Component &component)
+{
+    std::size_t count = 0;
+    for (const Property &property : component.properties)
+        if (isPropertyVisible(component, property))
+            count++;
+    return count;
 }
 
 void EditorProperties::toggleBool(const std::string &propertyValueName, ObjectType objectType,
@@ -241,10 +265,10 @@ void EditorProperties::updateObjectProperty()
 
     if (index < 0 || index >= static_cast<int>(components.size()))
         return;
-    for (auto &[id, name, value, type, options] : components[index].properties) {
-        if (name == _editor._currentlyUpdatedProperty.objectProperty) {
-            value = _editor._currentlyUpdatedProperty.text;
-            _editor.setButtonText(_editor._currentlyUpdatedProperty.name, value);
+    for (Property &property : components[index].properties) {
+        if (property.name == _editor._currentlyUpdatedProperty.objectProperty) {
+            property.value = _editor._currentlyUpdatedProperty.text;
+            _editor.setButtonText(_editor._currentlyUpdatedProperty.name, property.value);
             // A new parent moves the entity's button in the list right away
             if (components[index].name == "ChildOf" &&
                 _editor._selectedObjectType == ObjectType::Entity)
@@ -418,17 +442,35 @@ void EditorProperties::cycleFile(const std::string &, ObjectType objectType, int
         _editor._components.getObjectComponents(objectType, objectId)[componentIndex];
     Property &property = component.properties[propertyId];
     property.value = nextOption(getProjectFiles(property.options), property.value);
-    // A script file can declare parameters: they become properties of its Script component
-    if (component.name == "Script")
+    // A script file can declare parameters: they become properties of its component (Script,
+    // or Button for its button script)
+    if (isScriptFile(property))
         applyScriptParameters(component, property.value);
 
     _editor._components.createComponents(
         _editor._components.getObjectComponents(objectType, objectId), objectType, objectId);
 }
 
+bool EditorProperties::isScriptFile(const Property &property)
+{
+    return property.type == valueType::File && !property.options.empty() &&
+           property.options.front() == "scripts";
+}
+
+std::size_t EditorProperties::ownPropertyCount(const Component &component) const
+{
+    for (const Component &componentTemplate : _editor._componentTemplates)
+        if (componentTemplate.name == component.name)
+            return std::min(componentTemplate.properties.size(), component.properties.size());
+    return component.properties.size();
+}
+
 void EditorProperties::applyScriptParameters(Component &component, const std::string &scriptName)
 {
-    component.properties.erase(component.properties.begin() + 1, component.properties.end());
+    // Keeps the component's own properties, drops the parameters of the previous script
+    component.properties.erase(
+        component.properties.begin() + static_cast<std::ptrdiff_t>(ownPropertyCount(component)),
+        component.properties.end());
 
     if (scriptName == NO_FILE)
         return;

@@ -27,9 +27,9 @@ template <> struct ComponentDescription<Sprite> {
         return {"Sprite",
                 {
                     {"Shape", valueType::Choice, "Box", {"Box", "Circle"}},
-                    {"Width", valueType::Float, "32"},
-                    {"Height", valueType::Float, "32"},
-                    {"Radius", valueType::Float, "16"},
+                    {"Width", valueType::Float, "32", {}, {"Shape", "Box"}},
+                    {"Height", valueType::Float, "32", {}, {"Shape", "Box"}},
+                    {"Radius", valueType::Float, "16", {}, {"Shape", "Circle"}},
                     {"Color", valueType::Color, "White"},
                     {"DrawOrder", valueType::Int, "0"},
                     {"TexturePath", valueType::File, NO_FILE, {"assets", ".png", ".jpg"}},
