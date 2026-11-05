@@ -14,7 +14,7 @@ PostUpdate       RenderSystem -> IRenderer -> raylib`;
 
 	const layersExample = `layer                 folder                              knows about
 game (R-Type)         src/game-rtype, src/server          everything below
-plugins               src/plugins/{Renderer,Physics,      the engine core, and one library each
+plugins               src/plugins/{Renderer,Physics2D,    the engine core, and one library each
                       Network}                            (raylib, nothing, Asio)
 shared gameplay       src/components, src/systems,        the engine core
                       src/common
@@ -90,7 +90,7 @@ engine core           src/engine                          only the C++ standard 
 		<text x="40" y="244" fill="#7f9189" font-size="11">Sprite</text>
 
 		<rect x="154" y="135" width="112" height="120" rx="6" fill="#121a17" stroke="#3fbed6" />
-		<text x="164" y="158" fill="#d8e4de" font-size="13" font-weight="600">Physics</text>
+		<text x="164" y="158" fill="#d8e4de" font-size="13" font-weight="600">Physics2D</text>
 		<text x="164" y="180" fill="#7f9189" font-size="11">Velocity</text>
 		<text x="164" y="196" fill="#7f9189" font-size="11">Collider2D</text>
 		<text x="164" y="212" fill="#7f9189" font-size="11">MovementSystem</text>
@@ -133,7 +133,7 @@ engine core           src/engine                          only the C++ standard 
 		<text x="580" y="228" fill="#7f9189" font-size="11">sendSnapshot</text>
 
 		<rect x="756" y="135" width="174" height="120" rx="6" fill="#121a17" stroke="#3fbed6" />
-		<text x="766" y="158" fill="#d8e4de" font-size="13" font-weight="600">Physics systems</text>
+		<text x="766" y="158" fill="#d8e4de" font-size="13" font-weight="600">Physics2D systems</text>
 		<text x="766" y="180" fill="#7f9189" font-size="11">MovementSystem</text>
 		<text x="766" y="196" fill="#7f9189" font-size="11">Collider2DSystem</text>
 		<text x="766" y="212" fill="#7f9189" font-size="11">Sprite (data only)</text>

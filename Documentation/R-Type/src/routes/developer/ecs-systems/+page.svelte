@@ -17,7 +17,7 @@ ScriptSystem      Script                   no              yes             yes
 RenderSystem      Position + Sprite        yes             -               -
 SoundSystem       SoundEffect              yes             -               -`;
 
-	const setupExample = `// Physics::build(Application &app)
+	const setupExample = `// Physics2D::build(Application &app)
 app._scene.registerSystem<MovementSystem>(FixedUpdate);
 ComponentSet movementRequirements;
 movementRequirements.set(app._scene.getComponentType<Position>());
@@ -63,7 +63,7 @@ while (_scene.getResource<AppAlive>().alive) {
 
 // Application constructor
 addPlugin(std::make_shared<RayLibRenderer>()); // GetInput, RenderSystem, SoundSystem
-addPlugin(std::make_shared<Physics>());        // MovementSystem, Collider2DSystem
+addPlugin(std::make_shared<Physics2D>());        // MovementSystem, Collider2DSystem
 addPlugin(std::make_shared<Client>(serverAddress, serverPort)); // TryConnect, SendInput, ReadSocket`;
 
 	const newHeaderExample = `// src/systems/OffScreenSystem.hpp
@@ -232,16 +232,27 @@ _scene.setSystemComponentSet<OffScreenSystem>(offScreenRequirements);`;
 		({@render c('StateTransition')}).
 	</li>
 	<li>
-		<strong class="font-semibold">MovementSystem</strong> ({@render c('src/plugins/Physics/systems')},
+		<strong class="font-semibold">MovementSystem</strong> ({@render c('src/plugins/Physics2D/systems')},
 		{@render c('FixedUpdate')}, {@render c('Position')} + {@render c('Velocity')}): moves each
 		entity by its velocity multiplied by {@render c('FIXED_DELTA_TIME')}.
 	</li>
 	<li>
 		<strong class="font-semibold">Collider2DSystem</strong>
-		({@render c('src/plugins/Physics/systems')}, {@render c('FixedUpdate')},
+		({@render c('src/plugins/Physics2D/systems')}, {@render c('FixedUpdate')},
 		{@render c('Position')} + {@render c('Collider2D')}): tests every pair of entities (box or circle
-		shapes, two players are skipped) and calls the {@render c('onCollision')} callback of both when
-		they overlap.
+		shapes, filtered by layer and mask). When a trigger touches another collider, it calls the
+		{@render c('onCollision')} callbacks every step. When two solid colliders start touching, the
+		momentums of their {@render c('RigidBody2D')} are added together and both leave with the same
+		{@render c('Velocity')}. While solid colliders touch, they are pushed out of each other and stop
+		moving into each other, so bodies rest on a static floor.
+	</li>
+	<li>
+		<strong class="font-semibold">GravitySystem</strong>
+		({@render c('src/plugins/Physics2D/systems')}, {@render c('FixedUpdate')}, before the
+		{@render c('MovementSystem')}, {@render c('RigidBody2D')} + {@render c('Velocity')}): adds the
+		{@render c('Gravity2D')} resource (project settings {@render c('GravityX')} /
+		{@render c('GravityY')}, 980 px/s² down by default) times {@render c('gravityScale')} to the
+		velocity of every non static body.
 	</li>
 	<li>
 		<strong class="font-semibold">ScriptSystem</strong> ({@render c('src/systems')},

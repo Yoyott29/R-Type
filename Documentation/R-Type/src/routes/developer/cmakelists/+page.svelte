@@ -72,8 +72,8 @@ endif()`;
 
 	const addFileExample = `add_executable(\${PROJECT_NAME}
     ...
-    src/plugins/Physics/systems/MovementSystem.cpp
-    src/plugins/Physics/systems/GravitySystem.cpp   # new file
+    src/plugins/Physics2D/systems/MovementSystem.cpp
+    src/plugins/Physics2D/systems/GravitySystem.cpp   # new file
 )`;
 
 	const buildExample = `cmake -B build
@@ -181,7 +181,7 @@ cmake --build build`;
 	<li>
 		The server has its own target, {@render c('r-type_server')}, at the end of the file. It links
 		only Asio, not raylib, and reuses the engine sources. Its include directories also list the
-		Physics and Renderer plugin folders and the raylib headers, so the server can use
+		Physics2D and Renderer plugin folders and the raylib headers, so the server can use
 		{@render c('MovementSystem')}, {@render c('Velocity')} and {@render c('Sprite')}. Because of
 		this, building the server alone still downloads raylib.
 	</li>

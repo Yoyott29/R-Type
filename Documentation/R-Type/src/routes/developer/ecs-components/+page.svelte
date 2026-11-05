@@ -30,7 +30,7 @@ struct CircleShape {
     float radius;
 };`;
 
-	const pluginComponentsExample = `// src/plugins/Physics/components
+	const pluginComponentsExample = `// src/plugins/Physics2D/components
 struct Velocity {
     float dx; // pixels per second
     float dy;
@@ -38,7 +38,16 @@ struct Velocity {
 
 struct Collider2D {
     std::variant<BoxShape, CircleShape> shape;
-    std::function<void(Entity, Entity)> onCollision;
+    std::function<void(Entity, Entity)> onCollision; // called while touching, triggers only
+    std::uint32_t layer = 1;    // what the entity is
+    std::uint32_t mask = ~0u;   // the layers it reacts to
+    bool isTrigger = false;     // false: solid, the RigidBody2D react on contact
+};
+
+struct RigidBody2D {
+    float mass = 1.0f;
+    bool isStatic = false;      // static: never moved (a floor, a wall)
+    float gravityScale = 1.0f;  // times the Physics2D GravityX / GravityY settings
 };
 
 // src/plugins/Renderer/components
@@ -59,8 +68,8 @@ _scene.registerComponent<Position>();       // ComponentType 0 (Application)
 _scene.registerComponent<Script>();         // ComponentType 1 (Application)
 app._scene.registerComponent<Sprite>();      // ComponentType 2 (RayLibRenderer::build)
 app._scene.registerComponent<SoundEffect>(); // ComponentType 3 (RayLibRenderer::build)
-app._scene.registerComponent<Velocity>();    // ComponentType 4 (Physics::build)
-app._scene.registerComponent<Collider2D>();  // ComponentType 5 (Physics::build)
+app._scene.registerComponent<Velocity>();    // ComponentType 4 (Physics2D::build)
+app._scene.registerComponent<Collider2D>();  // ComponentType 5 (Physics2D::build)
 scene.registerComponent<Type>();             // ComponentType 6 (RTypeClientPlugin::build)`;
 
 	const useExample = `scene.addComponent(player, Position{0.0f, 200.0f});
@@ -224,7 +233,7 @@ Entity enemy = _prefabs.InstantiatePrefab("Enemy", _scene); // createEntity() + 
 </p>
 {@render code(registerExample)}
 <p class="mt-3 max-w-[100ch] leading-7">
-	The server is another binary with its own plugins ({@render c('Physics')},
+	The server is another binary with its own plugins ({@render c('Physics2D')},
 	{@render c('NetworkPlugin')}, {@render c('RTypeServerPlugin')}), so the same component can have a
 	different id on the client and on the server. Ids never go on the wire.
 </p>

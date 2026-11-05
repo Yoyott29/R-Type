@@ -555,7 +555,7 @@ std::string ProjectBuilder::build(const std::string &projectPath, const SceneObj
     const std::filesystem::path resolvedEngineDirectory =
         std::filesystem::is_directory(engineDirectory) ? engineDirectory : workingDirectory;
     const std::filesystem::path buildDirectory = projectFolder / "build";
-    // CMake list of the active plugins: "2D;Physics"
+    // CMake list of the active plugins: "2D;Physics2D"
     std::string pluginList;
     for (const std::string &plugin : sceneObjects.activePlugins)
         pluginList += (pluginList.empty() ? "" : ";") + plugin;
