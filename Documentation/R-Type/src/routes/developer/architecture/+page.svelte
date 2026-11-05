@@ -179,8 +179,7 @@ engine core           src/engine                          only the C++ standard 
 		<strong>Networking</strong>: the Network plugin on the client, the {@render c('Network')} class and
 		its thread on the server. Both only exchange the packets of
 		{@render c('src/common/rtype_protocol.hpp')}. See
-		{@render a('/developer/udp-server', 'How the server works')} and
-		{@render a('/developer/network-client', 'How the client network works')}.
+		{@render a('/developer/network', 'How the network works')}.
 	</li>
 	<li>
 		<strong>Game logic</strong>: {@render c('GameLoop')} and {@render c('Game')} on the server. They
@@ -207,7 +206,7 @@ engine core           src/engine                          only the C++ standard 
 	</li>
 	<li>
 		On the server, the network thread never touches the Scene: it only fills the input queues, see
-		{@render a('/developer/network-threads', 'How the server threads work')}.
+		{@render a('/developer/network', 'How the network works')}.
 	</li>
 </ul>
 
