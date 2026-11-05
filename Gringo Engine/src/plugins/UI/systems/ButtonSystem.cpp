@@ -7,7 +7,7 @@
 
 #include "ButtonSystem.hpp"
 #include "IRenderer.hpp"
-#include "Position.hpp"
+#include "Transform.hpp"
 #include "UIButton.hpp"
 #include <functional>
 
@@ -19,7 +19,7 @@ void ButtonSystem::update(Scene &scene)
     IRenderer &renderer = scene.getResource<std::reference_wrapper<IRenderer>>().get();
 
     for (Entity entity : _entities) {
-        Position const &position = scene.getComponent<Position>(entity);
+        Transform const &position = scene.getComponent<Transform>(entity);
         UIButton const &button = scene.getComponent<UIButton>(entity);
         renderer.drawRectangle(position.x, position.y, button.width, button.height, button.color);
         // Every draw call is centered on (x, y), so the text lands in the middle of the button

@@ -3,7 +3,7 @@
 #include "ComponentJson.hpp"
 #include "HierarchySystem.hpp"
 #include "PluginLoader.hpp"
-#include "Position.hpp"
+#include "Transform.hpp"
 #include "ProjectAssets.hpp"
 #include <stdexcept>
 
@@ -12,9 +12,13 @@
 ProjectComponentManager::ProjectComponentManager(Scene &scene, std::filesystem::path projectFolder)
 {
     scene.addResource<ProjectAssets>(ProjectAssets{std::move(projectFolder)});
-    scene.registerComponent<Position>([](Scene &target, Entity entity, const nlohmann::json &data) {
-        target.addComponent(entity, Position{ComponentJson::floatValue(data, "PositionX", 0.0f),
-                                             ComponentJson::floatValue(data, "PositionY", 0.0f)});
+    scene.registerComponent<Transform>([](Scene &target, Entity entity, const nlohmann::json &data) {
+        target.addComponent(entity, Transform{ComponentJson::floatValue(data, "PositionX", 0.0f),
+                                              ComponentJson::floatValue(data, "PositionY", 0.0f),
+                                              ComponentJson::floatValue(data, "PositionZ", 0.0f),
+                                              ComponentJson::floatValue(data, "ScaleX", 1.0f),
+                                              ComponentJson::floatValue(data, "ScaleY", 1.0f),
+                                              ComponentJson::floatValue(data, "Rotation", 0.0f)});
     });
     scene.addResource<EditorEntityIds>();
     // A parent loaded after its child is found later, by linkChildren. A prefab instantiated

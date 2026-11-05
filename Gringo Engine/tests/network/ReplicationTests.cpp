@@ -5,7 +5,7 @@
 #include "MirrorSystem.hpp"
 #include "NetComponents.hpp"
 #include "Networked.hpp"
-#include "Position.hpp"
+#include "Transform.hpp"
 #include "PrefabsManager.hpp"
 #include "ReservedInbox.hpp"
 
@@ -48,12 +48,12 @@ TEST_CASE(replicatedEntityIsMirrored)
     NetApp server = makeServer(addBoxPrefab);
     Entity box =
         server.scene().getResource<PrefabsManager>().InstantiatePrefab(BOX, server.scene());
-    server.scene().getComponent<Position>(box).x = 3.0f;
+    server.scene().getComponent<Transform>(box).x = 3.0f;
     NetApp client = connectedClient(server, addBoxPrefab);
     Scene &scene = client.scene();
     CHECK(pollUntil({&server, &client}, [&] {
         auto mirrors = scene.view<Mirror>();
-        return mirrors.size() == 1 && scene.getComponent<Position>(mirrors.front()).x == 3.0f;
+        return mirrors.size() == 1 && scene.getComponent<Transform>(mirrors.front()).x == 3.0f;
     }));
     CHECK(scene.getComponent<Mirror>(scene.view<Mirror>().front()).netId ==
           server.scene().getComponent<NetId>(box).value);

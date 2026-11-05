@@ -11,16 +11,16 @@ class System
 	const matchExample = `(entity ComponentSet & required ComponentSet) == required ComponentSet`;
 
 	const tableExample = `system            requires                 client entity   server player   server spawner
-MovementSystem    Position + Velocity      no              yes             no
-Collider2DSystem  Position + Collider2D    no              yes             no
+MovementSystem    Transform + Velocity     no              yes             no
+Collider2DSystem  Transform + Collider2D   no              yes             no
 ScriptSystem      Script                   no              yes             yes
-RenderSystem      Position + Sprite        yes             -               -
+RenderSystem      Transform + Sprite       yes             -               -
 SoundSystem       SoundEffect              yes             -               -`;
 
 	const setupExample = `// Physics2D::build(Application &app)
 app._scene.registerSystem<MovementSystem>(FixedUpdate);
 ComponentSet movementRequirements;
-movementRequirements.set(app._scene.getComponentType<Position>());
+movementRequirements.set(app._scene.getComponentType<Transform>());
 movementRequirements.set(app._scene.getComponentType<Velocity>());
 app._scene.setSystemComponentSet<MovementSystem>(movementRequirements);`;
 
@@ -45,7 +45,7 @@ while (_scene.getResource<AppAlive>().alive) {
 	const movementExample = `void MovementSystem::update(Scene &scene)
 {
     for (Entity entity : _entities) {
-        Position &position = scene.getComponent<Position>(entity);
+        Transform &position = scene.getComponent<Transform>(entity);
         Velocity const &velocity = scene.getComponent<Velocity>(entity);
 
         position.x += velocity.dx * FIXED_DELTA_TIME;
@@ -68,7 +68,7 @@ addPlugin(std::make_shared<Client>(serverAddress, serverPort)); // TryConnect, S
 
 	const newHeaderExample = `// src/systems/OffScreenSystem.hpp
 #pragma once
-#include "Position.hpp"
+#include "Transform.hpp"
 #include "Scene.hpp"
 #include "System.hpp"
 
@@ -84,7 +84,7 @@ class OffScreenSystem : public System
 void OffScreenSystem::update(Scene &scene)
 {
     for (Entity entity : _entities) {
-        if (scene.getComponent<Position>(entity).x < -100.0f)
+        if (scene.getComponent<Transform>(entity).x < -100.0f)
             scene.queueDestroy(entity);
     }
 }`;
@@ -99,7 +99,7 @@ void OffScreenSystem::update(Scene &scene)
 	const newAppExample = `// GameLoop::GameLoop(...), src/server/game/game_loop.cpp
 _scene.registerSystem<OffScreenSystem>(FixedUpdate);
 ComponentSet offScreenRequirements;
-offScreenRequirements.set(_scene.getComponentType<Position>());
+offScreenRequirements.set(_scene.getComponentType<Transform>());
 _scene.setSystemComponentSet<OffScreenSystem>(offScreenRequirements);`;
 </script>
 
@@ -147,7 +147,7 @@ _scene.setSystemComponentSet<OffScreenSystem>(offScreenRequirements);`;
 {@render code(matchExample)}
 <p class="mt-3 max-w-[100ch] leading-7">
 	With the entities of the game (a client entity is created from a snapshot with
-	{@render c('Position')} + {@render c('Type')} + {@render c('Sprite')}; the server player also has
+	{@render c('Transform')} + {@render c('Type')} + {@render c('Sprite')}; the server player also has
 	{@render c('Velocity')}, {@render c('Collider2D')}, {@render c('Script')} and
 	{@render c('PlayerId')}; the two server spawners, one for enemies and one for stars, only have a
 	{@render c('Script')}):
@@ -233,13 +233,13 @@ _scene.setSystemComponentSet<OffScreenSystem>(offScreenRequirements);`;
 	</li>
 	<li>
 		<strong class="font-semibold">MovementSystem</strong> ({@render c('src/plugins/Physics2D/systems')},
-		{@render c('FixedUpdate')}, {@render c('Position')} + {@render c('Velocity')}): moves each
+		{@render c('FixedUpdate')}, {@render c('Transform')} + {@render c('Velocity')}): moves each
 		entity by its velocity multiplied by {@render c('FIXED_DELTA_TIME')}.
 	</li>
 	<li>
 		<strong class="font-semibold">Collider2DSystem</strong>
 		({@render c('src/plugins/Physics2D/systems')}, {@render c('FixedUpdate')},
-		{@render c('Position')} + {@render c('Collider2D')}): tests every pair of entities (box or circle
+		{@render c('Transform')} + {@render c('Collider2D')}): tests every pair of entities (box or circle
 		shapes, filtered by layer and mask). When a trigger touches another collider, it calls the
 		{@render c('onCollision')} callbacks every step. When two solid colliders start touching, the
 		momentums of their {@render c('RigidBody2D')} are added together and both leave with the same
@@ -261,7 +261,7 @@ _scene.setSystemComponentSet<OffScreenSystem>(offScreenRequirements);`;
 	</li>
 	<li>
 		<strong class="font-semibold">RenderSystem</strong> ({@render c('src/plugins/Renderer/systems')},
-		{@render c('PostUpdate')}, {@render c('Position')} + {@render c('Sprite')}): gets the renderer
+		{@render c('PostUpdate')}, {@render c('Transform')} + {@render c('Sprite')}): gets the renderer
 		from the {@render c('std::reference_wrapper<IRenderer>')} resource, sorts the entities by
 		{@render c('Sprite::drawOrder')} (a stable sort, smallest first) and draws each one at its
 		position, so it never calls raylib directly. This sort keeps the stars (draw order -1) behind
@@ -287,7 +287,7 @@ _scene.setSystemComponentSet<OffScreenSystem>(offScreenRequirements);`;
 <h2 class="mt-9 text-lg font-semibold">Adding a system</h2>
 <p class="mt-3 max-w-[100ch] leading-7">
 	This example (not in the game) destroys the server entities that leave the screen on the left,
-	using the {@render c('Position')} component from
+	using the {@render c('Transform')} component from
 	<a href="/developer/ecs-components" class="text-[#ff8a3d] hover:underline">How components work</a>.
 </p>
 <p class="mt-3 max-w-[100ch] leading-7">1. Create the header and the source in {@render c('src/systems')}:</p>

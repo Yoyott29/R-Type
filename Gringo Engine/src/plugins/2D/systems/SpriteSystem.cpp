@@ -21,11 +21,11 @@ void SpriteSystem::update(Scene &scene)
     });
 
     for (Entity entity : entities)
-        drawSprite(renderer, scene.getComponent<Position>(entity),
+        drawSprite(renderer, scene.getComponent<Transform>(entity),
                    scene.getComponent<Sprite>(entity));
 }
 
-void SpriteSystem::drawSprite(IRenderer &renderer, Position const &position, Sprite const &sprite)
+void SpriteSystem::drawSprite(IRenderer &renderer, Transform const &position, Sprite const &sprite)
 {
     if (std::holds_alternative<BoxShape>(sprite.shape)) {
         BoxShape const &box = std::get<BoxShape>(sprite.shape);

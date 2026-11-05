@@ -1,7 +1,7 @@
 #ifndef SPACESPAWNERSCRIPT_HPP_
 #define SPACESPAWNERSCRIPT_HPP_
 
-#include "Position.hpp"
+#include "Transform.hpp"
 #include "PrefabsManager.hpp"
 #include "Scene.hpp"
 #include "Script.hpp"
@@ -26,8 +26,8 @@ inline void SpaceSpawnerScript::onStart(Scene &scene, Entity &)
 {
     for (int i = 0; i < 20; ++i) {
         Entity space = scene.getResource<PrefabsManager>().InstantiatePrefab("Star", scene);
-        scene.getComponent<Position>(space).x = static_cast<float>(std::rand() % 1920);
-        scene.getComponent<Position>(space).y = static_cast<float>(std::rand() % 1080);
+        scene.getComponent<Transform>(space).x = static_cast<float>(std::rand() % 1920);
+        scene.getComponent<Transform>(space).y = static_cast<float>(std::rand() % 1080);
     }
 }
 
@@ -38,7 +38,7 @@ inline void SpaceSpawnerScript::onUpdate(Scene &scene, Entity &)
         return;
 
     Entity space = scene.getResource<PrefabsManager>().InstantiatePrefab("Star", scene);
-    scene.getComponent<Position>(space).y = static_cast<float>(std::rand() % 1080);
+    scene.getComponent<Transform>(space).y = static_cast<float>(std::rand() % 1080);
     _spawnTimer = 0.0f;
 }
 

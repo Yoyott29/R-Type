@@ -7,7 +7,7 @@
 
 #include "ParticleEmitterSystem.hpp"
 #include "ParticleEmitter.hpp"
-#include "Position.hpp"
+#include "Transform.hpp"
 #include "Time.hpp"
 #include <algorithm>
 #include <cmath>
@@ -18,7 +18,7 @@ void ParticleEmitterSystem::update(Scene &scene)
     std::uniform_real_distribution<float> angle(0.0f, 2.0f * std::numbers::pi_v<float>);
 
     for (Entity entity : _entities) {
-        Position const &position = scene.getComponent<Position>(entity);
+        Transform const &position = scene.getComponent<Transform>(entity);
         ParticleEmitter &emitter = scene.getComponent<ParticleEmitter>(entity);
 
         for (Particle &particle : emitter.particles) {

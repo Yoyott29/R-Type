@@ -10,7 +10,7 @@
 void MovementSystem::update(Scene &scene)
 {
     for (Entity entity : _entities) {
-        Position &position = scene.getComponent<Position>(entity);
+        Transform &position = scene.getComponent<Transform>(entity);
         Velocity const &velocity = scene.getComponent<Velocity>(entity);
 
         position.x += velocity.dx * FIXED_DELTA_TIME;

@@ -1,7 +1,7 @@
 #ifndef DESTROYOFFSCREENSCRIPT_HPP_
 #define DESTROYOFFSCREENSCRIPT_HPP_
 
-#include "Position.hpp"
+#include "Transform.hpp"
 #include "Scene.hpp"
 #include "Script.hpp"
 
@@ -16,7 +16,7 @@ inline void DestroyOffScreenScript::onStart(Scene &, Entity &) {}
 
 inline void DestroyOffScreenScript::onUpdate(Scene &scene, Entity &entity)
 {
-    Position const &position = scene.getComponent<Position>(entity);
+    Transform const &position = scene.getComponent<Transform>(entity);
     if (position.x < -50.0f || position.x > 2050.0f || position.y < -50.0f || position.y > 1130.0f)
         scene.queueDestroy(entity);
 }

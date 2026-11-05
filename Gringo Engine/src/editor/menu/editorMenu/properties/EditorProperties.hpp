@@ -53,7 +53,7 @@ class EditorProperties
 
   private:
     void selectProperty(const std::string &propertyValueName, valueType type,
-                        Position buttonPosition, float fontSize, ObjectType objectType,
+                        Vec2 buttonPosition, float fontSize, ObjectType objectType,
                         int objectId, int componentIndex, const std::string &propertyName,
                         int propertyId);
     void cycleChoice(const std::string &propertyValueName, ObjectType objectType, int objectId,

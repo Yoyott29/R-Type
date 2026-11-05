@@ -20,7 +20,7 @@ struct Particle {
     float life;
 };
 
-// Spawns `density` particles per second around the entity's Position, once started.
+// Spawns `density` particles per second around the entity's Transform, once started.
 // From a script: scene.getComponent<ParticleEmitter>(entity).start() / .stop()
 struct ParticleEmitter {
     float density = 10.0f;

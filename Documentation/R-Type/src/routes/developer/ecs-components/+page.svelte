@@ -1,8 +1,12 @@
 <script>
 	const componentsExample = `// src/components
-struct Position {
-    float x;
-    float y;
+struct Transform {
+    float x = 0.0f;         // position in pixels
+    float y = 0.0f;
+    float z = 0.0f;         // depth, unused in 2D
+    float scaleX = 1.0f;
+    float scaleY = 1.0f;
+    float rotation = 0.0f;  // degrees
 };
 
 struct PlayerId {
@@ -64,7 +68,7 @@ struct SoundEffect {
 };`;
 
 	const registerExample = `// client: Application constructor, then each plugin's build() in the order of main.cpp
-_scene.registerComponent<Position>();       // ComponentType 0 (Application)
+_scene.registerComponent<Transform>();       // ComponentType 0 (Application)
 _scene.registerComponent<Script>();         // ComponentType 1 (Application)
 app._scene.registerComponent<Sprite>();      // ComponentType 2 (RayLibRenderer::build)
 app._scene.registerComponent<SoundEffect>(); // ComponentType 3 (RayLibRenderer::build)
@@ -72,12 +76,12 @@ app._scene.registerComponent<Velocity>();    // ComponentType 4 (Physics2D::buil
 app._scene.registerComponent<Collider2D>();  // ComponentType 5 (Physics2D::build)
 scene.registerComponent<Type>();             // ComponentType 6 (RTypeClientPlugin::build)`;
 
-	const useExample = `scene.addComponent(player, Position{0.0f, 200.0f});
+	const useExample = `scene.addComponent(player, Transform{0.0f, 200.0f});
 
-Position &position = scene.getComponent<Position>(player);
+Transform &position = scene.getComponent<Transform>(player);
 position.x += 10.0f; // modifies the value stored in the pool
 
-scene.removeComponent<Position>(player);`;
+scene.removeComponent<Transform>(player);`;
 
 	const multipleExample = `// src/components/Script.hpp
 template <> struct AllowMultiple<Script> : std::true_type {};
@@ -92,7 +96,7 @@ for (std::size_t i = 0; i < scene.getComponentCount<Script>(entity); i++) {
 std::vector<Component> _packedComponents;                                    // the values, with no holes
 std::vector<Entity> _packedIndexToEntity;                                    // index -> entity`;
 
-	const insertExample = `entities 3, 7 and 12 have a Position
+	const insertExample = `entities 3, 7 and 12 have a Transform
 
 _packedComponents       [ P3 | P7 | P12 ]
 _packedIndexToEntity    [  3 |  7 |  12 ]
@@ -115,7 +119,7 @@ struct Health {
 	const newRegisterExample = `// src/game-rtype/Application.cpp (client)
 Application::Application(const std::string &serverAddress, uint16_t serverPort)
 {
-    _scene.registerComponent<Position>();
+    _scene.registerComponent<Transform>();
     ...
     _scene.registerComponent<Health>();
     ...
@@ -125,7 +129,7 @@ Application::Application(const std::string &serverAddress, uint16_t serverPort)
 GameLoop::GameLoop(Network &network, std::atomic<bool> &running)
     : _network(network), _running(running), _game(_prefabs)
 {
-    _scene.registerComponent<Position>();
+    _scene.registerComponent<Transform>();
     ...
     _scene.registerComponent<Health>();
     ...
@@ -141,7 +145,7 @@ void GameLoop::initializePlayer(uint8_t id)
 	const prefabExample = `// src/server/game/game_loop.cpp
 _prefabs.createPrefab("Enemy", Prefab()
                                    .addComponent(Type{EntType::ENEMY})
-                                   .addComponent(Position{2000.0f, 0.0f})
+                                   .addComponent(Transform{2000.0f, 0.0f})
                                    .addComponent(Health{1, 1}));
 
 Entity enemy = _prefabs.InstantiatePrefab("Enemy", _scene); // createEntity() + every addComponent`;
@@ -183,7 +187,7 @@ Entity enemy = _prefabs.InstantiatePrefab("Enemy", _scene); // createEntity() + 
 </p>
 {@render code(pluginComponentsExample)}
 <ul class="mt-3 max-w-[100ch] list-disc space-y-1.5 pl-5 leading-7">
-	<li>{@render c('Position')}: the position of the entity on screen, in pixels.</li>
+	<li>{@render c('Transform')}: the position of the entity on screen in pixels (plus z, scale and rotation).</li>
 	<li>{@render c('PlayerId')}: the id of the player that owns the entity (server only).</li>
 	<li>
 		{@render c('Type')}: what the entity is ({@render c('PLAYER')}, {@render c('ENEMY')},

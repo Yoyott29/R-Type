@@ -8,12 +8,17 @@
 #pragma once
 #include "ColorRGBA.hpp"
 #include "ComponentDescriptor.hpp"
-#include "Position.hpp"
 #include <filesystem>
 #include <functional>
 #include <map>
 #include <string>
 #include <vector>
+
+// A point or a size on the editor's screen, in pixels
+struct Vec2 {
+    float x;
+    float y;
+};
 
 // Objects and Components structs
 
@@ -66,7 +71,7 @@ inline bool operator==(const ColorRGBA &left, const ColorRGBA &right)
 }
 
 struct Text {
-    Position position;
+    Vec2 position;
     int fontSize;
     std::string text;
     ColorRGBA color;
@@ -74,7 +79,7 @@ struct Text {
 };
 
 struct UiRectangle {
-    Position position;
+    Vec2 position;
     int width;
     int height;
     ColorRGBA color;

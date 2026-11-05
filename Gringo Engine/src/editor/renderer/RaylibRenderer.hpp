@@ -26,16 +26,16 @@ class RaylibRenderer : public IEditorRenderer {
 
 
     // Getters
-    Position getTextSize(const std::string& text, int fontSize) override;
-    Position getMousePosition() const override;
+    Vec2 getTextSize(const std::string& text, int fontSize) override;
+    Vec2 getMousePosition() const override;
     bool isMouseButtonPressed(MouseButtons button) const override;
     bool isMouseButtonDown(MouseButtons button) const override;
     bool isKeyPressed(KeyboardKeys key) const override;
     int getNextCharacter() const override;
 
     // Drawing functions
-    void drawRectangle(Position pos, int width, int height, ColorRGBA color) override;
-    void drawText(const std::string& text, Position pos, int fontSize, ColorRGBA color) override;
+    void drawRectangle(Vec2 pos, int width, int height, ColorRGBA color) override;
+    void drawText(const std::string& text, Vec2 pos, int fontSize, ColorRGBA color) override;
 
     private:
 

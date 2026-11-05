@@ -7,7 +7,7 @@
 
 #pragma once
 #include "IRenderer.hpp"
-#include "Position.hpp"
+#include "Transform.hpp"
 #include "Scene.hpp"
 #include "Sprite.hpp"
 #include "System.hpp"
@@ -20,5 +20,5 @@ class SpriteSystem : public System
 
   private:
     // A texture fills the shape's size, otherwise the shape is drawn in its color
-    static void drawSprite(IRenderer &renderer, Position const &position, Sprite const &sprite);
+    static void drawSprite(IRenderer &renderer, Transform const &position, Sprite const &sprite);
 };

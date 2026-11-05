@@ -52,7 +52,7 @@ struct EditingText {
     int objectComponentIndex = 0;
 
     valueType type;
-    Position position;
+    Vec2 position;
     int fontSize;
     std::string text;
     ColorRGBA color;
@@ -107,6 +107,9 @@ class EditorMenu : public AMenu
     void initPrefabs(SceneObjects sceneObjects);
     void initEntities(SceneObjects sceneObjects);
     void syncComponentWithTemplate(Component &component);
+    // Every entity and prefab has a Transform, first in its list: added if missing, never removed
+    static inline const std::string REQUIRED_COMPONENT = "Transform";
+    void ensureRequiredComponent(std::vector<Component> &components);
     void initComponentTemplates();
 
   private:

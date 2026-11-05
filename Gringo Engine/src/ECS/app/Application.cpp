@@ -14,7 +14,7 @@
 #include "EngineError.hpp"
 #include "GameClock.hpp"
 #include "EventBus.hpp"
-#include "Position.hpp"
+#include "Transform.hpp"
 #include <thread>
 #include <utility>
 #include <functional>
@@ -29,7 +29,7 @@ static const ColorRGBA BACKGROUND_COLOR{0, 0, 0, 255};
 Application::Application()
 {
     // setup basic components and resources
-    _scene.registerComponent<Position>();
+    _scene.registerComponent<Transform>();
     _scene.registerComponent<ChildOf>();
     _scene.registerSystem<HierarchySystem>(Update);
     _scene.addResource<AppAlive>();

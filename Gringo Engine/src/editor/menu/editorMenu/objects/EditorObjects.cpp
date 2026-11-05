@@ -20,7 +20,8 @@ void EditorObjects::addNewEntity()
     int newId = 1;
     for (const Entity &entity : _editor._entities)
         newId = std::max(newId, entity.id + 1);
-    _editor._entities.push_back({newId, "Entity" + std::to_string(newId), {}});
+    _editor._entities.push_back({newId, "Entity" + std::to_string(newId),
+                                 {_editor.createComponent(EditorMenu::REQUIRED_COMPONENT)}});
 
     _editor._currentEntityPage = static_cast<int>((_editor._entities.size() - 1) / ITEMS_PER_PAGE);
     refreshObjectList(ObjectType::Entity);
@@ -31,7 +32,8 @@ void EditorObjects::addNewPrefab()
     _editor._properties.applyCurrentEdit();
 
     int newId = _editor._prefabs.empty() ? 1 : _editor._prefabs.back().id + 1;
-    _editor._prefabs.push_back({newId, "Prefab" + std::to_string(newId), {}});
+    _editor._prefabs.push_back({newId, "Prefab" + std::to_string(newId),
+                                {_editor.createComponent(EditorMenu::REQUIRED_COMPONENT)}});
 
     _editor._currentPrefabPage = static_cast<int>((_editor._prefabs.size() - 1) / ITEMS_PER_PAGE);
     refreshObjectList(ObjectType::Prefab);

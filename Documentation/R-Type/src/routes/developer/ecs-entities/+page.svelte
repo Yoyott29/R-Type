@@ -27,10 +27,10 @@ createEntity() -> 1  free ids: 2 3 ... 4095
 destroyEntity(0)     free ids: 2 3 ... 4095 0`;
 
 	const setExample = `example only: PlayerControlled is a made-up component, it does not exist in the code
-registered types:  Position = 0, Velocity = 1, Sprite = 2, PlayerControlled = 3
+registered types:  Transform = 0, Velocity = 1, Sprite = 2, PlayerControlled = 3
 
-player     Position + Velocity + Sprite + PlayerControlled   ->  ...0000 1111
-decoration Position + Velocity + Sprite                      ->  ...0000 0111`;
+player     Transform + Velocity + Sprite + PlayerControlled  ->  ...0000 1111
+decoration Transform + Velocity + Sprite                     ->  ...0000 0111`;
 </script>
 
 <svelte:head>

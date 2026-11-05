@@ -153,7 +153,7 @@ void NetworkPlugin::build(Scene &scene)
     scene.addResource<Events<NetMessage>>();
     scene.addResource<Events<PeerLeft>>();
     scene.addResource<ReservedInbox>();
-    replicate<Position>(scene, "Position");
+    replicate<Transform>(scene, "Transform");
     if (config.role == NetRole::Client)
         scene.addResource<LocalPeer>();
 

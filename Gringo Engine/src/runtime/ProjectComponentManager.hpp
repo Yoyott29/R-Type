@@ -28,7 +28,7 @@ struct EditorEntityIds {
 class ProjectComponentManager
 {
   public:
-    // Adds the ProjectAssets resource and the Position deserializer. Create it after the plugins
+    // Adds the ProjectAssets resource and the Transform deserializer. Create it after the plugins
     // are added: they register the deserializers of their own components
     ProjectComponentManager(Scene &scene, std::filesystem::path projectFolder);
 

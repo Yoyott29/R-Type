@@ -77,7 +77,7 @@ void EditorProperties::createProperties(Component &component, int componentIndex
         std::string propertyValueName = prefix + propertyName + "_Value";
         std::string propertyRowName = prefix + propertyName + "_Row";
 
-        Position buttonPosition = {positionX + 80.0f, positionY};
+        Vec2 buttonPosition = {positionX + 80.0f, positionY};
 
         std::function<void()> onClick =
             std::bind(&EditorProperties::selectProperty, this, propertyValueName, propertyType,
@@ -154,7 +154,7 @@ void EditorProperties::showNewValue(const std::string &propertyValueName,
 }
 
 void EditorProperties::selectProperty(const std::string &propertyValueName, valueType type,
-                                      Position buttonPosition, float fontSize,
+                                      Vec2 buttonPosition, float fontSize,
                                       ObjectType objectType, int objectId, int componentIndex,
                                       const std::string &propertyName, int propertyId)
 {
@@ -378,12 +378,12 @@ void EditorProperties::drawTextCursor()
 
     Text &label = buttonIterator->second.text;
 
-    Position fullTextSize = _editor._renderer.getTextSize(label.text, label.fontSize);
+    Vec2 fullTextSize = _editor._renderer.getTextSize(label.text, label.fontSize);
     float textLeft = label.position.x - fullTextSize.x / 2.0f;
 
     std::string textBeforeCursor =
         label.text.substr(0, _editor._currentlyUpdatedProperty.cursorIndex);
-    Position textBeforeCursorSize = _editor._renderer.getTextSize(textBeforeCursor, label.fontSize);
+    Vec2 textBeforeCursorSize = _editor._renderer.getTextSize(textBeforeCursor, label.fontSize);
     float cursorX = textLeft + textBeforeCursorSize.x;
 
     _editor._renderer.drawRectangle({cursorX, label.position.y}, CURSOR_WIDTH, label.fontSize,

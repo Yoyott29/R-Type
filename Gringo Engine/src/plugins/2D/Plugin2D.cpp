@@ -7,7 +7,7 @@
 
 #include "Plugin2D.hpp"
 #include "ComponentJson.hpp"
-#include "Position.hpp"
+#include "Transform.hpp"
 #include "ProjectAssets.hpp"
 #include "SpriteSystem.hpp"
 #include "Sprite.hpp"
@@ -37,7 +37,7 @@ void Plugin2D::build(Application &app)
     // setup the SpriteSystem, drawn in the Render schedule
     app._scene.registerSystem<SpriteSystem>(Render);
     ComponentSet spriteRequirements;
-    spriteRequirements.set(app._scene.getComponentType<Position>());
+    spriteRequirements.set(app._scene.getComponentType<Transform>());
     spriteRequirements.set(app._scene.getComponentType<Sprite>());
     app._scene.setSystemComponentSet<SpriteSystem>(spriteRequirements);
 }

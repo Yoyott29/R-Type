@@ -10,7 +10,7 @@
 │   ├── Renderer/      # IRenderer, RayLibRenderer, Sprite, RenderSystem, GetInput, KeyboardInput
 │   ├── Physics2D/     # Velocity, Collider2D, RigidBody2D, MovementSystem, Collider2DSystem
 │   └── Network/       # Socket and the client systems TryConnect, SendInput, ReadSocket
-├── components/        # shared components: Position, PlayerId, Script, Shape, Type
+├── components/        # shared components: Transform, PlayerId, Script, Shape, Type
 ├── systems/           # shared systems: ScriptSystem
 ├── ressources/        # shared resources: AppAlive
 ├── common/            # keyboard codes and the network protocol
@@ -55,19 +55,19 @@
 	const exampleCode = `Scene scene;
 
 // 1. Register the component types
-scene.registerComponent<Position>();
+scene.registerComponent<Transform>();
 scene.registerComponent<Velocity>();
 
 // 2. Register a system in a schedule and tell it which components it needs
 std::shared_ptr<MovementSystem> movement = scene.registerSystem<MovementSystem>(FixedUpdate);
 ComponentSet required;
-required.set(scene.getComponentType<Position>());
+required.set(scene.getComponentType<Transform>());
 required.set(scene.getComponentType<Velocity>());
 scene.setSystemComponentSet<MovementSystem>(required);
 
 // 3. Create an entity and give it components
 Entity ship = scene.createEntity();
-scene.addComponent(ship, Position{0.0f, 200.0f});
+scene.addComponent(ship, Transform{0.0f, 200.0f});
 scene.addComponent(ship, Velocity{100.0f, 0.0f}); // ship is now in movement->_entities
 
 // 4. Run every system of the schedule, then destroy the queued entities
@@ -81,7 +81,7 @@ bool alive = scene.getResource<AppAlive>().alive;  // ResourceNotFoundError if n
 
 	const prefabExample = `PrefabsManager prefabs;
 prefabs.createPrefab("Enemy", Prefab()
-                                  .addComponent(Position{0.0f, 0.0f})
+                                  .addComponent(Transform{0.0f, 0.0f})
                                   .addComponent(Velocity{-100.0f, 0.0f}));
 
 Entity enemy = prefabs.InstantiatePrefab("Enemy", scene); // new entity with a copy of each component`;
@@ -125,7 +125,7 @@ Entity enemy = prefabs.InstantiatePrefab("Enemy", scene); // new entity with a c
 	</li>
 	<li>
 		<strong class="font-semibold">Component</strong>: a plain struct of data attached to an entity,
-		for example a {@render c('Position')} or a {@render c('Velocity')}. It has no logic. See
+		for example a {@render c('Transform')} or a {@render c('Velocity')}. It has no logic. See
 		<a href="/developer/ecs-components" class="text-[#ff8a3d] hover:underline"
 			>How components work</a
 		>.
@@ -133,7 +133,7 @@ Entity enemy = prefabs.InstantiatePrefab("Enemy", scene); // new entity with a c
 	<li>
 		<strong class="font-semibold">System</strong>: the logic. A system declares which components it
 		needs and runs on every entity that has all of them, for example moving every entity that has a
-		{@render c('Position')} and a {@render c('Velocity')}. See
+		{@render c('Transform')} and a {@render c('Velocity')}. See
 		<a href="/developer/ecs-systems" class="text-[#ff8a3d] hover:underline">How systems work</a>.
 	</li>
 </ul>

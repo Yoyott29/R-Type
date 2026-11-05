@@ -65,7 +65,7 @@
         {
             "components": [
                 {
-                    "name": "Position",
+                    "name": "Transform",
                     "properties": [
                         {
                             "id": 0,
@@ -193,7 +193,7 @@
         {
             "components": [
                 {
-                    "name": "Position",
+                    "name": "Transform",
                     "properties": [
                         {
                             "id": 0,
@@ -321,7 +321,7 @@
         {
             "components": [
                 {
-                    "name": "Position",
+                    "name": "Transform",
                     "properties": [
                         {
                             "id": 0,

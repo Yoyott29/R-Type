@@ -1,7 +1,7 @@
 #ifndef ENEMYSPAWNERSCRIPT_HPP_
 #define ENEMYSPAWNERSCRIPT_HPP_
 
-#include "Position.hpp"
+#include "Transform.hpp"
 #include "PrefabsManager.hpp"
 #include "Scene.hpp"
 #include "Script.hpp"
@@ -55,7 +55,7 @@ inline void EnemySpawnerScript::onUpdate(Scene &scene, Entity &)
 
     Entity enemy = scene.getResource<PrefabsManager>().InstantiatePrefab(
         _waveType == 2 ? "Enemy2" : "Enemy", scene);
-    scene.getComponent<Position>(enemy).y = _waveY;
+    scene.getComponent<Transform>(enemy).y = _waveY;
     _spawnTimer = 0.0f;
     --_enemyCount;
 }
