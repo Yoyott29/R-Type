@@ -71,7 +71,7 @@ class IPlugin
     virtual std::vector<BuildVariant> buildVariants() const { return {}; }
 };
 
-// Base class of every plugin: class Physics : public Plugin<Physics>. When the plugin's library
+// Base class of every plugin: class Physics2D : public Plugin<Physics2D>. When the plugin's library
 // is opened, it registers how to create the plugin, so the engine can load it by library name
 template <typename Derived> class Plugin : public IPlugin
 {

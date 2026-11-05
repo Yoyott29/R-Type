@@ -8,7 +8,7 @@
 │   └── errors/        # EngineError and its subclasses
 ├── plugins/           # features added to the client Application through IPlugin
 │   ├── Renderer/      # IRenderer, RayLibRenderer, Sprite, RenderSystem, GetInput, KeyboardInput
-│   ├── Physics/       # Velocity, Collider2D, MovementSystem, Collider2DSystem
+│   ├── Physics2D/     # Velocity, Collider2D, RigidBody2D, MovementSystem, Collider2DSystem
 │   └── Network/       # Socket and the client systems TryConnect, SendInput, ReadSocket
 ├── components/        # shared components: Position, PlayerId, Script, Shape, Type
 ├── systems/           # shared systems: ScriptSystem
@@ -168,7 +168,7 @@ Entity enemy = prefabs.InstantiatePrefab("Enemy", scene); // new entity with a c
 	This is the order used by the game: register the components, register the systems, then create the
 	entities. On the client, the {@render c('Application')} constructor registers the base components
 	and systems, and each plugin registers its own in its {@render c('build')} function (for example
-	{@render c('Physics::build')} sets up {@render c('MovementSystem')}). It creates no entity: they are
+	{@render c('Physics2D::build')} sets up {@render c('MovementSystem')}). It creates no entity: they are
 	created by {@render c('ReadSocket')} from the server snapshots. On the server, {@render c('GameLoop')}
 	({@render c('src/server/game/game_loop.cpp')}) does both in its constructor and while the game runs.
 </p>

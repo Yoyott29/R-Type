@@ -165,7 +165,7 @@ addPlugin(std::make_shared<Audio>());`;
 <h2 class="mt-9 text-lg font-semibold">Add a client plugin</h2>
 <p class="mt-3 max-w-[100ch] leading-7">
 	A plugin groups the components, resources and systems of one subsystem, like
-	{@render c('Physics')} or {@render c('RayLibRenderer')}. Put it in
+	{@render c('Physics2D')} or {@render c('RayLibRenderer')}. Put it in
 	{@render c('src/plugins/<Name>')}, add its folders to the include directories and its sources to
 	the client target in {@render c('CMakeLists.txt')}, then add it in the {@render c('Application')}
 	constructor:

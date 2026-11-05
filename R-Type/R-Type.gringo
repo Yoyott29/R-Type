@@ -55,7 +55,7 @@
         }
     },
     "plugins": [
-        "Physics",
+        "Physics2D",
         "2D",
         "Scripts",
         "InputHandler",

@@ -26,10 +26,10 @@
 
     // setup plugins
     addPlugin(std::make_shared<RayLibRenderer>());
-    addPlugin(std::make_shared<Physics>());
+    addPlugin(std::make_shared<Physics2D>());
     addPlugin(std::make_shared<Client>(serverAddress, serverPort));
 
-    // setup gameplay systems, after the Physics systems in the fixed update
+    // setup gameplay systems, after the Physics2D systems in the fixed update
     _scene.registerSystem<ScriptSystem>(FixedUpdate);
     ...
 }`;
@@ -159,7 +159,7 @@ PostUpdate       RenderSystem (draws the frame)`;
 	<li>
 		<strong class="font-semibold">RayLibRenderer</strong> opens the window (up to 1920 x 1080, fitted to the monitor), registers
 		{@render c('Sprite')}, {@render c('GetInput')} and {@render c('RenderSystem')}.
-		<strong class="font-semibold">Physics</strong> registers {@render c('Velocity')},
+		<strong class="font-semibold">Physics2D</strong> registers {@render c('Velocity')},
 		{@render c('Collider2D')}, {@render c('MovementSystem')} and {@render c('Collider2DSystem')}.
 		<strong class="font-semibold">Client</strong> adds the {@render c('Socket')} resource and the
 		network systems.
