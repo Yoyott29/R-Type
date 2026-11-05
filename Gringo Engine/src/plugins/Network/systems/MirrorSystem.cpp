@@ -7,6 +7,7 @@
 
 #include "MirrorSystem.hpp"
 #include "ChildOf.hpp"
+#include "DecodeOrLog.hpp"
 #include "GameClock.hpp"
 #include "NetComponents.hpp"
 #include "Networked.hpp"
@@ -18,19 +19,6 @@
 #include <string>
 #include <unordered_set>
 #include <vector>
-
-namespace
-{
-// The decoded message, or nullopt logged once per type
-template <typename Message>
-std::optional<Message> decodeOrLog(LogOnce &log, NetMessage const &message, char const *name)
-{
-    std::optional<Message> decoded = Message::decode(message.payload);
-    if (!decoded)
-        log("decode" + std::to_string(message.type), std::string("dropped a malformed ") + name);
-    return decoded;
-}
-} // namespace
 
 bool MirrorSystem::isKnown(Scene &scene, std::uint32_t netId, Entity entity) const
 {

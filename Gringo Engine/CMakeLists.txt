@@ -251,7 +251,7 @@ if(GRINGO_BUILD_TESTS)
     file(GLOB GRINGO_NETWORK_TEST_SOURCES CONFIGURE_DEPENDS tests/network/*.cpp)
     add_executable(network_tests ${GRINGO_NETWORK_TEST_SOURCES} src/runtime/ProjectComponentManager.cpp)
     target_include_directories(network_tests PRIVATE tests/network src/runtime)
-    target_link_libraries(network_tests PRIVATE plugin_Network)
+    target_link_libraries(network_tests PRIVATE plugin_Network plugin_InputHandler)
     set_target_properties(network_tests PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
         INSTALL_RPATH "${GRINGO_OUTPUT_DIRECTORY};${GRINGO_PLUGIN_DIRECTORY}")

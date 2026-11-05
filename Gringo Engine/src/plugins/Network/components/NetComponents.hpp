@@ -6,6 +6,7 @@
 */
 
 #pragma once
+#include "ActionInput.hpp"
 #include <cstdint>
 
 // On a client's mirror of a server entity
@@ -17,4 +18,9 @@ struct Mirror {
 // On a server entity that is replicated
 struct NetId {
     std::uint32_t value;
+};
+
+// Server: the latest actions of the peer that owns the entity (none once it left)
+struct RemoteInput {
+    ActionInput input;
 };

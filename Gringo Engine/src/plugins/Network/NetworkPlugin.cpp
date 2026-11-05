@@ -11,6 +11,7 @@
 #include "ComponentJson.hpp"
 #include "EngineError.hpp"
 #include "Events.hpp"
+#include "InputSendSystem.hpp"
 #include "LocalPeer.hpp"
 #include "MirrorSystem.hpp"
 #include "NetComponents.hpp"
@@ -21,6 +22,7 @@
 #include "Networked.hpp"
 #include "PlayerSystem.hpp"
 #include "ProjectSettings.hpp"
+#include "RemoteInputSystem.hpp"
 #include "Replication.hpp"
 #include "ReplicationSystem.hpp"
 #include "ReservedInbox.hpp"
@@ -66,6 +68,7 @@ void NetworkPlugin::registerComponents(Scene &scene)
         });
     scene.registerComponent<Mirror>();
     scene.registerComponent<NetId>();
+    scene.registerComponent<RemoteInput>();
 }
 
 void NetworkPlugin::build(Application &app) { build(app._scene); }
@@ -162,8 +165,10 @@ void NetworkPlugin::build(Scene &scene)
     scene.registerSystem<SideFilterSystem>(PrepUpdate);
     if (config.role == NetRole::Client) {
         scene.registerSystem<MirrorSystem>(PrepUpdate);
+        scene.registerSystem<InputSendSystem>(PostUpdate);
     } else {
         scene.registerSystem<PlayerSystem>(PrepUpdate);
+        scene.registerSystem<RemoteInputSystem>(PrepUpdate);
         scene.registerSystem<ReplicationSystem>(PostUpdate);
     }
     scene.registerSystem<NetSendSystem>(PostUpdate);
