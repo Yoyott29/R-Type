@@ -49,6 +49,13 @@
                         {"id": 5, "name": "DrawOrder", "type": 0, "value": "0"},
                         {"id": 6, "name": "TexturePath", "type": 7, "value": "NONE"}
                     ]
+                },
+                {
+                    "name": "Networked",
+                    "properties": [
+                        {"id": 0, "name": "Mode", "type": 5, "value": "Replicated"},
+                        {"id": 1, "name": "Prefab", "type": 2, "value": "Player"}
+                    ]
                 }
             ],
             "id": 0,

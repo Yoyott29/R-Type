@@ -20,6 +20,7 @@
 class NetworkPlugin : public Plugin<NetworkPlugin>
 {
   public:
+    void registerComponents(Scene &scene) override;
     void build(Application &app) override;
     void cleanup(Application &app) override;
     std::vector<PropertyDescriptor> settings() const override;

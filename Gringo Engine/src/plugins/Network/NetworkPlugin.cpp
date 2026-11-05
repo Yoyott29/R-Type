@@ -8,21 +8,39 @@
 #include "NetworkPlugin.hpp"
 #include "BuildVariantName.hpp"
 #include "CommandLine.hpp"
+#include "ComponentJson.hpp"
 #include "EngineError.hpp"
 #include "Events.hpp"
 #include "LocalPeer.hpp"
+#include "NetComponents.hpp"
 #include "NetEvents.hpp"
 #include "NetReceiveSystem.hpp"
 #include "NetSendSystem.hpp"
 #include "NetTransport.hpp"
+#include "Networked.hpp"
 #include "ProjectSettings.hpp"
+#include "Replication.hpp"
 #include "ReservedInbox.hpp"
+#include "SideFilterSystem.hpp"
 #include "UdpSocket.hpp"
 #include <asio.hpp>
 #include <optional>
 
 static constexpr const char *SERVER_VARIANT = "server";
 static constexpr const char *CLIENT_VARIANT = "client";
+
+void NetworkPlugin::registerComponents(Scene &scene)
+{
+    scene.registerComponent<Networked>(
+        [](Scene &target, Entity entity, const nlohmann::json &data) {
+            Networked networked;
+            networked.mode = Networked::parseMode(ComponentJson::value(data, "Mode", "Replicated"));
+            networked.prefab = ComponentJson::value(data, "Prefab", "");
+            target.addComponent(entity, networked);
+        });
+    scene.registerComponent<Mirror>();
+    scene.registerComponent<NetId>();
+}
 
 void NetworkPlugin::build(Application &app) { build(app._scene); }
 
@@ -104,6 +122,7 @@ void NetworkPlugin::build(Scene &scene)
     scene.addResource<Events<NetMessage>>();
     scene.addResource<Events<PeerLeft>>();
     scene.addResource<ReservedInbox>();
+    replicate<Position>(scene, "Position");
     if (config.role == NetRole::Client)
         scene.addResource<LocalPeer>();
 
@@ -112,6 +131,7 @@ void NetworkPlugin::build(Scene &scene)
     scene.registerSystem<EventUpdateSystem<NetMessage>>(PrepUpdate);
     scene.registerSystem<EventUpdateSystem<PeerLeft>>(PrepUpdate);
     scene.registerSystem<NetReceiveSystem>(PrepUpdate);
+    scene.registerSystem<SideFilterSystem>(PrepUpdate);
     scene.registerSystem<NetSendSystem>(PostUpdate);
 }
 
