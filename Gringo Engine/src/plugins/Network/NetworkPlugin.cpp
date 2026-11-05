@@ -122,5 +122,8 @@ void NetworkPlugin::cleanup(Scene &scene)
         for (PeerId peer : transport.peers())
             transport.disconnect(peer);
     }
-    flushToSocket(transport, scene.getResource<UdpSocket>());
+    auto &socket = scene.getResource<UdpSocket>();
+    flushToSocket(transport, socket);
+    // Sends the Disconnect packets just handed over, then stops the I/O thread
+    socket.close();
 }

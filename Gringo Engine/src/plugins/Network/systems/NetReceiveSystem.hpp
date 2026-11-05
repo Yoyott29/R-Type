@@ -9,7 +9,7 @@
 #include "Scene.hpp"
 #include "System.hpp"
 
-// Drains the socket into NetTransport, then publishes its events
+// Drains the socket's receive queue into NetTransport, then publishes its events
 class NetReceiveSystem : public System
 {
   public:

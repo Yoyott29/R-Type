@@ -179,29 +179,7 @@
                             "id": 6,
                             "name": "TexturePath",
                             "type": 2,
-                            "value": "Assets/Bydos1.png"
-                        }
-                    ]
-                },
-                {
-                    "name": "Script",
-                    "properties": [
-                        {
-                            "id": 0,
-                            "name": "Path",
-                            "type": 7,
-                            "value": "No Scripts Available"
-                        }
-                    ]
-                },
-                {
-                    "name": "Script",
-                    "properties": [
-                        {
-                            "id": 0,
-                            "name": "Path",
-                            "type": 7,
-                            "value": "No Scripts Available"
+                            "value": "assets/Bydos1.png"
                         }
                     ]
                 }
@@ -329,29 +307,7 @@
                             "id": 6,
                             "name": "TexturePath",
                             "type": 2,
-                            "value": "Assets/Bydos2.png"
-                        }
-                    ]
-                },
-                {
-                    "name": "Script",
-                    "properties": [
-                        {
-                            "id": 0,
-                            "name": "Path",
-                            "type": 7,
-                            "value": "No Scripts Available"
-                        }
-                    ]
-                },
-                {
-                    "name": "Script",
-                    "properties": [
-                        {
-                            "id": 0,
-                            "name": "Path",
-                            "type": 7,
-                            "value": "No Scripts Available"
+                            "value": "assets/Bydos2.png"
                         }
                     ]
                 }
@@ -439,17 +395,6 @@
                             "name": "TexturePath",
                             "type": 2,
                             "value": "default.png"
-                        }
-                    ]
-                },
-                {
-                    "name": "Script",
-                    "properties": [
-                        {
-                            "id": 0,
-                            "name": "Path",
-                            "type": 7,
-                            "value": "No Scripts Available"
                         }
                     ]
                 }

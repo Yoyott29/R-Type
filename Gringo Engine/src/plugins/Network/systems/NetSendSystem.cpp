@@ -12,10 +12,9 @@
 
 void flushToSocket(NetTransport &transport, UdpSocket &socket)
 {
-    transport.flush(NetClock::now(),
-                    [&socket](Endpoint const &to, std::span<const std::byte> data) {
-                        return socket.send(to, data);
-                    });
+    transport.flush(
+        NetClock::now(),
+        [&socket](Endpoint const &to, std::span<const std::byte> data) { socket.send(to, data); });
 }
 
 void NetSendSystem::update(Scene &scene)

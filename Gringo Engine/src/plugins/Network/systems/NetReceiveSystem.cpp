@@ -10,11 +10,7 @@
 #include "NetTransport.hpp"
 #include "NetworkConfig.hpp"
 #include "UdpSocket.hpp"
-#include <array>
-#include <cstddef>
 #include <utility>
-
-static const std::size_t ReadBufferSize = 1500;
 
 void NetReceiveSystem::update(Scene &scene)
 {
@@ -22,10 +18,8 @@ void NetReceiveSystem::update(Scene &scene)
     auto &transport = scene.getResource<NetTransport>();
     TimePoint const now = NetClock::now();
 
-    std::array<std::byte, ReadBufferSize> buffer;
-    Endpoint from{};
-    while (auto const size = socket.receive(buffer, from))
-        transport.receive(from, std::span<const std::byte>(buffer).first(*size), now);
+    for (Datagram const &datagram : socket.drain())
+        transport.receive(datagram.from, datagram.bytes, now);
     transport.update(now);
 
     NetIncoming incoming = transport.takeEvents();
