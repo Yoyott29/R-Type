@@ -14,16 +14,7 @@ namespace
 constexpr std::uint32_t NET_ID = 1;
 const std::string BOX = "Box";
 
-void addBoxPrefab(Scene &scene)
-{
-    Networked networked;
-    networked.mode = NetMode::Replicated;
-    networked.prefab = BOX;
-    Prefab prefab;
-    prefab.addComponent(Position{0.0f, 0.0f});
-    prefab.addComponent(networked);
-    scene.getResource<PrefabsManager>().createPrefab(BOX, prefab);
-}
+void addBoxPrefab(Scene &scene) { addNetworkedPrefab(scene, BOX); }
 
 NetMessage entityState(std::uint32_t tick)
 {

@@ -6,11 +6,14 @@
 #include "NetTransport.hpp"
 #include "NetworkConfig.hpp"
 #include "NetworkPlugin.hpp"
+#include "Networked.hpp"
+#include "Position.hpp"
 #include "PrefabsManager.hpp"
 #include "UdpSocket.hpp"
 #include <chrono>
 #include <functional>
 #include <memory>
+#include <string>
 #include <thread>
 #include <utility>
 #include <vector>
@@ -67,14 +70,28 @@ inline bool pollUntil(std::vector<NetApp *> const &apps, std::function<bool()> c
     return false;
 }
 
-// A client of server built with setup, polled until Connected
-inline NetApp connectedClient(NetApp &server, Setup const &setup = {})
+// A client of server built with setup, polled with others until Connected
+inline NetApp connectedClient(NetApp &server, Setup const &setup = {},
+                              std::vector<NetApp *> others = {})
 {
     NetworkConfig config = NetworkConfig::client("127.0.0.1", 0);
     config.port = server.scene().getResource<UdpSocket>().localPort();
     NetApp client = makeNetApp(std::move(config), setup);
     auto &transport = client.scene().getResource<NetTransport>();
-    CHECK(pollUntil({&server, &client},
-                    [&] { return transport.state() == ConnectionState::Connected; }));
+    others.push_back(&server);
+    others.push_back(&client);
+    CHECK(pollUntil(others, [&] { return transport.state() == ConnectionState::Connected; }));
     return client;
+}
+
+// The prefab name: Position{0, 0} and Networked{Replicated, name}
+inline void addNetworkedPrefab(Scene &scene, std::string const &name)
+{
+    Networked networked;
+    networked.mode = NetMode::Replicated;
+    networked.prefab = name;
+    Prefab prefab;
+    prefab.addComponent(Position{0.0f, 0.0f});
+    prefab.addComponent(networked);
+    scene.getResource<PrefabsManager>().createPrefab(name, prefab);
 }

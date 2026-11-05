@@ -7,14 +7,13 @@
 
 #include "MirrorSystem.hpp"
 #include "ChildOf.hpp"
-#include "EngineError.hpp"
 #include "GameClock.hpp"
 #include "NetComponents.hpp"
 #include "Networked.hpp"
 #include "Packet.hpp"
-#include "PrefabsManager.hpp"
 #include "Replication.hpp"
 #include "ReservedInbox.hpp"
+#include "TryInstantiate.hpp"
 #include <optional>
 #include <string>
 #include <unordered_set>
@@ -121,18 +120,10 @@ void MirrorSystem::spawn(Scene &scene, EntityStateMessage const &message, std::u
         _log("mirrorCap", "mirror limit reached, entities not shown");
         return;
     }
-    if (!scene.hasResource<PrefabsManager>() ||
-        !scene.getResource<PrefabsManager>().hasPrefab(message.prefab)) {
-        _log("prefab" + message.prefab, "unknown prefab \"" + message.prefab + "\"");
+    std::optional<Entity> const instance = tryInstantiate(scene, message.prefab, _log, "mirror");
+    if (!instance)
         return;
-    }
-    Entity entity = 0;
-    try {
-        entity = scene.getResource<PrefabsManager>().InstantiatePrefab(message.prefab, scene);
-    } catch (EntityLimitError const &error) {
-        _log("entityLimit", std::string("mirror not created: ") + error.what());
-        return;
-    }
+    Entity const entity = *instance;
     // A mirror is a top-level entity: the server sends world positions
     if (scene.hasComponent<ChildOf>(entity))
         scene.removeComponent<ChildOf>(entity);
@@ -187,6 +178,5 @@ void MirrorSystem::destroyAll(Scene &scene)
     for (auto const &[netId, entity] : _mirrors)
         if (isKnown(scene, netId, entity))
             scene.destroyEntity(entity);
-    _mirrors.clear();        std::unordered_set<CodecId> present;
-
+    _mirrors.clear();
 }

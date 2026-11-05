@@ -5,11 +5,15 @@
 #include "NetworkPlugin.hpp"
 #include "ProjectSettings.hpp"
 
-static void fill(Scene &scene, std::string variant, std::vector<std::string> args)
+static void fill(Scene &scene, std::string variant, std::vector<std::string> args,
+                 std::string playerPrefabs = "")
 {
     scene.addResource<CommandLine>(CommandLine{std::move(args)});
-    scene.addResource<ProjectSettings>(ProjectSettings(
-        {{"Network", {{"Host", "127.0.0.1"}, {"Port", "4242"}, {"Role", "Client"}}}}));
+    scene.addResource<ProjectSettings>(ProjectSettings({{"Network",
+                                                         {{"Host", "127.0.0.1"},
+                                                          {"Port", "4242"},
+                                                          {"Role", "Client"},
+                                                          {"PlayerPrefabs", playerPrefabs}}}}));
     if (!variant.empty())
         scene.addResource<BuildVariantName>(BuildVariantName{std::move(variant)});
 }
@@ -32,4 +36,12 @@ TEST_CASE(roleComesFromVariant)
     Scene bogus;
     fill(bogus, "bogus", {});
     CHECK_THROWS(NetworkPlugin::resolveConfig(bogus), EngineError);
+}
+
+TEST_CASE(playerPrefabsParsed)
+{
+    Scene scene;
+    fill(scene, "server", {}, "Player, Player2,,");
+    std::vector<std::string> const expected{"Player", "Player2"};
+    CHECK(NetworkPlugin::resolveConfig(scene).playerPrefabs == expected);
 }

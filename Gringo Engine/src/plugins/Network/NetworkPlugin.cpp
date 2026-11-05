@@ -19,6 +19,7 @@
 #include "NetSendSystem.hpp"
 #include "NetTransport.hpp"
 #include "Networked.hpp"
+#include "PlayerSystem.hpp"
 #include "ProjectSettings.hpp"
 #include "Replication.hpp"
 #include "ReplicationSystem.hpp"
@@ -26,10 +27,33 @@
 #include "SideFilterSystem.hpp"
 #include "UdpSocket.hpp"
 #include <asio.hpp>
+#include <cstddef>
 #include <optional>
+#include <string>
+#include <vector>
 
 static constexpr const char *SERVER_VARIANT = "server";
 static constexpr const char *CLIENT_VARIANT = "client";
+static constexpr char PREFAB_SEPARATOR = ',';
+static constexpr const char *PREFAB_BLANKS = " \t";
+
+// The comma-separated names, each trimmed, without the empty ones
+static std::vector<std::string> parsePrefabList(std::string const &text)
+{
+    std::vector<std::string> names;
+    std::size_t start = 0;
+    while (start <= text.size()) {
+        std::size_t end = text.find(PREFAB_SEPARATOR, start);
+        if (end == std::string::npos)
+            end = text.size();
+        std::string const item = text.substr(start, end - start);
+        std::size_t const first = item.find_first_not_of(PREFAB_BLANKS);
+        if (first != std::string::npos)
+            names.push_back(item.substr(first, item.find_last_not_of(PREFAB_BLANKS) - first + 1));
+        start = end + 1;
+    }
+    return names;
+}
 
 void NetworkPlugin::registerComponents(Scene &scene)
 {
@@ -53,6 +77,7 @@ std::vector<PropertyDescriptor> NetworkPlugin::settings() const
     return {
         {"Host", valueType::String, "127.0.0.1"},
         {"Port", valueType::Int, "4242"},
+        {"PlayerPrefabs", valueType::String, ""},
     };
 }
 
@@ -100,9 +125,10 @@ NetworkConfig NetworkPlugin::resolveConfig(Scene &scene)
     if (error)
         throw EngineError("Invalid ip: " + host);
 
-    if (variant == SERVER_VARIANT)
-        return NetworkConfig::server(port, host);
-    return NetworkConfig::client(host, port);
+    NetworkConfig config = variant == SERVER_VARIANT ? NetworkConfig::server(port, host)
+                                                     : NetworkConfig::client(host, port);
+    config.playerPrefabs = parsePrefabList(settings.get("Network", "PlayerPrefabs"));
+    return config;
 }
 
 void NetworkPlugin::build(Scene &scene)
@@ -134,10 +160,12 @@ void NetworkPlugin::build(Scene &scene)
     scene.registerSystem<EventUpdateSystem<PeerLeft>>(PrepUpdate);
     scene.registerSystem<NetReceiveSystem>(PrepUpdate);
     scene.registerSystem<SideFilterSystem>(PrepUpdate);
-    if (config.role == NetRole::Client)
+    if (config.role == NetRole::Client) {
         scene.registerSystem<MirrorSystem>(PrepUpdate);
-    else
+    } else {
+        scene.registerSystem<PlayerSystem>(PrepUpdate);
         scene.registerSystem<ReplicationSystem>(PostUpdate);
+    }
     scene.registerSystem<NetSendSystem>(PostUpdate);
 }
 
