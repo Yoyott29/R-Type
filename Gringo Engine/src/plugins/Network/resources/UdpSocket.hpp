@@ -1,6 +1,6 @@
 /*
 ** EPITECH PROJECT, 2026
-** R-Type
+** Gringo Engine
 ** File description:
 ** UdpSocket
 */
@@ -10,9 +10,9 @@
 #include <cstdint>
 #include <functional>
 #include <memory>
-#include <optional>
 #include <span>
 #include <string>
+#include <vector>
 
 // IPv4 peer address; `ip` is in host byte order (127.0.0.1 == 0x7F000001)
 struct Endpoint {
@@ -29,24 +29,39 @@ template <> struct std::hash<Endpoint> {
     }
 };
 
-// Non-blocking UDP socket; the only Asio user (Asio stays out of this header)
+// A received datagram and its sender
+struct Datagram {
+    Endpoint from;
+    std::vector<std::byte> bytes;
+};
+
+// Datagrams held between two drain() calls; the newer ones are dropped once it is full
+inline constexpr std::size_t RECEIVE_QUEUE_CAPACITY = 1024;
+
+// UDP socket owned by its own I/O thread; the only Asio user (Asio stays out of this header).
+// drain(), send() and close() are called from one thread (the main thread)
 class UdpSocket
 {
   public:
-    // Binds host:port (host = IPv4 literal, default 0.0.0.0; port 0 = ephemeral);
-    // throws NetError on a bad host or bind failure
+    // Binds host:port (host = IPv4 literal, default 0.0.0.0; port 0 = ephemeral) and starts the
+    // I/O thread; throws NetError on a bad host or bind failure
     static UdpSocket bindServer(std::uint16_t port, std::string const &host = "0.0.0.0");
-    // Resolves host once (first IPv4 result), binds port 0, stays unconnected; throws NetError
+    // Resolves host once (first IPv4 result), binds port 0, stays unconnected, starts the I/O
+    // thread; throws NetError
     static UdpSocket bindClient(std::string const &host, std::uint16_t port, Endpoint &server);
 
     UdpSocket(UdpSocket &&) noexcept;
+    // Closes this socket first
     UdpSocket &operator=(UdpSocket &&) noexcept;
+    // close()
     ~UdpSocket();
 
-    // nullopt = nothing pending (or no socket); resets/refusals and bad datagrams are skipped
-    std::optional<std::size_t> receive(std::span<std::byte> buf, Endpoint &from);
-    // false = datagram not sent
-    bool send(Endpoint const &to, std::span<const std::byte> data);
+    // The datagrams received since the last call, oldest first
+    std::vector<Datagram> drain();
+    // Copies the data and hands it to the I/O thread; a failed send is dropped
+    void send(Endpoint const &to, std::span<const std::byte> data);
+    // Runs the sends already handed over, closes the socket and joins the thread; idempotent
+    void close();
     std::uint16_t localPort() const;
 
   private:

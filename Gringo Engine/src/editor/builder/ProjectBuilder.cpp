@@ -1,5 +1,6 @@
 #include "ProjectBuilder.hpp"
 #include "PluginLoader.hpp"
+#include "Structs.hpp"
 #include <algorithm>
 #include <cctype>
 #include <cstdlib>
@@ -36,7 +37,10 @@ std::string ProjectBuilder::targetName(const std::string &projectName)
 {
     std::string result = "";
     for (char character : projectName)
-        result += std::isalnum(static_cast<unsigned char>(character)) ? character : '_';
+        if (std::isalnum(static_cast<unsigned char>(character)))
+            result += static_cast<char>(std::tolower(static_cast<unsigned char>(character)));
+        else
+            result += character == '-' ? '-' : '_';
     return result;
 }
 
@@ -121,19 +125,19 @@ ProjectBuilder::missingFiles(const SceneObjects &sceneObjects,
     const auto check = [&](const std::string &kind, const std::string &object,
                            const std::vector<Component> &components) {
         for (const Component &component : components) {
-            const auto descriptor = std::find_if(
-                descriptors.begin(), descriptors.end(),
-                [&component](const ComponentDescriptor &candidate) {
-                    return candidate.name == component.name;
-                });
+            const auto descriptor =
+                std::find_if(descriptors.begin(), descriptors.end(),
+                             [&component](const ComponentDescriptor &candidate) {
+                                 return candidate.name == component.name;
+                             });
             if (descriptor == descriptors.end())
                 continue;
             for (const Property &property : component.properties) {
-                const auto setting = std::find_if(
-                    descriptor->properties.begin(), descriptor->properties.end(),
-                    [&property](const PropertyDescriptor &candidate) {
-                        return candidate.name == property.name;
-                    });
+                const auto setting =
+                    std::find_if(descriptor->properties.begin(), descriptor->properties.end(),
+                                 [&property](const PropertyDescriptor &candidate) {
+                                     return candidate.name == property.name;
+                                 });
                 if (setting == descriptor->properties.end() || setting->type != valueType::File ||
                     setting->options.empty())
                     continue;
@@ -150,8 +154,8 @@ ProjectBuilder::missingFiles(const SceneObjects &sceneObjects,
                 if (!std::filesystem::is_regular_file(projectFolder / file))
                     missing.push_back("Impossible to build " + sceneObjects.projectName +
                                       ": missing asset: " + file.generic_string() + " (" + kind +
-                                      " " + object + ", " + component.name + "." +
-                                      property.name + ")");
+                                      " " + object + ", " + component.name + "." + property.name +
+                                      ")");
             }
         }
     };
@@ -245,7 +249,8 @@ ProjectBuilder::buildErrors(const SceneObjects &sceneObjects,
 void ProjectBuilder::requireRenderer(const SceneObjects &sceneObjects)
 {
     if (sceneObjects.renderer.empty())
-        throw std::runtime_error("Cannot build project: it has no renderer, choose one in Settings");
+        throw std::runtime_error(
+            "Cannot build project: it has no renderer, choose one in Settings");
     if (!PluginLoader("renderers").isAvailable(sceneObjects.renderer))
         throw std::runtime_error("Cannot build project: renderer \"" + sceneObjects.renderer +
                                  "\" is not available");
@@ -256,14 +261,15 @@ void ProjectBuilder::requireComponentPlugins(const SceneObjects &sceneObjects,
 {
     const auto check = [&](const std::vector<Component> &components) {
         for (const Component &component : components) {
-            const auto descriptor = std::find_if(
-                descriptors.begin(), descriptors.end(),
-                [&component](const ComponentDescriptor &candidate) {
-                    return candidate.name == component.name;
-                });
+            const auto descriptor =
+                std::find_if(descriptors.begin(), descriptors.end(),
+                             [&component](const ComponentDescriptor &candidate) {
+                                 return candidate.name == component.name;
+                             });
             if (descriptor == descriptors.end())
                 throw std::runtime_error("Cannot build project: no available plugin provides the "
-                                         "component \"" + component.name + "\"");
+                                         "component \"" +
+                                         component.name + "\"");
             if (!descriptor->plugin.empty() &&
                 std::find(sceneObjects.activePlugins.begin(), sceneObjects.activePlugins.end(),
                           descriptor->plugin) == sceneObjects.activePlugins.end())
@@ -295,7 +301,10 @@ bool ProjectBuilder::scriptsInclude(const std::filesystem::path &projectFolder,
 void ProjectBuilder::writeGeneratedMain(const std::filesystem::path &sourcePath,
                                         const std::filesystem::path &projectFile,
                                         const std::filesystem::path &projectFolder,
-                                        const SceneObjects &sceneObjects)
+                                        const SceneObjects &sceneObjects,
+                                        const BuildVariant &variant,
+                                        const std::set<std::string> &skippedPlugins,
+                                        const std::set<std::string> &ignoredComponents)
 {
     const std::set<std::string> scripts = collectScripts(sceneObjects);
     const std::set<std::string> buttonScripts = collectButtonScripts(sceneObjects);
@@ -308,6 +317,7 @@ void ProjectBuilder::writeGeneratedMain(const std::filesystem::path &sourcePath,
         throw std::runtime_error("Could not create generated source: " + sourcePath.string());
 
     source << "#include \"Application.hpp\"\n"
+           << "#include \"BuildVariantName.hpp\"\n"
            << "#include \"ProjectComponentManager.hpp\"\n"
            << "#include \"ProjectSettings.hpp\"\n"
            << "#include \"nlohmann/json.hpp\"\n"
@@ -363,14 +373,19 @@ void ProjectBuilder::writeGeneratedMain(const std::filesystem::path &sourcePath,
            << "        Application application(std::vector<std::string>(argv + 1, argv + argc));\n"
            << "        Scene &scene = application._scene;\n"
            << "        scene.addResource<ProjectSettings>(ProjectSettings::fromJson(\n"
-           << "            root.value(\"pluginSettings\", nlohmann::json::object())));\n";
+           << "            root.value(\"pluginSettings\", nlohmann::json::object())));\n"
+           << "        scene.addResource<BuildVariantName>(BuildVariantName{"
+           << cppStringLiteral(variant.name) << "});\n";
     if (usesPrefabs)
         source << "        scene.addResource<PrefabsManager>();\n";
-    // The renderer opens the window, before the plugins that draw through it
-    source << "        application.setRenderer(" << cppStringLiteral(sceneObjects.renderer)
-           << ", " << cppStringLiteral(sceneObjects.projectName) << ");\n";
+    // The renderer opens the window, before the plugins that draw through it. A headless
+    // executable opens none
+    if (!variant.headless)
+        source << "        application.setRenderer(" << cppStringLiteral(sceneObjects.renderer)
+               << ", " << cppStringLiteral(sceneObjects.projectName) << ");\n";
     for (const std::string &plugin : sceneObjects.activePlugins)
-        source << "        application.addPlugin(" << cppStringLiteral(plugin) << ");\n";
+        if (!skippedPlugins.count(plugin))
+            source << "        application.addPlugin(" << cppStringLiteral(plugin) << ");\n";
     if (!scripts.empty())
         source << "        const auto applyParameters = [](const "
                   "std::shared_ptr<GringoEntityScript> &script,\n"
@@ -383,8 +398,18 @@ void ProjectBuilder::writeGeneratedMain(const std::filesystem::path &sourcePath,
                   "\"\"));\n"
                << "            }\n"
                << "        };\n";
-    source << "        ProjectComponentManager components(scene, projectPath.parent_path());\n"
-           << "        for (const auto &entityData : root.value(\"entities\", "
+    source << "        ProjectComponentManager components(scene, projectPath.parent_path());\n";
+    // The components of the skipped plugins are not registered: they are left out of the scene
+    if (!ignoredComponents.empty()) {
+        source << "        components.ignore({";
+        bool firstComponent = true;
+        for (const std::string &component : ignoredComponents) {
+            source << (firstComponent ? "" : ", ") << cppStringLiteral(component);
+            firstComponent = false;
+        }
+        source << "});\n";
+    }
+    source << "        for (const auto &entityData : root.value(\"entities\", "
               "nlohmann::json::array())) {\n"
            << "            Entity entity = scene.createEntity();\n"
            << "            components.addEntityId(scene, entityData.value(\"id\", -1), entity);\n"
@@ -476,7 +501,6 @@ std::string ProjectBuilder::build(const std::string &projectPath, const SceneObj
 {
     const std::filesystem::path projectFile(projectPath);
     const std::filesystem::path projectFolder = projectFile.parent_path();
-    const std::filesystem::path generatedSource = projectFolder / "main.cpp";
     const std::string target = targetName(sceneObjects.projectName);
     const std::set<std::string> scripts = collectScripts(sceneObjects);
     const PluginLoader pluginLoader;
@@ -498,6 +522,7 @@ std::string ProjectBuilder::build(const std::string &projectPath, const SceneObj
             message += (message.empty() ? "" : "\n") + line;
         throw std::runtime_error(message);
     }
+    const PluginTraits traits = inspectPlugins(sceneObjects.activePlugins);
 
     std::filesystem::create_directories(projectFolder);
     for (const std::string &script : scripts) {
@@ -524,7 +549,6 @@ std::string ProjectBuilder::build(const std::string &projectPath, const SceneObj
         if (source.find("onClick") == std::string::npos)
             throw std::runtime_error("Button script must define onClick: " + scriptFile.string());
     }
-    writeGeneratedMain(generatedSource, projectFile, projectFolder, sceneObjects);
 
     const std::filesystem::path workingDirectory = std::filesystem::current_path();
     const std::filesystem::path engineDirectory = workingDirectory / "Gringo Engine";
@@ -535,27 +559,42 @@ std::string ProjectBuilder::build(const std::string &projectPath, const SceneObj
     std::string pluginList;
     for (const std::string &plugin : sceneObjects.activePlugins)
         pluginList += (pluginList.empty() ? "" : ";") + plugin;
-    std::string command =
-        "cmake -S " + shellQuote(resolvedEngineDirectory.string()) + " -B " +
-        shellQuote(buildDirectory.string()) +
-        " "
-        "-DGRINGO_GAME_TARGET=" +
-        shellQuote(target) + " -DGRINGO_GAME_OUTPUT_DIR=" + shellQuote(projectFolder.string()) +
-        " -DGRINGO_GAME_SOURCE=" + shellQuote(generatedSource.string()) +
-        " -DGRINGO_GAME_SCRIPT_DIR=" + shellQuote((projectFolder / "scripts").string()) +
-        " -DGRINGO_GAME_PLUGINS=" + shellQuote(pluginList) +
-        " -DGRINGO_GAME_RENDERER=" + shellQuote(sceneObjects.renderer) +
-        " && cmake --build " + shellQuote(buildDirectory.string()) + " --target " +
-        shellQuote(target) + " && cmake -S " + shellQuote(resolvedEngineDirectory.string()) +
-        " -B " + shellQuote(buildDirectory.string()) +
-        " -U GRINGO_GAME_TARGET"
-        " -U GRINGO_GAME_OUTPUT_DIR"
-        " -U GRINGO_GAME_SOURCE"
-        " -U GRINGO_GAME_SCRIPT_DIR"
-        " -U GRINGO_GAME_PLUGINS"
-        " -U GRINGO_GAME_RENDERER";
-    if (std::system(command.c_str()) != 0)
-        throw std::runtime_error("Failed to build project executable: " + target);
+
+    // No variant: one plain executable <target>. Otherwise one <target>_<variant> each
+    std::vector<BuildVariant> variants = traits.variants;
+    if (variants.empty())
+        variants.push_back({"", false});
+    for (const BuildVariant &variant : variants) {
+        const std::string variantTarget =
+            variant.name.empty() ? target : target + "_" + variant.name;
+        const std::filesystem::path generatedSource =
+            projectFolder / (variant.name.empty() ? "main.cpp" : variant.name + "_main.cpp");
+        std::set<std::string> skippedPlugins;
+        if (variant.headless)
+            skippedPlugins = traits.needRenderer;
+        std::set<std::string> ignoredComponents;
+        for (const ComponentDescriptor &descriptor : descriptors)
+            if (skippedPlugins.count(descriptor.plugin))
+                ignoredComponents.insert(descriptor.name);
+        writeGeneratedMain(generatedSource, projectFile, projectFolder, sceneObjects, variant,
+                           skippedPlugins, ignoredComponents);
+
+        const std::string renderer = variant.headless ? "" : sceneObjects.renderer;
+        std::string command =
+            "cmake -S " + shellQuote(resolvedEngineDirectory.string()) + " -B " +
+            shellQuote(buildDirectory.string()) +
+            " "
+            "-DGRINGO_GAME_TARGET=" +
+            shellQuote(variantTarget) +
+            " -DGRINGO_GAME_OUTPUT_DIR=" + shellQuote(projectFolder.string()) +
+            " -DGRINGO_GAME_SOURCE=" + shellQuote(generatedSource.string()) +
+            " -DGRINGO_GAME_SCRIPT_DIR=" + shellQuote((projectFolder / "scripts").string()) +
+            " -DGRINGO_GAME_PLUGINS=" + shellQuote(pluginList) +
+            " -DGRINGO_GAME_RENDERER=" + shellQuote(renderer) + " && cmake --build " +
+            shellQuote(buildDirectory.string()) + " --target " + shellQuote(variantTarget);
+        if (std::system(command.c_str()) != 0)
+            throw std::runtime_error("Failed to build project executable: " + variantTarget);
+    }
 
     return target;
 }

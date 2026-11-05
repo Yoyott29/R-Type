@@ -1,6 +1,6 @@
 /*
 ** EPITECH PROJECT, 2026
-** R-Type
+** Gringo Engine
 ** File description:
 ** NetEvents
 */
@@ -8,17 +8,34 @@
 #pragma once
 #include <cstddef>
 #include <cstdint>
+#include <limits>
 #include <vector>
 
 using PeerId = std::uint32_t;
 
-enum class DisconnectReason { Timeout, Remote, ConnectFailed, Full, VersionMismatch };
+inline constexpr PeerId NO_PEER = std::numeric_limits<PeerId>::max();
+// A client's only peer
+inline constexpr PeerId SERVER_PEER = 0;
+
+enum class DisconnectReason : std::uint8_t {
+    Timeout,
+    Remote,
+    ConnectFailed,
+    Full,
+    VersionMismatch
+};
 
 struct PeerConnected {
     PeerId peer;
 };
 
 struct PeerDisconnected {
+    PeerId peer;
+    DisconnectReason reason;
+};
+
+// A remote peer that left, announced by the server to the other clients
+struct PeerLeft {
     PeerId peer;
     DisconnectReason reason;
 };

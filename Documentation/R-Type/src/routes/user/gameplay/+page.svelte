@@ -7,7 +7,7 @@
 <ul class="mt-3 max-w-[100ch] list-disc space-y-1.5 pl-6 leading-7">
 	<li>The field is 1920 by 1080 pixels, scaled down to fit the window on smaller monitors.</li>
 	<li>White stars scroll from right to left in the background, at 100 pixels per second. A new star appears every half second.</li>
-	<li>Each of the four players has its own ship color: green, blue, magenta and red (see <a href="/user/multiplayer" class="text-[#ff8a3d] hover:underline">Multiplayer</a>).</li>
+	<li>Each of the four players has its own ship color: green, blue, magenta and red.</li>
 </ul>
 <h2 class="mt-9 text-lg font-semibold">Your ship</h2>
 <ul class="mt-3 max-w-[100ch] list-disc space-y-1.5 pl-6 leading-7">

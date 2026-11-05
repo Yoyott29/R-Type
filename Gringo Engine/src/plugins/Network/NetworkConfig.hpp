@@ -1,6 +1,6 @@
 /*
 ** EPITECH PROJECT, 2026
-** R-Type
+** Gringo Engine
 ** File description:
 ** NetworkConfig
 */
@@ -11,6 +11,7 @@
 #include <cstdint>
 #include <string>
 #include <utility>
+#include <vector>
 
 using NetClock = std::chrono::steady_clock;
 using TimePoint = NetClock::time_point;
@@ -21,7 +22,7 @@ struct NetworkConfig {
     NetRole role = NetRole::Server;
     std::string host;
     std::uint16_t port = 0;
-    std::uint16_t protocolVersion = 1;
+    std::uint16_t protocolVersion = 2;
     std::size_t maxPeers = 4;
     int connectAttempts = 25;
     std::chrono::milliseconds connectRetryInterval{200};
@@ -29,6 +30,8 @@ struct NetworkConfig {
     std::chrono::milliseconds timeout{5000};
     int disconnectRedundancy = 3;
     bool logStats = false; // logs per-peer receive stats to stderr every second
+    // Server: the prefab of the player in slot s is playerPrefabs[s % size]; none if empty
+    std::vector<std::string> playerPrefabs;
 
     static NetworkConfig server(std::uint16_t port, std::string host = "0.0.0.0")
     {

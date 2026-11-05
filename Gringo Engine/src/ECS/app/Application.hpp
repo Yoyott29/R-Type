@@ -6,11 +6,13 @@
 */
 
 #pragma once
+#include "BuildVariant.hpp"
 #include "ComponentDescriptor.hpp"
 #include "IRenderer.hpp"
 #include "PluginLoader.hpp"
 #include "PrefabsManager.hpp"
 #include "Scene.hpp"
+#include "TickTimeManager.hpp"
 #include <cstdint>
 #include <memory>
 #include <string>
@@ -25,7 +27,8 @@ class Application
     // Keeps the arguments (without the program name) in the CommandLine resource
     explicit Application(std::vector<std::string> arguments);
     // Throws if a plugin needs a renderer and none is set, then runs until AppAlive is false or
-    // the window is closed
+    // the window is closed. FixedUpdate runs on the game clock (GameClock); without a renderer
+    // the loop sleeps until the next tick
     void run();
     void addPlugin(const std::shared_ptr<IPlugin> &plugin);
     // Loads a plugin from the shared Gringo Engine/plugins directory.
@@ -48,6 +51,7 @@ class Application
     std::vector<std::shared_ptr<IPlugin>> _plugins;
     std::vector<std::string> _pluginNames;
     std::shared_ptr<IRenderer> _renderer;
+    TickTimeManager _clock;
 };
 
 class IPlugin
@@ -63,6 +67,8 @@ class IPlugin
     // Project settings of the plugin, edited in the editor's Settings panel and read in build()
     // from the ProjectSettings resource
     virtual std::vector<PropertyDescriptor> settings() const { return {}; }
+    // The executables this plugin adds to the project's build, besides the game itself
+    virtual std::vector<BuildVariant> buildVariants() const { return {}; }
 };
 
 // Base class of every plugin: class Physics : public Plugin<Physics>. When the plugin's library

@@ -1,6 +1,6 @@
 /*
 ** EPITECH PROJECT, 2026
-** R-Type
+** Gringo Engine
 ** File description:
 ** ByteStream
 */

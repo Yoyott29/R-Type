@@ -2,15 +2,14 @@
 #include "ChildOf.hpp"
 #include "ComponentJson.hpp"
 #include "HierarchySystem.hpp"
-#include "Position.hpp"
 #include "PluginLoader.hpp"
+#include "Position.hpp"
 #include "ProjectAssets.hpp"
 #include <stdexcept>
 
 // Plugin components are not handled here: each plugin registers its own deserializer in
 // registerComponents(), which runs when the plugin is added to the application
-ProjectComponentManager::ProjectComponentManager(Scene &scene,
-                                                 std::filesystem::path projectFolder)
+ProjectComponentManager::ProjectComponentManager(Scene &scene, std::filesystem::path projectFolder)
 {
     scene.addResource<ProjectAssets>(ProjectAssets{std::move(projectFolder)});
     scene.registerComponent<Position>([](Scene &target, Entity entity, const nlohmann::json &data) {
@@ -66,7 +65,7 @@ std::filesystem::path ProjectComponentManager::findProjectFile(const std::string
 void ProjectComponentManager::addToScene(Scene &scene, Entity entity,
                                          const nlohmann::json &component) const
 {
-    if (component.value("name", "") == "Script")
+    if (isSkipped(component))
         return;
     scene.addComponentFromJson(entity, component);
 }
@@ -74,7 +73,15 @@ void ProjectComponentManager::addToScene(Scene &scene, Entity entity,
 void ProjectComponentManager::addToPrefab(Prefab &prefab, Scene &scene,
                                           const nlohmann::json &component) const
 {
-    if (component.value("name", "") == "Script")
+    if (isSkipped(component))
         return;
     prefab.addComponent(scene.componentInitializer(component));
 }
+
+bool ProjectComponentManager::isSkipped(const nlohmann::json &component) const
+{
+    const std::string name = component.value("name", "");
+    return name == "Script" || _ignored.contains(name);
+}
+
+void ProjectComponentManager::ignore(std::set<std::string> names) { _ignored = std::move(names); }

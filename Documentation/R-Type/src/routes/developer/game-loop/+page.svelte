@@ -249,15 +249,15 @@ PostUpdate       RenderSystem (draws the frame)`;
 	<li>
 		The loop also stops when {@render c('ReadSocket')} sets {@render c('AppAlive.alive')} to false:
 		connection rejected, player eliminated by the server, or no snapshot received for too long. See
-		<a href="/developer/network-disconnect" class="text-[#ff8a3d] hover:underline"
-			>How disconnects and timeouts work</a
+		<a href="/developer/network-players" class="text-[#ff8a3d] hover:underline"
+			>How players and inputs work</a
 		>.
 	</li>
 	<li>
 		{@render c('SendInput')} runs once per frame, not once per {@render c('FixedUpdate')} step. Details
 		are in
-		<a href="/developer/network-client" class="text-[#ff8a3d] hover:underline"
-			>How the client network works</a
+		<a href="/developer/network" class="text-[#ff8a3d] hover:underline"
+			>How the network works</a
 		>.
 	</li>
 	<li>

@@ -1,11 +1,12 @@
 /*
 ** EPITECH PROJECT, 2026
-** R-Type
+** Gringo Engine
 ** File description:
 ** NetTransport
 */
 
 #pragma once
+#include "ByteStream.hpp"
 #include "Connection.hpp"
 #include "NetEvents.hpp"
 #include "NetworkConfig.hpp"
@@ -30,7 +31,8 @@ struct NetIncoming {
 
 using SendFn = std::function<void(Endpoint const &, std::span<const std::byte>)>;
 
-// Socket-free peer table, handshake and lifecycle; never reads the clock, never throws
+// Socket-free peer table, handshake and lifecycle; never reads the clock; send and broadcast throw
+// NetError on a reserved type
 class NetTransport
 {
   public:
@@ -39,9 +41,14 @@ class NetTransport
 
     void send(PeerId peer, std::uint16_t type, std::span<const std::byte> payload);
     void broadcast(std::uint16_t type, std::span<const std::byte> payload);
+    // Plugin-internal: the reserved types send and broadcast refuse
+    void sendReserved(PeerId peer, ReservedType type, std::span<const std::byte> payload);
+    void broadcastReserved(ReservedType type, std::span<const std::byte> payload);
     void disconnect(PeerId peer);
     std::vector<PeerId> peers() const;
     ConnectionState state() const;
+    // The id the server gave this client, once connected
+    std::optional<PeerId> localPeer() const;
 
     void receive(Endpoint const &from, std::span<const std::byte> datagram, TimePoint now);
     // Timeouts and ConnectFailed
@@ -58,6 +65,7 @@ class NetTransport
         bool acceptPending = false; // server: a ConnectAccepted is owed
     };
 
+    void enqueue(PeerId peer, std::uint16_t type, std::span<const std::byte> payload);
     // The peer with this id, std::nullopt if there is none
     std::optional<std::reference_wrapper<Peer>> findPeer(PeerId id);
     void removePeer(PeerId id);
@@ -85,6 +93,7 @@ class NetTransport
     // Client handshake
     int _attempts = 0;
     std::optional<TimePoint> _lastRequest;
+    std::optional<PeerId> _localPeer;
 
     // Encoded packets for endpoints without (or no longer with) a Connection
     std::vector<std::pair<Endpoint, std::vector<std::byte>>> _outbox;

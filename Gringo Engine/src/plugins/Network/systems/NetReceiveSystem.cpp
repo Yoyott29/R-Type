@@ -1,20 +1,19 @@
 /*
 ** EPITECH PROJECT, 2026
-** R-Type
+** Gringo Engine
 ** File description:
 ** NetReceiveSystem
 */
 
 #include "NetReceiveSystem.hpp"
 #include "Events.hpp"
+#include "LocalPeer.hpp"
 #include "NetTransport.hpp"
 #include "NetworkConfig.hpp"
+#include "ReservedInbox.hpp"
 #include "UdpSocket.hpp"
-#include <array>
-#include <cstddef>
+#include <string>
 #include <utility>
-
-static const std::size_t ReadBufferSize = 1500;
 
 void NetReceiveSystem::update(Scene &scene)
 {
@@ -22,20 +21,37 @@ void NetReceiveSystem::update(Scene &scene)
     auto &transport = scene.getResource<NetTransport>();
     TimePoint const now = NetClock::now();
 
-    std::array<std::byte, ReadBufferSize> buffer;
-    Endpoint from{};
-    while (auto const size = socket.receive(buffer, from))
-        transport.receive(from, std::span<const std::byte>(buffer).first(*size), now);
+    for (Datagram const &datagram : socket.drain())
+        transport.receive(datagram.from, datagram.bytes, now);
     transport.update(now);
 
     NetIncoming incoming = transport.takeEvents();
     auto &connected = scene.getResource<Events<PeerConnected>>();
     auto &disconnected = scene.getResource<Events<PeerDisconnected>>();
     auto &messages = scene.getResource<Events<NetMessage>>();
-    for (auto const &event : incoming.connected)
+    auto &inbox = scene.getResource<ReservedInbox>();
+    NetRole const role = scene.getResource<NetworkConfig>().role;
+    bool const server = role == NetRole::Server;
+    for (auto const &event : incoming.connected) {
         connected.send(event);
-    for (auto const &event : incoming.disconnected)
+        if (!server)
+            scene.getResource<LocalPeer>().id = transport.localPeer().value_or(NO_PEER);
+    }
+    for (auto const &event : incoming.disconnected) {
         disconnected.send(event);
-    for (auto &event : incoming.messages)
-        messages.send(std::move(event));
+        if (!server)
+            scene.getResource<LocalPeer>().id = NO_PEER;
+    }
+    inbox.messages.clear();
+    for (auto &event : incoming.messages) {
+        if (event.type < RESERVED_TYPE_MIN) {
+            messages.send(std::move(event));
+            continue;
+        }
+        if (acceptsReserved(role, static_cast<ReservedType>(event.type)))
+            inbox.messages.push_back(std::move(event));
+        else
+            _log("reserved" + std::to_string(event.type),
+                 "dropped reserved message type " + std::to_string(event.type));
+    }
 }

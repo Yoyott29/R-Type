@@ -57,14 +57,10 @@ export const developerPages = [
 	{ title: 'How the game loop works', path: '/developer/game-loop', section: 4 },
 	{ title: 'How-to guides', path: '/developer/how-to', section: 4 },
 
-	{ title: 'How the server works', path: '/developer/udp-server', section: 5 },
+	{ title: 'How the network works', path: '/developer/network', section: 5 },
 	{ title: 'How the protocol works', path: '/developer/network-protocol', section: 5 },
-	{ title: 'How connecting works', path: '/developer/network-connection', section: 5 },
-	{ title: 'How snapshots work', path: '/developer/network-snapshots', section: 5 },
-	{ title: 'How inputs work', path: '/developer/network-inputs', section: 5 },
-	{ title: 'How disconnects and timeouts work', path: '/developer/network-disconnect', section: 5 },
-	{ title: 'How the server threads work', path: '/developer/network-threads', section: 5 },
-	{ title: 'How the client network works', path: '/developer/network-client', section: 5 },
+	{ title: 'How replication works', path: '/developer/network-replication', section: 5 },
+	{ title: 'How players and inputs work', path: '/developer/network-players', section: 5 },
 
 	{ title: 'How to add a page', path: '/developer/add-a-page', section: 6 }
 ];

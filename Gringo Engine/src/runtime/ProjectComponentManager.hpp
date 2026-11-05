@@ -1,10 +1,12 @@
 #pragma once
 
-#include "Scene.hpp"
 #include "Prefab.hpp"
+#include "Scene.hpp"
 #include "nlohmann/json.hpp"
 #include <filesystem>
 #include <map>
+#include <set>
+#include <string>
 #include <optional>
 #include <utility>
 
@@ -40,4 +42,11 @@ class ProjectComponentManager
     // Once every entity is loaded: gives each ChildOf its parent and puts children in place
     void linkChildren(Scene &scene) const;
     void addToPrefab(Prefab &prefab, Scene &scene, const nlohmann::json &component) const;
+    // Components with these names are skipped by addToScene and addToPrefab
+    void ignore(std::set<std::string> names);
+
+  private:
+    bool isSkipped(const nlohmann::json &component) const;
+
+    std::set<std::string> _ignored;
 };

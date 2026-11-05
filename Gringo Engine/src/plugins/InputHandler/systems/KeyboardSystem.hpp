@@ -9,7 +9,8 @@
 #include "Scene.hpp"
 #include "System.hpp"
 
-// Runs in PrepUpdate: asks the renderer which keys are down and stores them in KeyboardInput
+// Runs in PrepUpdate: asks the renderer which keys are down and stores them in KeyboardInput.
+// With an InputBindings resource, it also stores the actions they trigger in ActionInput
 class KeyboardSystem : public System
 {
   public:
