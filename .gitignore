@@ -35,3 +35,4 @@ Gringo Engine/.cache/*
 Gringo Engine/tests/fixtures/*/build/
 Gringo Engine/tests/fixtures/*/*main.cpp
 Gringo Engine/tests/fixtures/*/netdemo*
+Gringo Engine/tests/fixtures/*/plugins

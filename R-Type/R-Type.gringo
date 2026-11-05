@@ -53,9 +53,10 @@
     },
     "plugins": [
         "Physics",
-        "RTypeClient",
-        "Network",
-        "Audio"
+        "2D",
+        "Scripts",
+        "InputHandler",
+        "Network"
     ],
     "prefabs": [
         {

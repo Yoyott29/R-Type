@@ -6,6 +6,7 @@
 */
 
 #pragma once
+#include "BuildVariant.hpp"
 #include "ComponentDescriptor.hpp"
 #include "IRenderer.hpp"
 #include "PluginLoader.hpp"
@@ -51,12 +52,6 @@ class Application
     std::vector<std::string> _pluginNames;
     std::shared_ptr<IRenderer> _renderer;
     TickTimeManager _clock;
-};
-
-// An executable the build makes from this project, e.g. a headless one
-struct BuildVariant {
-    std::string name;
-    bool headless = false;
 };
 
 class IPlugin
