@@ -9,7 +9,7 @@
 #include "ByteStream.hpp"
 #include "ChildOf.hpp"
 #include "EngineError.hpp"
-#include "Position.hpp"
+#include "Transform.hpp"
 #include "Scene.hpp"
 #include <cstddef>
 #include <cstdint>
@@ -41,18 +41,26 @@ constexpr CodecId fnv1a32(std::string_view text)
 //   static void write(ByteWriter &, T const &); static T read(ByteReader &);
 template <typename T> struct NetCodec;
 
-template <> struct NetCodec<Position> {
-    static void write(ByteWriter &writer, Position const &value)
+template <> struct NetCodec<Transform> {
+    static void write(ByteWriter &writer, Transform const &value)
     {
         writer.write(value.x);
         writer.write(value.y);
+        writer.write(value.z);
+        writer.write(value.scaleX);
+        writer.write(value.scaleY);
+        writer.write(value.rotation);
     }
 
-    static Position read(ByteReader &reader)
+    static Transform read(ByteReader &reader)
     {
-        Position value{};
+        Transform value{};
         value.x = reader.read<float>();
         value.y = reader.read<float>();
+        value.z = reader.read<float>();
+        value.scaleX = reader.read<float>();
+        value.scaleY = reader.read<float>();
+        value.rotation = reader.read<float>();
         return value;
     }
 };

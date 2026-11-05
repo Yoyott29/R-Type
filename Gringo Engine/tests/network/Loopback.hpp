@@ -7,7 +7,7 @@
 #include "NetworkConfig.hpp"
 #include "NetworkPlugin.hpp"
 #include "Networked.hpp"
-#include "Position.hpp"
+#include "Transform.hpp"
 #include "PrefabsManager.hpp"
 #include "UdpSocket.hpp"
 #include <chrono>
@@ -84,14 +84,14 @@ inline NetApp connectedClient(NetApp &server, Setup const &setup = {},
     return client;
 }
 
-// The prefab name: Position{0, 0} and Networked{Replicated, name}
+// The prefab name: Transform{0, 0} and Networked{Replicated, name}
 inline void addNetworkedPrefab(Scene &scene, std::string const &name)
 {
     Networked networked;
     networked.mode = NetMode::Replicated;
     networked.prefab = name;
     Prefab prefab;
-    prefab.addComponent(Position{0.0f, 0.0f});
+    prefab.addComponent(Transform{0.0f, 0.0f});
     prefab.addComponent(networked);
     scene.getResource<PrefabsManager>().createPrefab(name, prefab);
 }

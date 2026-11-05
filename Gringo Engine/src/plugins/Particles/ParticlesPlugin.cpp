@@ -10,7 +10,7 @@
 #include "ParticleEmitter.hpp"
 #include "ParticleEmitterSystem.hpp"
 #include "ParticleRenderSystem.hpp"
-#include "Position.hpp"
+#include "Transform.hpp"
 
 void ParticlesPlugin::registerComponents(Scene &scene)
 {
@@ -35,7 +35,7 @@ void ParticlesPlugin::registerComponents(Scene &scene)
 void ParticlesPlugin::build(Application &app)
 {
     ComponentSet requirements;
-    requirements.set(app._scene.getComponentType<Position>());
+    requirements.set(app._scene.getComponentType<Transform>());
     requirements.set(app._scene.getComponentType<ParticleEmitter>());
 
     // spawns and moves the particles

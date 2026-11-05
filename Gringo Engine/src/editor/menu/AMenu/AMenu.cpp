@@ -11,13 +11,13 @@
 
 AMenu::AMenu(IEditorRenderer &renderer) : _isRunning(true), _renderer(renderer) {}
 
-void AMenu::addText(const std::string &name, Position pos, int fontSize, const std::string &text,
+void AMenu::addText(const std::string &name, Vec2 pos, int fontSize, const std::string &text,
                     ColorRGBA color)
 {
     _texts.emplace(name, Text{pos, fontSize, text, color, true});
 }
 
-void AMenu::addButton(const std::string &name, Position center, int width, int height, int fontSize,
+void AMenu::addButton(const std::string &name, Vec2 center, int width, int height, int fontSize,
                       std::function<void()> onClick, ColorRGBA buttonColor, ColorRGBA hoveredColor,
                       ColorRGBA textColor, std::optional<std::string> text)
 {
@@ -28,7 +28,7 @@ void AMenu::addButton(const std::string &name, Position center, int width, int h
                                   onClick});
 }
 
-void AMenu::addRectangle(const std::string &name, Position center, int width, int height,
+void AMenu::addRectangle(const std::string &name, Vec2 center, int width, int height,
                          ColorRGBA color, int drawOrder)
 {
     _rectangles.emplace(name, UiRectangle{center, width, height, color, drawOrder});
@@ -43,7 +43,7 @@ void AMenu::drawTexts() const
 void AMenu::handleButtons()
 {
     std::vector<std::string> clickedButtons;
-    Position mousePosition = _renderer.getMousePosition();
+    Vec2 mousePosition = _renderer.getMousePosition();
     bool mousePressed = _renderer.isMouseButtonPressed(MouseButtons::LEFT);
 
     for (auto &[name, button] : _buttons) {
@@ -139,7 +139,7 @@ bool AMenu::isMouseOver(const UiRectangle &rectangle)
     float left = rectangle.position.x - rectangle.width / 2.0f;
     float top = rectangle.position.y - rectangle.height / 2.0f;
 
-    Position mousePosition = _renderer.getMousePosition();
+    Vec2 mousePosition = _renderer.getMousePosition();
     float mouseX = mousePosition.x;
     float mouseY = mousePosition.y;
 

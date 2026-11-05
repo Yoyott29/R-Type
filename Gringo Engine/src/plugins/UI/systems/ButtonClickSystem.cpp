@@ -7,7 +7,7 @@
 
 #include "ButtonClickSystem.hpp"
 #include "IRenderer.hpp"
-#include "Position.hpp"
+#include "Transform.hpp"
 #include "UIButton.hpp"
 #include <cmath>
 #include <functional>
@@ -24,7 +24,7 @@ void ButtonClickSystem::update(Scene &scene)
 
     MousePosition const mouse = renderer.getMousePosition();
     for (Entity entity : _entities) {
-        Position const &position = scene.getComponent<Position>(entity);
+        Transform const &position = scene.getComponent<Transform>(entity);
         UIButton const &button = scene.getComponent<UIButton>(entity);
         // A button is drawn centered on its position
         if (std::abs(mouse.x - position.x) <= static_cast<float>(button.width) / 2.0f &&

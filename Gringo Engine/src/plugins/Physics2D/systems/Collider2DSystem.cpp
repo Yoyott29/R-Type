@@ -16,7 +16,7 @@ void Collider2DSystem::update(Scene &scene)
     std::set<std::pair<Entity, Entity>> solidContacts;
 
     for (Entity entity : _entities) {
-        Position &position = scene.getComponent<Position>(entity);
+        Transform &position = scene.getComponent<Transform>(entity);
         Collider2D &collider = scene.getComponent<Collider2D>(entity);
 
         for (Entity otherEntity : checkedEntities) {
@@ -25,7 +25,7 @@ void Collider2DSystem::update(Scene &scene)
             bool otherWants = (otherCollider.mask & collider.layer) != 0;
             if (!entityWants && !otherWants)
                 continue;
-            Position &otherPosition = scene.getComponent<Position>(otherEntity);
+            Transform &otherPosition = scene.getComponent<Transform>(otherEntity);
 
             const std::optional<Contact> contact =
                 checkCollisions(position, collider, otherPosition, otherCollider);
@@ -83,8 +83,8 @@ void Collider2DSystem::handleSolidEnter(Scene &scene, Entity entity, Entity othe
     otherVelocity = result;
 }
 
-void Collider2DSystem::resolveSolid(Scene &scene, Entity entityA, Position &positionA,
-                                    Entity entityB, Position &positionB, const Contact &contact)
+void Collider2DSystem::resolveSolid(Scene &scene, Entity entityA, Transform &positionA,
+                                    Entity entityB, Transform &positionB, const Contact &contact)
 {
     const bool movesA = isDynamic(scene, entityA);
     const bool movesB = isDynamic(scene, entityB);
@@ -126,9 +126,9 @@ void Collider2DSystem::resolveSolid(Scene &scene, Entity entityA, Position &posi
     }
 }
 
-std::optional<Contact> Collider2DSystem::checkCollisions(const Position &positionA,
+std::optional<Contact> Collider2DSystem::checkCollisions(const Transform &positionA,
                                                          const Collider2D &colliderA,
-                                                         const Position &positionB,
+                                                         const Transform &positionB,
                                                          const Collider2D &colliderB)
 {
     return std::visit(
@@ -139,9 +139,9 @@ std::optional<Contact> Collider2DSystem::checkCollisions(const Position &positio
 }
 
 // Box vs Box: separated along the axis where they overlap the least
-std::optional<Contact> Collider2DSystem::checkOverlaps(const Position &positionA,
+std::optional<Contact> Collider2DSystem::checkOverlaps(const Transform &positionA,
                                                        const BoxShape &colliderA,
-                                                       const Position &positionB,
+                                                       const Transform &positionB,
                                                        const BoxShape &colliderB)
 {
     const float dx = positionB.x - positionA.x;
@@ -157,9 +157,9 @@ std::optional<Contact> Collider2DSystem::checkOverlaps(const Position &positionA
 }
 
 // Circle vs Circle: separated along the line between the centers
-std::optional<Contact> Collider2DSystem::checkOverlaps(const Position &positionA,
+std::optional<Contact> Collider2DSystem::checkOverlaps(const Transform &positionA,
                                                        const CircleShape &colliderA,
-                                                       const Position &positionB,
+                                                       const Transform &positionB,
                                                        const CircleShape &colliderB)
 {
     const float dx = positionB.x - positionA.x;
@@ -177,9 +177,9 @@ std::optional<Contact> Collider2DSystem::checkOverlaps(const Position &positionA
 }
 
 // Box vs Circle: separated from the closest point of the box to the circle's center
-std::optional<Contact> Collider2DSystem::checkOverlaps(const Position &positionA,
+std::optional<Contact> Collider2DSystem::checkOverlaps(const Transform &positionA,
                                                        const BoxShape &colliderA,
-                                                       const Position &positionB,
+                                                       const Transform &positionB,
                                                        const CircleShape &colliderB)
 {
     const float halfWidth = colliderA.width / 2.0f;
@@ -209,9 +209,9 @@ std::optional<Contact> Collider2DSystem::checkOverlaps(const Position &positionA
 }
 
 // Circle vs Box: the Box vs Circle contact, with the normal reversed
-std::optional<Contact> Collider2DSystem::checkOverlaps(const Position &positionA,
+std::optional<Contact> Collider2DSystem::checkOverlaps(const Transform &positionA,
                                                        const CircleShape &colliderA,
-                                                       const Position &positionB,
+                                                       const Transform &positionB,
                                                        const BoxShape &colliderB)
 {
     std::optional<Contact> contact = checkOverlaps(positionB, colliderB, positionA, colliderA);

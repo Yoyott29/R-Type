@@ -16,20 +16,20 @@ template <> struct NetCodec<Speed> {
 TEST_CASE(codecRoundTrip)
 {
     Scene scene;
-    replicate<Position>(scene, "Position");
+    replicate<Transform>(scene, "Transform");
     Entity from = scene.createEntity();
     Entity to = scene.createEntity();
-    Position const sent{1.5f, -2.0f};
+    Transform const sent{1.5f, -2.0f};
     scene.addComponent(from, sent);
     CHECK(fnv1a32("") == 0x811C9DC5u && fnv1a32("a") == 0xE40C292Cu);
-    auto &codec = scene.getResource<CodecRegistry>().codecs.at(fnv1a32("Position"));
+    auto &codec = scene.getResource<CodecRegistry>().codecs.at(fnv1a32("Transform"));
     ByteWriter writer;
     codec.write(scene, from, writer);
     std::vector<std::byte> bytes = writer.take();
 
     std::vector<std::byte> const truncated(bytes.begin(), bytes.end() - 1);
     CHECK(!codec.apply(scene, to, truncated) && !codec.has(scene, to));
-    CHECK(codec.apply(scene, to, bytes) && scene.getComponent<Position>(to).y == sent.y);
+    CHECK(codec.apply(scene, to, bytes) && scene.getComponent<Transform>(to).y == sent.y);
     codec.remove(scene, to);
     CHECK(!codec.has(scene, to));
 }
@@ -37,8 +37,8 @@ TEST_CASE(codecRoundTrip)
 TEST_CASE(nameClashThrows)
 {
     Scene scene;
-    replicate<Position>(scene, "Position");
-    replicate<Position>(scene, "Position");
-    CHECK_THROWS(replicate<Speed>(scene, "Position"), EngineError);
+    replicate<Transform>(scene, "Transform");
+    replicate<Transform>(scene, "Transform");
+    CHECK_THROWS(replicate<Speed>(scene, "Transform"), EngineError);
     CHECK(scene.getResource<CodecRegistry>().codecs.size() == 1);
 }

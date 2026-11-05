@@ -11,7 +11,7 @@
 #include "Gravity2D.hpp"
 #include "GravitySystem.hpp"
 #include "MovementSystem.hpp"
-#include "Position.hpp"
+#include "Transform.hpp"
 #include "ProjectSettings.hpp"
 #include "RigidBody2D.hpp"
 #include "Velocity.hpp"
@@ -109,14 +109,14 @@ void Physics2D::build(Application &app)
     // setup the MovementSystem and its component requirements
     auto movementSystem = app._scene.registerSystem<MovementSystem>(FixedUpdate);
     ComponentSet movementRequirements;
-    movementRequirements.set(app._scene.getComponentType<Position>());
+    movementRequirements.set(app._scene.getComponentType<Transform>());
     movementRequirements.set(app._scene.getComponentType<Velocity>());
     app._scene.setSystemComponentSet<MovementSystem>(movementRequirements);
 
     // setup the Collider2DSystem, run after the movement
     app._scene.registerSystem<Collider2DSystem>(FixedUpdate);
     ComponentSet colliderRequirements;
-    colliderRequirements.set(app._scene.getComponentType<Position>());
+    colliderRequirements.set(app._scene.getComponentType<Transform>());
     colliderRequirements.set(app._scene.getComponentType<Collider2D>());
     app._scene.setSystemComponentSet<Collider2DSystem>(colliderRequirements);
 }

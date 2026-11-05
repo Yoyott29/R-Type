@@ -7,7 +7,7 @@
 
 #pragma once
 #include "Collider2D.hpp"
-#include "Position.hpp"
+#include "Transform.hpp"
 #include "RigidBody2D.hpp"
 #include "Scene.hpp"
 #include "System.hpp"
@@ -29,21 +29,21 @@ class Collider2DSystem : public System
 {
   public:
     void update(Scene &scene);
-    std::optional<Contact> checkCollisions(const Position &positionA, const Collider2D &colliderA,
-                                           const Position &positionB, const Collider2D &colliderB);
+    std::optional<Contact> checkCollisions(const Transform &positionA, const Collider2D &colliderA,
+                                           const Transform &positionB, const Collider2D &colliderB);
 
     // Box vs Box
-    std::optional<Contact> checkOverlaps(const Position &positionA, const BoxShape &colliderA,
-                                         const Position &positionB, const BoxShape &colliderB);
+    std::optional<Contact> checkOverlaps(const Transform &positionA, const BoxShape &colliderA,
+                                         const Transform &positionB, const BoxShape &colliderB);
     // Circle vs Circle
-    std::optional<Contact> checkOverlaps(const Position &positionA, const CircleShape &colliderA,
-                                         const Position &positionB, const CircleShape &colliderB);
+    std::optional<Contact> checkOverlaps(const Transform &positionA, const CircleShape &colliderA,
+                                         const Transform &positionB, const CircleShape &colliderB);
     // Box vs Circle
-    std::optional<Contact> checkOverlaps(const Position &positionA, const BoxShape &colliderA,
-                                         const Position &positionB, const CircleShape &colliderB);
+    std::optional<Contact> checkOverlaps(const Transform &positionA, const BoxShape &colliderA,
+                                         const Transform &positionB, const CircleShape &colliderB);
     // Circle vs Box
-    std::optional<Contact> checkOverlaps(const Position &positionA, const CircleShape &colliderA,
-                                         const Position &positionB, const BoxShape &colliderB);
+    std::optional<Contact> checkOverlaps(const Transform &positionA, const CircleShape &colliderA,
+                                         const Transform &positionB, const BoxShape &colliderB);
 
   private:
     // Trigger pair: calls the onCollision of each side whose mask accepts the other
@@ -53,8 +53,8 @@ class Collider2DSystem : public System
     void handleSolidEnter(Scene &scene, Entity entity, Entity otherEntity);
     // Solid pair touching on this step: pushes the moving bodies out of each other and removes
     // the velocity going into the contact, so bodies rest on each other (e.g. on a floor)
-    void resolveSolid(Scene &scene, Entity entityA, Position &positionA, Entity entityB,
-                      Position &positionB, const Contact &contact);
+    void resolveSolid(Scene &scene, Entity entityA, Transform &positionA, Entity entityB,
+                      Transform &positionB, const Contact &contact);
     // A RigidBody2D that is not static and has a Velocity to change
     static bool isDynamic(Scene &scene, Entity entity);
 

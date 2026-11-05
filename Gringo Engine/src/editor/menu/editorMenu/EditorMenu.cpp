@@ -472,6 +472,7 @@ void EditorMenu::initPrefabs(SceneObjects sceneObjects)
                 component.color = _components.getComponentColor(component.name);
                 syncComponentWithTemplate(component);
             }
+            ensureRequiredComponent(prefab.components);
         }
         return;
     }
@@ -487,6 +488,7 @@ void EditorMenu::initEntities(SceneObjects sceneObjects)
                 component.color = _components.getComponentColor(component.name);
                 syncComponentWithTemplate(component);
             }
+            ensureRequiredComponent(entity.components);
         }
         return;
     }
@@ -495,7 +497,17 @@ void EditorMenu::initEntities(SceneObjects sceneObjects)
         return;
 
     _entities = {
-        {0, "Player", {createComponent("Position", {"960", "450"}), createComponent("Sprite")}}};
+        {0, "Player", {createComponent("Transform", {"960", "450"}), createComponent("Sprite")}}};
+}
+
+void EditorMenu::ensureRequiredComponent(std::vector<Component> &components)
+{
+    const bool present = std::any_of(components.begin(), components.end(),
+                                     [](const Component &component) {
+                                         return component.name == REQUIRED_COMPONENT;
+                                     });
+    if (!present)
+        components.insert(components.begin(), createComponent(REQUIRED_COMPONENT));
 }
 
 void EditorMenu::initComponentTemplates()

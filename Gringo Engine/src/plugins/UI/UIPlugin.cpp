@@ -9,7 +9,7 @@
 #include "ButtonClickSystem.hpp"
 #include "ButtonSystem.hpp"
 #include "ComponentJson.hpp"
-#include "Position.hpp"
+#include "Transform.hpp"
 #include "TextSystem.hpp"
 #include "UIButton.hpp"
 #include "UIText.hpp"
@@ -43,14 +43,14 @@ void UIPlugin::build(Application &app)
     // setup the TextSystem, drawn on top of the world
     app._scene.registerSystem<TextSystem>(Overlay);
     ComponentSet textRequirements;
-    textRequirements.set(app._scene.getComponentType<Position>());
+    textRequirements.set(app._scene.getComponentType<Transform>());
     textRequirements.set(app._scene.getComponentType<UIText>());
     app._scene.setSystemComponentSet<TextSystem>(textRequirements);
 
     // setup the ButtonSystem, drawn on top of the world
     app._scene.registerSystem<ButtonSystem>(Overlay);
     ComponentSet buttonRequirements;
-    buttonRequirements.set(app._scene.getComponentType<Position>());
+    buttonRequirements.set(app._scene.getComponentType<Transform>());
     buttonRequirements.set(app._scene.getComponentType<UIButton>());
     app._scene.setSystemComponentSet<ButtonSystem>(buttonRequirements);
 

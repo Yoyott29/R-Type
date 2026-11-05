@@ -13,7 +13,7 @@
 
 ComponentCatalog::ComponentCatalog()
 {
-    // The application registers the engine components (Position, Script) in its constructor: copy
+    // The application registers the engine components (Transform, Script) in its constructor: copy
     // them now, before the plugins add theirs (they have no plugin, they are always available)
     Application application;
     PluginLoader pluginLoader;

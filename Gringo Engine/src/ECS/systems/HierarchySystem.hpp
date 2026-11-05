@@ -7,7 +7,7 @@
 
 #pragma once
 #include "ChildOf.hpp"
-#include "Position.hpp"
+#include "Transform.hpp"
 #include "Scene.hpp"
 #include "System.hpp"
 #include <algorithm>
@@ -35,16 +35,17 @@ class HierarchySystem : public System
     static void follow(Scene &scene, Entity child)
     {
         ChildOf &link = scene.getComponent<ChildOf>(child);
-        if (link.parent == NO_PARENT || !scene.hasComponent<Position>(link.parent) ||
-            !scene.hasComponent<Position>(child))
+        if (link.parent == NO_PARENT || !scene.hasComponent<Transform>(link.parent) ||
+            !scene.hasComponent<Transform>(child))
             return;
-        const Position &parentPosition = scene.getComponent<Position>(link.parent);
-        Position &position = scene.getComponent<Position>(child);
+        const Transform &parentPosition = scene.getComponent<Transform>(link.parent);
+        Transform &position = scene.getComponent<Transform>(child);
 
-        // The first time, the whole parent position is added: the child's Position was relative
-        const Position from = link.attached ? link.lastParentPosition : Position{0.0f, 0.0f};
+        // The first time, the whole parent position is added: the child's Transform was relative
+        const Transform from = link.attached ? link.lastParentPosition : Transform{0.0f, 0.0f};
         position.x += parentPosition.x - from.x;
         position.y += parentPosition.y - from.y;
+        position.z += parentPosition.z - from.z;
         link.lastParentPosition = parentPosition;
         link.attached = true;
     }

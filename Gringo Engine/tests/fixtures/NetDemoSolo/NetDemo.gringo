@@ -3,7 +3,7 @@
         {
             "components": [
                 {
-                    "name": "Position",
+                    "name": "Transform",
                     "properties": [
                         {"id": 0, "name": "PositionX", "type": 1, "value": "100"},
                         {"id": 1, "name": "PositionY", "type": 1, "value": "100"}

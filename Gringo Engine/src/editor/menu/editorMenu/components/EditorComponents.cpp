@@ -175,11 +175,14 @@ void EditorComponents::createComponents(std::vector<Component> components, Objec
         _editor.addText(componentTitle, {positionX, headerPositionY}, 24, component.name, TEXT_COLOR);
         _editor._componentsTextNames.push_back(componentTitle);
 
-         std::string deleteName = prefix + "_Delete";
-        _editor.addButton(deleteName, {positionX + componentWidth / 2.0f - 25.0f, headerPositionY}, 30.0f, 30.0f, 18,
-                  [this, index]() { deleteComponent(index); },
-                  BUTTON_COLOR2, BUTTON_COLOR3, TEXT_COLOR, "X");
-        _editor._componentsButtonNames.push_back(deleteName);
+        // The required component (Transform) has no delete button
+        if (component.name != EditorMenu::REQUIRED_COMPONENT) {
+            std::string deleteName = prefix + "_Delete";
+            _editor.addButton(deleteName, {positionX + componentWidth / 2.0f - 25.0f, headerPositionY}, 30.0f, 30.0f, 18,
+                      [this, index]() { deleteComponent(index); },
+                      BUTTON_COLOR2, BUTTON_COLOR3, TEXT_COLOR, "X");
+            _editor._componentsButtonNames.push_back(deleteName);
+        }
 
         _editor._properties.createProperties(component, index, positionX, firstPropertyPositionY, componentWidth, objectType, objectId);
     }
@@ -367,7 +370,8 @@ void EditorComponents::deleteComponent(int index)
 
     std::vector<Component> &components = getObjectComponents(_editor._selectedObjectType, _editor._selectedObjectId);
 
-    if (index < 0 || static_cast<std::size_t>(index) >= components.size())
+    if (index < 0 || static_cast<std::size_t>(index) >= components.size() ||
+        components[index].name == EditorMenu::REQUIRED_COMPONENT)
         return;
 
     const std::string removed = components[index].name;

@@ -40,12 +40,12 @@ class AMenu
     virtual void initButtons() = 0;
     virtual void initRectangles() = 0;
 
-    void addText(const std::string &name, Position pos, int fontSize, const std::string &text,
+    void addText(const std::string &name, Vec2 pos, int fontSize, const std::string &text,
                  ColorRGBA color = ColorRGBA{255, 255, 255, 255});
-    void addButton(const std::string &name, Position center, int width, int height, int fontSize,
+    void addButton(const std::string &name, Vec2 center, int width, int height, int fontSize,
                    std::function<void()> onClick, ColorRGBA buttonColor, ColorRGBA hoveredColor,
                    ColorRGBA textColor, std::optional<std::string> text = std::nullopt);
-    void addRectangle(const std::string &name, Position center, int width, int height,
+    void addRectangle(const std::string &name, Vec2 center, int width, int height,
                       ColorRGBA color, int drawOrder = 0);
 
     void removeText(const std::string &name) { _texts.erase(name); }

@@ -7,7 +7,7 @@
 
 #include "TextSystem.hpp"
 #include "IRenderer.hpp"
-#include "Position.hpp"
+#include "Transform.hpp"
 #include "UIText.hpp"
 #include <functional>
 
@@ -19,7 +19,7 @@ void TextSystem::update(Scene &scene)
     IRenderer &renderer = scene.getResource<std::reference_wrapper<IRenderer>>().get();
 
     for (Entity entity : _entities) {
-        Position const &position = scene.getComponent<Position>(entity);
+        Transform const &position = scene.getComponent<Transform>(entity);
         UIText const &text = scene.getComponent<UIText>(entity);
         renderer.drawText(position.x, position.y, text.content, text.fontSize, text.color);
     }

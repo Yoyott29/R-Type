@@ -39,14 +39,14 @@ void RaylibRenderer::close()
     _closed = true;
 }
 
-Position RaylibRenderer::getTextSize(const std::string &text, int fontSize)
+Vec2 RaylibRenderer::getTextSize(const std::string &text, int fontSize)
 {
     Vector2 textSize = MeasureTextEx(_font, text.c_str(), static_cast<float>(fontSize), 0);
 
     return {textSize.x, textSize.y};
 }
 
-Position RaylibRenderer::getMousePosition() const
+Vec2 RaylibRenderer::getMousePosition() const
 {
     return {static_cast<float>(GetMouseX()), static_cast<float>(GetMouseY())};
 }
@@ -68,15 +68,15 @@ bool RaylibRenderer::isKeyPressed(KeyboardKeys key) const
 
 int RaylibRenderer::getNextCharacter() const { return GetCharPressed(); }
 
-void RaylibRenderer::drawRectangle(Position pos, int width, int height, ColorRGBA color)
+void RaylibRenderer::drawRectangle(Vec2 pos, int width, int height, ColorRGBA color)
 {
     DrawRectangle(static_cast<int>(pos.x - width / 2.0f), static_cast<int>(pos.y - height / 2.0f),
                   width, height, {color.r, color.g, color.b, color.a});
 }
 
-void RaylibRenderer::drawText(const std::string &text, Position pos, int fontSize, ColorRGBA color)
+void RaylibRenderer::drawText(const std::string &text, Vec2 pos, int fontSize, ColorRGBA color)
 {
-    Position size = getTextSize(text, fontSize);
+    Vec2 size = getTextSize(text, fontSize);
     Vector2 topLeft = {pos.x - size.x / 2.0f, pos.y - size.y / 2.0f};
 
     DrawTextEx(_font, text.c_str(), topLeft, static_cast<float>(fontSize), 0,
