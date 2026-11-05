@@ -1,6 +1,6 @@
 /*
 ** EPITECH PROJECT, 2026
-** R-Type
+** Gringo Engine
 ** File description:
 ** Packet
 */
@@ -12,12 +12,11 @@
 #include <span>
 #include <vector>
 
-inline const std::uint16_t PROTOCOL_ID = 0x5254;
+inline const std::uint16_t PROTOCOL_ID = 0x4752;
 inline const std::size_t MAX_DATAGRAM_SIZE = 1200;
 inline const std::size_t PACKET_HEADER_SIZE = 5;
 inline const std::size_t MESSAGE_HEADER_SIZE = 4;
-inline const std::size_t MAX_PAYLOAD =
-    MAX_DATAGRAM_SIZE - PACKET_HEADER_SIZE - MESSAGE_HEADER_SIZE;
+inline const std::size_t MAX_PAYLOAD = MAX_DATAGRAM_SIZE - PACKET_HEADER_SIZE - MESSAGE_HEADER_SIZE;
 
 enum class PacketKind : std::uint8_t {
     Data,

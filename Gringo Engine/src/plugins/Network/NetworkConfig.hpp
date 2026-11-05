@@ -1,6 +1,6 @@
 /*
 ** EPITECH PROJECT, 2026
-** R-Type
+** Gringo Engine
 ** File description:
 ** NetworkConfig
 */
@@ -21,7 +21,7 @@ struct NetworkConfig {
     NetRole role = NetRole::Server;
     std::string host;
     std::uint16_t port = 0;
-    std::uint16_t protocolVersion = 1;
+    std::uint16_t protocolVersion = 2;
     std::size_t maxPeers = 4;
     int connectAttempts = 25;
     std::chrono::milliseconds connectRetryInterval{200};
