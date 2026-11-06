@@ -6,12 +6,16 @@
 */
 
 #include "ThreadPool.hpp"
+#include <exception>
+#include <iostream>
 #include <utility>
 
 std::size_t ThreadPool::defaultWorkerCount()
 {
+    constexpr std::size_t CALLER_THREADS = 1;
+    constexpr std::size_t MIN_WORKERS = 1;
     const std::size_t hardware = std::thread::hardware_concurrency();
-    return hardware > 1 ? hardware - 1 : 1;
+    return hardware > CALLER_THREADS ? hardware - CALLER_THREADS : MIN_WORKERS;
 }
 
 ThreadPool::ThreadPool(std::size_t workerCount)
@@ -106,8 +110,10 @@ void ThreadPool::runTask(const std::function<void()> &task)
 {
     try {
         task();
+    } catch (const std::exception &error) {
+        std::cerr << "ThreadPool: task threw: " << error.what() << '\n';
     } catch (...) {
-        // Tasks report their own errors; an escaping one must not kill the thread
+        std::cerr << "ThreadPool: task threw a non-std exception\n";
     }
     notifyAll();
 }
