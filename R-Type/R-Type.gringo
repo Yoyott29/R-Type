@@ -183,7 +183,7 @@
                             "id": 0,
                             "name": "Path",
                             "type": 7,
-                            "value": "NONE"
+                            "value": "IncreaseScore.hpp"
                         }
                     ]
                 },
@@ -194,13 +194,13 @@
                             "id": 0,
                             "name": "PositionX",
                             "type": 1,
-                            "value": "0"
+                            "value": "100"
                         },
                         {
                             "id": 1,
                             "name": "PositionY",
                             "type": 1,
-                            "value": "0"
+                            "value": "50"
                         },
                         {
                             "id": 2,
@@ -230,7 +230,7 @@
                 }
             ],
             "id": 3,
-            "name": "Entity3"
+            "name": "Score"
         },
         {
             "components": [
