@@ -23,6 +23,8 @@ struct UIButton {
     std::shared_ptr<IGringoButtonScript> script;
     // The .ttf / .otf in the project's assets, resolved; empty: the renderer's built-in font
     std::string fontPath;
+    // The image in the project's assets, resolved, drawn instead of the color; empty: none
+    std::string imagePath;
 };
 
 template <> struct ComponentDescription<UIButton> {
@@ -39,6 +41,7 @@ template <> struct ComponentDescription<UIButton> {
                     {"Color", valueType::Color, "White"},
                     {"TextColor", valueType::Color, "Black"},
                     {"Font", valueType::File, DEFAULT_FONT, {"assets", ".ttf", ".otf"}},
+                    {"ImagePath", valueType::File, NO_FILE, {"assets", ".png", ".jpg"}},
                     {"Script", valueType::File, NO_FILE, {"scripts", ".hpp"}},
                 },
                 {60, 60, 75, 255},

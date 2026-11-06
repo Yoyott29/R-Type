@@ -114,19 +114,19 @@
                             "id": 1,
                             "name": "Width",
                             "type": 0,
-                            "value": "100"
+                            "value": "200"
                         },
                         {
                             "id": 2,
                             "name": "Height",
                             "type": 0,
-                            "value": "50"
+                            "value": "100"
                         },
                         {
                             "id": 3,
                             "name": "FontSize",
                             "type": 0,
-                            "value": "24"
+                            "value": "50"
                         },
                         {
                             "id": 4,
@@ -148,6 +148,12 @@
                         },
                         {
                             "id": 7,
+                            "name": "ImagePath",
+                            "type": 7,
+                            "value": "Button.png"
+                        },
+                        {
+                            "id": 8,
                             "name": "Script",
                             "type": 7,
                             "value": "NONE"
@@ -225,13 +231,13 @@
                             "id": 1,
                             "name": "FontSize",
                             "type": 0,
-                            "value": "60"
+                            "value": "72"
                         },
                         {
                             "id": 2,
                             "name": "Color",
                             "type": 4,
-                            "value": "White"
+                            "value": "Black"
                         },
                         {
                             "id": 3,
@@ -313,7 +319,7 @@
                 }
             ],
             "id": 3,
-            "name": "Entity3"
+            "name": "Track"
         }
     ],
     "pluginSettings": {
