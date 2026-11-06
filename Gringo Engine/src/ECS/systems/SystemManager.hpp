@@ -8,11 +8,13 @@
 #pragma once
 #include "EngineError.hpp"
 #include "System.hpp"
+#include "SystemAccess.hpp"
 #include <algorithm>
 #include <map>
 #include <memory>
 #include <typeindex>
 #include <unordered_map>
+#include <utility>
 #include <vector>
 
 // Run in this order every frame. With a renderer, the application opens the frame after
@@ -35,6 +37,7 @@ class SystemManager
         auto system = std::make_shared<SystemType>();
         _systems.insert({key, system});
         _systemsByLabel[label].push_back(system);
+        _graphsDirty = true;
         return system;
     }
 
@@ -47,6 +50,25 @@ class SystemManager
         }
 
         _componentSets.insert_or_assign(key, componentSet);
+    }
+
+    template <typename SystemType> void setAccess(SystemAccess access)
+    {
+        const std::type_index key(typeid(SystemType));
+
+        if (_systems.find(key) == _systems.end()) {
+            throw ComponentNotRegisteredError();
+        }
+
+        _accesses.insert_or_assign(key, std::move(access));
+        _graphsDirty = true;
+    }
+
+    // nullptr means the system declared no access and runs exclusively
+    const SystemAccess *findAccess(const std::type_index &system) const
+    {
+        auto it = _accesses.find(system);
+        return it == _accesses.end() ? nullptr : &it->second;
     }
 
     template <typename SystemType> void removeSystem()
@@ -63,7 +85,9 @@ class SystemManager
             systems.erase(std::remove(systems.begin(), systems.end(), it->second), systems.end());
         }
         _componentSets.erase(key);
+        _accesses.erase(key);
         _systems.erase(it);
+        _graphsDirty = true;
     }
 
     void entityDestroyed(Entity entity);
@@ -72,6 +96,8 @@ class SystemManager
 
   private:
     std::unordered_map<std::type_index, ComponentSet> _componentSets = {};
+    std::unordered_map<std::type_index, SystemAccess> _accesses = {};
     std::unordered_map<std::type_index, std::shared_ptr<System>> _systems{};
     std::map<ScheduleLabel, std::vector<std::shared_ptr<System>>> _systemsByLabel{};
+    bool _graphsDirty = true;
 };
