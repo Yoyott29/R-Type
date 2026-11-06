@@ -31,6 +31,8 @@ class RaylibRenderer : public Renderer<RaylibRenderer>
                   ColorRGBA color) override;
     void drawImage(std::string const &path, float x, float y, float width,
                    float height) override;
+    void drawModel3D(RendererCamera3D const &camera, RendererModel3D const &model, float x,
+                     float y, float z) override;
 
     bool isKeyDown(Key key) const override;
 
@@ -50,4 +52,5 @@ class RaylibRenderer : public Renderer<RaylibRenderer>
     float _worldWidth = 0.0f;
     float _worldHeight = 0.0f;
     std::unordered_map<std::string, Texture2D> _textures;
+    std::unordered_map<std::string, Model> _models;
 };
