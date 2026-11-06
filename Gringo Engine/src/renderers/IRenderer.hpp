@@ -30,7 +30,20 @@ enum class ColorFilter { None, Protanopia, Deuteranopia, Tritanopia };
 struct RendererModel3D {
     std::string path;
     std::string primitive = "Model";
+    std::string texturePath;
+    ColorRGBA color{255, 255, 255, 255};
+    float width = 1.0f;
+    float height = 1.0f;
+    float depth = 1.0f;
     float scale = 1.0f;
+    float scaleX = 1.0f;
+    float scaleY = 1.0f;
+    float scaleZ = 1.0f;
+    float rotationX = 0.0f;
+    float rotationY = 0.0f;
+    float rotationZ = 0.0f;
+    int animation = -1;
+    float animationSpeed = 1.0f;
 };
 
 // The most basic functions a renderer gives: a window, drawing simple things and the keyboard.
@@ -78,6 +91,7 @@ class IRenderer
     // Mouse
     // Cursor position in world coordinates, so it can be compared with what is drawn
     virtual MousePosition getMousePosition() const = 0;
+    virtual MouseDelta getMouseDelta() const = 0;
     // True only on the frame the button went down
     virtual bool isMouseButtonPressed(Mouse button) const = 0;
 
