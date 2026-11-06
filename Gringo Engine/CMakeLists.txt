@@ -89,9 +89,6 @@ add_library(gringo_engine SHARED
     src/ECS/core/Scene.cpp
     src/ECS/core/TickTimeManager.cpp
     src/ECS/core/EntityManager.cpp
-    src/ECS/core/ThreadPool.cpp
-    src/ECS/systems/ScheduleGraph.cpp
-    src/ECS/systems/ScheduleRunner.cpp
     src/ECS/systems/SystemManager.cpp
     src/ECS/prefabs/Prefab.cpp
     src/ECS/prefabs/PrefabsManager.cpp
@@ -101,7 +98,7 @@ target_include_directories(gringo_engine PUBLIC
     src/ECS/app src/ECS/core src/ECS/errors src/ECS/prefabs src/ECS/systems
     src/ECS/components src/ECS/input src/ECS/resources src/renderers
 )
-target_link_libraries(gringo_engine PUBLIC nlohmann_json::nlohmann_json PRIVATE ${CMAKE_DL_LIBS} Threads::Threads)
+target_link_libraries(gringo_engine PUBLIC nlohmann_json::nlohmann_json PRIVATE ${CMAKE_DL_LIBS})
 target_compile_definitions(gringo_engine PUBLIC
     "$<$<PLATFORM_ID:Windows>:NOGDI;NOUSER;WIN32_LEAN_AND_MEAN>"
 )
@@ -276,13 +273,4 @@ if(GRINGO_BUILD_TESTS)
         RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
         INSTALL_RPATH "${GRINGO_OUTPUT_DIRECTORY};${GRINGO_PLUGIN_DIRECTORY}")
     add_test(NAME network_tests COMMAND network_tests)
-
-    file(GLOB GRINGO_ENGINE_TEST_SOURCES CONFIGURE_DEPENDS tests/engine/*.cpp)
-    add_executable(engine_tests ${GRINGO_ENGINE_TEST_SOURCES})
-    target_include_directories(engine_tests PRIVATE tests/network)
-    target_link_libraries(engine_tests PRIVATE gringo_engine)
-    set_target_properties(engine_tests PROPERTIES
-        RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
-        INSTALL_RPATH "${GRINGO_OUTPUT_DIRECTORY};${GRINGO_PLUGIN_DIRECTORY}")
-    add_test(NAME engine_tests COMMAND engine_tests)
 endif()

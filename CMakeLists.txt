@@ -110,9 +110,6 @@ add_library(gringo_engine SHARED
     ${GRINGO_ENGINE_DIR}/src/ECS/core/Scene.cpp
     ${GRINGO_ENGINE_DIR}/src/ECS/core/TickTimeManager.cpp
     ${GRINGO_ENGINE_DIR}/src/ECS/core/EntityManager.cpp
-    ${GRINGO_ENGINE_DIR}/src/ECS/core/ThreadPool.cpp
-    ${GRINGO_ENGINE_DIR}/src/ECS/systems/ScheduleGraph.cpp
-    ${GRINGO_ENGINE_DIR}/src/ECS/systems/ScheduleRunner.cpp
     ${GRINGO_ENGINE_DIR}/src/ECS/systems/SystemManager.cpp
     ${GRINGO_ENGINE_DIR}/src/ECS/prefabs/Prefab.cpp
     ${GRINGO_ENGINE_DIR}/src/ECS/prefabs/PrefabsManager.cpp
@@ -130,7 +127,7 @@ target_include_directories(gringo_engine PUBLIC
     ${GRINGO_ENGINE_DIR}/src/renderers
 )
 
-target_link_libraries(gringo_engine PUBLIC nlohmann_json::nlohmann_json PRIVATE ${CMAKE_DL_LIBS} Threads::Threads)
+target_link_libraries(gringo_engine PUBLIC nlohmann_json::nlohmann_json PRIVATE ${CMAKE_DL_LIBS})
 
 # Asio and PluginLoader pull in windows.h, whose GDI/USER declarations (Rectangle, CloseWindow,
 # LoadImage, SendInput...) clash with raylib and our own names. PUBLIC: every target links the engine
