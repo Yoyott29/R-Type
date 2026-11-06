@@ -91,6 +91,7 @@ add_library(gringo_engine SHARED
     src/ECS/core/EntityManager.cpp
     src/ECS/core/ThreadPool.cpp
     src/ECS/systems/ScheduleGraph.cpp
+    src/ECS/systems/ScheduleRunner.cpp
     src/ECS/systems/SystemManager.cpp
     src/ECS/prefabs/Prefab.cpp
     src/ECS/prefabs/PrefabsManager.cpp
