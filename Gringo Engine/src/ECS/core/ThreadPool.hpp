@@ -15,7 +15,8 @@
 #include <vector>
 
 // Fixed set of worker threads fed by one shared queue. Tasks must not let exceptions escape: an
-// escaping one is swallowed. A thread waiting in waitUntil runs queued tasks instead of idling
+// escaping one is reported on stderr, then dropped. A thread waiting in waitUntil runs queued
+// tasks instead of idling
 class ThreadPool
 {
   public:
@@ -32,7 +33,8 @@ class ThreadPool
     // Runs one queued task on the calling thread. False if the queue was empty
     bool runPendingTask();
     // Returns once done() is true, running queued tasks meanwhile. done() is re-evaluated after
-    // each task and after notifyAll()
+    // each task and after notifyAll(). done() is evaluated with the pool mutex held, so it must not
+    // call into the pool
     void waitUntil(const std::function<bool()> &done);
     // To call after changing what a waitUntil predicate reads
     void notifyAll();

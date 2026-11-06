@@ -412,4 +412,12 @@ TEST_CASE(sequentialScheduleCreatesNoThread)
     parallel.runSchedule(Update);
     CHECK(threadCount() > kMainThreadOnly);
 }
+
+TEST_CASE(unregisteredScheduleCreatesNoThread)
+{
+    CHECK(settleToMainThread());
+    Scene scene;
+    scene.runSchedule(Render);
+    CHECK(threadCount() == kMainThreadOnly);
+}
 #endif
