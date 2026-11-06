@@ -54,7 +54,7 @@ void RaylibRenderer::openWindow(int width, int height, std::string const &title)
     InitWindow(width, height, title.c_str());
     if (!IsWindowReady())
         throw EngineError("Could not open the window");
-    DisableCursor();
+    // DisableCursor();
     SetTargetFPS(60);
 }
 
@@ -166,8 +166,7 @@ void RaylibRenderer::drawText(float x, float y, std::string const &text, int fon
                toRaylib(color));
 }
 
-void RaylibRenderer::drawImage(std::string const &path, float x, float y, float width,
-                               float height)
+void RaylibRenderer::drawImage(std::string const &path, float x, float y, float width, float height)
 {
     Texture2D &texture = getTexture(path);
     const Rectangle source = {0.0f, 0.0f, static_cast<float>(texture.width),
@@ -177,8 +176,8 @@ void RaylibRenderer::drawImage(std::string const &path, float x, float y, float 
 }
 
 void RaylibRenderer::drawImageRegion(std::string const &path, float x, float y, float width,
-                                     float height, float sourceX, float sourceY,
-                                     float sourceWidth, float sourceHeight)
+                                     float height, float sourceX, float sourceY, float sourceWidth,
+                                     float sourceHeight)
 {
     Texture2D &texture = getTexture(path);
     const Rectangle source = {sourceX, sourceY, sourceWidth, sourceHeight};
@@ -191,12 +190,13 @@ void RaylibRenderer::drawModel3D(RendererCamera3D const &camera, RendererModel3D
 {
     const ::Camera3D raylibCamera{{camera.positionX, camera.positionY, camera.positionZ},
                                   {camera.targetX, camera.targetY, camera.targetZ},
-                                  {camera.upX, camera.upY, camera.upZ}, camera.fieldOfView,
+                                  {camera.upX, camera.upY, camera.upZ},
+                                  camera.fieldOfView,
                                   CAMERA_PERSPECTIVE};
     EndMode2D();
     BeginMode3D(raylibCamera);
-    if (model.texturePath.empty() && model.primitive == "Cube" &&
-        model.rotationX == 0.0f && model.rotationY == 0.0f && model.rotationZ == 0.0f) {
+    if (model.texturePath.empty() && model.primitive == "Cube" && model.rotationX == 0.0f &&
+        model.rotationY == 0.0f && model.rotationZ == 0.0f) {
         DrawCube({x, y, z}, model.width * model.scale * model.scaleX,
                  model.height * model.scale * model.scaleY,
                  model.depth * model.scale * model.scaleZ, toRaylib(model.color));
@@ -204,9 +204,9 @@ void RaylibRenderer::drawModel3D(RendererCamera3D const &camera, RendererModel3D
         BeginMode2D(worldCamera());
         return;
     }
-    if (model.texturePath.empty() && model.primitive == "Sphere" &&
-        model.rotationX == 0.0f && model.rotationY == 0.0f && model.rotationZ == 0.0f &&
-        model.scaleX == model.scaleY && model.scaleY == model.scaleZ) {
+    if (model.texturePath.empty() && model.primitive == "Sphere" && model.rotationX == 0.0f &&
+        model.rotationY == 0.0f && model.rotationZ == 0.0f && model.scaleX == model.scaleY &&
+        model.scaleY == model.scaleZ) {
         DrawSphere({x, y, z}, model.scale * model.scaleX, toRaylib(model.color));
         EndMode3D();
         BeginMode2D(worldCamera());
@@ -293,17 +293,27 @@ Color RaylibRenderer::toRaylib(ColorRGBA color) { return {color.r, color.g, colo
 KeyboardKey RaylibRenderer::toRaylib(Key key)
 {
     switch (key) {
-        // Map the AZERTY physical keys to the engine's logical ZQSD actions.
-        case Key::Z: return KEY_W;
-        case Key::S: return KEY_S;
-        case Key::Q: return KEY_A;
-        case Key::D: return KEY_D;
-        case Key::Up: return KEY_UP;
-        case Key::Down: return KEY_DOWN;
-        case Key::Left: return KEY_LEFT;
-        case Key::Right: return KEY_RIGHT;
-        case Key::Space: return KEY_SPACE;
-        case Key::Unknown: break;
+    // Map the AZERTY physical keys to the engine's logical ZQSD actions.
+    case Key::Z:
+        return KEY_W;
+    case Key::S:
+        return KEY_S;
+    case Key::Q:
+        return KEY_A;
+    case Key::D:
+        return KEY_D;
+    case Key::Up:
+        return KEY_UP;
+    case Key::Down:
+        return KEY_DOWN;
+    case Key::Left:
+        return KEY_LEFT;
+    case Key::Right:
+        return KEY_RIGHT;
+    case Key::Space:
+        return KEY_SPACE;
+    case Key::Unknown:
+        break;
     }
     return KEY_NULL;
 }
@@ -311,9 +321,12 @@ KeyboardKey RaylibRenderer::toRaylib(Key key)
 MouseButton RaylibRenderer::toRaylib(Mouse button)
 {
     switch (button) {
-        case Mouse::Left: return MOUSE_BUTTON_LEFT;
-        case Mouse::Right: return MOUSE_BUTTON_RIGHT;
-        case Mouse::Middle: return MOUSE_BUTTON_MIDDLE;
+    case Mouse::Left:
+        return MOUSE_BUTTON_LEFT;
+    case Mouse::Right:
+        return MOUSE_BUTTON_RIGHT;
+    case Mouse::Middle:
+        return MOUSE_BUTTON_MIDDLE;
     }
     return MOUSE_BUTTON_LEFT;
 }

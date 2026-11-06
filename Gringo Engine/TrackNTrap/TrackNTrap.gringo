@@ -37,7 +37,25 @@
                         },
                         {
                             "id": 5,
-                            "name": "Rotation",
+                            "name": "ScaleZ",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 6,
+                            "name": "RotationX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 7,
+                            "name": "RotationY",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 8,
+                            "name": "RotationZ",
                             "type": 1,
                             "value": "0"
                         }
@@ -84,7 +102,25 @@
                         },
                         {
                             "id": 5,
-                            "name": "Rotation",
+                            "name": "ScaleZ",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 6,
+                            "name": "RotationX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 7,
+                            "name": "RotationY",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 8,
+                            "name": "RotationZ",
                             "type": 1,
                             "value": "0"
                         }
@@ -156,7 +192,13 @@
                             "id": 8,
                             "name": "Script",
                             "type": 7,
-                            "value": "NONE"
+                            "value": "PlayButton.hpp"
+                        },
+                        {
+                            "id": 9,
+                            "name": "Menu",
+                            "type": 2,
+                            "value": "0"
                         }
                     ]
                 }
@@ -201,7 +243,25 @@
                         },
                         {
                             "id": 5,
-                            "name": "Rotation",
+                            "name": "ScaleZ",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 6,
+                            "name": "RotationX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 7,
+                            "name": "RotationY",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 8,
+                            "name": "RotationZ",
                             "type": 1,
                             "value": "0"
                         }
@@ -288,7 +348,25 @@
                         },
                         {
                             "id": 5,
-                            "name": "Rotation",
+                            "name": "ScaleZ",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 6,
+                            "name": "RotationX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 7,
+                            "name": "RotationY",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 8,
+                            "name": "RotationZ",
                             "type": 1,
                             "value": "0"
                         }
@@ -311,7 +389,49 @@
                         },
                         {
                             "id": 2,
+                            "name": "TexturePath",
+                            "type": 7,
+                            "value": "NONE"
+                        },
+                        {
+                            "id": 3,
+                            "name": "Color",
+                            "type": 4,
+                            "value": "White"
+                        },
+                        {
+                            "id": 4,
+                            "name": "Width",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 5,
+                            "name": "Height",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 6,
+                            "name": "Depth",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 7,
                             "name": "Scale",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 8,
+                            "name": "Animation",
+                            "type": 0,
+                            "value": "-1"
+                        },
+                        {
+                            "id": 9,
+                            "name": "AnimationSpeed",
                             "type": 1,
                             "value": "1"
                         }
@@ -320,6 +440,301 @@
             ],
             "id": 3,
             "name": "Track"
+        },
+        {
+            "components": [
+                {
+                    "name": "Transform",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "PositionX",
+                            "type": 1,
+                            "value": "-157"
+                        },
+                        {
+                            "id": 1,
+                            "name": "PositionY",
+                            "type": 1,
+                            "value": "40"
+                        },
+                        {
+                            "id": 2,
+                            "name": "PositionZ",
+                            "type": 1,
+                            "value": "222"
+                        },
+                        {
+                            "id": 3,
+                            "name": "ScaleX",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 4,
+                            "name": "ScaleY",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 5,
+                            "name": "ScaleZ",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 6,
+                            "name": "RotationX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 7,
+                            "name": "RotationY",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 8,
+                            "name": "RotationZ",
+                            "type": 1,
+                            "value": "0"
+                        }
+                    ]
+                },
+                {
+                    "name": "Camera",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "TargetX",
+                            "type": 1,
+                            "value": "-157"
+                        },
+                        {
+                            "id": 1,
+                            "name": "TargetY",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 2,
+                            "name": "TargetZ",
+                            "type": 1,
+                            "value": "222"
+                        },
+                        {
+                            "id": 3,
+                            "name": "UpX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 4,
+                            "name": "UpY",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 5,
+                            "name": "UpZ",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 6,
+                            "name": "FieldOfView",
+                            "type": 1,
+                            "value": "45"
+                        },
+                        {
+                            "id": 7,
+                            "name": "Active",
+                            "type": 3,
+                            "value": "True"
+                        }
+                    ]
+                },
+                {
+                    "name": "Script",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Path",
+                            "type": 7,
+                            "value": "CameraOrbit.hpp"
+                        },
+                        {
+                            "id": 1,
+                            "name": "CenterX",
+                            "type": 2,
+                            "value": "-157"
+                        },
+                        {
+                            "id": 2,
+                            "name": "CenterZ",
+                            "type": 2,
+                            "value": "222"
+                        },
+                        {
+                            "id": 3,
+                            "name": "Radius",
+                            "type": 2,
+                            "value": "0"
+                        },
+                        {
+                            "id": 4,
+                            "name": "LookRadius",
+                            "type": 2,
+                            "value": "150"
+                        },
+                        {
+                            "id": 5,
+                            "name": "Height",
+                            "type": 2,
+                            "value": "40"
+                        },
+                        {
+                            "id": 6,
+                            "name": "Speed",
+                            "type": 2,
+                            "value": "6"
+                        }
+                    ]
+                }
+            ],
+            "id": 4,
+            "name": "Camera"
+        },
+        {
+            "components": [
+                {
+                    "name": "Transform",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "PositionX",
+                            "type": 1,
+                            "value": "-157"
+                        },
+                        {
+                            "id": 1,
+                            "name": "PositionY",
+                            "type": 1,
+                            "value": "-8"
+                        },
+                        {
+                            "id": 2,
+                            "name": "PositionZ",
+                            "type": 1,
+                            "value": "222"
+                        },
+                        {
+                            "id": 3,
+                            "name": "ScaleX",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 4,
+                            "name": "ScaleY",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 5,
+                            "name": "ScaleZ",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 6,
+                            "name": "RotationX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 7,
+                            "name": "RotationY",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 8,
+                            "name": "RotationZ",
+                            "type": 1,
+                            "value": "0"
+                        }
+                    ]
+                },
+                {
+                    "name": "3DModel",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Primitive",
+                            "type": 5,
+                            "value": "Cube"
+                        },
+                        {
+                            "id": 1,
+                            "name": "ModelPath",
+                            "type": 7,
+                            "value": "NONE"
+                        },
+                        {
+                            "id": 2,
+                            "name": "TexturePath",
+                            "type": 7,
+                            "value": "Grass.png"
+                        },
+                        {
+                            "id": 3,
+                            "name": "Color",
+                            "type": 4,
+                            "value": "White"
+                        },
+                        {
+                            "id": 4,
+                            "name": "Width",
+                            "type": 1,
+                            "value": "10000"
+                        },
+                        {
+                            "id": 5,
+                            "name": "Height",
+                            "type": 1,
+                            "value": "2"
+                        },
+                        {
+                            "id": 6,
+                            "name": "Depth",
+                            "type": 1,
+                            "value": "10000"
+                        },
+                        {
+                            "id": 7,
+                            "name": "Scale",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 8,
+                            "name": "Animation",
+                            "type": 0,
+                            "value": "-1"
+                        },
+                        {
+                            "id": 9,
+                            "name": "AnimationSpeed",
+                            "type": 1,
+                            "value": "1"
+                        }
+                    ]
+                }
+            ],
+            "id": 5,
+            "name": "Ground"
         }
     ],
     "pluginSettings": {
@@ -337,7 +752,8 @@
         "2D",
         "UI",
         "3D",
-        "Physics3D"
+        "Physics3D",
+        "Scripts"
     ],
     "prefabs": [],
     "projectName": "TrackNTrap",
