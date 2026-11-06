@@ -37,7 +37,8 @@ enum class ReservedType : std::uint16_t {
     EntityState = 0xFF01,
     Despawn = 0xFF02,
     InputState = 0xFF03,
-    PeerLeft = 0xFF04
+    PeerLeft = 0xFF04,
+    ScoreUpdate = 0xFF05
 };
 
 struct WireMessage {

@@ -11,6 +11,7 @@
 #include "ComponentJson.hpp"
 #include "EngineError.hpp"
 #include "Events.hpp"
+#include "GameScore.hpp"
 #include "InputSendSystem.hpp"
 #include "LocalPeer.hpp"
 #include "MirrorSystem.hpp"
@@ -153,6 +154,7 @@ void NetworkPlugin::build(Scene &scene)
     scene.addResource<Events<NetMessage>>();
     scene.addResource<Events<PeerLeft>>();
     scene.addResource<ReservedInbox>();
+    scene.addResource<GameScore>();
     replicate<Transform>(scene, "Transform");
     if (config.role == NetRole::Client)
         scene.addResource<LocalPeer>();
