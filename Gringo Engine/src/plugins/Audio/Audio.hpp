@@ -15,6 +15,7 @@ class Audio : public Plugin<Audio>
     void registerComponents(Scene &scene) override;
     void build(Application &app) override;
     void cleanup(Application &app) override;
+    bool requiresRenderer() const override { return true; }
 
   protected:
   private:
