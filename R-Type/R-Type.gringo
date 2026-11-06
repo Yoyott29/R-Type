@@ -148,76 +148,6 @@
         {
             "components": [
                 {
-                    "name": "Transform",
-                    "properties": [
-                        {
-                            "id": 0,
-                            "name": "PositionX",
-                            "type": 1,
-                            "value": "0"
-                        },
-                        {
-                            "id": 1,
-                            "name": "PositionY",
-                            "type": 1,
-                            "value": "0"
-                        },
-                        {
-                            "id": 2,
-                            "name": "PositionZ",
-                            "type": 1,
-                            "value": "0"
-                        },
-                        {
-                            "id": 3,
-                            "name": "ScaleX",
-                            "type": 1,
-                            "value": "1"
-                        },
-                        {
-                            "id": 4,
-                            "name": "ScaleY",
-                            "type": 1,
-                            "value": "1"
-                        },
-                        {
-                            "id": 5,
-                            "name": "Rotation",
-                            "type": 1,
-                            "value": "0"
-                        }
-                    ]
-                },
-                {
-                    "name": "AudioSource",
-                    "properties": [
-                        {
-                            "id": 0,
-                            "name": "Path",
-                            "type": 7,
-                            "value": "stage1.mp3"
-                        },
-                        {
-                            "id": 1,
-                            "name": "Volume",
-                            "type": 0,
-                            "value": "100"
-                        },
-                        {
-                            "id": 2,
-                            "name": "Loop",
-                            "type": 3,
-                            "value": "False"
-                        }
-                    ]
-                }
-            ],
-            "id": 2,
-            "name": "Entity2"
-        },
-        {
-            "components": [
-                {
                     "name": "Text",
                     "properties": [
                         {
@@ -301,6 +231,976 @@
             ],
             "id": 3,
             "name": "Entity3"
+        },
+        {
+            "components": [
+                {
+                    "name": "Transform",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "PositionX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 1,
+                            "name": "PositionY",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 2,
+                            "name": "PositionZ",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 3,
+                            "name": "ScaleX",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 4,
+                            "name": "ScaleY",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 5,
+                            "name": "Rotation",
+                            "type": 1,
+                            "value": "0"
+                        }
+                    ]
+                },
+                {
+                    "name": "Script",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Path",
+                            "type": 7,
+                            "value": "LobbyServerScript.hpp"
+                        }
+                    ]
+                },
+                {
+                    "name": "Networked",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Mode",
+                            "type": 5,
+                            "value": "Server"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Prefab",
+                            "type": 2,
+                            "value": ""
+                        }
+                    ]
+                }
+            ],
+            "id": 4,
+            "name": "LobbyDirector"
+        },
+        {
+            "components": [
+                {
+                    "name": "Transform",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "PositionX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 1,
+                            "name": "PositionY",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 2,
+                            "name": "PositionZ",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 3,
+                            "name": "ScaleX",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 4,
+                            "name": "ScaleY",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 5,
+                            "name": "Rotation",
+                            "type": 1,
+                            "value": "0"
+                        }
+                    ]
+                },
+                {
+                    "name": "Script",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Path",
+                            "type": 7,
+                            "value": "LobbyMenuScript.hpp"
+                        }
+                    ]
+                },
+                {
+                    "name": "Networked",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Mode",
+                            "type": 5,
+                            "value": "Client"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Prefab",
+                            "type": 2,
+                            "value": ""
+                        }
+                    ]
+                }
+            ],
+            "id": 10,
+            "name": "LobbyMenu"
+        },
+        {
+            "components": [
+                {
+                    "name": "Transform",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "PositionX",
+                            "type": 1,
+                            "value": "960"
+                        },
+                        {
+                            "id": 1,
+                            "name": "PositionY",
+                            "type": 1,
+                            "value": "170"
+                        },
+                        {
+                            "id": 2,
+                            "name": "PositionZ",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 3,
+                            "name": "ScaleX",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 4,
+                            "name": "ScaleY",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 5,
+                            "name": "Rotation",
+                            "type": 1,
+                            "value": "0"
+                        }
+                    ]
+                },
+                {
+                    "name": "Text",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Content",
+                            "type": 2,
+                            "value": "R-TYPE"
+                        },
+                        {
+                            "id": 1,
+                            "name": "FontSize",
+                            "type": 0,
+                            "value": "130"
+                        },
+                        {
+                            "id": 2,
+                            "name": "Color",
+                            "type": 4,
+                            "value": "Cyan"
+                        },
+                        {
+                            "id": 3,
+                            "name": "Font",
+                            "type": 7,
+                            "value": "Font.ttf"
+                        }
+                    ]
+                },
+                {
+                    "name": "ChildOf",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Parent",
+                            "type": 0,
+                            "value": "10"
+                        }
+                    ]
+                },
+                {
+                    "name": "Networked",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Mode",
+                            "type": 5,
+                            "value": "Client"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Prefab",
+                            "type": 2,
+                            "value": ""
+                        }
+                    ]
+                }
+            ],
+            "id": 11,
+            "name": "LobbyTitle"
+        },
+        {
+            "components": [
+                {
+                    "name": "Transform",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "PositionX",
+                            "type": 1,
+                            "value": "960"
+                        },
+                        {
+                            "id": 1,
+                            "name": "PositionY",
+                            "type": 1,
+                            "value": "275"
+                        },
+                        {
+                            "id": 2,
+                            "name": "PositionZ",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 3,
+                            "name": "ScaleX",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 4,
+                            "name": "ScaleY",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 5,
+                            "name": "Rotation",
+                            "type": 1,
+                            "value": "0"
+                        }
+                    ]
+                },
+                {
+                    "name": "Text",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Content",
+                            "type": 2,
+                            "value": "MULTIPLAYER LOBBY"
+                        },
+                        {
+                            "id": 1,
+                            "name": "FontSize",
+                            "type": 0,
+                            "value": "36"
+                        },
+                        {
+                            "id": 2,
+                            "name": "Color",
+                            "type": 4,
+                            "value": "White"
+                        },
+                        {
+                            "id": 3,
+                            "name": "Font",
+                            "type": 7,
+                            "value": "Font.ttf"
+                        }
+                    ]
+                },
+                {
+                    "name": "ChildOf",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Parent",
+                            "type": 0,
+                            "value": "10"
+                        }
+                    ]
+                },
+                {
+                    "name": "Networked",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Mode",
+                            "type": 5,
+                            "value": "Client"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Prefab",
+                            "type": 2,
+                            "value": ""
+                        }
+                    ]
+                }
+            ],
+            "id": 12,
+            "name": "LobbySubtitle"
+        },
+        {
+            "components": [
+                {
+                    "name": "Transform",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "PositionX",
+                            "type": 1,
+                            "value": "960"
+                        },
+                        {
+                            "id": 1,
+                            "name": "PositionY",
+                            "type": 1,
+                            "value": "400"
+                        },
+                        {
+                            "id": 2,
+                            "name": "PositionZ",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 3,
+                            "name": "ScaleX",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 4,
+                            "name": "ScaleY",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 5,
+                            "name": "Rotation",
+                            "type": 1,
+                            "value": "0"
+                        }
+                    ]
+                },
+                {
+                    "name": "Text",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Content",
+                            "type": 2,
+                            "value": "P1  EMPTY"
+                        },
+                        {
+                            "id": 1,
+                            "name": "FontSize",
+                            "type": 0,
+                            "value": "40"
+                        },
+                        {
+                            "id": 2,
+                            "name": "Color",
+                            "type": 4,
+                            "value": "Cyan"
+                        },
+                        {
+                            "id": 3,
+                            "name": "Font",
+                            "type": 7,
+                            "value": "Font.ttf"
+                        }
+                    ]
+                },
+                {
+                    "name": "Script",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Path",
+                            "type": 7,
+                            "value": "LobbySlotScript.hpp"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Slot",
+                            "type": 2,
+                            "value": "0"
+                        }
+                    ]
+                },
+                {
+                    "name": "ChildOf",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Parent",
+                            "type": 0,
+                            "value": "10"
+                        }
+                    ]
+                },
+                {
+                    "name": "Networked",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Mode",
+                            "type": 5,
+                            "value": "Client"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Prefab",
+                            "type": 2,
+                            "value": ""
+                        }
+                    ]
+                }
+            ],
+            "id": 14,
+            "name": "LobbySlot1"
+        },
+        {
+            "components": [
+                {
+                    "name": "Transform",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "PositionX",
+                            "type": 1,
+                            "value": "960"
+                        },
+                        {
+                            "id": 1,
+                            "name": "PositionY",
+                            "type": 1,
+                            "value": "470"
+                        },
+                        {
+                            "id": 2,
+                            "name": "PositionZ",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 3,
+                            "name": "ScaleX",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 4,
+                            "name": "ScaleY",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 5,
+                            "name": "Rotation",
+                            "type": 1,
+                            "value": "0"
+                        }
+                    ]
+                },
+                {
+                    "name": "Text",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Content",
+                            "type": 2,
+                            "value": "P2  EMPTY"
+                        },
+                        {
+                            "id": 1,
+                            "name": "FontSize",
+                            "type": 0,
+                            "value": "40"
+                        },
+                        {
+                            "id": 2,
+                            "name": "Color",
+                            "type": 4,
+                            "value": "Lime"
+                        },
+                        {
+                            "id": 3,
+                            "name": "Font",
+                            "type": 7,
+                            "value": "Font.ttf"
+                        }
+                    ]
+                },
+                {
+                    "name": "Script",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Path",
+                            "type": 7,
+                            "value": "LobbySlotScript.hpp"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Slot",
+                            "type": 2,
+                            "value": "1"
+                        }
+                    ]
+                },
+                {
+                    "name": "ChildOf",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Parent",
+                            "type": 0,
+                            "value": "10"
+                        }
+                    ]
+                },
+                {
+                    "name": "Networked",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Mode",
+                            "type": 5,
+                            "value": "Client"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Prefab",
+                            "type": 2,
+                            "value": ""
+                        }
+                    ]
+                }
+            ],
+            "id": 15,
+            "name": "LobbySlot2"
+        },
+        {
+            "components": [
+                {
+                    "name": "Transform",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "PositionX",
+                            "type": 1,
+                            "value": "960"
+                        },
+                        {
+                            "id": 1,
+                            "name": "PositionY",
+                            "type": 1,
+                            "value": "540"
+                        },
+                        {
+                            "id": 2,
+                            "name": "PositionZ",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 3,
+                            "name": "ScaleX",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 4,
+                            "name": "ScaleY",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 5,
+                            "name": "Rotation",
+                            "type": 1,
+                            "value": "0"
+                        }
+                    ]
+                },
+                {
+                    "name": "Text",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Content",
+                            "type": 2,
+                            "value": "P3  EMPTY"
+                        },
+                        {
+                            "id": 1,
+                            "name": "FontSize",
+                            "type": 0,
+                            "value": "40"
+                        },
+                        {
+                            "id": 2,
+                            "name": "Color",
+                            "type": 4,
+                            "value": "Magenta"
+                        },
+                        {
+                            "id": 3,
+                            "name": "Font",
+                            "type": 7,
+                            "value": "Font.ttf"
+                        }
+                    ]
+                },
+                {
+                    "name": "Script",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Path",
+                            "type": 7,
+                            "value": "LobbySlotScript.hpp"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Slot",
+                            "type": 2,
+                            "value": "2"
+                        }
+                    ]
+                },
+                {
+                    "name": "ChildOf",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Parent",
+                            "type": 0,
+                            "value": "10"
+                        }
+                    ]
+                },
+                {
+                    "name": "Networked",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Mode",
+                            "type": 5,
+                            "value": "Client"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Prefab",
+                            "type": 2,
+                            "value": ""
+                        }
+                    ]
+                }
+            ],
+            "id": 16,
+            "name": "LobbySlot3"
+        },
+        {
+            "components": [
+                {
+                    "name": "Transform",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "PositionX",
+                            "type": 1,
+                            "value": "960"
+                        },
+                        {
+                            "id": 1,
+                            "name": "PositionY",
+                            "type": 1,
+                            "value": "610"
+                        },
+                        {
+                            "id": 2,
+                            "name": "PositionZ",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 3,
+                            "name": "ScaleX",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 4,
+                            "name": "ScaleY",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 5,
+                            "name": "Rotation",
+                            "type": 1,
+                            "value": "0"
+                        }
+                    ]
+                },
+                {
+                    "name": "Text",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Content",
+                            "type": 2,
+                            "value": "P4  EMPTY"
+                        },
+                        {
+                            "id": 1,
+                            "name": "FontSize",
+                            "type": 0,
+                            "value": "40"
+                        },
+                        {
+                            "id": 2,
+                            "name": "Color",
+                            "type": 4,
+                            "value": "Red"
+                        },
+                        {
+                            "id": 3,
+                            "name": "Font",
+                            "type": 7,
+                            "value": "Font.ttf"
+                        }
+                    ]
+                },
+                {
+                    "name": "Script",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Path",
+                            "type": 7,
+                            "value": "LobbySlotScript.hpp"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Slot",
+                            "type": 2,
+                            "value": "3"
+                        }
+                    ]
+                },
+                {
+                    "name": "ChildOf",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Parent",
+                            "type": 0,
+                            "value": "10"
+                        }
+                    ]
+                },
+                {
+                    "name": "Networked",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Mode",
+                            "type": 5,
+                            "value": "Client"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Prefab",
+                            "type": 2,
+                            "value": ""
+                        }
+                    ]
+                }
+            ],
+            "id": 17,
+            "name": "LobbySlot4"
+        },
+        {
+            "components": [
+                {
+                    "name": "Transform",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "PositionX",
+                            "type": 1,
+                            "value": "960"
+                        },
+                        {
+                            "id": 1,
+                            "name": "PositionY",
+                            "type": 1,
+                            "value": "780"
+                        },
+                        {
+                            "id": 2,
+                            "name": "PositionZ",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 3,
+                            "name": "ScaleX",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 4,
+                            "name": "ScaleY",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 5,
+                            "name": "Rotation",
+                            "type": 1,
+                            "value": "0"
+                        }
+                    ]
+                },
+                {
+                    "name": "Button",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Content",
+                            "type": 2,
+                            "value": "START"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Width",
+                            "type": 0,
+                            "value": "320"
+                        },
+                        {
+                            "id": 2,
+                            "name": "Height",
+                            "type": 0,
+                            "value": "80"
+                        },
+                        {
+                            "id": 3,
+                            "name": "FontSize",
+                            "type": 0,
+                            "value": "40"
+                        },
+                        {
+                            "id": 4,
+                            "name": "Color",
+                            "type": 4,
+                            "value": "Lime"
+                        },
+                        {
+                            "id": 5,
+                            "name": "TextColor",
+                            "type": 4,
+                            "value": "Black"
+                        },
+                        {
+                            "id": 6,
+                            "name": "Font",
+                            "type": 7,
+                            "value": "Font.ttf"
+                        },
+                        {
+                            "id": 7,
+                            "name": "Script",
+                            "type": 7,
+                            "value": "StartButtonScript.hpp"
+                        }
+                    ]
+                },
+                {
+                    "name": "ChildOf",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Parent",
+                            "type": 0,
+                            "value": "10"
+                        }
+                    ]
+                },
+                {
+                    "name": "Networked",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Mode",
+                            "type": 5,
+                            "value": "Client"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Prefab",
+                            "type": 2,
+                            "value": ""
+                        }
+                    ]
+                }
+            ],
+            "id": 20,
+            "name": "LobbyStartButton"
         }
     ],
     "pluginSettings": {
@@ -1750,6 +2650,93 @@
             ],
             "id": 0,
             "name": "PlayerBullet"
+        },
+        {
+            "components": [
+                {
+                    "name": "Transform",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "PositionX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 1,
+                            "name": "PositionY",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 2,
+                            "name": "PositionZ",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 3,
+                            "name": "ScaleX",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 4,
+                            "name": "ScaleY",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 5,
+                            "name": "Rotation",
+                            "type": 1,
+                            "value": "0"
+                        }
+                    ]
+                },
+                {
+                    "name": "AudioSource",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Path",
+                            "type": 7,
+                            "value": "stage1.mp3"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Volume",
+                            "type": 0,
+                            "value": "100"
+                        },
+                        {
+                            "id": 2,
+                            "name": "Loop",
+                            "type": 3,
+                            "value": "True"
+                        }
+                    ]
+                },
+                {
+                    "name": "Networked",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Mode",
+                            "type": 5,
+                            "value": "Replicated"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Prefab",
+                            "type": 2,
+                            "value": "StageMusic"
+                        }
+                    ]
+                }
+            ],
+            "id": 3,
+            "name": "StageMusic"
         }
     ],
     "projectName": "R-Type",
