@@ -7,8 +7,10 @@
 
 #pragma once
 #include "EngineError.hpp"
+#include "ScheduleGraph.hpp"
 #include "System.hpp"
 #include "SystemAccess.hpp"
+#include "ThreadPool.hpp"
 #include <algorithm>
 #include <map>
 #include <memory>
@@ -95,9 +97,15 @@ class SystemManager
     void runSchedule(ScheduleLabel label, Scene &scene);
 
   private:
+    void rebuildGraphs();
+
     std::unordered_map<std::type_index, ComponentSet> _componentSets = {};
     std::unordered_map<std::type_index, SystemAccess> _accesses = {};
     std::unordered_map<std::type_index, std::shared_ptr<System>> _systems{};
     std::map<ScheduleLabel, std::vector<std::shared_ptr<System>>> _systemsByLabel{};
+    // Shared and immutable: a run keeps its snapshot while a rebuild swaps in new graphs
+    std::map<ScheduleLabel, std::shared_ptr<const ScheduleGraph>> _graphs{};
     bool _graphsDirty = true;
+    // Created by the first schedule that has parallelism, so a sequential app starts no thread
+    std::unique_ptr<ThreadPool> _pool;
 };
