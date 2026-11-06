@@ -59,9 +59,10 @@ int main(int argc, char **argv)
                     const NameMenu &nameMenu = static_cast<NameMenu &>(*currentMenu);
                     projectName = nameMenu.getProjectName();
                     sceneObjects.renderer = nameMenu.getRenderer();
-                    // The 2D template draws its Player with a Sprite
                     if (templateName == "2D")
-                        sceneObjects.activePlugins = {"2D"};
+                        sceneObjects.activePlugins = {"2D", "Physics2D"};
+                    else if (templateName == "3D")
+                        sceneObjects.activePlugins = {"3D", "Physics3D"};
                 } else if (current == MenuType::LoadMenu) {
                     sceneObjects = static_cast<LoadMenu &>(*currentMenu).getSceneObjects();
                     projectName = sceneObjects.projectName;
