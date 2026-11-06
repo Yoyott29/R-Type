@@ -8,15 +8,17 @@
 #pragma once
 #include "ComponentDescriptor.hpp"
 
-// Where an entity is in the world: position in pixels (z for depth, unused in 2D), scale (1: the
-// size of its Sprite / Collider2D) and rotation in degrees
+// Where an entity is in the world, with independent scale and Euler rotation in degrees.
 struct Transform {
     float x = 0.0f;
     float y = 0.0f;
     float z = 0.0f;
     float scaleX = 1.0f;
     float scaleY = 1.0f;
-    float rotation = 0.0f;
+    float scaleZ = 1.0f;
+    float rotationX = 0.0f;
+    float rotationY = 0.0f;
+    float rotationZ = 0.0f;
 };
 
 template <> struct ComponentDescription<Transform> {
@@ -31,7 +33,10 @@ template <> struct ComponentDescription<Transform> {
                     {"PositionZ", valueType::Float, "0"},
                     {"ScaleX", valueType::Float, "1"},
                     {"ScaleY", valueType::Float, "1"},
-                    {"Rotation", valueType::Float, "0"},
+                    {"ScaleZ", valueType::Float, "1"},
+                    {"RotationX", valueType::Float, "0"},
+                    {"RotationY", valueType::Float, "0"},
+                    {"RotationZ", valueType::Float, "0"},
                 },
                 {58, 53, 63, 255},
                 ""};

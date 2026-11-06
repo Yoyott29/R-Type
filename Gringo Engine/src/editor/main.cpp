@@ -62,7 +62,7 @@ int main(int argc, char **argv)
                     if (templateName == "2D")
                         sceneObjects.activePlugins = {"2D", "Physics2D"};
                     else if (templateName == "3D")
-                        sceneObjects.activePlugins = {"3D", "Physics3D"};
+                        sceneObjects.activePlugins = {"3D", "Physics3D", "InputHandler", "Scripts"};
                 } else if (current == MenuType::LoadMenu) {
                     sceneObjects = static_cast<LoadMenu &>(*currentMenu).getSceneObjects();
                     projectName = sceneObjects.projectName;

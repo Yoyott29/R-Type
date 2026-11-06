@@ -39,6 +39,7 @@ class RaylibRenderer : public Renderer<RaylibRenderer>
     bool isKeyDown(Key key) const override;
 
     MousePosition getMousePosition() const override;
+    MouseDelta getMouseDelta() const override;
     bool isMouseButtonPressed(Mouse button) const override;
 
     void setColorFilter(ColorFilter filter) override;
@@ -52,6 +53,13 @@ class RaylibRenderer : public Renderer<RaylibRenderer>
     // Loaded once, kept until the window closes
     Texture2D &getTexture(std::string const &path);
     void unloadTextures();
+    struct AnimationSet {
+        ModelAnimation *animations = nullptr;
+        int count = 0;
+        float frame = 0.0f;
+    };
+    AnimationSet &getAnimations(std::string const &path);
+    void unloadAnimations();
     // The font of fontPath, raylib's default one if it is empty or does not load
     Font getFont(std::string const &fontPath);
     void unloadFonts();
@@ -67,6 +75,7 @@ class RaylibRenderer : public Renderer<RaylibRenderer>
     // Loaded once per path; a path that does not load is kept as the built-in font
     std::unordered_map<std::string, Font> _fonts;
     std::unordered_map<std::string, Model> _models;
+    std::unordered_map<std::string, AnimationSet> _animations;
     ColorFilter _colorFilter = ColorFilter::None;
     RenderTexture2D _filterTarget{};
     Shader _filterShader{};

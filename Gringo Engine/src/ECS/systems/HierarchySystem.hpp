@@ -42,7 +42,7 @@ class HierarchySystem : public System
         Transform &position = scene.getComponent<Transform>(child);
 
         // The first time, the whole parent position is added: the child's Transform was relative
-        const Transform from = link.attached ? link.lastParentPosition : Transform{0.0f, 0.0f};
+        const Transform from = link.attached ? link.lastParentPosition : Transform{};
         position.x += parentPosition.x - from.x;
         position.y += parentPosition.y - from.y;
         position.z += parentPosition.z - from.z;

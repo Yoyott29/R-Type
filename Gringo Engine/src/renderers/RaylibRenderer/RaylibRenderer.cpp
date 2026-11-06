@@ -8,6 +8,8 @@
 #include "RaylibRenderer.hpp"
 #include "EngineError.hpp"
 #include <algorithm>
+#include <cmath>
+#include <raymath.h>
 
 // Size the fonts are loaded at: big enough to stay sharp when scaled to a text's size
 const int FONT_LOAD_SIZE = 96;
@@ -52,6 +54,7 @@ void RaylibRenderer::openWindow(int width, int height, std::string const &title)
     InitWindow(width, height, title.c_str());
     if (!IsWindowReady())
         throw EngineError("Could not open the window");
+    DisableCursor();
     SetTargetFPS(60);
 }
 
@@ -63,8 +66,11 @@ void RaylibRenderer::releaseWindow()
     unloadTextures();
     unloadFonts();
     unloadColorFilter();
-    if (IsWindowReady())
+
+    if (IsWindowReady()) {
+        EnableCursor();
         CloseWindow();
+    }
 }
 
 bool RaylibRenderer::isWindowOpen() const { return IsWindowReady() && !WindowShouldClose(); }
@@ -189,18 +195,72 @@ void RaylibRenderer::drawModel3D(RendererCamera3D const &camera, RendererModel3D
                                   CAMERA_PERSPECTIVE};
     EndMode2D();
     BeginMode3D(raylibCamera);
-    if (model.primitive == "Cube")
-        DrawCube({x, y, z}, model.scale, model.scale, model.scale, WHITE);
-    else if (model.primitive == "Sphere")
-        DrawSphere({x, y, z}, model.scale, WHITE);
-    else {
-        auto [iterator, inserted] = _models.try_emplace(model.path);
-        if (inserted)
-            iterator->second = LoadModel(model.path.c_str());
-        if (iterator->second.meshCount == 0)
-            throw FileNotFound(model.path);
-        DrawModel(iterator->second, {x, y, z}, model.scale, WHITE);
+    if (model.texturePath.empty() && model.primitive == "Cube" &&
+        model.rotationX == 0.0f && model.rotationY == 0.0f && model.rotationZ == 0.0f) {
+        DrawCube({x, y, z}, model.width * model.scale * model.scaleX,
+                 model.height * model.scale * model.scaleY,
+                 model.depth * model.scale * model.scaleZ, toRaylib(model.color));
+        EndMode3D();
+        BeginMode2D(worldCamera());
+        return;
     }
+    if (model.texturePath.empty() && model.primitive == "Sphere" &&
+        model.rotationX == 0.0f && model.rotationY == 0.0f && model.rotationZ == 0.0f &&
+        model.scaleX == model.scaleY && model.scaleY == model.scaleZ) {
+        DrawSphere({x, y, z}, model.scale * model.scaleX, toRaylib(model.color));
+        EndMode3D();
+        BeginMode2D(worldCamera());
+        return;
+    }
+
+    const std::string modelKey =
+        model.primitive == "Model"
+            ? model.path
+            : "__primitive_" + model.primitive + "_" + std::to_string(model.width) + "_" +
+                  std::to_string(model.height) + "_" + std::to_string(model.depth);
+    auto [iterator, inserted] = _models.try_emplace(modelKey);
+    if (inserted) {
+        if (model.primitive == "Cube")
+            iterator->second =
+                LoadModelFromMesh(GenMeshCube(model.width, model.height, model.depth));
+        else if (model.primitive == "Sphere")
+            iterator->second = LoadModelFromMesh(GenMeshSphere(0.5f, 32, 16));
+        else
+            iterator->second = LoadModel(model.path.c_str());
+    }
+    if (iterator->second.meshCount == 0)
+        throw FileNotFound(model.path);
+
+    if (!model.texturePath.empty()) {
+        Texture2D &texture = getTexture(model.texturePath);
+        for (int materialIndex = 0; materialIndex < iterator->second.materialCount;
+             ++materialIndex) {
+            iterator->second.materials[materialIndex].maps[MATERIAL_MAP_DIFFUSE].texture = texture;
+            iterator->second.materials[materialIndex].maps[MATERIAL_MAP_DIFFUSE].color =
+                toRaylib(model.color);
+        }
+    }
+    if (model.primitive == "Model" && model.animation >= 0) {
+        AnimationSet &animationSet = getAnimations(model.path);
+        if (model.animation >= animationSet.count)
+            throw EngineError("Animation index out of range for " + model.path);
+        ModelAnimation &animation = animationSet.animations[model.animation];
+        animationSet.frame += GetFrameTime() * std::max(model.animationSpeed, 0.0f) *
+                              static_cast<float>(animation.keyframeCount);
+        if (animation.keyframeCount > 0)
+            animationSet.frame =
+                std::fmod(animationSet.frame, static_cast<float>(animation.keyframeCount));
+        UpdateModelAnimation(iterator->second, animation, animationSet.frame);
+    }
+    const float assetYaw = model.primitive == "Model" ? -90.0f : 0.0f;
+    iterator->second.transform =
+        MatrixMultiply(MatrixScale(model.scale * model.scaleX, model.scale * model.scaleY,
+                                   model.scale * model.scaleZ),
+                       MatrixMultiply(MatrixRotateX(model.rotationX * DEG2RAD),
+                                      MatrixMultiply(MatrixRotateY(assetYaw * DEG2RAD),
+                                                     MatrixRotateZ(model.rotationZ * DEG2RAD))));
+    DrawModelEx(iterator->second, {x, y, z}, {0.0f, 1.0f, 0.0f}, -model.rotationY,
+                {1.0f, 1.0f, 1.0f}, toRaylib(model.color));
     EndMode3D();
     BeginMode2D(worldCamera());
 }
@@ -217,6 +277,12 @@ MousePosition RaylibRenderer::getMousePosition() const
     return {world.x, world.y};
 }
 
+MouseDelta RaylibRenderer::getMouseDelta() const
+{
+    const Vector2 delta = GetMouseDelta();
+    return {delta.x, delta.y};
+}
+
 bool RaylibRenderer::isMouseButtonPressed(Mouse button) const
 {
     return IsMouseButtonPressed(toRaylib(button));
@@ -227,9 +293,10 @@ Color RaylibRenderer::toRaylib(ColorRGBA color) { return {color.r, color.g, colo
 KeyboardKey RaylibRenderer::toRaylib(Key key)
 {
     switch (key) {
-        case Key::Z: return KEY_Z;
+        // Map the AZERTY physical keys to the engine's logical ZQSD actions.
+        case Key::Z: return KEY_W;
         case Key::S: return KEY_S;
-        case Key::Q: return KEY_Q;
+        case Key::Q: return KEY_A;
         case Key::D: return KEY_D;
         case Key::Up: return KEY_UP;
         case Key::Down: return KEY_DOWN;
@@ -301,9 +368,31 @@ void RaylibRenderer::unloadTextures()
             UnloadTexture(texture);
     }
     _textures.clear();
+    unloadAnimations();
     for (auto &[path, model] : _models) {
         (void)path;
         UnloadModel(model);
     }
     _models.clear();
+}
+
+RaylibRenderer::AnimationSet &RaylibRenderer::getAnimations(std::string const &path)
+{
+    auto [iterator, inserted] = _animations.try_emplace(path);
+    if (inserted) {
+        iterator->second.animations = LoadModelAnimations(path.c_str(), &iterator->second.count);
+        if (iterator->second.animations == nullptr || iterator->second.count == 0)
+            throw EngineError("No animations found in " + path);
+    }
+    return iterator->second;
+}
+
+void RaylibRenderer::unloadAnimations()
+{
+    for (auto &[path, animationSet] : _animations) {
+        (void)path;
+        if (animationSet.animations != nullptr)
+            UnloadModelAnimations(animationSet.animations, animationSet.count);
+    }
+    _animations.clear();
 }

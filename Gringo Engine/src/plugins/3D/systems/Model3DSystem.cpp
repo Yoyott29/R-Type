@@ -19,7 +19,12 @@ void Model3DSystem::update(Scene &scene)
         const Model3D &model = scene.getComponent<Model3D>(entity);
         if (model.primitive == "Model" && model.path.empty())
             continue;
-        renderer.drawModel3D(camera, {model.path, model.primitive, model.scale}, position.x,
-                             position.y, position.z);
+        renderer.drawModel3D(camera,
+                             {model.path, model.primitive, model.texturePath, model.color,
+                              model.width, model.height, model.depth, model.scale,
+                              position.scaleX, position.scaleY, position.scaleZ,
+                              position.rotationX, position.rotationY, position.rotationZ,
+                              model.animation, model.animationSpeed},
+                             position.x, position.y, position.z);
     }
 }
