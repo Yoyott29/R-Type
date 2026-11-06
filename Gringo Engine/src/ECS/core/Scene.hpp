@@ -123,6 +123,13 @@ class Scene
         _systemManager->setComponentSet<SystemType>(componentSet);
     }
 
+    SystemAccess access() const { return SystemAccess(*_componentManager); }
+
+    template <typename SystemType> void setSystemAccess(SystemAccess access)
+    {
+        _systemManager->setAccess<SystemType>(std::move(access));
+    }
+
     template <typename SystemType> void removeSystem()
     {
         _systemManager->removeSystem<SystemType>();
