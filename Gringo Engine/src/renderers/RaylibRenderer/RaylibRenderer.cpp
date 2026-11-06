@@ -84,8 +84,24 @@ Camera2D RaylibRenderer::worldCamera() const
     return {offset, {0.0f, 0.0f}, 0.0f, zoom};
 }
 
+void RaylibRenderer::setCursorLocked(bool locked) { _cursorLockRequested = locked; }
+
+void RaylibRenderer::applyCursorLock()
+{
+    const bool requested = _cursorLockRequested;
+    if (requested == _cursorLocked)
+        return;
+    _cursorLocked = requested;
+    if (requested)
+        DisableCursor();
+    else
+        EnableCursor();
+}
+
 void RaylibRenderer::beginFrame(ColorRGBA background)
 {
+    // Here because the window system only accepts it from the main thread
+    applyCursorLock();
     BeginDrawing();
     if (_colorFilter != ColorFilter::None) {
         prepareFilterTarget();

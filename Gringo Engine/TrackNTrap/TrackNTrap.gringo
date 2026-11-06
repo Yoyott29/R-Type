@@ -199,6 +199,18 @@
                             "name": "Menu",
                             "type": 2,
                             "value": "0"
+                        },
+                        {
+                            "id": 10,
+                            "name": "MenuCamera",
+                            "type": 2,
+                            "value": "4"
+                        },
+                        {
+                            "id": 11,
+                            "name": "RatCamera",
+                            "type": 2,
+                            "value": "7"
                         }
                     ]
                 }
@@ -735,6 +747,527 @@
             ],
             "id": 5,
             "name": "Ground"
+        },
+        {
+            "components": [
+                {
+                    "name": "Transform",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "PositionX",
+                            "type": 1,
+                            "value": "-300"
+                        },
+                        {
+                            "id": 1,
+                            "name": "PositionY",
+                            "type": 1,
+                            "value": "1.6"
+                        },
+                        {
+                            "id": 2,
+                            "name": "PositionZ",
+                            "type": 1,
+                            "value": "27"
+                        },
+                        {
+                            "id": 3,
+                            "name": "ScaleX",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 4,
+                            "name": "ScaleY",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 5,
+                            "name": "ScaleZ",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 6,
+                            "name": "RotationX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 7,
+                            "name": "RotationY",
+                            "type": 1,
+                            "value": "90"
+                        },
+                        {
+                            "id": 8,
+                            "name": "RotationZ",
+                            "type": 1,
+                            "value": "0"
+                        }
+                    ]
+                },
+                {
+                    "name": "3DModel",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Primitive",
+                            "type": 5,
+                            "value": "Model"
+                        },
+                        {
+                            "id": 1,
+                            "name": "ModelPath",
+                            "type": 7,
+                            "value": "Run.glb"
+                        },
+                        {
+                            "id": 2,
+                            "name": "TexturePath",
+                            "type": 7,
+                            "value": "NONE"
+                        },
+                        {
+                            "id": 3,
+                            "name": "Color",
+                            "type": 4,
+                            "value": "White"
+                        },
+                        {
+                            "id": 4,
+                            "name": "Width",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 5,
+                            "name": "Height",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 6,
+                            "name": "Depth",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 7,
+                            "name": "Scale",
+                            "type": 1,
+                            "value": "2"
+                        },
+                        {
+                            "id": 8,
+                            "name": "Animation",
+                            "type": 0,
+                            "value": "0"
+                        },
+                        {
+                            "id": 9,
+                            "name": "AnimationSpeed",
+                            "type": 1,
+                            "value": "3"
+                        }
+                    ]
+                },
+                {
+                    "name": "Velocity3D",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Dx",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Dy",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 2,
+                            "name": "Dz",
+                            "type": 1,
+                            "value": "0"
+                        }
+                    ]
+                },
+                {
+                    "name": "RigidBody3D",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Mass",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 1,
+                            "name": "IsStatic",
+                            "type": 3,
+                            "value": "False"
+                        },
+                        {
+                            "id": 2,
+                            "name": "GravityScale",
+                            "type": 1,
+                            "value": "1"
+                        }
+                    ]
+                },
+                {
+                    "name": "Collider3D",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Width",
+                            "type": 1,
+                            "value": "2"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Height",
+                            "type": 1,
+                            "value": "2"
+                        },
+                        {
+                            "id": 2,
+                            "name": "Depth",
+                            "type": 1,
+                            "value": "2"
+                        },
+                        {
+                            "id": 3,
+                            "name": "Layer",
+                            "type": 0,
+                            "value": "1"
+                        },
+                        {
+                            "id": 4,
+                            "name": "TypeCollisions",
+                            "type": 2,
+                            "value": "All layers"
+                        },
+                        {
+                            "id": 5,
+                            "name": "IsTrigger",
+                            "type": 3,
+                            "value": "False"
+                        }
+                    ]
+                },
+                {
+                    "name": "Script",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Path",
+                            "type": 7,
+                            "value": "RatPlayerController.hpp"
+                        },
+                        {
+                            "id": 1,
+                            "name": "speed",
+                            "type": 2,
+                            "value": "50"
+                        },
+                        {
+                            "id": 2,
+                            "name": "sensitivity",
+                            "type": 2,
+                            "value": "0.1"
+                        }
+                    ]
+                }
+            ],
+            "id": 6,
+            "name": "Rat"
+        },
+        {
+            "components": [
+                {
+                    "name": "Transform",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "PositionX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 1,
+                            "name": "PositionY",
+                            "type": 1,
+                            "value": "3"
+                        },
+                        {
+                            "id": 2,
+                            "name": "PositionZ",
+                            "type": 1,
+                            "value": "8"
+                        },
+                        {
+                            "id": 3,
+                            "name": "ScaleX",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 4,
+                            "name": "ScaleY",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 5,
+                            "name": "ScaleZ",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 6,
+                            "name": "RotationX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 7,
+                            "name": "RotationY",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 8,
+                            "name": "RotationZ",
+                            "type": 1,
+                            "value": "0"
+                        }
+                    ]
+                },
+                {
+                    "name": "Camera",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "TargetX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 1,
+                            "name": "TargetY",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 2,
+                            "name": "TargetZ",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 3,
+                            "name": "UpX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 4,
+                            "name": "UpY",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 5,
+                            "name": "UpZ",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 6,
+                            "name": "FieldOfView",
+                            "type": 1,
+                            "value": "45"
+                        },
+                        {
+                            "id": 7,
+                            "name": "Active",
+                            "type": 3,
+                            "value": "False"
+                        }
+                    ]
+                },
+                {
+                    "name": "CameraFollow3D",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Distance",
+                            "type": 1,
+                            "value": "16"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Height",
+                            "type": 1,
+                            "value": "6"
+                        },
+                        {
+                            "id": 2,
+                            "name": "TargetHeight",
+                            "type": 1,
+                            "value": "1"
+                        }
+                    ]
+                },
+                {
+                    "name": "ChildOf",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Parent",
+                            "type": 0,
+                            "value": "6"
+                        }
+                    ]
+                }
+            ],
+            "id": 7,
+            "name": "Rat Camera"
+        },
+        {
+            "components": [
+                {
+                    "name": "Transform",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "PositionX",
+                            "type": 1,
+                            "value": "-157"
+                        },
+                        {
+                            "id": 1,
+                            "name": "PositionY",
+                            "type": 1,
+                            "value": "-0.4"
+                        },
+                        {
+                            "id": 2,
+                            "name": "PositionZ",
+                            "type": 1,
+                            "value": "222"
+                        },
+                        {
+                            "id": 3,
+                            "name": "ScaleX",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 4,
+                            "name": "ScaleY",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 5,
+                            "name": "ScaleZ",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 6,
+                            "name": "RotationX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 7,
+                            "name": "RotationY",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 8,
+                            "name": "RotationZ",
+                            "type": 1,
+                            "value": "0"
+                        }
+                    ]
+                },
+                {
+                    "name": "RigidBody3D",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Mass",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 1,
+                            "name": "IsStatic",
+                            "type": 3,
+                            "value": "True"
+                        },
+                        {
+                            "id": 2,
+                            "name": "GravityScale",
+                            "type": 1,
+                            "value": "0"
+                        }
+                    ]
+                },
+                {
+                    "name": "Collider3D",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Width",
+                            "type": 1,
+                            "value": "10000"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Height",
+                            "type": 1,
+                            "value": "2"
+                        },
+                        {
+                            "id": 2,
+                            "name": "Depth",
+                            "type": 1,
+                            "value": "10000"
+                        },
+                        {
+                            "id": 3,
+                            "name": "Layer",
+                            "type": 0,
+                            "value": "1"
+                        },
+                        {
+                            "id": 4,
+                            "name": "TypeCollisions",
+                            "type": 2,
+                            "value": "All layers"
+                        },
+                        {
+                            "id": 5,
+                            "name": "IsTrigger",
+                            "type": 3,
+                            "value": "False"
+                        }
+                    ]
+                }
+            ],
+            "id": 8,
+            "name": "Rat Floor"
         }
     ],
     "pluginSettings": {
@@ -753,7 +1286,8 @@
         "UI",
         "3D",
         "Physics3D",
-        "Scripts"
+        "Scripts",
+        "InputHandler"
     ],
     "prefabs": [],
     "projectName": "TrackNTrap",

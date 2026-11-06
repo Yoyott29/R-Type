@@ -15,6 +15,7 @@
 #include "UIButton.hpp"
 #include "CameraOrbit.hpp"
 #include "PlayButton.hpp"
+#include "RatPlayerController.hpp"
 
 template <typename ButtonScript>
 static std::shared_ptr<IGringoButtonScript> makeButtonScript(const nlohmann::json &component)
@@ -49,6 +50,7 @@ int main(int argc, char **argv)
         application.addPlugin("3D");
         application.addPlugin("Physics3D");
         application.addPlugin("Scripts");
+        application.addPlugin("InputHandler");
         const auto applyParameters = [](const std::shared_ptr<GringoEntityScript> &script,
                                         const nlohmann::json &component) {
             for (const auto &property : component.value("properties", nlohmann::json::array())) {
@@ -71,6 +73,11 @@ int main(int argc, char **argv)
                         continue;
                     if (path == "CameraOrbit.hpp") {
                         auto instance = std::make_shared<CameraOrbit>();
+                        applyParameters(instance, component);
+                        scene.addComponent(entity, Script{instance, false});
+                    }
+                    else if (path == "RatPlayerController.hpp") {
+                        auto instance = std::make_shared<RatPlayerController>();
                         applyParameters(instance, component);
                         scene.addComponent(entity, Script{instance, false});
                     }
@@ -100,6 +107,11 @@ int main(int argc, char **argv)
                             path = property.value("value", "");
                     if (path == "CameraOrbit.hpp") {
                         auto instance = std::make_shared<CameraOrbit>();
+                        applyParameters(instance, component);
+                        prefab.addComponent(Script{instance, false});
+                    }
+                    else if (path == "RatPlayerController.hpp") {
+                        auto instance = std::make_shared<RatPlayerController>();
                         applyParameters(instance, component);
                         prefab.addComponent(Script{instance, false});
                     }
