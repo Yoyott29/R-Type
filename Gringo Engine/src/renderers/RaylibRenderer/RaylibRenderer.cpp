@@ -101,6 +101,8 @@ void RaylibRenderer::drawImageRegion(std::string const &path, float x, float y, 
     const Rectangle source = {sourceX, sourceY, sourceWidth, sourceHeight};
     const Rectangle destination = {x - width / 2.0f, y - height / 2.0f, width, height};
     DrawTexturePro(texture, source, destination, {0.0f, 0.0f}, 0.0f, WHITE);
+}
+
 void RaylibRenderer::drawModel3D(RendererCamera3D const &camera, RendererModel3D const &model,
                                  float x, float y, float z)
 {
