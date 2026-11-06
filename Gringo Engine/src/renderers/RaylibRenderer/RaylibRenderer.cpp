@@ -12,6 +12,35 @@
 // Size the fonts are loaded at: big enough to stay sharp when scaled to a text's size
 const int FONT_LOAD_SIZE = 96;
 
+const char *const COLOR_FILTER_SHADER = R"(#version 330
+in vec2 fragTexCoord;
+in vec4 fragColor;
+uniform sampler2D texture0;
+uniform vec4 colDiffuse;
+uniform int mode;
+out vec4 finalColor;
+
+const mat3 SIMULATIONS[3] = mat3[3](
+    mat3(vec3(0.152286, 1.052583, -0.204868), vec3(0.114503, 0.786281, 0.099216),
+         vec3(-0.003882, -0.048116, 1.051998)),
+    mat3(vec3(0.367322, 0.860646, -0.227968), vec3(0.280085, 0.672501, 0.047413),
+         vec3(-0.011820, 0.042940, 0.968881)),
+    mat3(vec3(1.255528, -0.076749, -0.178779), vec3(-0.078411, 0.930809, 0.147602),
+         vec3(0.004733, 0.691367, 0.303900)));
+
+const mat3 SHIFTS[3] = mat3[3](
+    mat3(vec3(0.0, 0.0, 0.0), vec3(0.7, 1.0, 0.0), vec3(0.7, 0.0, 1.0)),
+    mat3(vec3(0.0, 0.0, 0.0), vec3(0.7, 1.0, 0.0), vec3(0.7, 0.0, 1.0)),
+    mat3(vec3(1.0, 0.0, 0.7), vec3(0.0, 1.0, 0.7), vec3(0.0, 0.0, 0.0)));
+
+void main()
+{
+    vec4 color = texture(texture0, fragTexCoord) * colDiffuse * fragColor;
+    vec3 error = color.rgb - color.rgb * SIMULATIONS[mode];
+    finalColor = vec4(clamp(color.rgb + error * SHIFTS[mode], 0.0, 1.0), color.a);
+}
+)";
+
 // Not closeWindow(): a virtual call in a destructor does not reach a derived class
 RaylibRenderer::~RaylibRenderer() { releaseWindow(); }
 
@@ -33,6 +62,7 @@ void RaylibRenderer::releaseWindow()
     // Textures and fonts belong to the window's graphics context: freed before it closes
     unloadTextures();
     unloadFonts();
+    unloadColorFilter();
     if (IsWindowReady())
         CloseWindow();
 }
@@ -51,6 +81,10 @@ Camera2D RaylibRenderer::worldCamera() const
 void RaylibRenderer::beginFrame(ColorRGBA background)
 {
     BeginDrawing();
+    if (_colorFilter != ColorFilter::None) {
+        prepareFilterTarget();
+        BeginTextureMode(_filterTarget);
+    }
     ClearBackground(toRaylib(background));
     BeginMode2D(worldCamera());
 }
@@ -58,7 +92,50 @@ void RaylibRenderer::beginFrame(ColorRGBA background)
 void RaylibRenderer::endFrame()
 {
     EndMode2D();
+    if (_colorFilter != ColorFilter::None)
+        drawFiltered();
     EndDrawing();
+}
+
+void RaylibRenderer::setColorFilter(ColorFilter filter)
+{
+    _colorFilter = filter;
+    if (filter == ColorFilter::None || _filterShader.id != 0)
+        return;
+    _filterShader = LoadShaderFromMemory(nullptr, COLOR_FILTER_SHADER);
+    _filterModeLocation = GetShaderLocation(_filterShader, "mode");
+}
+
+void RaylibRenderer::prepareFilterTarget()
+{
+    if (_filterTarget.id != 0 && _filterTarget.texture.width == GetScreenWidth() &&
+        _filterTarget.texture.height == GetScreenHeight())
+        return;
+    if (_filterTarget.id != 0)
+        UnloadRenderTexture(_filterTarget);
+    _filterTarget = LoadRenderTexture(GetScreenWidth(), GetScreenHeight());
+}
+
+void RaylibRenderer::drawFiltered()
+{
+    EndTextureMode();
+    const int mode = static_cast<int>(_colorFilter) - 1;
+    const Rectangle source = {0.0f, 0.0f, static_cast<float>(_filterTarget.texture.width),
+                              -static_cast<float>(_filterTarget.texture.height)};
+    SetShaderValue(_filterShader, _filterModeLocation, &mode, SHADER_UNIFORM_INT);
+    BeginShaderMode(_filterShader);
+    DrawTextureRec(_filterTarget.texture, source, {0.0f, 0.0f}, WHITE);
+    EndShaderMode();
+}
+
+void RaylibRenderer::unloadColorFilter()
+{
+    if (_filterTarget.id != 0)
+        UnloadRenderTexture(_filterTarget);
+    if (_filterShader.id != 0)
+        UnloadShader(_filterShader);
+    _filterTarget = RenderTexture2D{};
+    _filterShader = Shader{};
 }
 
 void RaylibRenderer::drawRectangle(float x, float y, float width, float height, ColorRGBA color)

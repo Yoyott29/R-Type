@@ -41,6 +41,8 @@ class RaylibRenderer : public Renderer<RaylibRenderer>
     MousePosition getMousePosition() const override;
     bool isMouseButtonPressed(Mouse button) const override;
 
+    void setColorFilter(ColorFilter filter) override;
+
   private:
     static Color toRaylib(ColorRGBA color);
     static KeyboardKey toRaylib(Key key);
@@ -55,6 +57,9 @@ class RaylibRenderer : public Renderer<RaylibRenderer>
     void unloadFonts();
     // Frees the textures and closes the window if open (closeWindow and the destructor)
     void releaseWindow();
+    void prepareFilterTarget();
+    void drawFiltered();
+    void unloadColorFilter();
 
     float _worldWidth = 0.0f;
     float _worldHeight = 0.0f;
@@ -62,4 +67,8 @@ class RaylibRenderer : public Renderer<RaylibRenderer>
     // Loaded once per path; a path that does not load is kept as the built-in font
     std::unordered_map<std::string, Font> _fonts;
     std::unordered_map<std::string, Model> _models;
+    ColorFilter _colorFilter = ColorFilter::None;
+    RenderTexture2D _filterTarget{};
+    Shader _filterShader{};
+    int _filterModeLocation = -1;
 };
