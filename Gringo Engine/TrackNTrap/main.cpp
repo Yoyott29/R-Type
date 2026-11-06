@@ -30,6 +30,8 @@ int main(int argc, char **argv)
         application.setRenderer("RaylibRenderer", "TrackNTrap");
         application.addPlugin("2D");
         application.addPlugin("UI");
+        application.addPlugin("3D");
+        application.addPlugin("Physics3D");
         ProjectComponentManager components(scene, projectPath.parent_path());
         for (const auto &entityData : root.value("entities", nlohmann::json::array())) {
             Entity entity = scene.createEntity();

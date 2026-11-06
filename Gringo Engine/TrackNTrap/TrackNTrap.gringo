@@ -142,6 +142,12 @@
                         },
                         {
                             "id": 6,
+                            "name": "Font",
+                            "type": 7,
+                            "value": "Font.ttf"
+                        },
+                        {
+                            "id": 7,
                             "name": "Script",
                             "type": 7,
                             "value": "NONE"
@@ -226,18 +232,106 @@
                             "name": "Color",
                             "type": 4,
                             "value": "White"
+                        },
+                        {
+                            "id": 3,
+                            "name": "Font",
+                            "type": 7,
+                            "value": "Font.ttf"
                         }
                     ]
                 }
             ],
             "id": 2,
             "name": "Title"
+        },
+        {
+            "components": [
+                {
+                    "name": "Transform",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "PositionX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 1,
+                            "name": "PositionY",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 2,
+                            "name": "PositionZ",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 3,
+                            "name": "ScaleX",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 4,
+                            "name": "ScaleY",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 5,
+                            "name": "Rotation",
+                            "type": 1,
+                            "value": "0"
+                        }
+                    ]
+                },
+                {
+                    "name": "3DModel",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Primitive",
+                            "type": 5,
+                            "value": "Model"
+                        },
+                        {
+                            "id": 1,
+                            "name": "ModelPath",
+                            "type": 7,
+                            "value": "track.glb"
+                        },
+                        {
+                            "id": 2,
+                            "name": "Scale",
+                            "type": 1,
+                            "value": "1"
+                        }
+                    ]
+                }
+            ],
+            "id": 3,
+            "name": "Entity3"
         }
     ],
-    "pluginSettings": {},
+    "pluginSettings": {
+        "Physics2D": {
+            "GravityX": "0",
+            "GravityY": "980"
+        },
+        "Physics3D": {
+            "GravityX": "0",
+            "GravityY": "-9.81",
+            "GravityZ": "0"
+        }
+    },
     "plugins": [
         "2D",
-        "UI"
+        "UI",
+        "3D",
+        "Physics3D"
     ],
     "prefabs": [],
     "projectName": "TrackNTrap",
