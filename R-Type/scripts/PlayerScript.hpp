@@ -4,6 +4,7 @@
 #include "ActionInput.hpp"
 #include "BuildVariantName.hpp"
 #include "Collider2D.hpp"
+#include "MatchState.hpp"
 #include "Transform.hpp"
 #include "PrefabsManager.hpp"
 #include "Scene.hpp"
@@ -87,7 +88,7 @@ inline void PlayerScript::onStart(Scene &scene, Entity &) { bindKeys(scene); }
 
 inline void PlayerScript::onUpdate(Scene &scene, Entity &entity)
 {
-    if (isClientSide(scene))
+    if (isClientSide(scene) || isWaitingForMatch(scene))
         return;
     _shootCooldown = std::max(0.0f, _shootCooldown - FIXED_DELTA_TIME);
     const ActionInput input = readInput(scene, entity);
