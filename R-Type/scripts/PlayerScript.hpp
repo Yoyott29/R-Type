@@ -1,14 +1,25 @@
 #ifndef PLAYERSCRIPT_HPP_
 #define PLAYERSCRIPT_HPP_
 
+#include "ActionInput.hpp"
+#include "BuildVariantName.hpp"
 #include "Collider2D.hpp"
 #include "Transform.hpp"
+#include "PrefabsManager.hpp"
 #include "Scene.hpp"
 #include "Script.hpp"
 #include "Shape.hpp"
 #include "Time.hpp"
+#include <algorithm>
+#include <cstddef>
+#include <string>
+#include <variant>
+#include <vector>
 #ifdef GRINGO_USE_INPUTHANDLER
-#include "KeyboardInput.hpp"
+#include "InputBindings.hpp"
+#endif
+#ifdef GRINGO_USE_NETWORK
+#include "NetComponents.hpp"
 #endif
 
 inline const std::vector<std::string> PlayerScript_params = {"speed", "health"};
@@ -16,12 +27,31 @@ inline const std::vector<std::string> PlayerScript_params = {"speed", "health"};
 class PlayerScript : public GringoEntityScript
 {
   public:
+    static constexpr std::size_t ACTION_UP = 0;
+    static constexpr std::size_t ACTION_DOWN = 1;
+    static constexpr std::size_t ACTION_LEFT = 2;
+    static constexpr std::size_t ACTION_RIGHT = 3;
+
     void onStart(Scene &scene, Entity &entity) override;
     void onUpdate(Scene &scene, Entity &entity) override;
     void setParameter(const std::string &name, const std::string &value) override;
 
   private:
-    float _speed;
+    static constexpr float SHOOT_COOLDOWN = 0.2f;
+    static constexpr float BULLET_OFFSET_X = 60.0f;
+    static constexpr float SCREEN_WIDTH = 1920.0f;
+    static constexpr float SCREEN_HEIGHT = 1080.0f;
+
+    static bool isClientSide(Scene &scene);
+    static void bindKeys(Scene &scene);
+    static ActionInput readInput(Scene &scene, Entity entity);
+    static Transform halfSize(const Collider2D &collider);
+    static void clampToScreen(Scene &scene, Entity entity);
+    void move(Scene &scene, Entity entity, const ActionInput &input) const;
+    void shoot(Scene &scene, Entity entity);
+
+    float _speed = 400.0f;
+    float _shootCooldown = 0.0f;
 };
 
 inline void PlayerScript::setParameter(const std::string &name, const std::string &value)
@@ -30,41 +60,98 @@ inline void PlayerScript::setParameter(const std::string &name, const std::strin
         _speed = std::stof(value);
 }
 
-inline void PlayerScript::onStart(Scene &, Entity &) {}
+inline bool PlayerScript::isClientSide(Scene &scene)
+{
+    return scene.hasResource<BuildVariantName>() &&
+           scene.getResource<BuildVariantName>().name == "client";
+}
+
+inline void PlayerScript::bindKeys([[maybe_unused]] Scene &scene)
+{
+#ifdef GRINGO_USE_INPUTHANDLER
+    if (scene.hasResource<InputBindings>())
+        return;
+    InputBindings &bindings = scene.addResource<InputBindings>();
+    bindings.bind(Key::Up, ACTION_UP);
+    bindings.bind(Key::Z, ACTION_UP);
+    bindings.bind(Key::Down, ACTION_DOWN);
+    bindings.bind(Key::S, ACTION_DOWN);
+    bindings.bind(Key::Left, ACTION_LEFT);
+    bindings.bind(Key::Q, ACTION_LEFT);
+    bindings.bind(Key::Right, ACTION_RIGHT);
+    bindings.bind(Key::D, ACTION_RIGHT);
+#endif
+}
+
+inline void PlayerScript::onStart(Scene &scene, Entity &) { bindKeys(scene); }
 
 inline void PlayerScript::onUpdate(Scene &scene, Entity &entity)
 {
+    if (isClientSide(scene))
+        return;
+    _shootCooldown = std::max(0.0f, _shootCooldown - FIXED_DELTA_TIME);
+    const ActionInput input = readInput(scene, entity);
+    move(scene, entity, input);
+    clampToScreen(scene, entity);
+    shoot(scene, entity);
+}
+
+inline ActionInput PlayerScript::readInput(Scene &scene, [[maybe_unused]] Entity entity)
+{
+#ifdef GRINGO_USE_NETWORK
+    if (scene.hasComponent<RemoteInput>(entity))
+        return scene.getComponent<RemoteInput>(entity).input;
+#endif
+    if (scene.hasResource<ActionInput>())
+        return scene.getResource<ActionInput>();
+    return ActionInput{};
+}
+
+inline void PlayerScript::move(Scene &scene, Entity entity, const ActionInput &input) const
+{
     Transform &position = scene.getComponent<Transform>(entity);
-    Collider2D &collider = scene.getComponent<Collider2D>(entity);
-#ifdef GRINGO_USE_INPUTHANDLER
-    const KeyboardInput &keyboard = scene.getResource<KeyboardInput>();
-#endif
-    float offsetX = std::holds_alternative<BoxShape>(collider.shape)
-                        ? std::get<BoxShape>(collider.shape).width / 2.0f
-                        : std::get<CircleShape>(collider.shape).radius;
-    float offsetY = std::holds_alternative<BoxShape>(collider.shape)
-                        ? std::get<BoxShape>(collider.shape).height / 2.0f
-                        : std::get<CircleShape>(collider.shape).radius;
+    const float step = _speed * FIXED_DELTA_TIME;
 
-#ifdef GRINGO_USE_INPUTHANDLER
-    if (keyboard.isDown(Key::Up) || keyboard.isDown(Key::Z))
-        position.y -= _speed * FIXED_DELTA_TIME;
-    if (keyboard.isDown(Key::Down) || keyboard.isDown(Key::S))
-        position.y += _speed * FIXED_DELTA_TIME;
-    if (keyboard.isDown(Key::Left) || keyboard.isDown(Key::Q))
-        position.x -= _speed * FIXED_DELTA_TIME;
-    if (keyboard.isDown(Key::Right) || keyboard.isDown(Key::D))
-        position.x += _speed * FIXED_DELTA_TIME;
-#endif
+    if (input.isActive(ACTION_UP))
+        position.y -= step;
+    if (input.isActive(ACTION_DOWN))
+        position.y += step;
+    if (input.isActive(ACTION_LEFT))
+        position.x -= step;
+    if (input.isActive(ACTION_RIGHT))
+        position.x += step;
+}
 
-    if (position.x - offsetX < 0.0f)
-        position.x = offsetX;
-    if (position.x + offsetX > 1920.0f)
-        position.x = 1920.0f - offsetX;
-    if (position.y - offsetY < 0.0f)
-        position.y = offsetY;
-    if (position.y + offsetY > 1080.0f)
-        position.y = 1080.0f - offsetY;
+inline Transform PlayerScript::halfSize(const Collider2D &collider)
+{
+    if (std::holds_alternative<BoxShape>(collider.shape)) {
+        const BoxShape &box = std::get<BoxShape>(collider.shape);
+        return Transform{box.width / 2.0f, box.height / 2.0f};
+    }
+    const float radius = std::get<CircleShape>(collider.shape).radius;
+    return Transform{radius, radius};
+}
+
+inline void PlayerScript::clampToScreen(Scene &scene, Entity entity)
+{
+    Transform &position = scene.getComponent<Transform>(entity);
+    const Transform half = halfSize(scene.getComponent<Collider2D>(entity));
+
+    position.x = std::clamp(position.x, half.x, SCREEN_WIDTH - half.x);
+    position.y = std::clamp(position.y, half.y, SCREEN_HEIGHT - half.y);
+}
+
+inline void PlayerScript::shoot(Scene &scene, Entity entity)
+{
+    if (_shootCooldown > 0.0f)
+        return;
+    const Transform origin = scene.getComponent<Transform>(entity);
+    Entity bullet = scene.getResource<PrefabsManager>().InstantiatePrefab("PlayerBullet", scene);
+    Transform &position = scene.getComponent<Transform>(bullet);
+
+    position.x = origin.x + BULLET_OFFSET_X;
+    position.y = origin.y;
+    _shootCooldown = SHOOT_COOLDOWN;
 }
 
 #endif /* !PLAYERSCRIPT_HPP_ */
