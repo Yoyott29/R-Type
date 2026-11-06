@@ -27,6 +27,10 @@ void ScriptSystem::update(Scene &scene)
         for (std::size_t i = 0; i < scene.getComponentCount<Script>(entity); i++) {
             Script &script = scene.getComponent<Script>(entity, i);
 
+            if (!script.isRunning) {
+                script.isRunning = true;
+                script.gringoEntityScript->onStart(scene, entity);
+            }
             script.gringoEntityScript->onUpdate(scene, entity);
         }
     }

@@ -307,7 +307,9 @@ void ProjectBuilder::writeGeneratedMain(const std::filesystem::path &sourcePath,
                                         const std::set<std::string> &ignoredComponents)
 {
     const std::set<std::string> scripts = collectScripts(sceneObjects);
-    const std::set<std::string> buttonScripts = collectButtonScripts(sceneObjects);
+    std::set<std::string> buttonScripts;
+    if (!ignoredComponents.count("Button"))
+        buttonScripts = collectButtonScripts(sceneObjects);
     std::set<std::string> allScripts = scripts;
     allScripts.insert(buttonScripts.begin(), buttonScripts.end());
     const bool usesPrefabs = !sceneObjects._prefabs.empty() ||

@@ -8,6 +8,7 @@
 #include "ReplicationSystem.hpp"
 #include "ByteStream.hpp"
 #include "GameClock.hpp"
+#include "GameScore.hpp"
 #include "Messages.hpp"
 #include "NetComponents.hpp"
 #include "NetTransport.hpp"
@@ -96,4 +97,7 @@ void ReplicationSystem::update(Scene &scene)
     _previous = std::move(current);
     for (auto const &payload : DespawnMessage::encodeSplit(wireTick, gone))
         transport.broadcastReserved(ReservedType::Despawn, payload);
+    transport.broadcastReserved(
+        ReservedType::ScoreUpdate,
+        ScoreUpdateMessage{wireTick, scene.getResource<GameScore>().value}.encode());
 }

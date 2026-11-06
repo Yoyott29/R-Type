@@ -45,6 +45,7 @@ class NetTransport
     void sendReserved(PeerId peer, ReservedType type, std::span<const std::byte> payload);
     void broadcastReserved(ReservedType type, std::span<const std::byte> payload);
     void disconnect(PeerId peer);
+    void setAcceptingPeers(bool accepting) { _acceptingPeers = accepting; }
     std::vector<PeerId> peers() const;
     ConnectionState state() const;
     // The id the server gave this client, once connected
@@ -99,5 +100,6 @@ class NetTransport
     std::vector<std::pair<Endpoint, std::vector<std::byte>>> _outbox;
     NetIncoming _events;
     bool _oversizedLogged = false;
+    bool _acceptingPeers = true;
     std::optional<TimePoint> _lastStatsLog;
 };

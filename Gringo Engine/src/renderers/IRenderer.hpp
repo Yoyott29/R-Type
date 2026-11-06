@@ -25,6 +25,8 @@ struct RendererCamera3D {
     float fieldOfView;
 };
 
+enum class ColorFilter { None, Protanopia, Deuteranopia, Tritanopia };
+
 struct RendererModel3D {
     std::string path;
     std::string primitive = "Model";
@@ -92,6 +94,8 @@ class IRenderer
     virtual MouseDelta getMouseDelta() const = 0;
     // True only on the frame the button went down
     virtual bool isMouseButtonPressed(Mouse button) const = 0;
+
+    virtual void setColorFilter(ColorFilter filter) { (void)filter; }
 };
 
 // Base class of every renderer: class RaylibRenderer : public Renderer<RaylibRenderer>. When the

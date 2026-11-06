@@ -65,3 +65,11 @@ struct PeerLeftMessage {
     // nullopt also on a reason above VersionMismatch
     static std::optional<PeerLeftMessage> decode(std::span<const std::byte> payload);
 };
+
+struct ScoreUpdateMessage {
+    std::uint32_t tick;
+    std::int32_t score;
+
+    std::vector<std::byte> encode() const;
+    static std::optional<ScoreUpdateMessage> decode(std::span<const std::byte> payload);
+};

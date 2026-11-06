@@ -1,6 +1,7 @@
 #ifndef ENEMYSPAWNERSCRIPT_HPP_
 #define ENEMYSPAWNERSCRIPT_HPP_
 
+#include "MatchState.hpp"
 #include "Transform.hpp"
 #include "PrefabsManager.hpp"
 #include "Scene.hpp"
@@ -39,6 +40,8 @@ inline void EnemySpawnerScript::onStart(Scene &, Entity &) {}
 
 inline void EnemySpawnerScript::onUpdate(Scene &scene, Entity &)
 {
+    if (isWaitingForMatch(scene))
+        return;
     if (_enemyCount == 0) {
         _waveTimer += FIXED_DELTA_TIME;
         if (_waveTimer < _waveDelay)
