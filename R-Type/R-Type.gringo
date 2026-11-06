@@ -1201,6 +1201,134 @@
             ],
             "id": 20,
             "name": "LobbyStartButton"
+        },
+        {
+            "components": [
+                {
+                    "name": "Transform",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "PositionX",
+                            "type": 1,
+                            "value": "960"
+                        },
+                        {
+                            "id": 1,
+                            "name": "PositionY",
+                            "type": 1,
+                            "value": "900"
+                        },
+                        {
+                            "id": 2,
+                            "name": "PositionZ",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 3,
+                            "name": "ScaleX",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 4,
+                            "name": "ScaleY",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 5,
+                            "name": "Rotation",
+                            "type": 1,
+                            "value": "0"
+                        }
+                    ]
+                },
+                {
+                    "name": "Button",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Content",
+                            "type": 2,
+                            "value": "COLORS: NORMAL"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Width",
+                            "type": 0,
+                            "value": "460"
+                        },
+                        {
+                            "id": 2,
+                            "name": "Height",
+                            "type": 0,
+                            "value": "60"
+                        },
+                        {
+                            "id": 3,
+                            "name": "FontSize",
+                            "type": 0,
+                            "value": "28"
+                        },
+                        {
+                            "id": 4,
+                            "name": "Color",
+                            "type": 4,
+                            "value": "White"
+                        },
+                        {
+                            "id": 5,
+                            "name": "TextColor",
+                            "type": 4,
+                            "value": "Black"
+                        },
+                        {
+                            "id": 6,
+                            "name": "Font",
+                            "type": 7,
+                            "value": "Font.ttf"
+                        },
+                        {
+                            "id": 7,
+                            "name": "Script",
+                            "type": 7,
+                            "value": "ColorFilterButtonScript.hpp"
+                        }
+                    ]
+                },
+                {
+                    "name": "ChildOf",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Parent",
+                            "type": 0,
+                            "value": "10"
+                        }
+                    ]
+                },
+                {
+                    "name": "Networked",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Mode",
+                            "type": 5,
+                            "value": "Client"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Prefab",
+                            "type": 2,
+                            "value": ""
+                        }
+                    ]
+                }
+            ],
+            "id": 23,
+            "name": "LobbyColorButton"
         }
     ],
     "pluginSettings": {
