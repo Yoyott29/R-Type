@@ -12,6 +12,25 @@
 #include <memory>
 #include <string>
 
+struct RendererCamera3D {
+    float positionX;
+    float positionY;
+    float positionZ;
+    float targetX;
+    float targetY;
+    float targetZ;
+    float upX;
+    float upY;
+    float upZ;
+    float fieldOfView;
+};
+
+struct RendererModel3D {
+    std::string path;
+    std::string primitive = "Model";
+    float scale = 1.0f;
+};
+
 // The most basic functions a renderer gives: a window, drawing simple things and the keyboard.
 // A renderer (src/renderers/<Name>) derives from Renderer<T> below and implements this; plugins
 // (2D, UI, InputHandler...) build their features by calling it. The application owns the renderer the project chose, and puts it
@@ -48,6 +67,8 @@ class IRenderer
                                  float height, float sourceX, float sourceY, float sourceWidth,
                                  float sourceHeight) = 0;
 
+    virtual void drawModel3D(RendererCamera3D const &, RendererModel3D const &, float, float,
+                             float) = 0;
     // Keyboard
     virtual bool isKeyDown(Key key) const = 0;
 

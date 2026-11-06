@@ -153,6 +153,14 @@ scene.registerComponent<MyComponent>(
 
 Only components from active plugins are available in the editor component picker.
 
+### 3D plugins
+
+The `3D` plugin provides `Camera` and `3DModel` components and renders models through the selected
+renderer. `3DModel` can currently render a built-in cube or sphere, or a project model file.
+Add `Physics3D` as well for `Velocity3D`, `RigidBody3D`, and `Collider3D`; its `GravityX`,
+`GravityY`, and `GravityZ` settings control the gravity resource. All entities use the shared
+`Transform` component for 2D and 3D positions.
+
 Start the server in one terminal, then one client per player (up to 4) in separate terminals:
 
 ```sh

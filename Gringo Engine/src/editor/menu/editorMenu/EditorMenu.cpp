@@ -500,6 +500,12 @@ void EditorMenu::initEntities(SceneObjects sceneObjects)
         return;
     }
 
+    if (_template == "3D") {
+        _entities = {{0, "Camera", {createComponent("Transform", {"0", "0", "10"}),
+                                    createComponent("Camera")}},
+                     {1, "Cube", {createComponent("Transform"), createComponent("3DModel")}}};
+        return;
+    }
     if (_template != "2D")
         return;
 
