@@ -35,6 +35,7 @@ CPMAddPackage(
 )
 if(TARGET raylib)
     target_compile_options(raylib PRIVATE -w)
+    target_compile_definitions(raylib PRIVATE SUPPORT_FILEFORMAT_JPG=1)
 endif()
 
 CPMAddPackage(
