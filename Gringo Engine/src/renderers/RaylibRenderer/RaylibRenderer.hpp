@@ -29,11 +29,12 @@ class RaylibRenderer : public Renderer<RaylibRenderer>
     void drawCircle(float x, float y, float radius, ColorRGBA color) override;
     void drawText(float x, float y, std::string const &text, int fontSize, ColorRGBA color,
                   std::string const &fontPath) override;
-    void drawImage(std::string const &path, float x, float y, float width,
-                   float height) override;
+    void drawImage(std::string const &path, float x, float y, float width, float height) override;
     void drawImageRegion(std::string const &path, float x, float y, float width, float height,
                          float sourceX, float sourceY, float sourceWidth,
                          float sourceHeight) override;
+    void drawModel3D(RendererCamera3D const &camera, RendererModel3D const &model, float x, float y,
+                     float z) override;
 
     bool isKeyDown(Key key) const override;
 
@@ -60,4 +61,5 @@ class RaylibRenderer : public Renderer<RaylibRenderer>
     std::unordered_map<std::string, Texture2D> _textures;
     // Loaded once per path; a path that does not load is kept as the built-in font
     std::unordered_map<std::string, Font> _fonts;
+    std::unordered_map<std::string, Model> _models;
 };

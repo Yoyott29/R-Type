@@ -29,6 +29,13 @@ void TemplateMenu::initButtons()
         },
         BUTTON_COLOR1, BUTTON_COLOR3, TEXT_COLOR);
     addButton(
+        "3D", {850, 400}, 300, 100, 30,
+        [this]() {
+            _switchMenu = MenuType::NameMenu;
+            setTemplate("3D");
+        },
+        BUTTON_COLOR1, BUTTON_COLOR3, TEXT_COLOR);
+    addButton(
         "Back", {1800, 50}, 200, 50, 20, [this]() { _switchMenu = MenuType::MainMenu; },
         BUTTON_COLOR1, BUTTON_COLOR3, TEXT_COLOR);
 }

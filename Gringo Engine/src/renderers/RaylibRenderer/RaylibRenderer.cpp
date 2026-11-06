@@ -101,6 +101,29 @@ void RaylibRenderer::drawImageRegion(std::string const &path, float x, float y, 
     const Rectangle source = {sourceX, sourceY, sourceWidth, sourceHeight};
     const Rectangle destination = {x - width / 2.0f, y - height / 2.0f, width, height};
     DrawTexturePro(texture, source, destination, {0.0f, 0.0f}, 0.0f, WHITE);
+void RaylibRenderer::drawModel3D(RendererCamera3D const &camera, RendererModel3D const &model,
+                                 float x, float y, float z)
+{
+    const ::Camera3D raylibCamera{{camera.positionX, camera.positionY, camera.positionZ},
+                                  {camera.targetX, camera.targetY, camera.targetZ},
+                                  {camera.upX, camera.upY, camera.upZ}, camera.fieldOfView,
+                                  CAMERA_PERSPECTIVE};
+    EndMode2D();
+    BeginMode3D(raylibCamera);
+    if (model.primitive == "Cube")
+        DrawCube({x, y, z}, model.scale, model.scale, model.scale, WHITE);
+    else if (model.primitive == "Sphere")
+        DrawSphere({x, y, z}, model.scale, WHITE);
+    else {
+        auto [iterator, inserted] = _models.try_emplace(model.path);
+        if (inserted)
+            iterator->second = LoadModel(model.path.c_str());
+        if (iterator->second.meshCount == 0)
+            throw FileNotFound(model.path);
+        DrawModel(iterator->second, {x, y, z}, model.scale, WHITE);
+    }
+    EndMode3D();
+    BeginMode2D(worldCamera());
 }
 
 bool RaylibRenderer::isKeyDown(Key key) const
@@ -199,4 +222,9 @@ void RaylibRenderer::unloadTextures()
             UnloadTexture(texture);
     }
     _textures.clear();
+    for (auto &[path, model] : _models) {
+        (void)path;
+        UnloadModel(model);
+    }
+    _models.clear();
 }
