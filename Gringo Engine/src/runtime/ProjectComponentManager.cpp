@@ -13,12 +13,18 @@ ProjectComponentManager::ProjectComponentManager(Scene &scene, std::filesystem::
 {
     scene.addResource<ProjectAssets>(ProjectAssets{std::move(projectFolder)});
     scene.registerComponent<Transform>([](Scene &target, Entity entity, const nlohmann::json &data) {
-        target.addComponent(entity, Transform{ComponentJson::floatValue(data, "PositionX", 0.0f),
-                                              ComponentJson::floatValue(data, "PositionY", 0.0f),
-                                              ComponentJson::floatValue(data, "PositionZ", 0.0f),
-                                              ComponentJson::floatValue(data, "ScaleX", 1.0f),
-                                              ComponentJson::floatValue(data, "ScaleY", 1.0f),
-                                              ComponentJson::floatValue(data, "Rotation", 0.0f)});
+        Transform transform;
+        transform.x = ComponentJson::floatValue(data, "PositionX", 0.0f);
+        transform.y = ComponentJson::floatValue(data, "PositionY", 0.0f);
+        transform.z = ComponentJson::floatValue(data, "PositionZ", 0.0f);
+        transform.scaleX = ComponentJson::floatValue(data, "ScaleX", 1.0f);
+        transform.scaleY = ComponentJson::floatValue(data, "ScaleY", 1.0f);
+        transform.scaleZ = ComponentJson::floatValue(data, "ScaleZ", 1.0f);
+        const float legacyRotation = ComponentJson::floatValue(data, "Rotation", 0.0f);
+        transform.rotationX = ComponentJson::floatValue(data, "RotationX", 0.0f);
+        transform.rotationY = ComponentJson::floatValue(data, "RotationY", legacyRotation);
+        transform.rotationZ = ComponentJson::floatValue(data, "RotationZ", 0.0f);
+        target.addComponent(entity, transform);
     });
     scene.addResource<EditorEntityIds>();
     // A parent loaded after its child is found later, by linkChildren. A prefab instantiated

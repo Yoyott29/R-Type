@@ -18,6 +18,11 @@ struct MousePosition {
     float y;
 };
 
+struct MouseDelta {
+    float x;
+    float y;
+};
+
 struct InputEvent {
     enum class Type : uint8_t { KeyDown, KeyUp, Quit } type;
     Key key = Key::Unknown;

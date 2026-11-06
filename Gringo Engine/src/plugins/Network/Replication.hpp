@@ -49,7 +49,10 @@ template <> struct NetCodec<Transform> {
         writer.write(value.z);
         writer.write(value.scaleX);
         writer.write(value.scaleY);
-        writer.write(value.rotation);
+        writer.write(value.scaleZ);
+        writer.write(value.rotationX);
+        writer.write(value.rotationY);
+        writer.write(value.rotationZ);
     }
 
     static Transform read(ByteReader &reader)
@@ -60,7 +63,10 @@ template <> struct NetCodec<Transform> {
         value.z = reader.read<float>();
         value.scaleX = reader.read<float>();
         value.scaleY = reader.read<float>();
-        value.rotation = reader.read<float>();
+        value.scaleZ = reader.read<float>();
+        value.rotationX = reader.read<float>();
+        value.rotationY = reader.read<float>();
+        value.rotationZ = reader.read<float>();
         return value;
     }
 };
