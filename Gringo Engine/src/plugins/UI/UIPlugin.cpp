@@ -6,6 +6,7 @@
 */
 
 #include "UIPlugin.hpp"
+#include "ProjectAssets.hpp"
 #include "ButtonClickSystem.hpp"
 #include "ButtonSystem.hpp"
 #include "ComponentJson.hpp"
@@ -15,6 +16,15 @@
 #include "UIText.hpp"
 #include <memory>
 
+// The "Font" property, resolved in the project's assets; no file chosen: the built-in font
+static std::string fontPath(Scene &scene, const nlohmann::json &data)
+{
+    const std::string font = ComponentJson::value(data, "Font", DEFAULT_FONT);
+    if (font.empty() || font == NO_FILE)
+        return "";
+    return ProjectAssets::resolve(scene, font);
+}
+
 void UIPlugin::registerComponents(Scene &scene)
 {
     // register the UIText component, with how to read it from a .gringo file
@@ -22,7 +32,8 @@ void UIPlugin::registerComponents(Scene &scene)
         target.addComponent(entity,
                             UIText{ComponentJson::value(data, "Content", ""),
                                    ComponentJson::intValue(data, "FontSize", 32),
-                                   ComponentJson::colorValue(data, "Color", {255, 255, 255, 255})});
+                                   ComponentJson::colorValue(data, "Color", {255, 255, 255, 255}),
+                                   fontPath(target, data)});
     });
     // register the UIButton component, with how to read it from a .gringo file. Its script is a
     // game class: the generated main creates it from the "Script" property
@@ -34,7 +45,7 @@ void UIPlugin::registerComponents(Scene &scene)
                              ComponentJson::intValue(data, "FontSize", 24),
                              ComponentJson::colorValue(data, "Color", {255, 255, 255, 255}),
                              ComponentJson::colorValue(data, "TextColor", {0, 0, 0, 255}),
-                             nullptr});
+                             {}, fontPath(target, data)});
     });
 }
 

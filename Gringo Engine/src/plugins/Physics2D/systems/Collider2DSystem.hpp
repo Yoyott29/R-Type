@@ -56,7 +56,7 @@ class Collider2DSystem : public System
     void resolveSolid(Scene &scene, Entity entityA, Transform &positionA, Entity entityB,
                       Transform &positionB, const Contact &contact);
     // A RigidBody2D that is not static and has a Velocity to change
-    static bool isDynamic(Scene &scene, Entity entity);
+    bool isDynamic(Scene &scene, Entity entity) const;
 
     // Solid pairs (smallest entity first) touching during the previous step, so the momentums
     // are only added once per contact and not on every step the colliders overlap

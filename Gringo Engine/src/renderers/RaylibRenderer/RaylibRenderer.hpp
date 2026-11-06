@@ -27,12 +27,14 @@ class RaylibRenderer : public Renderer<RaylibRenderer>
 
     void drawRectangle(float x, float y, float width, float height, ColorRGBA color) override;
     void drawCircle(float x, float y, float radius, ColorRGBA color) override;
-    void drawText(float x, float y, std::string const &text, int fontSize,
-                  ColorRGBA color) override;
-    void drawImage(std::string const &path, float x, float y, float width,
-                   float height) override;
-    void drawModel3D(RendererCamera3D const &camera, RendererModel3D const &model, float x,
-                     float y, float z) override;
+    void drawText(float x, float y, std::string const &text, int fontSize, ColorRGBA color,
+                  std::string const &fontPath) override;
+    void drawImage(std::string const &path, float x, float y, float width, float height) override;
+    void drawImageRegion(std::string const &path, float x, float y, float width, float height,
+                         float sourceX, float sourceY, float sourceWidth,
+                         float sourceHeight) override;
+    void drawModel3D(RendererCamera3D const &camera, RendererModel3D const &model, float x, float y,
+                     float z) override;
 
     bool isKeyDown(Key key) const override;
 
@@ -48,9 +50,16 @@ class RaylibRenderer : public Renderer<RaylibRenderer>
     // Loaded once, kept until the window closes
     Texture2D &getTexture(std::string const &path);
     void unloadTextures();
+    // The font of fontPath, raylib's default one if it is empty or does not load
+    Font getFont(std::string const &fontPath);
+    void unloadFonts();
+    // Frees the textures and closes the window if open (closeWindow and the destructor)
+    void releaseWindow();
 
     float _worldWidth = 0.0f;
     float _worldHeight = 0.0f;
     std::unordered_map<std::string, Texture2D> _textures;
+    // Loaded once per path; a path that does not load is kept as the built-in font
+    std::unordered_map<std::string, Font> _fonts;
     std::unordered_map<std::string, Model> _models;
 };

@@ -33,6 +33,8 @@ class Parser
     static nlohmann::json serializeComponents(const std::vector<Component> &components);
     static std::vector<Component> deserializeComponents(const nlohmann::json &json);
     static std::filesystem::path executableDirectory();
+    // Copies the editor's font (src/editor/Assets/Font.ttf) to assets/DEFAULT_FONT if missing
+    static void copyDefaultFont(const std::filesystem::path &assetsFolder);
     std::filesystem::path _lastSavedPath;
 };
 

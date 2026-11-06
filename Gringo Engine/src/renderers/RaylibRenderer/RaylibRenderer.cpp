@@ -9,7 +9,11 @@
 #include "EngineError.hpp"
 #include <algorithm>
 
-RaylibRenderer::~RaylibRenderer() { closeWindow(); }
+// Size the fonts are loaded at: big enough to stay sharp when scaled to a text's size
+const int FONT_LOAD_SIZE = 96;
+
+// Not closeWindow(): a virtual call in a destructor does not reach a derived class
+RaylibRenderer::~RaylibRenderer() { releaseWindow(); }
 
 void RaylibRenderer::openWindow(int width, int height, std::string const &title)
 {
@@ -22,10 +26,13 @@ void RaylibRenderer::openWindow(int width, int height, std::string const &title)
     SetTargetFPS(60);
 }
 
-void RaylibRenderer::closeWindow()
+void RaylibRenderer::closeWindow() { releaseWindow(); }
+
+void RaylibRenderer::releaseWindow()
 {
-    // Textures belong to the window's graphics context: freed before it closes
+    // Textures and fonts belong to the window's graphics context: freed before it closes
     unloadTextures();
+    unloadFonts();
     if (IsWindowReady())
         CloseWindow();
 }
@@ -65,10 +72,10 @@ void RaylibRenderer::drawCircle(float x, float y, float radius, ColorRGBA color)
 }
 
 void RaylibRenderer::drawText(float x, float y, std::string const &text, int fontSize,
-                              ColorRGBA color)
+                              ColorRGBA color, std::string const &fontPath)
 {
-    // Same font and spacing as raylib's DrawText, measured so (x, y) is the center of the text
-    const Font font = GetFontDefault();
+    // Same spacing as raylib's DrawText, measured so (x, y) is the center of the text
+    const Font font = getFont(fontPath);
     const float size = static_cast<float>(std::max(fontSize, 10));
     const float spacing = size / 10.0f;
     const Vector2 bounds = MeasureTextEx(font, text.c_str(), size, spacing);
@@ -86,6 +93,14 @@ void RaylibRenderer::drawImage(std::string const &path, float x, float y, float 
     DrawTexturePro(texture, source, destination, {0.0f, 0.0f}, 0.0f, WHITE);
 }
 
+void RaylibRenderer::drawImageRegion(std::string const &path, float x, float y, float width,
+                                     float height, float sourceX, float sourceY,
+                                     float sourceWidth, float sourceHeight)
+{
+    Texture2D &texture = getTexture(path);
+    const Rectangle source = {sourceX, sourceY, sourceWidth, sourceHeight};
+    const Rectangle destination = {x - width / 2.0f, y - height / 2.0f, width, height};
+    DrawTexturePro(texture, source, destination, {0.0f, 0.0f}, 0.0f, WHITE);
 void RaylibRenderer::drawModel3D(RendererCamera3D const &camera, RendererModel3D const &model,
                                  float x, float y, float z)
 {
@@ -168,6 +183,35 @@ Texture2D &RaylibRenderer::getTexture(std::string const &path)
         }
     }
     return iterator->second;
+}
+
+Font RaylibRenderer::getFont(std::string const &fontPath)
+{
+    if (fontPath.empty())
+        return GetFontDefault();
+    auto [iterator, inserted] = _fonts.try_emplace(fontPath);
+    if (inserted) {
+        // Rasterized big once, then scaled down to each text's size
+        Font font = LoadFontEx(fontPath.c_str(), FONT_LOAD_SIZE, nullptr, 0);
+        if (font.texture.id == 0 || font.glyphCount == 0) {
+            font = GetFontDefault();
+        } else {
+            SetTextureFilter(font.texture, TEXTURE_FILTER_BILINEAR);
+        }
+        iterator->second = font;
+    }
+    return iterator->second;
+}
+
+void RaylibRenderer::unloadFonts()
+{
+    const Font builtIn = GetFontDefault();
+    for (auto &[path, font] : _fonts) {
+        (void)path;
+        if (font.texture.id != builtIn.texture.id)
+            UnloadFont(font);
+    }
+    _fonts.clear();
 }
 
 void RaylibRenderer::unloadTextures()

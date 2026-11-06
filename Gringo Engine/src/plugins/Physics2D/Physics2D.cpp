@@ -80,7 +80,7 @@ std::vector<PropertyDescriptor> Physics2D::settings() const
     };
 }
 
-float Physics2D::floatSetting(Scene &scene, const std::string &key)
+float Physics2D::floatSetting(Scene &scene, const std::string &key) const
 {
     const std::string text = scene.getResource<ProjectSettings>().get("Physics2D", key);
     try {

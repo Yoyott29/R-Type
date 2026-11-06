@@ -34,10 +34,10 @@
 #include <string>
 #include <vector>
 
-static constexpr const char *SERVER_VARIANT = "server";
-static constexpr const char *CLIENT_VARIANT = "client";
-static constexpr char PREFAB_SEPARATOR = ',';
-static constexpr const char *PREFAB_BLANKS = " \t";
+const std::string SERVER_VARIANT = "server";
+const std::string CLIENT_VARIANT = "client";
+const char PREFAB_SEPARATOR = ',';
+const std::string PREFAB_BLANKS = " \t";
 
 // The comma-separated names, each trimmed, without the empty ones
 static std::vector<std::string> parsePrefabList(std::string const &text)
