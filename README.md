@@ -157,6 +157,13 @@ Only components from active plugins are available in the editor component picker
 
 The `3D` plugin provides `Camera` and `3DModel` components and renders models through the selected
 renderer. `3DModel` can currently render a built-in cube or sphere, or a project model file.
+Use its `Color` property to tint primitives or imported models, and select an asset in
+`TexturePath` to apply a texture through the model material.
+Add `CameraFollow3D` and `ChildOf` to a camera entity to keep it above and behind its parent; the
+parent's `Transform.RotationY` controls the orbit around it. `Transform` also exposes independent
+`RotationX`, `RotationY`, and `RotationZ` values and `ScaleX`, `ScaleY`, and `ScaleZ` values.
+For an animated GLB/GLTF, set `3DModel.Animation` to its zero-based animation index and adjust
+`AnimationSpeed`; use `-1` to keep the model fixed.
 Add `Physics3D` as well for `Velocity3D`, `RigidBody3D`, and `Collider3D`; its `GravityX`,
 `GravityY`, and `GravityZ` settings control the gravity resource. All entities use the shared
 `Transform` component for 2D and 3D positions.
