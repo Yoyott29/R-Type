@@ -26,6 +26,7 @@ inline bool acceptsReserved(NetRole role, ReservedType type)
     case ReservedType::EntityState:
     case ReservedType::Despawn:
     case ReservedType::PeerLeft:
+    case ReservedType::ScoreUpdate:
         return role == NetRole::Client;
     }
     return false;

@@ -68,6 +68,14 @@ std::vector<std::byte> InputStateMessage::encode() const
     return w.take();
 }
 
+std::vector<std::byte> ScoreUpdateMessage::encode() const
+{
+    ByteWriter w;
+    w.write<std::uint32_t>(tick);
+    w.write<std::int32_t>(score);
+    return w.take();
+}
+
 std::vector<std::byte> PeerLeftMessage::encode() const
 {
     ByteWriter w;
@@ -146,6 +154,15 @@ std::optional<PeerLeftMessage> PeerLeftMessage::decode(std::span<const std::byte
         if (reason > LAST_REASON)
             return false;
         m.reason = static_cast<DisconnectReason>(reason);
+        return true;
+    });
+}
+
+std::optional<ScoreUpdateMessage> ScoreUpdateMessage::decode(std::span<const std::byte> payload)
+{
+    return decodeExact<ScoreUpdateMessage>(payload, [](ByteReader &r, ScoreUpdateMessage &m) {
+        m.tick = r.read<std::uint32_t>();
+        m.score = r.read<std::int32_t>();
         return true;
     });
 }

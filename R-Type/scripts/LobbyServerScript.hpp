@@ -1,6 +1,7 @@
 #ifndef LOBBYSERVERSCRIPT_HPP_
 #define LOBBYSERVERSCRIPT_HPP_
 
+#include "GameScore.hpp"
 #include "Lobby.hpp"
 #include "MatchState.hpp"
 #include "NetComponents.hpp"
@@ -49,6 +50,7 @@ inline bool LobbyServerScript::hostPressedStart(Scene &scene)
 inline void LobbyServerScript::startMatch(Scene &scene)
 {
     scene.getResource<MatchState>().started = true;
+    scene.getResource<GameScore>().value = 0;
     scene.getResource<NetTransport>().setAcceptingPeers(false);
     scene.getResource<PrefabsManager>().InstantiatePrefab(Lobby::MUSIC_PREFAB, scene);
 }

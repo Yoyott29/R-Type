@@ -3,6 +3,7 @@
 
 #include "BuildVariantName.hpp"
 #include "Collider2D.hpp"
+#include "GameScore.hpp"
 #include "Scene.hpp"
 #include "Script.hpp"
 
@@ -29,6 +30,7 @@ inline void BulletScript::onStart(Scene &scene, Entity &entity)
     scene.getComponent<Collider2D>(entity).onCollision = [&scene](Entity bullet, Entity other) {
         if (!scene.isEntityAlive(other))
             return;
+        scene.getResource<GameScore>().value += 100;
         scene.queueDestroy(bullet);
         scene.queueDestroy(other);
     };

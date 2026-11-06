@@ -9,6 +9,7 @@
 #include "ChildOf.hpp"
 #include "DecodeOrLog.hpp"
 #include "GameClock.hpp"
+#include "GameScore.hpp"
 #include "NetComponents.hpp"
 #include "Networked.hpp"
 #include "Packet.hpp"
@@ -58,6 +59,11 @@ void MirrorSystem::update(Scene &scene)
         case ReservedType::PeerLeft:
             if (auto left = decodeOrLog<PeerLeftMessage>(_log, message, "PeerLeft"))
                 scene.getResource<Events<PeerLeft>>().send(PeerLeft{left->peer, left->reason});
+            break;
+        case ReservedType::ScoreUpdate:
+            if (auto score = decodeOrLog<ScoreUpdateMessage>(_log, message, "ScoreUpdate"))
+                if (inOrder(score->tick))
+                    scene.getResource<GameScore>().value = score->score;
             break;
         default: {
             std::string const type = std::to_string(message.type);
