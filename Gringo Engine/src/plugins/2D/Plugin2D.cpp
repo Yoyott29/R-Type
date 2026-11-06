@@ -6,6 +6,9 @@
 */
 
 #include "Plugin2D.hpp"
+#include "AnimationLibrary.hpp"
+#include "AnimationSystem.hpp"
+#include "Animator.hpp"
 #include "ComponentJson.hpp"
 #include "Transform.hpp"
 #include "ProjectAssets.hpp"
@@ -30,6 +33,15 @@ void Plugin2D::registerComponents(Scene &scene)
         sprite.color = ComponentJson::colorValue(data, "Color", {255, 255, 255, 255});
         target.addComponent(entity, sprite);
     });
+    // register the Animator component: the .anim file of the animation it starts with
+    scene.registerComponent<Animator>([](Scene &target, Entity entity, const nlohmann::json &data) {
+        Animator animator;
+        const std::string path = ComponentJson::value(data, "Animation", "");
+        if (!path.empty() && path != NO_FILE)
+            animator.path = ProjectAssets::resolve(target, path);
+        animator.speed = ComponentJson::floatValue(data, "Speed", 1.0f);
+        target.addComponent(entity, animator);
+    });
 }
 
 void Plugin2D::build(Application &app)
@@ -40,6 +52,14 @@ void Plugin2D::build(Application &app)
     spriteRequirements.set(app._scene.getComponentType<Transform>());
     spriteRequirements.set(app._scene.getComponentType<Sprite>());
     app._scene.setSystemComponentSet<SpriteSystem>(spriteRequirements);
+
+    // setup the AnimationSystem: it sets the Sprite of every Animator to its current frame
+    app._scene.addResource<AnimationLibrary>();
+    app._scene.registerSystem<AnimationSystem>(FixedUpdate);
+    ComponentSet animationRequirements;
+    animationRequirements.set(app._scene.getComponentType<Animator>());
+    animationRequirements.set(app._scene.getComponentType<Sprite>());
+    app._scene.setSystemComponentSet<AnimationSystem>(animationRequirements);
 }
 
 void Plugin2D::cleanup(Application &app) { (void)app; }

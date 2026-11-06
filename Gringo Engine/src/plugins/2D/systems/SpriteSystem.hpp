@@ -21,4 +21,7 @@ class SpriteSystem : public System
   private:
     // A texture fills the shape's size, otherwise the shape is drawn in its color
     static void drawSprite(IRenderer &renderer, Transform const &position, Sprite const &sprite);
+    // The sprite's region of its texture (the whole texture without one), stretched to the shape
+    static void drawTexture(IRenderer &renderer, Sprite const &sprite, float x, float y,
+                            float width, float height);
 };

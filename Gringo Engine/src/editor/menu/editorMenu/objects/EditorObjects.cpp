@@ -75,6 +75,7 @@ void EditorObjects::editObject(ObjectType objectType, int objectId)
     _editor._currentlyUpdatedProperty.text = getObjectName(objectType, objectId);
     _editor._currentlyUpdatedProperty.type = valueType::String;
     _editor._currentlyUpdatedProperty.editingName = true;
+    _editor._currentlyUpdatedProperty.commit = {};
     _editor._currentlyUpdatedProperty.cursorIndex = static_cast<int>(_editor._currentlyUpdatedProperty.text.size());
     _editor._currentlyUpdatedProperty.blinkFrames = 0;
     _editor._currentlyUpdatedProperty.active = true;

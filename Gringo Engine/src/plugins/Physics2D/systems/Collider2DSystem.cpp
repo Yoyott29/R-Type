@@ -60,7 +60,7 @@ void Collider2DSystem::handleTrigger(Entity entity, const Collider2D &collider, 
         otherCollider.onCollision(otherEntity, entity);
 }
 
-bool Collider2DSystem::isDynamic(Scene &scene, Entity entity)
+bool Collider2DSystem::isDynamic(Scene &scene, Entity entity) const
 {
     return scene.hasComponent<RigidBody2D>(entity) && scene.hasComponent<Velocity>(entity) &&
            !scene.getComponent<RigidBody2D>(entity).isStatic;

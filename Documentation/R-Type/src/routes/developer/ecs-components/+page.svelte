@@ -60,7 +60,30 @@ struct Sprite {
     ColorRGBA color;
     int drawOrder = 0;          // smaller is drawn first
     std::string texturePath;    // empty: drawn as a plain shape
+    SpriteRegion region;        // part of the texture to draw (width 0: all of it)
 };
+
+// src/plugins/2D/components: plays .anim animations (one per file) on the entity's Sprite
+struct Animator {
+    std::string path;           // the .anim it starts with, in the project's assets
+    std::string current;        // animation playing (file name without .anim)
+    int frame = 0;
+    float elapsed = 0.0f;
+    bool finished = false;      // an animation with "loop": false stopped on its last frame
+    float speed = 1.0f;         // multiplies the animations' fps
+};
+
+// src/plugins/2D/systems: plays <animation>.anim from the same folder, from frame 0
+// (nothing changes if it is already playing, so it can be called every frame)
+static void AnimationSystem::play(Animator &animator, const std::string &animation);
+
+// assets/run.anim, written by the editor's Animation panel (Name, Image, Frames, Loop):
+// frames are frameWidth x frameHeight cells of the texture, read left to right
+{ "texture": "run.png", "frameWidth": 32, "frameHeight": 32, "frames": 8, "fps": 10, "loop": true }
+
+// a script picks the animation from the game state, every frame
+AnimationSystem::play(scene.getComponent<Animator>(entity),
+                      dead ? "death" : moving ? "run" : "idle");
 
 struct SoundEffect {
     std::string path;

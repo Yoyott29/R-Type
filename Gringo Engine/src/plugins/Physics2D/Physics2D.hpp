@@ -27,5 +27,5 @@ class Physics2D : public Plugin<Physics2D>
     // Reads the Collider2D "TypeCollisions" property: "All layers", "None" or a number (0x6)
     static std::uint32_t maskValue(const nlohmann::json &component);
     // Reads one float project setting of the plugin, throws with its name if invalid
-    static float floatSetting(Scene &scene, const std::string &key);
+    float floatSetting(Scene &scene, const std::string &key) const;
 };

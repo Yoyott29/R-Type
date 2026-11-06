@@ -7,6 +7,7 @@
 
 #include "AMenu.hpp"
 #include "ComponentCatalog.hpp"
+#include "EditorAnimations.hpp"
 #include "EditorComponents.hpp"
 #include "EditorObjects.hpp"
 #include "EditorProperties.hpp"
@@ -16,6 +17,7 @@
 #include <map>
 #include <string>
 #include <filesystem>
+#include <functional>
 #include <vector>
 
 #ifndef EDITORMENU_HPP_
@@ -45,6 +47,8 @@ struct EditingText {
 
     std::string objectProperty;
     bool editingName = false;
+    // Set: the typed text is given to it instead of a component property (Animation panel)
+    std::function<void(const std::string &)> commit;
 
     int cursorIndex = 0;
     int blinkFrames = 0;
@@ -116,6 +120,7 @@ class EditorMenu : public AMenu
     friend class EditorObjects;
     friend class EditorComponents;
     friend class EditorProperties;
+    friend class EditorAnimations;
 
     std::string _template;
     std::string _projectName;
@@ -162,6 +167,7 @@ class EditorMenu : public AMenu
     EditorObjects _objects;
     EditorComponents _components;
     EditorProperties _properties;
+    EditorAnimations _animations;
 };
 
 #endif /* !EDITORMENU_HPP_ */

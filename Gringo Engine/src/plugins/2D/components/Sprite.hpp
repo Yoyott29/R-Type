@@ -12,11 +12,21 @@
 #include <string>
 #include <variant>
 
+// Part of the texture to draw, in the texture's pixels. Width 0: the whole texture
+struct SpriteRegion {
+    float x = 0.0f;
+    float y = 0.0f;
+    float width = 0.0f;
+    float height = 0.0f;
+};
+
 struct Sprite {
     std::variant<BoxShape, CircleShape> shape;
     ColorRGBA color;
     int drawOrder = 0;
     std::string texturePath = "";
+    // Set by the AnimationSystem to the current frame of a spritesheet
+    SpriteRegion region;
 };
 
 template <> struct ComponentDescription<Sprite> {

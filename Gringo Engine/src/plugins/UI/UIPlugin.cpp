@@ -34,7 +34,7 @@ void UIPlugin::registerComponents(Scene &scene)
                              ComponentJson::intValue(data, "FontSize", 24),
                              ComponentJson::colorValue(data, "Color", {255, 255, 255, 255}),
                              ComponentJson::colorValue(data, "TextColor", {0, 0, 0, 255}),
-                             nullptr});
+                             {}});
     });
 }
 

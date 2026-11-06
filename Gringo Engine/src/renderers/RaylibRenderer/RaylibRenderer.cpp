@@ -9,7 +9,8 @@
 #include "EngineError.hpp"
 #include <algorithm>
 
-RaylibRenderer::~RaylibRenderer() { closeWindow(); }
+// Not closeWindow(): a virtual call in a destructor does not reach a derived class
+RaylibRenderer::~RaylibRenderer() { releaseWindow(); }
 
 void RaylibRenderer::openWindow(int width, int height, std::string const &title)
 {
@@ -22,7 +23,9 @@ void RaylibRenderer::openWindow(int width, int height, std::string const &title)
     SetTargetFPS(60);
 }
 
-void RaylibRenderer::closeWindow()
+void RaylibRenderer::closeWindow() { releaseWindow(); }
+
+void RaylibRenderer::releaseWindow()
 {
     // Textures belong to the window's graphics context: freed before it closes
     unloadTextures();
@@ -82,6 +85,16 @@ void RaylibRenderer::drawImage(std::string const &path, float x, float y, float 
     Texture2D &texture = getTexture(path);
     const Rectangle source = {0.0f, 0.0f, static_cast<float>(texture.width),
                               static_cast<float>(texture.height)};
+    const Rectangle destination = {x - width / 2.0f, y - height / 2.0f, width, height};
+    DrawTexturePro(texture, source, destination, {0.0f, 0.0f}, 0.0f, WHITE);
+}
+
+void RaylibRenderer::drawImageRegion(std::string const &path, float x, float y, float width,
+                                     float height, float sourceX, float sourceY,
+                                     float sourceWidth, float sourceHeight)
+{
+    Texture2D &texture = getTexture(path);
+    const Rectangle source = {sourceX, sourceY, sourceWidth, sourceHeight};
     const Rectangle destination = {x - width / 2.0f, y - height / 2.0f, width, height};
     DrawTexturePro(texture, source, destination, {0.0f, 0.0f}, 0.0f, WHITE);
 }

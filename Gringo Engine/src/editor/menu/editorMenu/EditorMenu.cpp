@@ -23,7 +23,7 @@ EditorMenu::EditorMenu(IEditorRenderer &renderer, std::string templateName, std:
       _availableRenderers(PluginLoader{"renderers"}.listNames()),
       _pluginSettings(sceneObjects.pluginSettings),
       _pluginSettingDescriptors(pluginSettingDescriptors), _objects(*this), _components(*this),
-      _properties(*this)
+      _properties(*this), _animations(*this)
 {
     _currentMenu = MenuType::EditorMenu;
 
@@ -169,6 +169,7 @@ void EditorMenu::buildProject()
 void EditorMenu::clearPanel()
 {
     commitSettingEdit();
+    _animations.clear();
     removeText("PanelText");
     for (const std::string &plugin : _availablePlugins) {
         removeButton("Plugin_" + plugin);
@@ -226,6 +227,8 @@ void EditorMenu::showPanel(const std::string &text)
                 BUTTON_COLOR3, TEXT_COLOR, active ? "ON" : "OFF");
             y += 65;
         }
+    } else if (text == "Animation") {
+        _animations.show();
     }
 }
 
@@ -369,6 +372,7 @@ void EditorMenu::initButtons()
     float backButtonWidth = 140.0f;
     float settingsCenterX = sideMargin + buttonWidth / 2.0f;
     float pluginsCenterX = settingsCenterX + buttonWidth + buttonSpacing;
+    float animationCenterX = pluginsCenterX + buttonWidth + buttonSpacing;
     float backCenterX = WINDOW_WIDTH - sideMargin - backButtonWidth / 2.0f;
 
     // top bar buttons
@@ -378,6 +382,9 @@ void EditorMenu::initButtons()
     addButton(
         "Plugins", {pluginsCenterX, topBarCenterY}, buttonWidth, buttonHeight, 22,
         [this]() { showPanel("Plugins"); }, BUTTON_COLOR2, BUTTON_COLOR3, TEXT_COLOR);
+    addButton(
+        "Animation", {animationCenterX, topBarCenterY}, buttonWidth, buttonHeight, 22,
+        [this]() { showPanel("Animation"); }, BUTTON_COLOR2, BUTTON_COLOR3, TEXT_COLOR);
 
     addButton(
         "Back", {backCenterX, topBarCenterY}, backButtonWidth, buttonHeight, 22,

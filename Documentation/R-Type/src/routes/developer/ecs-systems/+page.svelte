@@ -268,6 +268,14 @@ _scene.setSystemComponentSet<OffScreenSystem>(offScreenRequirements);`;
 		everything else.
 	</li>
 	<li>
+		<strong class="font-semibold">AnimationSystem</strong> ({@render c('src/plugins/2D/systems')},
+		{@render c('FixedUpdate')}, {@render c('Animator')} + {@render c('Sprite')}): reads each
+		{@render c('.anim')} file once (the {@render c('AnimationLibrary')} resource), advances the
+		animator's animation at its fps and sets the {@render c('Sprite')}'s texture and region to
+		the current frame. {@render c('AnimationSystem::play(animator, "run")')} plays {@render c('run.anim')} from the folder of
+		the starting animation; a missing file throws, so a typo is not silent.
+	</li>
+	<li>
 		<strong class="font-semibold">SoundSystem</strong> ({@render c('src/plugins/Renderer/systems')},
 		{@render c('PostUpdate')}, {@render c('SoundEffect')}): plays the music of the
 		{@render c('BackgroundMusic')} resource when the game adds one (it changes track when

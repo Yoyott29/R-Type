@@ -41,6 +41,12 @@ class IRenderer
     // Draws an image file stretched to width x height
     virtual void drawImage(std::string const &path, float x, float y, float width,
                            float height) = 0;
+    // Draws the part of an image file starting at (sourceX, sourceY), of size
+    // sourceWidth x sourceHeight in the image's pixels, stretched to width x height. Used for the
+    // frames of a spritesheet
+    virtual void drawImageRegion(std::string const &path, float x, float y, float width,
+                                 float height, float sourceX, float sourceY, float sourceWidth,
+                                 float sourceHeight) = 0;
 
     // Keyboard
     virtual bool isKeyDown(Key key) const = 0;

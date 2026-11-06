@@ -3,6 +3,47 @@
         {
             "components": [
                 {
+                    "name": "Transform",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "PositionX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 1,
+                            "name": "PositionY",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 2,
+                            "name": "PositionZ",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 3,
+                            "name": "ScaleX",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 4,
+                            "name": "ScaleY",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 5,
+                            "name": "Rotation",
+                            "type": 1,
+                            "value": "0"
+                        }
+                    ]
+                },
+                {
                     "name": "Script",
                     "properties": [
                         {
@@ -32,6 +73,47 @@
         {
             "components": [
                 {
+                    "name": "Transform",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "PositionX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 1,
+                            "name": "PositionY",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 2,
+                            "name": "PositionZ",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 3,
+                            "name": "ScaleX",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 4,
+                            "name": "ScaleY",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 5,
+                            "name": "Rotation",
+                            "type": 1,
+                            "value": "0"
+                        }
+                    ]
+                },
+                {
                     "name": "Script",
                     "properties": [
                         {
@@ -50,8 +132,13 @@
     "pluginSettings": {
         "Network": {
             "Host": "127.0.0.1",
+            "PlayerPrefabs": "",
             "Port": "4242",
             "Role": "Client"
+        },
+        "Physics2D": {
+            "GravityX": "0",
+            "GravityY": "980"
         }
     },
     "plugins": [
@@ -76,6 +163,30 @@
                         {
                             "id": 1,
                             "name": "PositionY",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 2,
+                            "name": "PositionZ",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 3,
+                            "name": "ScaleX",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 4,
+                            "name": "ScaleY",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 5,
+                            "name": "Rotation",
                             "type": 1,
                             "value": "0"
                         }
@@ -136,6 +247,12 @@
                             "name": "TypeCollisions",
                             "type": 2,
                             "value": "All layers"
+                        },
+                        {
+                            "id": 6,
+                            "name": "IsTrigger",
+                            "type": 3,
+                            "value": "False"
                         }
                     ]
                 },
@@ -206,6 +323,30 @@
                             "name": "PositionY",
                             "type": 1,
                             "value": "0"
+                        },
+                        {
+                            "id": 2,
+                            "name": "PositionZ",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 3,
+                            "name": "ScaleX",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 4,
+                            "name": "ScaleY",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 5,
+                            "name": "Rotation",
+                            "type": 1,
+                            "value": "0"
                         }
                     ]
                 },
@@ -264,6 +405,12 @@
                             "name": "TypeCollisions",
                             "type": 2,
                             "value": "All layers"
+                        },
+                        {
+                            "id": 6,
+                            "name": "IsTrigger",
+                            "type": 3,
+                            "value": "False"
                         }
                     ]
                 },
@@ -332,6 +479,30 @@
                         {
                             "id": 1,
                             "name": "PositionY",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 2,
+                            "name": "PositionZ",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 3,
+                            "name": "ScaleX",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 4,
+                            "name": "ScaleY",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 5,
+                            "name": "Rotation",
                             "type": 1,
                             "value": "0"
                         }

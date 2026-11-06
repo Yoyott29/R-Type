@@ -199,7 +199,7 @@ target_include_directories(Gringo PRIVATE
     src/editor/menu/AMenu src/editor/menu/mainMenu src/editor/menu/templateMenu
     src/editor/menu/nameMenu src/editor/menu/loadMenu src/editor/menu/editorMenu
     src/editor/menu/editorMenu/components src/editor/menu/editorMenu/objects
-    src/editor/menu/editorMenu/properties
+    src/editor/menu/editorMenu/properties src/editor/menu/editorMenu/animations
 )
 target_include_directories(Gringo SYSTEM PRIVATE "${raylib_SOURCE_DIR}/src")
 target_link_libraries(Gringo PRIVATE gringo_engine raylib nlohmann_json::nlohmann_json)

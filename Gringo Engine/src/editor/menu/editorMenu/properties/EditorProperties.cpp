@@ -50,6 +50,7 @@ void EditorProperties::applyCurrentEdit()
     updateObjectProperty();
     _editor._currentlyUpdatedProperty.active = false;
     _editor._currentlyUpdatedProperty.editingName = false;
+    _editor._currentlyUpdatedProperty.commit = {};
 }
 
 void EditorProperties::createProperties(Component &component, int componentIndex, float positionX,
@@ -175,6 +176,7 @@ void EditorProperties::selectProperty(const std::string &propertyValueName, valu
 
     _editor._currentlyUpdatedProperty.text = storedValue;
     _editor._currentlyUpdatedProperty.active = true;
+    _editor._currentlyUpdatedProperty.commit = {};
 
     _editor._currentlyUpdatedProperty.cursorIndex =
         static_cast<int>(_editor._currentlyUpdatedProperty.text.size());
@@ -249,6 +251,10 @@ void EditorProperties::cycleColor(const std::string &propertyValueName, ObjectTy
 
 void EditorProperties::updateObjectProperty()
 {
+    if (_editor._currentlyUpdatedProperty.commit) {
+        _editor._currentlyUpdatedProperty.commit(_editor._currentlyUpdatedProperty.text);
+        return;
+    }
     if (_editor._currentlyUpdatedProperty.editingName) {
         if (_editor._selectedObjectType == ObjectType::Entity)
             _editor._objects.editEntityName(_editor._selectedObjectId,

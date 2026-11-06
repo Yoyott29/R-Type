@@ -32,13 +32,24 @@ void SpriteSystem::drawSprite(IRenderer &renderer, Transform const &position, Sp
         if (sprite.texturePath.empty())
             renderer.drawRectangle(position.x, position.y, box.width, box.height, sprite.color);
         else
-            renderer.drawImage(sprite.texturePath, position.x, position.y, box.width, box.height);
+            drawTexture(renderer, sprite, position.x, position.y, box.width, box.height);
         return;
     }
     CircleShape const &circle = std::get<CircleShape>(sprite.shape);
     if (sprite.texturePath.empty())
         renderer.drawCircle(position.x, position.y, circle.radius, sprite.color);
     else
-        renderer.drawImage(sprite.texturePath, position.x, position.y, circle.radius * 2.0f,
-                           circle.radius * 2.0f);
+        drawTexture(renderer, sprite, position.x, position.y, circle.radius * 2.0f,
+                    circle.radius * 2.0f);
+}
+
+void SpriteSystem::drawTexture(IRenderer &renderer, Sprite const &sprite, float x, float y,
+                               float width, float height)
+{
+    SpriteRegion const &region = sprite.region;
+    if (region.width <= 0.0f || region.height <= 0.0f)
+        renderer.drawImage(sprite.texturePath, x, y, width, height);
+    else
+        renderer.drawImageRegion(sprite.texturePath, x, y, width, height, region.x, region.y,
+                                 region.width, region.height);
 }

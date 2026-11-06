@@ -31,6 +31,9 @@ class RaylibRenderer : public Renderer<RaylibRenderer>
                   ColorRGBA color) override;
     void drawImage(std::string const &path, float x, float y, float width,
                    float height) override;
+    void drawImageRegion(std::string const &path, float x, float y, float width, float height,
+                         float sourceX, float sourceY, float sourceWidth,
+                         float sourceHeight) override;
 
     bool isKeyDown(Key key) const override;
 
@@ -46,6 +49,8 @@ class RaylibRenderer : public Renderer<RaylibRenderer>
     // Loaded once, kept until the window closes
     Texture2D &getTexture(std::string const &path);
     void unloadTextures();
+    // Frees the textures and closes the window if open (closeWindow and the destructor)
+    void releaseWindow();
 
     float _worldWidth = 0.0f;
     float _worldHeight = 0.0f;
