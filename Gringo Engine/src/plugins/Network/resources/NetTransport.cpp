@@ -138,7 +138,7 @@ void NetTransport::receiveFromUnknown(Endpoint const &from, Packet const &packet
     std::optional<RejectReason> reject;
     if (packet.version != _config.protocolVersion)
         reject = RejectReason::VersionMismatch;
-    else if (_peers.size() >= _config.maxPeers)
+    else if (_peers.size() >= _config.maxPeers || !_acceptingPeers)
         reject = RejectReason::Full;
     if (reject) {
         Packet rejected = makePacket(PacketKind::ConnectRejected);
