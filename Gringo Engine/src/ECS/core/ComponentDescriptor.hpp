@@ -12,6 +12,8 @@
 
 // Value of a File property when no file is chosen
 #define NO_FILE "NONE"
+// Font of the texts and buttons by default: the editor's font, copied in every project's assets
+#define DEFAULT_FONT "Font.ttf"
 
 // How the editor edits a property. The numbers are saved in .gringo files
 enum class valueType {

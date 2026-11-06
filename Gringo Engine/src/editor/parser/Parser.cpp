@@ -88,6 +88,7 @@ void Parser::saveFile(const std::string &, const SceneObjects &sceneObjects)
     std::filesystem::create_directories(gameFolder);
     std::filesystem::create_directories(gameFolder / "scripts");
     std::filesystem::create_directories(gameFolder / "assets");
+    copyDefaultFont(gameFolder / "assets");
     std::ofstream file(gamePath);
 
     if (!file.is_open()) {
@@ -199,6 +200,20 @@ std::vector<std::string> Parser::getSavedFiles()
         }
     }
     return savedFiles;
+}
+
+void Parser::copyDefaultFont(const std::filesystem::path &assetsFolder)
+{
+    // The texts' default font must be in the project for its build (and the game) to find it
+    const std::filesystem::path font = assetsFolder / DEFAULT_FONT;
+    std::error_code error;
+    if (std::filesystem::exists(font, error))
+        return;
+    std::filesystem::copy_file(executableDirectory() / "src" / "editor" / "Assets" / "Font.ttf",
+                               font, error);
+    if (error)
+        std::cerr << "Could not copy the default font to " << font << ": " << error.message()
+                  << std::endl;
 }
 
 std::filesystem::path Parser::executableDirectory()

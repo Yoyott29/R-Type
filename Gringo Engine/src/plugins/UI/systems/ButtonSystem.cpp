@@ -24,6 +24,6 @@ void ButtonSystem::update(Scene &scene)
         renderer.drawRectangle(position.x, position.y, button.width, button.height, button.color);
         // Every draw call is centered on (x, y), so the text lands in the middle of the button
         renderer.drawText(position.x, position.y, button.content, button.fontSize,
-                          button.textColor);
+                          button.textColor, button.fontPath);
     }
 }

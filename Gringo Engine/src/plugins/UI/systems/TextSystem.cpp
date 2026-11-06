@@ -21,6 +21,7 @@ void TextSystem::update(Scene &scene)
     for (Entity entity : _entities) {
         Transform const &position = scene.getComponent<Transform>(entity);
         UIText const &text = scene.getComponent<UIText>(entity);
-        renderer.drawText(position.x, position.y, text.content, text.fontSize, text.color);
+        renderer.drawText(position.x, position.y, text.content, text.fontSize, text.color,
+                          text.fontPath);
     }
 }

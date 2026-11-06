@@ -1,0 +1,245 @@
+{
+    "entities": [
+        {
+            "components": [
+                {
+                    "name": "Transform",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "PositionX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 1,
+                            "name": "PositionY",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 2,
+                            "name": "PositionZ",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 3,
+                            "name": "ScaleX",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 4,
+                            "name": "ScaleY",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 5,
+                            "name": "Rotation",
+                            "type": 1,
+                            "value": "0"
+                        }
+                    ]
+                }
+            ],
+            "id": 0,
+            "name": "Main Menu"
+        },
+        {
+            "components": [
+                {
+                    "name": "Transform",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "PositionX",
+                            "type": 1,
+                            "value": "940"
+                        },
+                        {
+                            "id": 1,
+                            "name": "PositionY",
+                            "type": 1,
+                            "value": "540"
+                        },
+                        {
+                            "id": 2,
+                            "name": "PositionZ",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 3,
+                            "name": "ScaleX",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 4,
+                            "name": "ScaleY",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 5,
+                            "name": "Rotation",
+                            "type": 1,
+                            "value": "0"
+                        }
+                    ]
+                },
+                {
+                    "name": "ChildOf",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Parent",
+                            "type": 0,
+                            "value": "0"
+                        }
+                    ]
+                },
+                {
+                    "name": "Button",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Content",
+                            "type": 2,
+                            "value": "Play"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Width",
+                            "type": 0,
+                            "value": "100"
+                        },
+                        {
+                            "id": 2,
+                            "name": "Height",
+                            "type": 0,
+                            "value": "50"
+                        },
+                        {
+                            "id": 3,
+                            "name": "FontSize",
+                            "type": 0,
+                            "value": "24"
+                        },
+                        {
+                            "id": 4,
+                            "name": "Color",
+                            "type": 4,
+                            "value": "Brown"
+                        },
+                        {
+                            "id": 5,
+                            "name": "TextColor",
+                            "type": 4,
+                            "value": "Black"
+                        },
+                        {
+                            "id": 6,
+                            "name": "Script",
+                            "type": 7,
+                            "value": "NONE"
+                        }
+                    ]
+                }
+            ],
+            "id": 1,
+            "name": "Play Button"
+        },
+        {
+            "components": [
+                {
+                    "name": "Transform",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "PositionX",
+                            "type": 1,
+                            "value": "960"
+                        },
+                        {
+                            "id": 1,
+                            "name": "PositionY",
+                            "type": 1,
+                            "value": "300"
+                        },
+                        {
+                            "id": 2,
+                            "name": "PositionZ",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 3,
+                            "name": "ScaleX",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 4,
+                            "name": "ScaleY",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 5,
+                            "name": "Rotation",
+                            "type": 1,
+                            "value": "0"
+                        }
+                    ]
+                },
+                {
+                    "name": "ChildOf",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Parent",
+                            "type": 0,
+                            "value": "0"
+                        }
+                    ]
+                },
+                {
+                    "name": "Text",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Content",
+                            "type": 2,
+                            "value": "TrackNTrap"
+                        },
+                        {
+                            "id": 1,
+                            "name": "FontSize",
+                            "type": 0,
+                            "value": "60"
+                        },
+                        {
+                            "id": 2,
+                            "name": "Color",
+                            "type": 4,
+                            "value": "White"
+                        }
+                    ]
+                }
+            ],
+            "id": 2,
+            "name": "Title"
+        }
+    ],
+    "pluginSettings": {},
+    "plugins": [
+        "2D",
+        "UI"
+    ],
+    "prefabs": [],
+    "projectName": "TrackNTrap",
+    "renderer": "RaylibRenderer"
+}

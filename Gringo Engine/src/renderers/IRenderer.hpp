@@ -36,8 +36,9 @@ class IRenderer
     // Drawing
     virtual void drawRectangle(float x, float y, float width, float height, ColorRGBA color) = 0;
     virtual void drawCircle(float x, float y, float radius, ColorRGBA color) = 0;
+    // fontPath: a .ttf / .otf file; empty or not loadable: the renderer's built-in font
     virtual void drawText(float x, float y, std::string const &text, int fontSize,
-                          ColorRGBA color) = 0;
+                          ColorRGBA color, std::string const &fontPath) = 0;
     // Draws an image file stretched to width x height
     virtual void drawImage(std::string const &path, float x, float y, float width,
                            float height) = 0;
