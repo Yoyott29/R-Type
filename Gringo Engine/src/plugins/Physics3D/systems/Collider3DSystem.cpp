@@ -76,4 +76,37 @@ void Collider3DSystem::resolve(Scene &scene, Entity first, Entity second, Transf
     if (xAxis) { firstPosition.x -= normal * pushFirst; secondPosition.x += normal * pushSecond; }
     else if (yAxis) { firstPosition.y -= normal * pushFirst; secondPosition.y += normal * pushSecond; }
     else { firstPosition.z -= normal * pushFirst; secondPosition.z += normal * pushSecond; }
+
+    const Velocity3D firstVelocity =
+        scene.hasComponent<Velocity3D>(first) ? scene.getComponent<Velocity3D>(first)
+                                               : Velocity3D{};
+    const Velocity3D secondVelocity =
+        scene.hasComponent<Velocity3D>(second) ? scene.getComponent<Velocity3D>(second)
+                                                : Velocity3D{};
+    const float relativeVelocity =
+        (secondVelocity.dx - firstVelocity.dx) * (xAxis ? normal : 0.0f) +
+        (secondVelocity.dy - firstVelocity.dy) * (yAxis ? normal : 0.0f) +
+        (secondVelocity.dz - firstVelocity.dz) * (!xAxis && !yAxis ? normal : 0.0f);
+    if (relativeVelocity >= 0.0f)
+        return;
+
+    const float impulse = -relativeVelocity / total;
+    if (inverseFirst != 0.0f) {
+        Velocity3D &velocity = scene.getComponent<Velocity3D>(first);
+        if (xAxis)
+            velocity.dx -= normal * impulse * inverseFirst;
+        else if (yAxis)
+            velocity.dy -= normal * impulse * inverseFirst;
+        else
+            velocity.dz -= normal * impulse * inverseFirst;
+    }
+    if (inverseSecond != 0.0f) {
+        Velocity3D &velocity = scene.getComponent<Velocity3D>(second);
+        if (xAxis)
+            velocity.dx += normal * impulse * inverseSecond;
+        else if (yAxis)
+            velocity.dy += normal * impulse * inverseSecond;
+        else
+            velocity.dz += normal * impulse * inverseSecond;
+    }
 }
