@@ -58,9 +58,14 @@ Scene::componentInitializer(const nlohmann::json &component) const
 
 void Scene::flushDestroyQueue()
 {
-    while (!_destroyQueue.empty()) {
-        Entity entity = _destroyQueue.front();
-        _destroyQueue.pop();
+    std::queue<Entity> pending;
+    {
+        const std::lock_guard lock(_destroyMutex);
+        std::swap(pending, _destroyQueue);
+    }
+    while (!pending.empty()) {
+        Entity entity = pending.front();
+        pending.pop();
         destroyEntity(entity);
     }
 }

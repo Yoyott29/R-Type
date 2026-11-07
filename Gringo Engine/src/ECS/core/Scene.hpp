@@ -11,6 +11,7 @@
 #include "ResourceManager.hpp"
 #include "SystemManager.hpp"
 #include <memory>
+#include <mutex>
 #include <type_traits>
 #include <utility>
 #include <vector>
@@ -25,6 +26,7 @@ class Scene
     void runSchedule(ScheduleLabel label);
     void putAllEntitysInDestroyQueue()
     {
+        const std::lock_guard lock(_destroyMutex);
         _entityManager->putAllEntitysInDestroyQueue(_destroyQueue);
     };
 
@@ -139,7 +141,11 @@ class Scene
     {
         return _componentManager->getComponentType<Component>();
     }
-    void queueDestroy(Entity entity) { _destroyQueue.push(entity); }
+    void queueDestroy(Entity entity)
+    {
+        const std::lock_guard lock(_destroyMutex);
+        _destroyQueue.push(entity);
+    }
     void flushDestroyQueue();
 
     template <typename Resource, typename... Args> Resource &addResource(Args &&...args)
@@ -188,4 +194,5 @@ class Scene
     std::unique_ptr<SystemManager> _systemManager;
     std::unique_ptr<ResourceManager> _resourceManager;
     std::queue<Entity> _destroyQueue;
+    std::mutex _destroyMutex;
 };
