@@ -1,0 +1,8 @@
+{
+    "texture": "EnemyBullet.png",
+    "frameWidth": 7.0,
+    "frameHeight": 6,
+    "frames": 8,
+    "fps": 12,
+    "loop": true
+}
