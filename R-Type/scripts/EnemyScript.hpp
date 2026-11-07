@@ -1,20 +1,46 @@
 #ifndef ENEMYSCRIPT_HPP_
 #define ENEMYSCRIPT_HPP_
 
-#include "Transform.hpp"
+#include "BuildVariantName.hpp"
+#include "Collider2D.hpp"
+#include "PlayerScript.hpp"
 #include "Scene.hpp"
 #include "Script.hpp"
+#include "Transform.hpp"
 #include "Velocity.hpp"
 #include <cmath>
+#include <cstdint>
 
 class EnemyScript : public GringoEntityScript
 {
   public:
     void onStart(Scene &scene, Entity &entity) override;
     void onUpdate(Scene &scene, Entity &entity) override;
+
+  private:
+    static constexpr std::uint32_t PLAYER_LAYER = 1;
+
+    static bool isClientSide(Scene &scene);
 };
 
-inline void EnemyScript::onStart(Scene &, Entity &) {}
+inline bool EnemyScript::isClientSide(Scene &scene)
+{
+    return scene.hasResource<BuildVariantName>() &&
+           scene.getResource<BuildVariantName>().name == "client";
+}
+
+inline void EnemyScript::onStart(Scene &scene, Entity &entity)
+{
+    if (isClientSide(scene))
+        return;
+    scene.getComponent<Collider2D>(entity).onCollision = [&scene](Entity, Entity other) {
+        if (!scene.isEntityAlive(other))
+            return;
+        if (scene.getComponent<Collider2D>(other).layer != PLAYER_LAYER)
+            return;
+        PlayerScript::kill(scene, other);
+    };
+}
 
 inline void EnemyScript::onUpdate(Scene &scene, Entity &entity)
 {
