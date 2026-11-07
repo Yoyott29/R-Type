@@ -111,6 +111,7 @@ add_library(gringo_engine SHARED
     ${GRINGO_ENGINE_DIR}/src/ECS/core/TickTimeManager.cpp
     ${GRINGO_ENGINE_DIR}/src/ECS/core/EntityManager.cpp
     ${GRINGO_ENGINE_DIR}/src/ECS/core/ThreadPool.cpp
+    ${GRINGO_ENGINE_DIR}/src/ECS/core/ParallelFor.cpp
     ${GRINGO_ENGINE_DIR}/src/ECS/systems/ScheduleGraph.cpp
     ${GRINGO_ENGINE_DIR}/src/ECS/systems/ScheduleRunner.cpp
     ${GRINGO_ENGINE_DIR}/src/ECS/systems/SystemManager.cpp
