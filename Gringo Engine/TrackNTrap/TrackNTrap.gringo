@@ -446,6 +446,12 @@
                             "name": "AnimationSpeed",
                             "type": 1,
                             "value": "1"
+                        },
+                        {
+                            "id": 10,
+                            "name": "AnimationFrame",
+                            "type": 1,
+                            "value": "-1"
                         }
                     ]
                 }
@@ -741,6 +747,12 @@
                             "name": "AnimationSpeed",
                             "type": 1,
                             "value": "1"
+                        },
+                        {
+                            "id": 10,
+                            "name": "AnimationFrame",
+                            "type": 1,
+                            "value": "-1"
                         }
                     ]
                 }
@@ -871,6 +883,12 @@
                             "name": "AnimationSpeed",
                             "type": 1,
                             "value": "3"
+                        },
+                        {
+                            "id": 10,
+                            "name": "AnimationFrame",
+                            "type": 1,
+                            "value": "-1"
                         }
                     ]
                 },
@@ -1270,6 +1288,12 @@
                             "name": "GravityScale",
                             "type": 1,
                             "value": "0"
+                        },
+                        {
+                            "id": 3,
+                            "name": "StepHeight",
+                            "type": 1,
+                            "value": "0"
                         }
                     ]
                 },
@@ -1459,6 +1483,12 @@
                             "name": "AnimationSpeed",
                             "type": 1,
                             "value": "1"
+                        },
+                        {
+                            "id": 10,
+                            "name": "AnimationFrame",
+                            "type": 1,
+                            "value": "-1"
                         }
                     ]
                 }
@@ -3395,6 +3425,12 @@
                             "name": "KeepInside",
                             "type": 3,
                             "value": "False"
+                        },
+                        {
+                            "id": 5,
+                            "name": "Reach",
+                            "type": 1,
+                            "value": "0"
                         }
                     ]
                 }
@@ -3506,6 +3542,12 @@
                             "name": "KeepInside",
                             "type": 3,
                             "value": "True"
+                        },
+                        {
+                            "id": 5,
+                            "name": "Reach",
+                            "type": 1,
+                            "value": "0"
                         }
                     ]
                 }
@@ -3617,6 +3659,12 @@
                             "name": "KeepInside",
                             "type": 3,
                             "value": "False"
+                        },
+                        {
+                            "id": 5,
+                            "name": "Reach",
+                            "type": 1,
+                            "value": "0"
                         }
                     ]
                 }
@@ -3728,6 +3776,12 @@
                             "name": "KeepInside",
                             "type": 3,
                             "value": "True"
+                        },
+                        {
+                            "id": 5,
+                            "name": "Reach",
+                            "type": 1,
+                            "value": "0"
                         }
                     ]
                 }
@@ -3839,6 +3893,12 @@
                             "name": "KeepInside",
                             "type": 3,
                             "value": "False"
+                        },
+                        {
+                            "id": 5,
+                            "name": "Reach",
+                            "type": 1,
+                            "value": "0"
                         }
                     ]
                 }
@@ -3950,6 +4010,12 @@
                             "name": "KeepInside",
                             "type": 3,
                             "value": "True"
+                        },
+                        {
+                            "id": 5,
+                            "name": "Reach",
+                            "type": 1,
+                            "value": "0"
                         }
                     ]
                 }
@@ -4061,6 +4127,12 @@
                             "name": "KeepInside",
                             "type": 3,
                             "value": "False"
+                        },
+                        {
+                            "id": 5,
+                            "name": "Reach",
+                            "type": 1,
+                            "value": "0"
                         }
                     ]
                 }
@@ -4172,6 +4244,12 @@
                             "name": "KeepInside",
                             "type": 3,
                             "value": "True"
+                        },
+                        {
+                            "id": 5,
+                            "name": "Reach",
+                            "type": 1,
+                            "value": "0"
                         }
                     ]
                 }
@@ -5671,6 +5749,12 @@
                             "name": "GravityScale",
                             "type": 1,
                             "value": "0"
+                        },
+                        {
+                            "id": 3,
+                            "name": "StepHeight",
+                            "type": 1,
+                            "value": "0"
                         }
                     ]
                 },
@@ -5827,6 +5911,12 @@
                         {
                             "id": 2,
                             "name": "GravityScale",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 3,
+                            "name": "StepHeight",
                             "type": 1,
                             "value": "0"
                         }
@@ -5987,6 +6077,12 @@
                             "name": "GravityScale",
                             "type": 1,
                             "value": "0"
+                        },
+                        {
+                            "id": 3,
+                            "name": "StepHeight",
+                            "type": 1,
+                            "value": "0"
                         }
                     ]
                 },
@@ -6143,6 +6239,12 @@
                         {
                             "id": 2,
                             "name": "GravityScale",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 3,
+                            "name": "StepHeight",
                             "type": 1,
                             "value": "0"
                         }
@@ -6303,6 +6405,12 @@
                             "name": "GravityScale",
                             "type": 1,
                             "value": "0"
+                        },
+                        {
+                            "id": 3,
+                            "name": "StepHeight",
+                            "type": 1,
+                            "value": "0"
                         }
                     ]
                 },
@@ -6459,6 +6567,12 @@
                         {
                             "id": 2,
                             "name": "GravityScale",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 3,
+                            "name": "StepHeight",
                             "type": 1,
                             "value": "0"
                         }
@@ -6619,6 +6733,12 @@
                             "name": "GravityScale",
                             "type": 1,
                             "value": "0"
+                        },
+                        {
+                            "id": 3,
+                            "name": "StepHeight",
+                            "type": 1,
+                            "value": "0"
                         }
                     ]
                 },
@@ -6775,6 +6895,12 @@
                         {
                             "id": 2,
                             "name": "GravityScale",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 3,
+                            "name": "StepHeight",
                             "type": 1,
                             "value": "0"
                         }
@@ -6935,6 +7061,12 @@
                             "name": "GravityScale",
                             "type": 1,
                             "value": "0"
+                        },
+                        {
+                            "id": 3,
+                            "name": "StepHeight",
+                            "type": 1,
+                            "value": "0"
                         }
                     ]
                 },
@@ -7091,6 +7223,12 @@
                         {
                             "id": 2,
                             "name": "GravityScale",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 3,
+                            "name": "StepHeight",
                             "type": 1,
                             "value": "0"
                         }
@@ -7251,6 +7389,12 @@
                             "name": "GravityScale",
                             "type": 1,
                             "value": "0"
+                        },
+                        {
+                            "id": 3,
+                            "name": "StepHeight",
+                            "type": 1,
+                            "value": "0"
                         }
                     ]
                 },
@@ -7407,6 +7551,12 @@
                         {
                             "id": 2,
                             "name": "GravityScale",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 3,
+                            "name": "StepHeight",
                             "type": 1,
                             "value": "0"
                         }
@@ -7567,6 +7717,12 @@
                             "name": "GravityScale",
                             "type": 1,
                             "value": "0"
+                        },
+                        {
+                            "id": 3,
+                            "name": "StepHeight",
+                            "type": 1,
+                            "value": "0"
                         }
                     ]
                 },
@@ -7723,6 +7879,12 @@
                         {
                             "id": 2,
                             "name": "GravityScale",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 3,
+                            "name": "StepHeight",
                             "type": 1,
                             "value": "0"
                         }
@@ -7883,6 +8045,12 @@
                             "name": "GravityScale",
                             "type": 1,
                             "value": "0"
+                        },
+                        {
+                            "id": 3,
+                            "name": "StepHeight",
+                            "type": 1,
+                            "value": "0"
                         }
                     ]
                 },
@@ -8039,6 +8207,12 @@
                         {
                             "id": 2,
                             "name": "GravityScale",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 3,
+                            "name": "StepHeight",
                             "type": 1,
                             "value": "0"
                         }
@@ -8199,6 +8373,12 @@
                             "name": "GravityScale",
                             "type": 1,
                             "value": "0"
+                        },
+                        {
+                            "id": 3,
+                            "name": "StepHeight",
+                            "type": 1,
+                            "value": "0"
                         }
                     ]
                 },
@@ -8355,6 +8535,12 @@
                         {
                             "id": 2,
                             "name": "GravityScale",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 3,
+                            "name": "StepHeight",
                             "type": 1,
                             "value": "0"
                         }
@@ -8515,6 +8701,12 @@
                             "name": "GravityScale",
                             "type": 1,
                             "value": "0"
+                        },
+                        {
+                            "id": 3,
+                            "name": "StepHeight",
+                            "type": 1,
+                            "value": "0"
                         }
                     ]
                 },
@@ -8671,6 +8863,12 @@
                         {
                             "id": 2,
                             "name": "GravityScale",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 3,
+                            "name": "StepHeight",
                             "type": 1,
                             "value": "0"
                         }
@@ -8831,6 +9029,12 @@
                             "name": "GravityScale",
                             "type": 1,
                             "value": "0"
+                        },
+                        {
+                            "id": 3,
+                            "name": "StepHeight",
+                            "type": 1,
+                            "value": "0"
                         }
                     ]
                 },
@@ -8987,6 +9191,12 @@
                         {
                             "id": 2,
                             "name": "GravityScale",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 3,
+                            "name": "StepHeight",
                             "type": 1,
                             "value": "0"
                         }
@@ -9147,6 +9357,12 @@
                             "name": "GravityScale",
                             "type": 1,
                             "value": "0"
+                        },
+                        {
+                            "id": 3,
+                            "name": "StepHeight",
+                            "type": 1,
+                            "value": "0"
                         }
                     ]
                 },
@@ -9303,6 +9519,12 @@
                         {
                             "id": 2,
                             "name": "GravityScale",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 3,
+                            "name": "StepHeight",
                             "type": 1,
                             "value": "0"
                         }
@@ -9463,6 +9685,12 @@
                             "name": "GravityScale",
                             "type": 1,
                             "value": "0"
+                        },
+                        {
+                            "id": 3,
+                            "name": "StepHeight",
+                            "type": 1,
+                            "value": "0"
                         }
                     ]
                 },
@@ -9619,6 +9847,12 @@
                         {
                             "id": 2,
                             "name": "GravityScale",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 3,
+                            "name": "StepHeight",
                             "type": 1,
                             "value": "0"
                         }
@@ -9779,6 +10013,12 @@
                             "name": "GravityScale",
                             "type": 1,
                             "value": "0"
+                        },
+                        {
+                            "id": 3,
+                            "name": "StepHeight",
+                            "type": 1,
+                            "value": "0"
                         }
                     ]
                 },
@@ -9935,6 +10175,12 @@
                         {
                             "id": 2,
                             "name": "GravityScale",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 3,
+                            "name": "StepHeight",
                             "type": 1,
                             "value": "0"
                         }
@@ -10095,6 +10341,12 @@
                             "name": "GravityScale",
                             "type": 1,
                             "value": "0"
+                        },
+                        {
+                            "id": 3,
+                            "name": "StepHeight",
+                            "type": 1,
+                            "value": "0"
                         }
                     ]
                 },
@@ -10251,6 +10503,12 @@
                         {
                             "id": 2,
                             "name": "GravityScale",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 3,
+                            "name": "StepHeight",
                             "type": 1,
                             "value": "0"
                         }
@@ -10411,6 +10669,12 @@
                             "name": "GravityScale",
                             "type": 1,
                             "value": "0"
+                        },
+                        {
+                            "id": 3,
+                            "name": "StepHeight",
+                            "type": 1,
+                            "value": "0"
                         }
                     ]
                 },
@@ -10567,6 +10831,12 @@
                         {
                             "id": 2,
                             "name": "GravityScale",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 3,
+                            "name": "StepHeight",
                             "type": 1,
                             "value": "0"
                         }
@@ -10727,6 +10997,12 @@
                             "name": "GravityScale",
                             "type": 1,
                             "value": "0"
+                        },
+                        {
+                            "id": 3,
+                            "name": "StepHeight",
+                            "type": 1,
+                            "value": "0"
                         }
                     ]
                 },
@@ -10883,6 +11159,12 @@
                         {
                             "id": 2,
                             "name": "GravityScale",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 3,
+                            "name": "StepHeight",
                             "type": 1,
                             "value": "0"
                         }
@@ -11043,6 +11325,12 @@
                             "name": "GravityScale",
                             "type": 1,
                             "value": "0"
+                        },
+                        {
+                            "id": 3,
+                            "name": "StepHeight",
+                            "type": 1,
+                            "value": "0"
                         }
                     ]
                 },
@@ -11199,6 +11487,12 @@
                         {
                             "id": 2,
                             "name": "GravityScale",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 3,
+                            "name": "StepHeight",
                             "type": 1,
                             "value": "0"
                         }
@@ -11359,6 +11653,12 @@
                             "name": "GravityScale",
                             "type": 1,
                             "value": "0"
+                        },
+                        {
+                            "id": 3,
+                            "name": "StepHeight",
+                            "type": 1,
+                            "value": "0"
                         }
                     ]
                 },
@@ -11517,6 +11817,12 @@
                             "name": "GravityScale",
                             "type": 1,
                             "value": "0"
+                        },
+                        {
+                            "id": 3,
+                            "name": "StepHeight",
+                            "type": 1,
+                            "value": "0"
                         }
                     ]
                 },
@@ -11673,6 +11979,12 @@
                         {
                             "id": 2,
                             "name": "GravityScale",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 3,
+                            "name": "StepHeight",
                             "type": 1,
                             "value": "0"
                         }
@@ -11897,6 +12209,12 @@
                             "name": "AnimationSpeed",
                             "type": 1,
                             "value": "1"
+                        },
+                        {
+                            "id": 10,
+                            "name": "AnimationFrame",
+                            "type": 1,
+                            "value": "-1"
                         }
                     ]
                 },
@@ -11918,6 +12236,12 @@
                         {
                             "id": 2,
                             "name": "GravityScale",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 3,
+                            "name": "StepHeight",
                             "type": 1,
                             "value": "0"
                         }
@@ -12016,7 +12340,6 @@
             "name": "Knife"
         },
         {
-            "name": "Stone Wall",
             "components": [
                 {
                     "name": "Transform",
@@ -12139,6 +12462,12 @@
                             "name": "AnimationSpeed",
                             "type": 1,
                             "value": "1"
+                        },
+                        {
+                            "id": 10,
+                            "name": "AnimationFrame",
+                            "type": 1,
+                            "value": "-1"
                         }
                     ]
                 },
@@ -12160,6 +12489,12 @@
                         {
                             "id": 2,
                             "name": "GravityScale",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 3,
+                            "name": "StepHeight",
                             "type": 1,
                             "value": "0"
                         }
@@ -12224,10 +12559,11 @@
                         }
                     ]
                 }
-            ]
+            ],
+            "id": 0,
+            "name": "Stone Wall"
         },
         {
-            "name": "Stone Wall Side",
             "components": [
                 {
                     "name": "Transform",
@@ -12350,6 +12686,12 @@
                             "name": "AnimationSpeed",
                             "type": 1,
                             "value": "1"
+                        },
+                        {
+                            "id": 10,
+                            "name": "AnimationFrame",
+                            "type": 1,
+                            "value": "-1"
                         }
                     ]
                 },
@@ -12371,6 +12713,12 @@
                         {
                             "id": 2,
                             "name": "GravityScale",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 3,
+                            "name": "StepHeight",
                             "type": 1,
                             "value": "0"
                         }
@@ -12435,7 +12783,9 @@
                         }
                     ]
                 }
-            ]
+            ],
+            "id": 0,
+            "name": "Stone Wall Side"
         }
     ],
     "projectName": "TrackNTrap",
