@@ -42,7 +42,7 @@ class ThreadPool
     std::size_t workerCount() const;
 
   private:
-    void workerLoop(std::stop_token token);
+    void workerLoop(const std::stop_token &token);
     // _mutex held, queue not empty
     std::function<void()> popTask();
     void runTask(const std::function<void()> &task);

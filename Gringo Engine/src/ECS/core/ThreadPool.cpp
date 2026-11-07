@@ -22,7 +22,7 @@ ThreadPool::ThreadPool(std::size_t workerCount) : _workerCount(workerCount)
 {
     _workers.reserve(workerCount);
     for (std::size_t i = 0; i < workerCount; ++i)
-        _workers.emplace_back([this](std::stop_token token) { workerLoop(token); });
+        _workers.emplace_back([this](const std::stop_token &token) { workerLoop(token); });
 }
 
 ThreadPool::~ThreadPool() = default;
@@ -75,7 +75,7 @@ std::size_t ThreadPool::workerCount() const
     return _workerCount;
 }
 
-void ThreadPool::workerLoop(std::stop_token token)
+void ThreadPool::workerLoop(const std::stop_token &token)
 {
     while (true) {
         std::function<void()> task;
