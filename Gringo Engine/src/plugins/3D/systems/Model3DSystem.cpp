@@ -24,7 +24,7 @@ void Model3DSystem::update(Scene &scene)
                               model.width, model.height, model.depth, model.scale,
                               position.scaleX, position.scaleY, position.scaleZ,
                               position.rotationX, position.rotationY, position.rotationZ,
-                              model.animation, model.animationSpeed},
+                              model.animation, model.animationSpeed, model.animationFrame},
                              position.x, position.y, position.z);
     }
 }

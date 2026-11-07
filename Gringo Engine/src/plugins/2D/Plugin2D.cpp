@@ -10,6 +10,9 @@
 #include "AnimationSystem.hpp"
 #include "Animator.hpp"
 #include "ComponentJson.hpp"
+#include "ParticleEmitter2D.hpp"
+#include "ParticleEmitter2DSystem.hpp"
+#include "ParticleRender2DSystem.hpp"
 #include "Transform.hpp"
 #include "ProjectAssets.hpp"
 #include "SpriteSystem.hpp"
@@ -42,6 +45,21 @@ void Plugin2D::registerComponents(Scene &scene)
         animator.speed = ComponentJson::floatValue(data, "Speed", 1.0f);
         target.addComponent(entity, animator);
     });
+    // register the ParticleEmitter2D component. It starts stopped: a script calls start()
+    scene.registerComponent<ParticleEmitter2D>(
+        [](Scene &target, Entity entity, const nlohmann::json &data) {
+            ParticleEmitter2D emitter;
+            emitter.density = ComponentJson::floatValue(data, "Density", 10.0f);
+            if (ComponentJson::value(data, "Shape", "Circle") == "Box")
+                emitter.shape = BoxShape{ComponentJson::floatValue(data, "Width", 4.0f),
+                                         ComponentJson::floatValue(data, "Height", 4.0f)};
+            else
+                emitter.shape = CircleShape{ComponentJson::floatValue(data, "Radius", 2.0f)};
+            emitter.lifetime = ComponentJson::floatValue(data, "Lifetime", 1.0f);
+            emitter.speed = ComponentJson::floatValue(data, "Speed", 100.0f);
+            emitter.color = ComponentJson::colorValue(data, "Color", {255, 255, 255, 255});
+            target.addComponent(entity, emitter);
+        });
 }
 
 void Plugin2D::build(Application &app)
@@ -66,6 +84,17 @@ void Plugin2D::build(Application &app)
                                                     .write<Sprite>()
                                                     .writeResource<AnimationLibrary>()
                                                     .readResource<ProjectAssets>());
+
+    // setup the 2D particles: spawned and moved in FixedUpdate, drawn with the world
+    ComponentSet particleRequirements;
+    particleRequirements.set(app._scene.getComponentType<Transform>());
+    particleRequirements.set(app._scene.getComponentType<ParticleEmitter2D>());
+    app._scene.registerSystem<ParticleEmitter2DSystem>(FixedUpdate);
+    app._scene.setSystemComponentSet<ParticleEmitter2DSystem>(particleRequirements);
+    app._scene.setSystemAccess<ParticleEmitter2DSystem>(
+        app._scene.access().read<Transform>().write<ParticleEmitter2D>());
+    app._scene.registerSystem<ParticleRender2DSystem>(Render);
+    app._scene.setSystemComponentSet<ParticleRender2DSystem>(particleRequirements);
 }
 
 void Plugin2D::cleanup(Application &app) { (void)app; }

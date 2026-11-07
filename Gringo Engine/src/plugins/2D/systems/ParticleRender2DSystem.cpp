@@ -2,18 +2,18 @@
 ** EPITECH PROJECT, 2026
 ** Gringo Engine
 ** File description:
-** ParticleRenderSystem
+** ParticleRender2DSystem
 */
 
-#include "ParticleRenderSystem.hpp"
+#include "ParticleRender2DSystem.hpp"
 #include "IRenderer.hpp"
-#include "ParticleEmitter.hpp"
+#include "ParticleEmitter2D.hpp"
 #include <algorithm>
 #include <functional>
 #include <type_traits>
 #include <variant>
 
-void ParticleRenderSystem::update(Scene &scene)
+void ParticleRender2DSystem::update(Scene &scene)
 {
     // Without the renderer plugin there is no window to draw in
     if (!scene.hasResource<std::reference_wrapper<IRenderer>>())
@@ -21,8 +21,8 @@ void ParticleRenderSystem::update(Scene &scene)
     IRenderer &renderer = scene.getResource<std::reference_wrapper<IRenderer>>().get();
 
     for (Entity entity : _entities) {
-        ParticleEmitter const &emitter = scene.getComponent<ParticleEmitter>(entity);
-        for (Particle const &particle : emitter.particles) {
+        ParticleEmitter2D const &emitter = scene.getComponent<ParticleEmitter2D>(entity);
+        for (Particle2D const &particle : emitter.particles) {
             ColorRGBA color = emitter.color;
             const float remaining = emitter.lifetime > 0.0f ? particle.life / emitter.lifetime : 0.0f;
             color.a = static_cast<decltype(color.a)>(color.a * std::clamp(remaining, 0.0f, 1.0f));

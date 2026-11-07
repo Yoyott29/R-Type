@@ -44,6 +44,8 @@ struct RendererModel3D {
     float rotationZ = 0.0f;
     int animation = -1;
     float animationSpeed = 1.0f;
+    // Holds the animation on one point, 0 (start) to 1 (end), instead of playing it. -1 plays it
+    float animationFrame = -1.0f;
 };
 
 // The most basic functions a renderer gives: a window, drawing simple things and the keyboard.

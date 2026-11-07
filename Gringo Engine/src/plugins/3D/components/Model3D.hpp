@@ -21,6 +21,8 @@ struct Model3D {
     float scale = 1.0f;
     int animation = -1;
     float animationSpeed = 1.0f;
+    // Holds the animation on one point, 0 (start) to 1 (end), instead of playing it. -1 plays it
+    float animationFrame = -1.0f;
 };
 
 template <> struct ComponentDescription<Model3D> {
