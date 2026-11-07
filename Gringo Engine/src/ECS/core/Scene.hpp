@@ -8,6 +8,7 @@
 #pragma once
 #include "ComponentManager.hpp"
 #include "EntityManager.hpp"
+#include "ParallelFor.hpp"
 #include "ResourceManager.hpp"
 #include "SystemManager.hpp"
 #include <memory>
@@ -147,6 +148,31 @@ class Scene
         _destroyQueue.push(entity);
     }
     void flushDestroyQueue();
+
+    // Runs body over [0, count) in chunks, on the pool when count exceeds minChunk. See parallelFor
+    void parallelFor(std::size_t count, const ChunkBody &body,
+                     std::size_t minChunk = PARALLEL_FOR_MIN_CHUNK)
+    {
+        if (count == 0)
+            return;
+        if (count <= minChunk) {
+            body(0, count);
+            return;
+        }
+        ::parallelFor(_systemManager->pool(), count, minChunk, body);
+    }
+
+    // body(const Item &) for each item, in parallel
+    template <typename Item, typename Body>
+    void parallelFor(const std::vector<Item> &items, Body body)
+    {
+        parallelFor(items.size(), [&items, &body](std::size_t begin, std::size_t end) {
+            for (std::size_t i = begin; i < end; ++i)
+                body(items[i]);
+        });
+    }
+
+    bool hasThreadPool() const { return _systemManager->hasPool(); }
 
     template <typename Resource, typename... Args> Resource &addResource(Args &&...args)
     {

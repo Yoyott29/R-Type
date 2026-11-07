@@ -14,6 +14,7 @@
 #include <algorithm>
 #include <map>
 #include <memory>
+#include <mutex>
 #include <typeindex>
 #include <unordered_map>
 #include <utility>
@@ -95,6 +96,9 @@ class SystemManager
     void entityDestroyed(Entity entity);
     void entityComponentSetChanged(Entity entity, ComponentSet entityComponentSet);
     void runSchedule(ScheduleLabel label, Scene &scene);
+    // Created on first use, so a sequential app starts no thread
+    ThreadPool &pool();
+    bool hasPool() const { return _pool != nullptr; }
 
   private:
     void rebuildGraphs();
@@ -106,6 +110,6 @@ class SystemManager
     // Shared and immutable: a run keeps its snapshot while a rebuild swaps in new graphs
     std::map<ScheduleLabel, std::shared_ptr<const ScheduleGraph>> _graphs{};
     bool _graphsDirty = true;
-    // Created by the first schedule that has parallelism, so a sequential app starts no thread
     std::unique_ptr<ThreadPool> _pool;
+    std::once_flag _poolOnce;
 };

@@ -65,7 +65,11 @@ void SystemManager::runSchedule(ScheduleLabel label, Scene &scene)
         }
         return;
     }
-    if (!_pool)
-        _pool = std::make_unique<ThreadPool>();
-    runParallel(graph, scene, *_pool);
+    runParallel(graph, scene, pool());
+}
+
+ThreadPool &SystemManager::pool()
+{
+    std::call_once(_poolOnce, [this] { _pool = std::make_unique<ThreadPool>(); });
+    return *_pool;
 }
