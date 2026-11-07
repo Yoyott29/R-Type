@@ -19,6 +19,7 @@
 #include "ProjectComponentManager.hpp"
 #include "Script.hpp"
 #include "Transform.hpp"
+#include "TrapImmunity.hpp"
 #include "Velocity3D.hpp"
 #include <algorithm>
 #include <cmath>
@@ -67,7 +68,12 @@ class RatPlayerController : public GringoEntityScript
             scene.addResource<GameState>();
         spawn = scene.getComponent<Transform>(entity);
         // Only called for triggers: the floor is solid, every trigger kills the rat
-        scene.getComponent<Collider3D>(entity).onCollision = [this](Entity, Entity) {
+        // except a trap it has just placed
+        scene.getComponent<Collider3D>(entity).onCollision = [this, &scene](Entity rat,
+                                                                            Entity other) {
+            if (scene.hasResource<TrapImmunity>() &&
+                scene.getResource<TrapImmunity>().covers(rat, other))
+                return;
             dead = true;
         };
         createShadow(scene, entity);

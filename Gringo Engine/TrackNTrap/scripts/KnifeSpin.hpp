@@ -20,8 +20,9 @@
 #define TIP_Y 0.0625f
 #define THICKNESS 0.05f
 
+// "MoveAngle": direction of the back and forth, in degrees on the floor: 0 along Z, 90 along X
 inline const std::vector<std::string> KnifeSpin_params = {"RotationSpeed", "MoveSpeed",
-                                                          "MoveRange"};
+                                                          "MoveRange", "MoveAngle"};
 
 class KnifeSpin : public GringoEntityScript
 {
@@ -34,6 +35,8 @@ class KnifeSpin : public GringoEntityScript
             _moveSpeed = std::stof(value);
         else if (name == "MoveRange")
             _moveRange = std::stof(value);
+        else if (name == "MoveAngle")
+            _moveAngle = std::stof(value);
     }
 
     void onStart(Scene &scene, Entity &entity) override
@@ -49,11 +52,11 @@ class KnifeSpin : public GringoEntityScript
         }
         _centerX = knife.x + middle.x;
         _centerY = knife.y + middle.y;
-        _minZ = knife.z - _moveRange;
-        _maxZ = knife.z + _moveRange;
-        knife.z = random(_minZ, _maxZ);
+        _centerZ = knife.z;
+        _moveX = std::sin(_moveAngle * DEGREES_TO_RADIANS);
+        _moveZ = std::cos(_moveAngle * DEGREES_TO_RADIANS);
         _moveDirection = random(-1.0f, 1.0f) < 0.0f ? -1.0f : 1.0f;
-        knife.z = random(_minZ, _maxZ);
+        _offset = random(-_moveRange, _moveRange);
     }
 
     void onUpdate(Scene &scene, Entity &entity) override
@@ -77,23 +80,24 @@ class KnifeSpin : public GringoEntityScript
         const Transform tip = turned(TIP_X, TIP_Y, knife);
         const float thickness = THICKNESS * knife.scaleX;
 
-        knife.x = _centerX - middle.x;
+        if (_offset < -_moveRange) {
+            _offset = -_moveRange;
+            _moveDirection = 1.0f;
+        } else if (_offset > _moveRange) {
+            _offset = _moveRange;
+            _moveDirection = -1.0f;
+        }
+        _offset += _moveDirection * _moveSpeed * FIXED_DELTA_TIME;
+
+        knife.x = _centerX + _offset * _moveX - middle.x;
         knife.y = _centerY - middle.y;
+        knife.z = _centerZ + _offset * _moveZ;
         collider.offsetX = middle.x;
         collider.offsetY = middle.y;
         collider.offsetZ = middle.z;
         collider.width = 2.0f * std::abs(tip.x) + thickness;
         collider.height = 2.0f * std::abs(tip.y) + thickness;
         collider.depth = 2.0f * std::abs(tip.z) + thickness;
-
-        if (knife.z < _minZ) {
-            knife.z = _minZ;
-            _moveDirection = 1.0f;
-        } else if (knife.z > _maxZ) {
-            knife.z = _maxZ;
-            _moveDirection = -1.0f;
-        }
-        knife.z += _moveDirection * _moveSpeed * FIXED_DELTA_TIME;
     }
 
   private:
@@ -129,14 +133,17 @@ class KnifeSpin : public GringoEntityScript
     float _rotationSpeed = 90.0f;
     float _moveSpeed = 10.0f;
     float _moveRange = 10.0f;
-    float _minZ = 0.0f;
-    float _maxZ = 0.0f;
+    float _moveAngle = 0.0f;
+    float _moveX = 0.0f;
+    float _moveZ = 1.0f;
+    float _offset = 0.0f;
     float _timer = 0.0f;
     float _spinX = 0.0f;
     float _spinY = 0.0f;
     float _spinZ = 0.0f;
     float _centerX = 0.0f;
     float _centerY = 0.0f;
+    float _centerZ = 0.0f;
     float _moveDirection = 1.0f;
 };
 

@@ -1043,6 +1043,59 @@
                             "value": "7"
                         }
                     ]
+                },
+                {
+                    "name": "Script",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Path",
+                            "type": 7,
+                            "value": "TrapPlacer.hpp"
+                        },
+                        {
+                            "id": 1,
+                            "name": "prefab",
+                            "type": 2,
+                            "value": "MouseTrap"
+                        },
+                        {
+                            "id": 2,
+                            "name": "count",
+                            "type": 2,
+                            "value": "3"
+                        },
+                        {
+                            "id": 3,
+                            "name": "distance",
+                            "type": 2,
+                            "value": "12"
+                        },
+                        {
+                            "id": 4,
+                            "name": "immunity",
+                            "type": 2,
+                            "value": "5"
+                        },
+                        {
+                            "id": 5,
+                            "name": "hud",
+                            "type": 2,
+                            "value": "100,101,102,103"
+                        },
+                        {
+                            "id": 6,
+                            "name": "counter",
+                            "type": 2,
+                            "value": "102"
+                        },
+                        {
+                            "id": 7,
+                            "name": "key",
+                            "type": 2,
+                            "value": "103"
+                        }
+                    ]
                 }
             ],
             "id": 6,
@@ -1657,19 +1710,19 @@
                             "id": 0,
                             "name": "PositionX",
                             "type": 1,
-                            "value": "-90"
+                            "value": "0"
                         },
                         {
                             "id": 1,
                             "name": "PositionY",
                             "type": 1,
-                            "value": "-1.824"
+                            "value": "0"
                         },
                         {
                             "id": 2,
                             "name": "PositionZ",
                             "type": 1,
-                            "value": "33.5"
+                            "value": "0"
                         },
                         {
                             "id": 3,
@@ -1710,1083 +1763,25 @@
                     ]
                 },
                 {
-                    "name": "Prefab",
+                    "name": "Script",
                     "properties": [
                         {
                             "id": 0,
-                            "name": "Prefab",
-                            "type": 6,
-                            "value": "Knife"
-                        }
-                    ]
-                }
-            ],
-            "id": 12,
-            "name": "Knife 1"
-        },
-        {
-            "components": [
-                {
-                    "name": "Transform",
-                    "properties": [
-                        {
-                            "id": 0,
-                            "name": "PositionX",
-                            "type": 1,
-                            "value": "0"
+                            "name": "Path",
+                            "type": 7,
+                            "value": "ObstacleSpawner.hpp"
                         },
                         {
                             "id": 1,
-                            "name": "PositionY",
-                            "type": 1,
-                            "value": "-2.601"
-                        },
-                        {
-                            "id": 2,
-                            "name": "PositionZ",
-                            "type": 1,
-                            "value": "33.5"
-                        },
-                        {
-                            "id": 3,
-                            "name": "ScaleX",
-                            "type": 1,
-                            "value": "1"
-                        },
-                        {
-                            "id": 4,
-                            "name": "ScaleY",
-                            "type": 1,
-                            "value": "1"
-                        },
-                        {
-                            "id": 5,
-                            "name": "ScaleZ",
-                            "type": 1,
-                            "value": "1"
-                        },
-                        {
-                            "id": 6,
-                            "name": "RotationX",
-                            "type": 1,
-                            "value": "0"
-                        },
-                        {
-                            "id": 7,
-                            "name": "RotationY",
-                            "type": 1,
-                            "value": "0"
-                        },
-                        {
-                            "id": 8,
-                            "name": "RotationZ",
-                            "type": 1,
-                            "value": "0"
-                        }
-                    ]
-                },
-                {
-                    "name": "Prefab",
-                    "properties": [
-                        {
-                            "id": 0,
-                            "name": "Prefab",
-                            "type": 6,
-                            "value": "Knife"
+                            "name": "KnifeChance",
+                            "type": 2,
+                            "value": "0.5"
                         }
                     ]
                 }
             ],
-            "id": 13,
-            "name": "Knife 2"
-        },
-        {
-            "components": [
-                {
-                    "name": "Transform",
-                    "properties": [
-                        {
-                            "id": 0,
-                            "name": "PositionX",
-                            "type": 1,
-                            "value": "90"
-                        },
-                        {
-                            "id": 1,
-                            "name": "PositionY",
-                            "type": 1,
-                            "value": "-3.287"
-                        },
-                        {
-                            "id": 2,
-                            "name": "PositionZ",
-                            "type": 1,
-                            "value": "33.5"
-                        },
-                        {
-                            "id": 3,
-                            "name": "ScaleX",
-                            "type": 1,
-                            "value": "1"
-                        },
-                        {
-                            "id": 4,
-                            "name": "ScaleY",
-                            "type": 1,
-                            "value": "1"
-                        },
-                        {
-                            "id": 5,
-                            "name": "ScaleZ",
-                            "type": 1,
-                            "value": "1"
-                        },
-                        {
-                            "id": 6,
-                            "name": "RotationX",
-                            "type": 1,
-                            "value": "0"
-                        },
-                        {
-                            "id": 7,
-                            "name": "RotationY",
-                            "type": 1,
-                            "value": "0"
-                        },
-                        {
-                            "id": 8,
-                            "name": "RotationZ",
-                            "type": 1,
-                            "value": "0"
-                        }
-                    ]
-                },
-                {
-                    "name": "Prefab",
-                    "properties": [
-                        {
-                            "id": 0,
-                            "name": "Prefab",
-                            "type": 6,
-                            "value": "Knife"
-                        }
-                    ]
-                }
-            ],
-            "id": 14,
-            "name": "Knife 3"
-        },
-        {
-            "components": [
-                {
-                    "name": "Transform",
-                    "properties": [
-                        {
-                            "id": 0,
-                            "name": "PositionX",
-                            "type": 1,
-                            "value": "268"
-                        },
-                        {
-                            "id": 1,
-                            "name": "PositionY",
-                            "type": 1,
-                            "value": "-4.048"
-                        },
-                        {
-                            "id": 2,
-                            "name": "PositionZ",
-                            "type": 1,
-                            "value": "64"
-                        },
-                        {
-                            "id": 3,
-                            "name": "ScaleX",
-                            "type": 1,
-                            "value": "1"
-                        },
-                        {
-                            "id": 4,
-                            "name": "ScaleY",
-                            "type": 1,
-                            "value": "1"
-                        },
-                        {
-                            "id": 5,
-                            "name": "ScaleZ",
-                            "type": 1,
-                            "value": "1"
-                        },
-                        {
-                            "id": 6,
-                            "name": "RotationX",
-                            "type": 1,
-                            "value": "0"
-                        },
-                        {
-                            "id": 7,
-                            "name": "RotationY",
-                            "type": 1,
-                            "value": "0"
-                        },
-                        {
-                            "id": 8,
-                            "name": "RotationZ",
-                            "type": 1,
-                            "value": "0"
-                        }
-                    ]
-                },
-                {
-                    "name": "Prefab",
-                    "properties": [
-                        {
-                            "id": 0,
-                            "name": "Prefab",
-                            "type": 6,
-                            "value": "Knife"
-                        }
-                    ]
-                }
-            ],
-            "id": 15,
-            "name": "Knife 4"
-        },
-        {
-            "components": [
-                {
-                    "name": "Transform",
-                    "properties": [
-                        {
-                            "id": 0,
-                            "name": "PositionX",
-                            "type": 1,
-                            "value": "305"
-                        },
-                        {
-                            "id": 1,
-                            "name": "PositionY",
-                            "type": 1,
-                            "value": "-4.048"
-                        },
-                        {
-                            "id": 2,
-                            "name": "PositionZ",
-                            "type": 1,
-                            "value": "225"
-                        },
-                        {
-                            "id": 3,
-                            "name": "ScaleX",
-                            "type": 1,
-                            "value": "1"
-                        },
-                        {
-                            "id": 4,
-                            "name": "ScaleY",
-                            "type": 1,
-                            "value": "1"
-                        },
-                        {
-                            "id": 5,
-                            "name": "ScaleZ",
-                            "type": 1,
-                            "value": "1"
-                        },
-                        {
-                            "id": 6,
-                            "name": "RotationX",
-                            "type": 1,
-                            "value": "0"
-                        },
-                        {
-                            "id": 7,
-                            "name": "RotationY",
-                            "type": 1,
-                            "value": "0"
-                        },
-                        {
-                            "id": 8,
-                            "name": "RotationZ",
-                            "type": 1,
-                            "value": "0"
-                        }
-                    ]
-                },
-                {
-                    "name": "Prefab",
-                    "properties": [
-                        {
-                            "id": 0,
-                            "name": "Prefab",
-                            "type": 6,
-                            "value": "Knife"
-                        }
-                    ]
-                }
-            ],
-            "id": 16,
-            "name": "Knife 5"
-        },
-        {
-            "components": [
-                {
-                    "name": "Transform",
-                    "properties": [
-                        {
-                            "id": 0,
-                            "name": "PositionX",
-                            "type": 1,
-                            "value": "252"
-                        },
-                        {
-                            "id": 1,
-                            "name": "PositionY",
-                            "type": 1,
-                            "value": "-3.635"
-                        },
-                        {
-                            "id": 2,
-                            "name": "PositionZ",
-                            "type": 1,
-                            "value": "351"
-                        },
-                        {
-                            "id": 3,
-                            "name": "ScaleX",
-                            "type": 1,
-                            "value": "1"
-                        },
-                        {
-                            "id": 4,
-                            "name": "ScaleY",
-                            "type": 1,
-                            "value": "1"
-                        },
-                        {
-                            "id": 5,
-                            "name": "ScaleZ",
-                            "type": 1,
-                            "value": "1"
-                        },
-                        {
-                            "id": 6,
-                            "name": "RotationX",
-                            "type": 1,
-                            "value": "0"
-                        },
-                        {
-                            "id": 7,
-                            "name": "RotationY",
-                            "type": 1,
-                            "value": "0"
-                        },
-                        {
-                            "id": 8,
-                            "name": "RotationZ",
-                            "type": 1,
-                            "value": "0"
-                        }
-                    ]
-                },
-                {
-                    "name": "Prefab",
-                    "properties": [
-                        {
-                            "id": 0,
-                            "name": "Prefab",
-                            "type": 6,
-                            "value": "Knife"
-                        }
-                    ]
-                }
-            ],
-            "id": 17,
-            "name": "Knife 6"
-        },
-        {
-            "components": [
-                {
-                    "name": "Transform",
-                    "properties": [
-                        {
-                            "id": 0,
-                            "name": "PositionX",
-                            "type": 1,
-                            "value": "60"
-                        },
-                        {
-                            "id": 1,
-                            "name": "PositionY",
-                            "type": 1,
-                            "value": "-2.51"
-                        },
-                        {
-                            "id": 2,
-                            "name": "PositionZ",
-                            "type": 1,
-                            "value": "400"
-                        },
-                        {
-                            "id": 3,
-                            "name": "ScaleX",
-                            "type": 1,
-                            "value": "1"
-                        },
-                        {
-                            "id": 4,
-                            "name": "ScaleY",
-                            "type": 1,
-                            "value": "1"
-                        },
-                        {
-                            "id": 5,
-                            "name": "ScaleZ",
-                            "type": 1,
-                            "value": "1"
-                        },
-                        {
-                            "id": 6,
-                            "name": "RotationX",
-                            "type": 1,
-                            "value": "0"
-                        },
-                        {
-                            "id": 7,
-                            "name": "RotationY",
-                            "type": 1,
-                            "value": "0"
-                        },
-                        {
-                            "id": 8,
-                            "name": "RotationZ",
-                            "type": 1,
-                            "value": "0"
-                        }
-                    ]
-                },
-                {
-                    "name": "Prefab",
-                    "properties": [
-                        {
-                            "id": 0,
-                            "name": "Prefab",
-                            "type": 6,
-                            "value": "Knife"
-                        }
-                    ]
-                }
-            ],
-            "id": 18,
-            "name": "Knife 7"
-        },
-        {
-            "components": [
-                {
-                    "name": "Transform",
-                    "properties": [
-                        {
-                            "id": 0,
-                            "name": "PositionX",
-                            "type": 1,
-                            "value": "-60"
-                        },
-                        {
-                            "id": 1,
-                            "name": "PositionY",
-                            "type": 1,
-                            "value": "-2.627"
-                        },
-                        {
-                            "id": 2,
-                            "name": "PositionZ",
-                            "type": 1,
-                            "value": "400"
-                        },
-                        {
-                            "id": 3,
-                            "name": "ScaleX",
-                            "type": 1,
-                            "value": "1"
-                        },
-                        {
-                            "id": 4,
-                            "name": "ScaleY",
-                            "type": 1,
-                            "value": "1"
-                        },
-                        {
-                            "id": 5,
-                            "name": "ScaleZ",
-                            "type": 1,
-                            "value": "1"
-                        },
-                        {
-                            "id": 6,
-                            "name": "RotationX",
-                            "type": 1,
-                            "value": "0"
-                        },
-                        {
-                            "id": 7,
-                            "name": "RotationY",
-                            "type": 1,
-                            "value": "0"
-                        },
-                        {
-                            "id": 8,
-                            "name": "RotationZ",
-                            "type": 1,
-                            "value": "0"
-                        }
-                    ]
-                },
-                {
-                    "name": "Prefab",
-                    "properties": [
-                        {
-                            "id": 0,
-                            "name": "Prefab",
-                            "type": 6,
-                            "value": "Knife"
-                        }
-                    ]
-                }
-            ],
-            "id": 19,
-            "name": "Knife 8"
-        },
-        {
-            "components": [
-                {
-                    "name": "Transform",
-                    "properties": [
-                        {
-                            "id": 0,
-                            "name": "PositionX",
-                            "type": 1,
-                            "value": "-180"
-                        },
-                        {
-                            "id": 1,
-                            "name": "PositionY",
-                            "type": 1,
-                            "value": "-2.907"
-                        },
-                        {
-                            "id": 2,
-                            "name": "PositionZ",
-                            "type": 1,
-                            "value": "400"
-                        },
-                        {
-                            "id": 3,
-                            "name": "ScaleX",
-                            "type": 1,
-                            "value": "1"
-                        },
-                        {
-                            "id": 4,
-                            "name": "ScaleY",
-                            "type": 1,
-                            "value": "1"
-                        },
-                        {
-                            "id": 5,
-                            "name": "ScaleZ",
-                            "type": 1,
-                            "value": "1"
-                        },
-                        {
-                            "id": 6,
-                            "name": "RotationX",
-                            "type": 1,
-                            "value": "0"
-                        },
-                        {
-                            "id": 7,
-                            "name": "RotationY",
-                            "type": 1,
-                            "value": "0"
-                        },
-                        {
-                            "id": 8,
-                            "name": "RotationZ",
-                            "type": 1,
-                            "value": "0"
-                        }
-                    ]
-                },
-                {
-                    "name": "Prefab",
-                    "properties": [
-                        {
-                            "id": 0,
-                            "name": "Prefab",
-                            "type": 6,
-                            "value": "Knife"
-                        }
-                    ]
-                }
-            ],
-            "id": 20,
-            "name": "Knife 9"
-        },
-        {
-            "components": [
-                {
-                    "name": "Transform",
-                    "properties": [
-                        {
-                            "id": 0,
-                            "name": "PositionX",
-                            "type": 1,
-                            "value": "-300"
-                        },
-                        {
-                            "id": 1,
-                            "name": "PositionY",
-                            "type": 1,
-                            "value": "-2.528"
-                        },
-                        {
-                            "id": 2,
-                            "name": "PositionZ",
-                            "type": 1,
-                            "value": "400"
-                        },
-                        {
-                            "id": 3,
-                            "name": "ScaleX",
-                            "type": 1,
-                            "value": "1"
-                        },
-                        {
-                            "id": 4,
-                            "name": "ScaleY",
-                            "type": 1,
-                            "value": "1"
-                        },
-                        {
-                            "id": 5,
-                            "name": "ScaleZ",
-                            "type": 1,
-                            "value": "1"
-                        },
-                        {
-                            "id": 6,
-                            "name": "RotationX",
-                            "type": 1,
-                            "value": "0"
-                        },
-                        {
-                            "id": 7,
-                            "name": "RotationY",
-                            "type": 1,
-                            "value": "0"
-                        },
-                        {
-                            "id": 8,
-                            "name": "RotationZ",
-                            "type": 1,
-                            "value": "0"
-                        }
-                    ]
-                },
-                {
-                    "name": "Prefab",
-                    "properties": [
-                        {
-                            "id": 0,
-                            "name": "Prefab",
-                            "type": 6,
-                            "value": "Knife"
-                        }
-                    ]
-                }
-            ],
-            "id": 21,
-            "name": "Knife 10"
-        },
-        {
-            "components": [
-                {
-                    "name": "Transform",
-                    "properties": [
-                        {
-                            "id": 0,
-                            "name": "PositionX",
-                            "type": 1,
-                            "value": "-493"
-                        },
-                        {
-                            "id": 1,
-                            "name": "PositionY",
-                            "type": 1,
-                            "value": "-2.085"
-                        },
-                        {
-                            "id": 2,
-                            "name": "PositionZ",
-                            "type": 1,
-                            "value": "339"
-                        },
-                        {
-                            "id": 3,
-                            "name": "ScaleX",
-                            "type": 1,
-                            "value": "1"
-                        },
-                        {
-                            "id": 4,
-                            "name": "ScaleY",
-                            "type": 1,
-                            "value": "1"
-                        },
-                        {
-                            "id": 5,
-                            "name": "ScaleZ",
-                            "type": 1,
-                            "value": "1"
-                        },
-                        {
-                            "id": 6,
-                            "name": "RotationX",
-                            "type": 1,
-                            "value": "0"
-                        },
-                        {
-                            "id": 7,
-                            "name": "RotationY",
-                            "type": 1,
-                            "value": "0"
-                        },
-                        {
-                            "id": 8,
-                            "name": "RotationZ",
-                            "type": 1,
-                            "value": "0"
-                        }
-                    ]
-                },
-                {
-                    "name": "Prefab",
-                    "properties": [
-                        {
-                            "id": 0,
-                            "name": "Prefab",
-                            "type": 6,
-                            "value": "Knife"
-                        }
-                    ]
-                }
-            ],
-            "id": 22,
-            "name": "Knife 11"
-        },
-        {
-            "components": [
-                {
-                    "name": "Transform",
-                    "properties": [
-                        {
-                            "id": 0,
-                            "name": "PositionX",
-                            "type": 1,
-                            "value": "-541"
-                        },
-                        {
-                            "id": 1,
-                            "name": "PositionY",
-                            "type": 1,
-                            "value": "-1.792"
-                        },
-                        {
-                            "id": 2,
-                            "name": "PositionZ",
-                            "type": 1,
-                            "value": "225"
-                        },
-                        {
-                            "id": 3,
-                            "name": "ScaleX",
-                            "type": 1,
-                            "value": "1"
-                        },
-                        {
-                            "id": 4,
-                            "name": "ScaleY",
-                            "type": 1,
-                            "value": "1"
-                        },
-                        {
-                            "id": 5,
-                            "name": "ScaleZ",
-                            "type": 1,
-                            "value": "1"
-                        },
-                        {
-                            "id": 6,
-                            "name": "RotationX",
-                            "type": 1,
-                            "value": "0"
-                        },
-                        {
-                            "id": 7,
-                            "name": "RotationY",
-                            "type": 1,
-                            "value": "0"
-                        },
-                        {
-                            "id": 8,
-                            "name": "RotationZ",
-                            "type": 1,
-                            "value": "0"
-                        }
-                    ]
-                },
-                {
-                    "name": "Prefab",
-                    "properties": [
-                        {
-                            "id": 0,
-                            "name": "Prefab",
-                            "type": 6,
-                            "value": "Knife"
-                        }
-                    ]
-                }
-            ],
-            "id": 23,
-            "name": "Knife 12"
-        },
-        {
-            "components": [
-                {
-                    "name": "Transform",
-                    "properties": [
-                        {
-                            "id": 0,
-                            "name": "PositionX",
-                            "type": 1,
-                            "value": "-507"
-                        },
-                        {
-                            "id": 1,
-                            "name": "PositionY",
-                            "type": 1,
-                            "value": "-1.526"
-                        },
-                        {
-                            "id": 2,
-                            "name": "PositionZ",
-                            "type": 1,
-                            "value": "78"
-                        },
-                        {
-                            "id": 3,
-                            "name": "ScaleX",
-                            "type": 1,
-                            "value": "1"
-                        },
-                        {
-                            "id": 4,
-                            "name": "ScaleY",
-                            "type": 1,
-                            "value": "1"
-                        },
-                        {
-                            "id": 5,
-                            "name": "ScaleZ",
-                            "type": 1,
-                            "value": "1"
-                        },
-                        {
-                            "id": 6,
-                            "name": "RotationX",
-                            "type": 1,
-                            "value": "0"
-                        },
-                        {
-                            "id": 7,
-                            "name": "RotationY",
-                            "type": 1,
-                            "value": "0"
-                        },
-                        {
-                            "id": 8,
-                            "name": "RotationZ",
-                            "type": 1,
-                            "value": "0"
-                        }
-                    ]
-                },
-                {
-                    "name": "Prefab",
-                    "properties": [
-                        {
-                            "id": 0,
-                            "name": "Prefab",
-                            "type": 6,
-                            "value": "Knife"
-                        }
-                    ]
-                }
-            ],
-            "id": 24,
-            "name": "Knife 13"
-        },
-        {
-            "components": [
-                {
-                    "name": "Transform",
-                    "properties": [
-                        {
-                            "id": 0,
-                            "name": "PositionX",
-                            "type": 1,
-                            "value": "-340"
-                        },
-                        {
-                            "id": 1,
-                            "name": "PositionY",
-                            "type": 1,
-                            "value": "-1.298"
-                        },
-                        {
-                            "id": 2,
-                            "name": "PositionZ",
-                            "type": 1,
-                            "value": "33.5"
-                        },
-                        {
-                            "id": 3,
-                            "name": "ScaleX",
-                            "type": 1,
-                            "value": "1"
-                        },
-                        {
-                            "id": 4,
-                            "name": "ScaleY",
-                            "type": 1,
-                            "value": "1"
-                        },
-                        {
-                            "id": 5,
-                            "name": "ScaleZ",
-                            "type": 1,
-                            "value": "1"
-                        },
-                        {
-                            "id": 6,
-                            "name": "RotationX",
-                            "type": 1,
-                            "value": "0"
-                        },
-                        {
-                            "id": 7,
-                            "name": "RotationY",
-                            "type": 1,
-                            "value": "0"
-                        },
-                        {
-                            "id": 8,
-                            "name": "RotationZ",
-                            "type": 1,
-                            "value": "0"
-                        }
-                    ]
-                },
-                {
-                    "name": "Prefab",
-                    "properties": [
-                        {
-                            "id": 0,
-                            "name": "Prefab",
-                            "type": 6,
-                            "value": "Knife"
-                        }
-                    ]
-                }
-            ],
-            "id": 25,
-            "name": "Knife 14"
-        },
-        {
-            "components": [
-                {
-                    "name": "Transform",
-                    "properties": [
-                        {
-                            "id": 0,
-                            "name": "PositionX",
-                            "type": 1,
-                            "value": "-250"
-                        },
-                        {
-                            "id": 1,
-                            "name": "PositionY",
-                            "type": 1,
-                            "value": "-1.298"
-                        },
-                        {
-                            "id": 2,
-                            "name": "PositionZ",
-                            "type": 1,
-                            "value": "33.5"
-                        },
-                        {
-                            "id": 3,
-                            "name": "ScaleX",
-                            "type": 1,
-                            "value": "1"
-                        },
-                        {
-                            "id": 4,
-                            "name": "ScaleY",
-                            "type": 1,
-                            "value": "1"
-                        },
-                        {
-                            "id": 5,
-                            "name": "ScaleZ",
-                            "type": 1,
-                            "value": "1"
-                        },
-                        {
-                            "id": 6,
-                            "name": "RotationX",
-                            "type": 1,
-                            "value": "0"
-                        },
-                        {
-                            "id": 7,
-                            "name": "RotationY",
-                            "type": 1,
-                            "value": "0"
-                        },
-                        {
-                            "id": 8,
-                            "name": "RotationZ",
-                            "type": 1,
-                            "value": "0"
-                        }
-                    ]
-                },
-                {
-                    "name": "Prefab",
-                    "properties": [
-                        {
-                            "id": 0,
-                            "name": "Prefab",
-                            "type": 6,
-                            "value": "Knife"
-                        }
-                    ]
-                }
-            ],
-            "id": 26,
-            "name": "Knife 15"
+            "id": 99,
+            "name": "Obstacles"
         },
         {
             "components": [
@@ -4388,6 +3383,18 @@
                         },
                         {
                             "id": 9,
+                            "name": "VerticalSpread",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 10,
+                            "name": "UpOnly",
+                            "type": 3,
+                            "value": "False"
+                        },
+                        {
+                            "id": 11,
                             "name": "Color",
                             "type": 4,
                             "value": "Dirt"
@@ -4529,6 +3536,18 @@
                         },
                         {
                             "id": 9,
+                            "name": "VerticalSpread",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 10,
+                            "name": "UpOnly",
+                            "type": 3,
+                            "value": "False"
+                        },
+                        {
+                            "id": 11,
                             "name": "Color",
                             "type": 4,
                             "value": "Dirt"
@@ -4852,19 +3871,19 @@
                             "id": 0,
                             "name": "PositionX",
                             "type": 1,
-                            "value": "-295"
+                            "value": "-45.94"
                         },
                         {
                             "id": 1,
                             "name": "PositionY",
                             "type": 1,
-                            "value": "0.502"
+                            "value": "-0.305"
                         },
                         {
                             "id": 2,
                             "name": "PositionZ",
                             "type": 1,
-                            "value": "45.12"
+                            "value": "37.8"
                         },
                         {
                             "id": 3,
@@ -4928,19 +3947,19 @@
                             "id": 0,
                             "name": "PositionX",
                             "type": 1,
-                            "value": "-45"
+                            "value": "169.7"
                         },
                         {
                             "id": 1,
                             "name": "PositionY",
                             "type": 1,
-                            "value": "-0.443"
+                            "value": "-2.148"
                         },
                         {
                             "id": 2,
                             "name": "PositionZ",
                             "type": 1,
-                            "value": "19.88"
+                            "value": "18.61"
                         },
                         {
                             "id": 3,
@@ -5004,19 +4023,19 @@
                             "id": 0,
                             "name": "PositionX",
                             "type": 1,
-                            "value": "45"
+                            "value": "319.09"
                         },
                         {
                             "id": 1,
                             "name": "PositionY",
                             "type": 1,
-                            "value": "-1.161"
+                            "value": "-2.148"
                         },
                         {
                             "id": 2,
                             "name": "PositionZ",
                             "type": 1,
-                            "value": "38.62"
+                            "value": "160.6"
                         },
                         {
                             "id": 3,
@@ -5063,7 +4082,7 @@
                             "id": 0,
                             "name": "Prefab",
                             "type": 6,
-                            "value": "Stone Wall"
+                            "value": "Stone Wall Side"
                         }
                     ]
                 }
@@ -5080,19 +4099,19 @@
                             "id": 0,
                             "name": "PositionX",
                             "type": 1,
-                            "value": "130"
+                            "value": "150.03"
                         },
                         {
                             "id": 1,
                             "name": "PositionY",
                             "type": 1,
-                            "value": "-1.852"
+                            "value": "-1.111"
                         },
                         {
                             "id": 2,
                             "name": "PositionZ",
                             "type": 1,
-                            "value": "19.88"
+                            "value": "395.07"
                         },
                         {
                             "id": 3,
@@ -5156,19 +4175,19 @@
                             "id": 0,
                             "name": "PositionX",
                             "type": 1,
-                            "value": "100"
+                            "value": "43.38"
                         },
                         {
                             "id": 1,
                             "name": "PositionY",
                             "type": 1,
-                            "value": "-0.964"
+                            "value": "-0.544"
                         },
                         {
                             "id": 2,
                             "name": "PositionZ",
                             "type": 1,
-                            "value": "394.53"
+                            "value": "411.53"
                         },
                         {
                             "id": 3,
@@ -5232,19 +4251,19 @@
                             "id": 0,
                             "name": "PositionX",
                             "type": 1,
-                            "value": "0"
+                            "value": "-172.31"
                         },
                         {
                             "id": 1,
                             "name": "PositionY",
                             "type": 1,
-                            "value": "-0.598"
+                            "value": "-1.03"
                         },
                         {
                             "id": 2,
                             "name": "PositionZ",
                             "type": 1,
-                            "value": "413.26"
+                            "value": "393.88"
                         },
                         {
                             "id": 3,
@@ -5308,19 +4327,19 @@
                             "id": 0,
                             "name": "PositionX",
                             "type": 1,
-                            "value": "-240"
+                            "value": "-387.63"
                         },
                         {
                             "id": 1,
                             "name": "PositionY",
                             "type": 1,
-                            "value": "-0.928"
+                            "value": "-0.555"
                         },
                         {
                             "id": 2,
                             "name": "PositionZ",
                             "type": 1,
-                            "value": "390.53"
+                            "value": "403.05"
                         },
                         {
                             "id": 3,
@@ -5384,19 +4403,95 @@
                             "id": 0,
                             "name": "PositionX",
                             "type": 1,
-                            "value": "-330"
+                            "value": "-557.02"
                         },
                         {
                             "id": 1,
                             "name": "PositionY",
                             "type": 1,
-                            "value": "-0.675"
+                            "value": "0.211"
                         },
                         {
                             "id": 2,
                             "name": "PositionZ",
                             "type": 1,
-                            "value": "409.26"
+                            "value": "154.22"
+                        },
+                        {
+                            "id": 3,
+                            "name": "ScaleX",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 4,
+                            "name": "ScaleY",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 5,
+                            "name": "ScaleZ",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 6,
+                            "name": "RotationX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 7,
+                            "name": "RotationY",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 8,
+                            "name": "RotationZ",
+                            "type": 1,
+                            "value": "0"
+                        }
+                    ]
+                },
+                {
+                    "name": "Prefab",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Prefab",
+                            "type": 6,
+                            "value": "Stone Wall Side"
+                        }
+                    ]
+                }
+            ],
+            "id": 56,
+            "name": "Stone Wall 8"
+        },
+        {
+            "components": [
+                {
+                    "name": "Transform",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "PositionX",
+                            "type": 1,
+                            "value": "-391.57"
+                        },
+                        {
+                            "id": 1,
+                            "name": "PositionY",
+                            "type": 1,
+                            "value": "0.602"
+                        },
+                        {
+                            "id": 2,
+                            "name": "PositionZ",
+                            "type": 1,
+                            "value": "45.54"
                         },
                         {
                             "id": 3,
@@ -5448,82 +4543,6 @@
                     ]
                 }
             ],
-            "id": 56,
-            "name": "Stone Wall 8"
-        },
-        {
-            "components": [
-                {
-                    "name": "Transform",
-                    "properties": [
-                        {
-                            "id": 0,
-                            "name": "PositionX",
-                            "type": 1,
-                            "value": "320.37"
-                        },
-                        {
-                            "id": 1,
-                            "name": "PositionY",
-                            "type": 1,
-                            "value": "-2.248"
-                        },
-                        {
-                            "id": 2,
-                            "name": "PositionZ",
-                            "type": 1,
-                            "value": "150"
-                        },
-                        {
-                            "id": 3,
-                            "name": "ScaleX",
-                            "type": 1,
-                            "value": "1"
-                        },
-                        {
-                            "id": 4,
-                            "name": "ScaleY",
-                            "type": 1,
-                            "value": "1"
-                        },
-                        {
-                            "id": 5,
-                            "name": "ScaleZ",
-                            "type": 1,
-                            "value": "1"
-                        },
-                        {
-                            "id": 6,
-                            "name": "RotationX",
-                            "type": 1,
-                            "value": "0"
-                        },
-                        {
-                            "id": 7,
-                            "name": "RotationY",
-                            "type": 1,
-                            "value": "0"
-                        },
-                        {
-                            "id": 8,
-                            "name": "RotationZ",
-                            "type": 1,
-                            "value": "0"
-                        }
-                    ]
-                },
-                {
-                    "name": "Prefab",
-                    "properties": [
-                        {
-                            "id": 0,
-                            "name": "Prefab",
-                            "type": 6,
-                            "value": "Stone Wall Side"
-                        }
-                    ]
-                }
-            ],
             "id": 57,
             "name": "Stone Wall 9"
         },
@@ -5536,19 +4555,19 @@
                             "id": 0,
                             "name": "PositionX",
                             "type": 1,
-                            "value": "-539.84"
+                            "value": "-283.74"
                         },
                         {
                             "id": 1,
                             "name": "PositionY",
                             "type": 1,
-                            "value": "0.1"
+                            "value": "0.602"
                         },
                         {
                             "id": 2,
                             "name": "PositionZ",
                             "type": 1,
-                            "value": "160"
+                            "value": "29.12"
                         },
                         {
                             "id": 3,
@@ -5595,7 +4614,7 @@
                             "id": 0,
                             "name": "Prefab",
                             "type": 6,
-                            "value": "Stone Wall Side"
+                            "value": "Stone Wall"
                         }
                     ]
                 }
@@ -12063,6 +11082,502 @@
             ],
             "id": 98,
             "name": "Floor 39"
+        },
+        {
+            "components": [
+                {
+                    "name": "Transform",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "PositionX",
+                            "type": 1,
+                            "value": "1740"
+                        },
+                        {
+                            "id": 1,
+                            "name": "PositionY",
+                            "type": 1,
+                            "value": "90"
+                        },
+                        {
+                            "id": 2,
+                            "name": "PositionZ",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 3,
+                            "name": "ScaleX",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 4,
+                            "name": "ScaleY",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 5,
+                            "name": "ScaleZ",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 6,
+                            "name": "RotationX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 7,
+                            "name": "RotationY",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 8,
+                            "name": "RotationZ",
+                            "type": 1,
+                            "value": "0"
+                        }
+                    ]
+                },
+                {
+                    "name": "Button",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Content",
+                            "type": 2,
+                            "value": ""
+                        },
+                        {
+                            "id": 1,
+                            "name": "Width",
+                            "type": 0,
+                            "value": "280"
+                        },
+                        {
+                            "id": 2,
+                            "name": "Height",
+                            "type": 0,
+                            "value": "120"
+                        },
+                        {
+                            "id": 3,
+                            "name": "FontSize",
+                            "type": 0,
+                            "value": "56"
+                        },
+                        {
+                            "id": 4,
+                            "name": "Color",
+                            "type": 4,
+                            "value": "Gray"
+                        },
+                        {
+                            "id": 5,
+                            "name": "TextColor",
+                            "type": 4,
+                            "value": "White"
+                        },
+                        {
+                            "id": 6,
+                            "name": "Font",
+                            "type": 7,
+                            "value": "Font.ttf"
+                        },
+                        {
+                            "id": 7,
+                            "name": "ImagePath",
+                            "type": 7,
+                            "value": "NONE"
+                        },
+                        {
+                            "id": 8,
+                            "name": "Script",
+                            "type": 7,
+                            "value": "NONE"
+                        }
+                    ]
+                }
+            ],
+            "id": 100,
+            "name": "Trap Panel"
+        },
+        {
+            "components": [
+                {
+                    "name": "Transform",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "PositionX",
+                            "type": 1,
+                            "value": "1670"
+                        },
+                        {
+                            "id": 1,
+                            "name": "PositionY",
+                            "type": 1,
+                            "value": "90"
+                        },
+                        {
+                            "id": 2,
+                            "name": "PositionZ",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 3,
+                            "name": "ScaleX",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 4,
+                            "name": "ScaleY",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 5,
+                            "name": "ScaleZ",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 6,
+                            "name": "RotationX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 7,
+                            "name": "RotationY",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 8,
+                            "name": "RotationZ",
+                            "type": 1,
+                            "value": "0"
+                        }
+                    ]
+                },
+                {
+                    "name": "Button",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Content",
+                            "type": 2,
+                            "value": ""
+                        },
+                        {
+                            "id": 1,
+                            "name": "Width",
+                            "type": 0,
+                            "value": "150"
+                        },
+                        {
+                            "id": 2,
+                            "name": "Height",
+                            "type": 0,
+                            "value": "88"
+                        },
+                        {
+                            "id": 3,
+                            "name": "FontSize",
+                            "type": 0,
+                            "value": "56"
+                        },
+                        {
+                            "id": 4,
+                            "name": "Color",
+                            "type": 4,
+                            "value": "White"
+                        },
+                        {
+                            "id": 5,
+                            "name": "TextColor",
+                            "type": 4,
+                            "value": "White"
+                        },
+                        {
+                            "id": 6,
+                            "name": "Font",
+                            "type": 7,
+                            "value": "Font.ttf"
+                        },
+                        {
+                            "id": 7,
+                            "name": "ImagePath",
+                            "type": 7,
+                            "value": "UIMouseTrap.png"
+                        },
+                        {
+                            "id": 8,
+                            "name": "Script",
+                            "type": 7,
+                            "value": "NONE"
+                        }
+                    ]
+                }
+            ],
+            "id": 101,
+            "name": "Trap Icon"
+        },
+        {
+            "components": [
+                {
+                    "name": "Transform",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "PositionX",
+                            "type": 1,
+                            "value": "1810"
+                        },
+                        {
+                            "id": 1,
+                            "name": "PositionY",
+                            "type": 1,
+                            "value": "90"
+                        },
+                        {
+                            "id": 2,
+                            "name": "PositionZ",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 3,
+                            "name": "ScaleX",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 4,
+                            "name": "ScaleY",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 5,
+                            "name": "ScaleZ",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 6,
+                            "name": "RotationX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 7,
+                            "name": "RotationY",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 8,
+                            "name": "RotationZ",
+                            "type": 1,
+                            "value": "0"
+                        }
+                    ]
+                },
+                {
+                    "name": "Button",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Content",
+                            "type": 2,
+                            "value": "X3"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Width",
+                            "type": 0,
+                            "value": "110"
+                        },
+                        {
+                            "id": 2,
+                            "name": "Height",
+                            "type": 0,
+                            "value": "100"
+                        },
+                        {
+                            "id": 3,
+                            "name": "FontSize",
+                            "type": 0,
+                            "value": "56"
+                        },
+                        {
+                            "id": 4,
+                            "name": "Color",
+                            "type": 4,
+                            "value": "Transparent"
+                        },
+                        {
+                            "id": 5,
+                            "name": "TextColor",
+                            "type": 4,
+                            "value": "White"
+                        },
+                        {
+                            "id": 6,
+                            "name": "Font",
+                            "type": 7,
+                            "value": "Font.ttf"
+                        },
+                        {
+                            "id": 7,
+                            "name": "ImagePath",
+                            "type": 7,
+                            "value": "NONE"
+                        },
+                        {
+                            "id": 8,
+                            "name": "Script",
+                            "type": 7,
+                            "value": "NONE"
+                        }
+                    ]
+                }
+            ],
+            "id": 102,
+            "name": "Trap Count"
+        },
+        {
+            "components": [
+                {
+                    "name": "Transform",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "PositionX",
+                            "type": 1,
+                            "value": "1740"
+                        },
+                        {
+                            "id": 1,
+                            "name": "PositionY",
+                            "type": 1,
+                            "value": "200"
+                        },
+                        {
+                            "id": 2,
+                            "name": "PositionZ",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 3,
+                            "name": "ScaleX",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 4,
+                            "name": "ScaleY",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 5,
+                            "name": "ScaleZ",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 6,
+                            "name": "RotationX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 7,
+                            "name": "RotationY",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 8,
+                            "name": "RotationZ",
+                            "type": 1,
+                            "value": "0"
+                        }
+                    ]
+                },
+                {
+                    "name": "Button",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Content",
+                            "type": 2,
+                            "value": "E"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Width",
+                            "type": 0,
+                            "value": "70"
+                        },
+                        {
+                            "id": 2,
+                            "name": "Height",
+                            "type": 0,
+                            "value": "70"
+                        },
+                        {
+                            "id": 3,
+                            "name": "FontSize",
+                            "type": 0,
+                            "value": "48"
+                        },
+                        {
+                            "id": 4,
+                            "name": "Color",
+                            "type": 4,
+                            "value": "Gray"
+                        },
+                        {
+                            "id": 5,
+                            "name": "TextColor",
+                            "type": 4,
+                            "value": "White"
+                        },
+                        {
+                            "id": 6,
+                            "name": "Font",
+                            "type": 7,
+                            "value": "Font.ttf"
+                        },
+                        {
+                            "id": 7,
+                            "name": "ImagePath",
+                            "type": 7,
+                            "value": "NONE"
+                        },
+                        {
+                            "id": 8,
+                            "name": "Script",
+                            "type": 7,
+                            "value": "NONE"
+                        }
+                    ]
+                }
+            ],
+            "id": 103,
+            "name": "Trap Key"
         }
     ],
     "pluginSettings": {
@@ -12332,6 +11847,12 @@
                             "name": "MoveRange",
                             "type": 2,
                             "value": "10"
+                        },
+                        {
+                            "id": 4,
+                            "name": "MoveAngle",
+                            "type": 2,
+                            "value": "0"
                         }
                     ]
                 }
@@ -12354,31 +11875,31 @@
                             "id": 1,
                             "name": "PositionY",
                             "type": 1,
-                            "value": "8.978"
+                            "value": "3"
                         },
                         {
                             "id": 2,
                             "name": "PositionZ",
                             "type": 1,
-                            "value": "-3.135"
+                            "value": "-7"
                         },
                         {
                             "id": 3,
                             "name": "ScaleX",
                             "type": 1,
-                            "value": "0.75"
+                            "value": "1.6667"
                         },
                         {
                             "id": 4,
                             "name": "ScaleY",
                             "type": 1,
-                            "value": "0.75"
+                            "value": "0.25"
                         },
                         {
                             "id": 5,
                             "name": "ScaleZ",
                             "type": 1,
-                            "value": "0.75"
+                            "value": "0.7482"
                         },
                         {
                             "id": 6,
@@ -12513,13 +12034,13 @@
                             "id": 1,
                             "name": "Height",
                             "type": 1,
-                            "value": "8.978"
+                            "value": "3"
                         },
                         {
                             "id": 2,
                             "name": "Depth",
                             "type": 1,
-                            "value": "6.27"
+                            "value": "14"
                         },
                         {
                             "id": 3,
@@ -12531,13 +12052,13 @@
                             "id": 4,
                             "name": "OffsetY",
                             "type": 1,
-                            "value": "-4.489"
+                            "value": "-1.5"
                         },
                         {
                             "id": 5,
                             "name": "OffsetZ",
                             "type": 1,
-                            "value": "3.135"
+                            "value": "7"
                         },
                         {
                             "id": 6,
@@ -12572,13 +12093,13 @@
                             "id": 0,
                             "name": "PositionX",
                             "type": 1,
-                            "value": "3.135"
+                            "value": "7"
                         },
                         {
                             "id": 1,
                             "name": "PositionY",
                             "type": 1,
-                            "value": "8.978"
+                            "value": "3"
                         },
                         {
                             "id": 2,
@@ -12590,19 +12111,19 @@
                             "id": 3,
                             "name": "ScaleX",
                             "type": 1,
-                            "value": "0.75"
+                            "value": "1.6667"
                         },
                         {
                             "id": 4,
                             "name": "ScaleY",
                             "type": 1,
-                            "value": "0.75"
+                            "value": "0.25"
                         },
                         {
                             "id": 5,
                             "name": "ScaleZ",
                             "type": 1,
-                            "value": "0.75"
+                            "value": "0.7482"
                         },
                         {
                             "id": 6,
@@ -12731,13 +12252,13 @@
                             "id": 0,
                             "name": "Width",
                             "type": 1,
-                            "value": "6.27"
+                            "value": "14"
                         },
                         {
                             "id": 1,
                             "name": "Height",
                             "type": 1,
-                            "value": "8.978"
+                            "value": "3"
                         },
                         {
                             "id": 2,
@@ -12749,13 +12270,13 @@
                             "id": 3,
                             "name": "OffsetX",
                             "type": 1,
-                            "value": "-3.135"
+                            "value": "-7"
                         },
                         {
                             "id": 4,
                             "name": "OffsetY",
                             "type": 1,
-                            "value": "-4.489"
+                            "value": "-1.5"
                         },
                         {
                             "id": 5,
@@ -12786,6 +12307,578 @@
             ],
             "id": 0,
             "name": "Stone Wall Side"
+        },
+        {
+            "components": [
+                {
+                    "name": "Transform",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "PositionX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 1,
+                            "name": "PositionY",
+                            "type": 1,
+                            "value": "0.5"
+                        },
+                        {
+                            "id": 2,
+                            "name": "PositionZ",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 3,
+                            "name": "ScaleX",
+                            "type": 1,
+                            "value": "0.03"
+                        },
+                        {
+                            "id": 4,
+                            "name": "ScaleY",
+                            "type": 1,
+                            "value": "0.03"
+                        },
+                        {
+                            "id": 5,
+                            "name": "ScaleZ",
+                            "type": 1,
+                            "value": "0.03"
+                        },
+                        {
+                            "id": 6,
+                            "name": "RotationX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 7,
+                            "name": "RotationY",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 8,
+                            "name": "RotationZ",
+                            "type": 1,
+                            "value": "0"
+                        }
+                    ]
+                },
+                {
+                    "name": "3DModel",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Primitive",
+                            "type": 5,
+                            "value": "Model"
+                        },
+                        {
+                            "id": 1,
+                            "name": "ModelPath",
+                            "type": 7,
+                            "value": "spatula.glb"
+                        },
+                        {
+                            "id": 2,
+                            "name": "TexturePath",
+                            "type": 7,
+                            "value": "NONE"
+                        },
+                        {
+                            "id": 3,
+                            "name": "Color",
+                            "type": 4,
+                            "value": "White"
+                        },
+                        {
+                            "id": 4,
+                            "name": "Width",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 5,
+                            "name": "Height",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 6,
+                            "name": "Depth",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 7,
+                            "name": "Scale",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 8,
+                            "name": "Animation",
+                            "type": 0,
+                            "value": "-1"
+                        },
+                        {
+                            "id": 9,
+                            "name": "AnimationSpeed",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 10,
+                            "name": "AnimationFrame",
+                            "type": 1,
+                            "value": "-1"
+                        }
+                    ]
+                },
+                {
+                    "name": "RigidBody3D",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Mass",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 1,
+                            "name": "IsStatic",
+                            "type": 3,
+                            "value": "True"
+                        },
+                        {
+                            "id": 2,
+                            "name": "GravityScale",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 3,
+                            "name": "StepHeight",
+                            "type": 1,
+                            "value": "0"
+                        }
+                    ]
+                },
+                {
+                    "name": "Collider3D",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Width",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Height",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 2,
+                            "name": "Depth",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 3,
+                            "name": "OffsetX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 4,
+                            "name": "OffsetY",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 5,
+                            "name": "OffsetZ",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 6,
+                            "name": "Layer",
+                            "type": 0,
+                            "value": "1"
+                        },
+                        {
+                            "id": 7,
+                            "name": "TypeCollisions",
+                            "type": 2,
+                            "value": "All layers"
+                        },
+                        {
+                            "id": 8,
+                            "name": "IsTrigger",
+                            "type": 3,
+                            "value": "True"
+                        }
+                    ]
+                },
+                {
+                    "name": "Script",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Path",
+                            "type": 7,
+                            "value": "SpatulaSlap.hpp"
+                        },
+                        {
+                            "id": 1,
+                            "name": "MinDelay",
+                            "type": 2,
+                            "value": "1"
+                        },
+                        {
+                            "id": 2,
+                            "name": "MaxDelay",
+                            "type": 2,
+                            "value": "3"
+                        },
+                        {
+                            "id": 3,
+                            "name": "SlapTime",
+                            "type": 2,
+                            "value": "0.15"
+                        },
+                        {
+                            "id": 4,
+                            "name": "HoldTime",
+                            "type": 2,
+                            "value": "0.4"
+                        },
+                        {
+                            "id": 5,
+                            "name": "RaiseTime",
+                            "type": 2,
+                            "value": "1"
+                        },
+                        {
+                            "id": 6,
+                            "name": "BurstTime",
+                            "type": 2,
+                            "value": "0.12"
+                        }
+                    ]
+                },
+                {
+                    "name": "ParticleEmitter3D",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Density",
+                            "type": 1,
+                            "value": "2000"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Shape",
+                            "type": 5,
+                            "value": "Cube"
+                        },
+                        {
+                            "id": 2,
+                            "name": "Width",
+                            "type": 1,
+                            "value": "0.3"
+                        },
+                        {
+                            "id": 3,
+                            "name": "Height",
+                            "type": 1,
+                            "value": "0.3"
+                        },
+                        {
+                            "id": 4,
+                            "name": "Depth",
+                            "type": 1,
+                            "value": "0.3"
+                        },
+                        {
+                            "id": 5,
+                            "name": "Radius",
+                            "type": 1,
+                            "value": "0.07"
+                        },
+                        {
+                            "id": 6,
+                            "name": "Lifetime",
+                            "type": 1,
+                            "value": "0.6"
+                        },
+                        {
+                            "id": 7,
+                            "name": "Speed",
+                            "type": 1,
+                            "value": "12"
+                        },
+                        {
+                            "id": 8,
+                            "name": "SpawnRadius",
+                            "type": 1,
+                            "value": "6"
+                        },
+                        {
+                            "id": 9,
+                            "name": "VerticalSpread",
+                            "type": 1,
+                            "value": "0.25"
+                        },
+                        {
+                            "id": 10,
+                            "name": "UpOnly",
+                            "type": 3,
+                            "value": "True"
+                        },
+                        {
+                            "id": 11,
+                            "name": "Color",
+                            "type": 4,
+                            "value": "Dirt"
+                        }
+                    ]
+                }
+            ],
+            "id": 0,
+            "name": "Spatula"
+        },
+        {
+            "components": [
+                {
+                    "name": "Transform",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "PositionX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 1,
+                            "name": "PositionY",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 2,
+                            "name": "PositionZ",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 3,
+                            "name": "ScaleX",
+                            "type": 1,
+                            "value": "4"
+                        },
+                        {
+                            "id": 4,
+                            "name": "ScaleY",
+                            "type": 1,
+                            "value": "4"
+                        },
+                        {
+                            "id": 5,
+                            "name": "ScaleZ",
+                            "type": 1,
+                            "value": "4"
+                        },
+                        {
+                            "id": 6,
+                            "name": "RotationX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 7,
+                            "name": "RotationY",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 8,
+                            "name": "RotationZ",
+                            "type": 1,
+                            "value": "0"
+                        }
+                    ]
+                },
+                {
+                    "name": "3DModel",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Primitive",
+                            "type": 5,
+                            "value": "Model"
+                        },
+                        {
+                            "id": 1,
+                            "name": "ModelPath",
+                            "type": 7,
+                            "value": "MouseTrap.glb"
+                        },
+                        {
+                            "id": 2,
+                            "name": "TexturePath",
+                            "type": 7,
+                            "value": "NONE"
+                        },
+                        {
+                            "id": 3,
+                            "name": "Color",
+                            "type": 4,
+                            "value": "White"
+                        },
+                        {
+                            "id": 4,
+                            "name": "Width",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 5,
+                            "name": "Height",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 6,
+                            "name": "Depth",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 7,
+                            "name": "Scale",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 8,
+                            "name": "Animation",
+                            "type": 0,
+                            "value": "-1"
+                        },
+                        {
+                            "id": 9,
+                            "name": "AnimationSpeed",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 10,
+                            "name": "AnimationFrame",
+                            "type": 1,
+                            "value": "-1"
+                        }
+                    ]
+                },
+                {
+                    "name": "RigidBody3D",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Mass",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 1,
+                            "name": "IsStatic",
+                            "type": 3,
+                            "value": "True"
+                        },
+                        {
+                            "id": 2,
+                            "name": "GravityScale",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 3,
+                            "name": "StepHeight",
+                            "type": 1,
+                            "value": "0"
+                        }
+                    ]
+                },
+                {
+                    "name": "Collider3D",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Width",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Height",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 2,
+                            "name": "Depth",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 3,
+                            "name": "OffsetX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 4,
+                            "name": "OffsetY",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 5,
+                            "name": "OffsetZ",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 6,
+                            "name": "Layer",
+                            "type": 0,
+                            "value": "1"
+                        },
+                        {
+                            "id": 7,
+                            "name": "TypeCollisions",
+                            "type": 2,
+                            "value": "All layers"
+                        },
+                        {
+                            "id": 8,
+                            "name": "IsTrigger",
+                            "type": 3,
+                            "value": "True"
+                        }
+                    ]
+                }
+            ],
+            "id": 0,
+            "name": "MouseTrap"
         }
     ],
     "projectName": "TrackNTrap",
