@@ -281,9 +281,9 @@ endforeach()
 
 # Same plugins as R-Type.gringo; the headless server skips the ones needing a renderer
 rtype_add_game(r-type_client ${GRINGO_REPOSITORY_DIR}/R-Type/client_main.cpp RaylibRenderer
-               Physics2D 2D Scripts InputHandler Network)
+               Physics2D 2D Scripts InputHandler Network Audio UI)
 rtype_add_game(r-type_server ${GRINGO_REPOSITORY_DIR}/R-Type/server_main.cpp ""
-               Physics2D Scripts Network)
+               Physics2D Scripts Network UI)
 
 list(APPEND RTYPE_TARGETS r-type_client r-type_server)
 # ============================================================
