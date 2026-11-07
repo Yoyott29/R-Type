@@ -1004,7 +1004,7 @@
                             "id": 3,
                             "name": "jump_force",
                             "type": 2,
-                            "value": "30"
+                            "value": "20"
                         }
                     ]
                 }
@@ -2697,6 +2697,2505 @@
             ],
             "id": 26,
             "name": "Knife 15"
+        },
+        {
+            "components": [
+                {
+                    "name": "Transform",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "PositionX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 1,
+                            "name": "PositionY",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 2,
+                            "name": "PositionZ",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 3,
+                            "name": "ScaleX",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 4,
+                            "name": "ScaleY",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 5,
+                            "name": "ScaleZ",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 6,
+                            "name": "RotationX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 7,
+                            "name": "RotationY",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 8,
+                            "name": "RotationZ",
+                            "type": 1,
+                            "value": "0"
+                        }
+                    ]
+                }
+            ],
+            "id": 27,
+            "name": "Track Walls"
+        },
+        {
+            "components": [
+                {
+                    "name": "Transform",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "PositionX",
+                            "type": 1,
+                            "value": "-267"
+                        },
+                        {
+                            "id": 1,
+                            "name": "PositionY",
+                            "type": 1,
+                            "value": "14"
+                        },
+                        {
+                            "id": 2,
+                            "name": "PositionZ",
+                            "type": 1,
+                            "value": "53.25"
+                        },
+                        {
+                            "id": 3,
+                            "name": "ScaleX",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 4,
+                            "name": "ScaleY",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 5,
+                            "name": "ScaleZ",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 6,
+                            "name": "RotationX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 7,
+                            "name": "RotationY",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 8,
+                            "name": "RotationZ",
+                            "type": 1,
+                            "value": "0"
+                        }
+                    ]
+                },
+                {
+                    "name": "ChildOf",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Parent",
+                            "type": 0,
+                            "value": "27"
+                        }
+                    ]
+                },
+                {
+                    "name": "RigidBody3D",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Mass",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 1,
+                            "name": "IsStatic",
+                            "type": 3,
+                            "value": "True"
+                        },
+                        {
+                            "id": 2,
+                            "name": "GravityScale",
+                            "type": 1,
+                            "value": "0"
+                        }
+                    ]
+                },
+                {
+                    "name": "Collider3D",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Width",
+                            "type": 1,
+                            "value": "298"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Height",
+                            "type": 1,
+                            "value": "30"
+                        },
+                        {
+                            "id": 2,
+                            "name": "Depth",
+                            "type": 1,
+                            "value": "10"
+                        },
+                        {
+                            "id": 3,
+                            "name": "OffsetX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 4,
+                            "name": "OffsetY",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 5,
+                            "name": "OffsetZ",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 6,
+                            "name": "Layer",
+                            "type": 0,
+                            "value": "1"
+                        },
+                        {
+                            "id": 7,
+                            "name": "TypeCollisions",
+                            "type": 2,
+                            "value": "All layers"
+                        },
+                        {
+                            "id": 8,
+                            "name": "IsTrigger",
+                            "type": 3,
+                            "value": "False"
+                        }
+                    ]
+                }
+            ],
+            "id": 28,
+            "name": "Wall South inner west"
+        },
+        {
+            "components": [
+                {
+                    "name": "Transform",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "PositionX",
+                            "type": 1,
+                            "value": "-267"
+                        },
+                        {
+                            "id": 1,
+                            "name": "PositionY",
+                            "type": 1,
+                            "value": "14"
+                        },
+                        {
+                            "id": 2,
+                            "name": "PositionZ",
+                            "type": 1,
+                            "value": "18.25"
+                        },
+                        {
+                            "id": 3,
+                            "name": "ScaleX",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 4,
+                            "name": "ScaleY",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 5,
+                            "name": "ScaleZ",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 6,
+                            "name": "RotationX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 7,
+                            "name": "RotationY",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 8,
+                            "name": "RotationZ",
+                            "type": 1,
+                            "value": "0"
+                        }
+                    ]
+                },
+                {
+                    "name": "ChildOf",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Parent",
+                            "type": 0,
+                            "value": "27"
+                        }
+                    ]
+                },
+                {
+                    "name": "RigidBody3D",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Mass",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 1,
+                            "name": "IsStatic",
+                            "type": 3,
+                            "value": "True"
+                        },
+                        {
+                            "id": 2,
+                            "name": "GravityScale",
+                            "type": 1,
+                            "value": "0"
+                        }
+                    ]
+                },
+                {
+                    "name": "Collider3D",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Width",
+                            "type": 1,
+                            "value": "298"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Height",
+                            "type": 1,
+                            "value": "30"
+                        },
+                        {
+                            "id": 2,
+                            "name": "Depth",
+                            "type": 1,
+                            "value": "10"
+                        },
+                        {
+                            "id": 3,
+                            "name": "OffsetX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 4,
+                            "name": "OffsetY",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 5,
+                            "name": "OffsetZ",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 6,
+                            "name": "Layer",
+                            "type": 0,
+                            "value": "1"
+                        },
+                        {
+                            "id": 7,
+                            "name": "TypeCollisions",
+                            "type": 2,
+                            "value": "All layers"
+                        },
+                        {
+                            "id": 8,
+                            "name": "IsTrigger",
+                            "type": 3,
+                            "value": "False"
+                        }
+                    ]
+                }
+            ],
+            "id": 29,
+            "name": "Wall South outer west"
+        },
+        {
+            "components": [
+                {
+                    "name": "Transform",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "PositionX",
+                            "type": 1,
+                            "value": "23"
+                        },
+                        {
+                            "id": 1,
+                            "name": "PositionY",
+                            "type": 1,
+                            "value": "14"
+                        },
+                        {
+                            "id": 2,
+                            "name": "PositionZ",
+                            "type": 1,
+                            "value": "46.75"
+                        },
+                        {
+                            "id": 3,
+                            "name": "ScaleX",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 4,
+                            "name": "ScaleY",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 5,
+                            "name": "ScaleZ",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 6,
+                            "name": "RotationX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 7,
+                            "name": "RotationY",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 8,
+                            "name": "RotationZ",
+                            "type": 1,
+                            "value": "0"
+                        }
+                    ]
+                },
+                {
+                    "name": "ChildOf",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Parent",
+                            "type": 0,
+                            "value": "27"
+                        }
+                    ]
+                },
+                {
+                    "name": "RigidBody3D",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Mass",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 1,
+                            "name": "IsStatic",
+                            "type": 3,
+                            "value": "True"
+                        },
+                        {
+                            "id": 2,
+                            "name": "GravityScale",
+                            "type": 1,
+                            "value": "0"
+                        }
+                    ]
+                },
+                {
+                    "name": "Collider3D",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Width",
+                            "type": 1,
+                            "value": "298"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Height",
+                            "type": 1,
+                            "value": "30"
+                        },
+                        {
+                            "id": 2,
+                            "name": "Depth",
+                            "type": 1,
+                            "value": "10"
+                        },
+                        {
+                            "id": 3,
+                            "name": "OffsetX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 4,
+                            "name": "OffsetY",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 5,
+                            "name": "OffsetZ",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 6,
+                            "name": "Layer",
+                            "type": 0,
+                            "value": "1"
+                        },
+                        {
+                            "id": 7,
+                            "name": "TypeCollisions",
+                            "type": 2,
+                            "value": "All layers"
+                        },
+                        {
+                            "id": 8,
+                            "name": "IsTrigger",
+                            "type": 3,
+                            "value": "False"
+                        }
+                    ]
+                }
+            ],
+            "id": 30,
+            "name": "Wall South inner east"
+        },
+        {
+            "components": [
+                {
+                    "name": "Transform",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "PositionX",
+                            "type": 1,
+                            "value": "23"
+                        },
+                        {
+                            "id": 1,
+                            "name": "PositionY",
+                            "type": 1,
+                            "value": "14"
+                        },
+                        {
+                            "id": 2,
+                            "name": "PositionZ",
+                            "type": 1,
+                            "value": "11.75"
+                        },
+                        {
+                            "id": 3,
+                            "name": "ScaleX",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 4,
+                            "name": "ScaleY",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 5,
+                            "name": "ScaleZ",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 6,
+                            "name": "RotationX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 7,
+                            "name": "RotationY",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 8,
+                            "name": "RotationZ",
+                            "type": 1,
+                            "value": "0"
+                        }
+                    ]
+                },
+                {
+                    "name": "ChildOf",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Parent",
+                            "type": 0,
+                            "value": "27"
+                        }
+                    ]
+                },
+                {
+                    "name": "RigidBody3D",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Mass",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 1,
+                            "name": "IsStatic",
+                            "type": 3,
+                            "value": "True"
+                        },
+                        {
+                            "id": 2,
+                            "name": "GravityScale",
+                            "type": 1,
+                            "value": "0"
+                        }
+                    ]
+                },
+                {
+                    "name": "Collider3D",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Width",
+                            "type": 1,
+                            "value": "298"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Height",
+                            "type": 1,
+                            "value": "30"
+                        },
+                        {
+                            "id": 2,
+                            "name": "Depth",
+                            "type": 1,
+                            "value": "10"
+                        },
+                        {
+                            "id": 3,
+                            "name": "OffsetX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 4,
+                            "name": "OffsetY",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 5,
+                            "name": "OffsetZ",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 6,
+                            "name": "Layer",
+                            "type": 0,
+                            "value": "1"
+                        },
+                        {
+                            "id": 7,
+                            "name": "TypeCollisions",
+                            "type": 2,
+                            "value": "All layers"
+                        },
+                        {
+                            "id": 8,
+                            "name": "IsTrigger",
+                            "type": 3,
+                            "value": "False"
+                        }
+                    ]
+                }
+            ],
+            "id": 31,
+            "name": "Wall South outer east"
+        },
+        {
+            "components": [
+                {
+                    "name": "Transform",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "PositionX",
+                            "type": 1,
+                            "value": "-230"
+                        },
+                        {
+                            "id": 1,
+                            "name": "PositionY",
+                            "type": 1,
+                            "value": "14"
+                        },
+                        {
+                            "id": 2,
+                            "name": "PositionZ",
+                            "type": 1,
+                            "value": "382.4"
+                        },
+                        {
+                            "id": 3,
+                            "name": "ScaleX",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 4,
+                            "name": "ScaleY",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 5,
+                            "name": "ScaleZ",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 6,
+                            "name": "RotationX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 7,
+                            "name": "RotationY",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 8,
+                            "name": "RotationZ",
+                            "type": 1,
+                            "value": "0"
+                        }
+                    ]
+                },
+                {
+                    "name": "ChildOf",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Parent",
+                            "type": 0,
+                            "value": "27"
+                        }
+                    ]
+                },
+                {
+                    "name": "RigidBody3D",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Mass",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 1,
+                            "name": "IsStatic",
+                            "type": 3,
+                            "value": "True"
+                        },
+                        {
+                            "id": 2,
+                            "name": "GravityScale",
+                            "type": 1,
+                            "value": "0"
+                        }
+                    ]
+                },
+                {
+                    "name": "Collider3D",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Width",
+                            "type": 1,
+                            "value": "244"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Height",
+                            "type": 1,
+                            "value": "30"
+                        },
+                        {
+                            "id": 2,
+                            "name": "Depth",
+                            "type": 1,
+                            "value": "10"
+                        },
+                        {
+                            "id": 3,
+                            "name": "OffsetX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 4,
+                            "name": "OffsetY",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 5,
+                            "name": "OffsetZ",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 6,
+                            "name": "Layer",
+                            "type": 0,
+                            "value": "1"
+                        },
+                        {
+                            "id": 7,
+                            "name": "TypeCollisions",
+                            "type": 2,
+                            "value": "All layers"
+                        },
+                        {
+                            "id": 8,
+                            "name": "IsTrigger",
+                            "type": 3,
+                            "value": "False"
+                        }
+                    ]
+                }
+            ],
+            "id": 32,
+            "name": "Wall North inner west"
+        },
+        {
+            "components": [
+                {
+                    "name": "Transform",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "PositionX",
+                            "type": 1,
+                            "value": "-230"
+                        },
+                        {
+                            "id": 1,
+                            "name": "PositionY",
+                            "type": 1,
+                            "value": "14"
+                        },
+                        {
+                            "id": 2,
+                            "name": "PositionZ",
+                            "type": 1,
+                            "value": "417.4"
+                        },
+                        {
+                            "id": 3,
+                            "name": "ScaleX",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 4,
+                            "name": "ScaleY",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 5,
+                            "name": "ScaleZ",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 6,
+                            "name": "RotationX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 7,
+                            "name": "RotationY",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 8,
+                            "name": "RotationZ",
+                            "type": 1,
+                            "value": "0"
+                        }
+                    ]
+                },
+                {
+                    "name": "ChildOf",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Parent",
+                            "type": 0,
+                            "value": "27"
+                        }
+                    ]
+                },
+                {
+                    "name": "RigidBody3D",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Mass",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 1,
+                            "name": "IsStatic",
+                            "type": 3,
+                            "value": "True"
+                        },
+                        {
+                            "id": 2,
+                            "name": "GravityScale",
+                            "type": 1,
+                            "value": "0"
+                        }
+                    ]
+                },
+                {
+                    "name": "Collider3D",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Width",
+                            "type": 1,
+                            "value": "244"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Height",
+                            "type": 1,
+                            "value": "30"
+                        },
+                        {
+                            "id": 2,
+                            "name": "Depth",
+                            "type": 1,
+                            "value": "10"
+                        },
+                        {
+                            "id": 3,
+                            "name": "OffsetX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 4,
+                            "name": "OffsetY",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 5,
+                            "name": "OffsetZ",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 6,
+                            "name": "Layer",
+                            "type": 0,
+                            "value": "1"
+                        },
+                        {
+                            "id": 7,
+                            "name": "TypeCollisions",
+                            "type": 2,
+                            "value": "All layers"
+                        },
+                        {
+                            "id": 8,
+                            "name": "IsTrigger",
+                            "type": 3,
+                            "value": "False"
+                        }
+                    ]
+                }
+            ],
+            "id": 33,
+            "name": "Wall North outer west"
+        },
+        {
+            "components": [
+                {
+                    "name": "Transform",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "PositionX",
+                            "type": 1,
+                            "value": "6"
+                        },
+                        {
+                            "id": 1,
+                            "name": "PositionY",
+                            "type": 1,
+                            "value": "14"
+                        },
+                        {
+                            "id": 2,
+                            "name": "PositionZ",
+                            "type": 1,
+                            "value": "386.4"
+                        },
+                        {
+                            "id": 3,
+                            "name": "ScaleX",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 4,
+                            "name": "ScaleY",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 5,
+                            "name": "ScaleZ",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 6,
+                            "name": "RotationX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 7,
+                            "name": "RotationY",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 8,
+                            "name": "RotationZ",
+                            "type": 1,
+                            "value": "0"
+                        }
+                    ]
+                },
+                {
+                    "name": "ChildOf",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Parent",
+                            "type": 0,
+                            "value": "27"
+                        }
+                    ]
+                },
+                {
+                    "name": "RigidBody3D",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Mass",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 1,
+                            "name": "IsStatic",
+                            "type": 3,
+                            "value": "True"
+                        },
+                        {
+                            "id": 2,
+                            "name": "GravityScale",
+                            "type": 1,
+                            "value": "0"
+                        }
+                    ]
+                },
+                {
+                    "name": "Collider3D",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Width",
+                            "type": 1,
+                            "value": "244"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Height",
+                            "type": 1,
+                            "value": "30"
+                        },
+                        {
+                            "id": 2,
+                            "name": "Depth",
+                            "type": 1,
+                            "value": "10"
+                        },
+                        {
+                            "id": 3,
+                            "name": "OffsetX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 4,
+                            "name": "OffsetY",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 5,
+                            "name": "OffsetZ",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 6,
+                            "name": "Layer",
+                            "type": 0,
+                            "value": "1"
+                        },
+                        {
+                            "id": 7,
+                            "name": "TypeCollisions",
+                            "type": 2,
+                            "value": "All layers"
+                        },
+                        {
+                            "id": 8,
+                            "name": "IsTrigger",
+                            "type": 3,
+                            "value": "False"
+                        }
+                    ]
+                }
+            ],
+            "id": 34,
+            "name": "Wall North inner east"
+        },
+        {
+            "components": [
+                {
+                    "name": "Transform",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "PositionX",
+                            "type": 1,
+                            "value": "6"
+                        },
+                        {
+                            "id": 1,
+                            "name": "PositionY",
+                            "type": 1,
+                            "value": "14"
+                        },
+                        {
+                            "id": 2,
+                            "name": "PositionZ",
+                            "type": 1,
+                            "value": "421.4"
+                        },
+                        {
+                            "id": 3,
+                            "name": "ScaleX",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 4,
+                            "name": "ScaleY",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 5,
+                            "name": "ScaleZ",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 6,
+                            "name": "RotationX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 7,
+                            "name": "RotationY",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 8,
+                            "name": "RotationZ",
+                            "type": 1,
+                            "value": "0"
+                        }
+                    ]
+                },
+                {
+                    "name": "ChildOf",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Parent",
+                            "type": 0,
+                            "value": "27"
+                        }
+                    ]
+                },
+                {
+                    "name": "RigidBody3D",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Mass",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 1,
+                            "name": "IsStatic",
+                            "type": 3,
+                            "value": "True"
+                        },
+                        {
+                            "id": 2,
+                            "name": "GravityScale",
+                            "type": 1,
+                            "value": "0"
+                        }
+                    ]
+                },
+                {
+                    "name": "Collider3D",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Width",
+                            "type": 1,
+                            "value": "244"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Height",
+                            "type": 1,
+                            "value": "30"
+                        },
+                        {
+                            "id": 2,
+                            "name": "Depth",
+                            "type": 1,
+                            "value": "10"
+                        },
+                        {
+                            "id": 3,
+                            "name": "OffsetX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 4,
+                            "name": "OffsetY",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 5,
+                            "name": "OffsetZ",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 6,
+                            "name": "Layer",
+                            "type": 0,
+                            "value": "1"
+                        },
+                        {
+                            "id": 7,
+                            "name": "TypeCollisions",
+                            "type": 2,
+                            "value": "All layers"
+                        },
+                        {
+                            "id": 8,
+                            "name": "IsTrigger",
+                            "type": 3,
+                            "value": "False"
+                        }
+                    ]
+                }
+            ],
+            "id": 35,
+            "name": "Wall North outer east"
+        },
+        {
+            "components": [
+                {
+                    "name": "Transform",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "PositionX",
+                            "type": 1,
+                            "value": "168"
+                        },
+                        {
+                            "id": 1,
+                            "name": "PositionY",
+                            "type": 1,
+                            "value": "14"
+                        },
+                        {
+                            "id": 2,
+                            "name": "PositionZ",
+                            "type": 1,
+                            "value": "170"
+                        },
+                        {
+                            "id": 3,
+                            "name": "ScaleX",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 4,
+                            "name": "ScaleY",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 5,
+                            "name": "ScaleZ",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 6,
+                            "name": "RotationX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 7,
+                            "name": "RotationY",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 8,
+                            "name": "RotationZ",
+                            "type": 1,
+                            "value": "0"
+                        }
+                    ]
+                },
+                {
+                    "name": "ChildOf",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Parent",
+                            "type": 0,
+                            "value": "27"
+                        }
+                    ]
+                },
+                {
+                    "name": "ArcWall3D",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Radius",
+                            "type": 1,
+                            "value": "131.9"
+                        },
+                        {
+                            "id": 1,
+                            "name": "StartAngle",
+                            "type": 1,
+                            "value": "-96"
+                        },
+                        {
+                            "id": 2,
+                            "name": "EndAngle",
+                            "type": 1,
+                            "value": "18.28"
+                        },
+                        {
+                            "id": 3,
+                            "name": "Height",
+                            "type": 1,
+                            "value": "30"
+                        },
+                        {
+                            "id": 4,
+                            "name": "KeepInside",
+                            "type": 3,
+                            "value": "False"
+                        }
+                    ]
+                }
+            ],
+            "id": 36,
+            "name": "Wall Turn ES inner"
+        },
+        {
+            "components": [
+                {
+                    "name": "Transform",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "PositionX",
+                            "type": 1,
+                            "value": "168"
+                        },
+                        {
+                            "id": 1,
+                            "name": "PositionY",
+                            "type": 1,
+                            "value": "14"
+                        },
+                        {
+                            "id": 2,
+                            "name": "PositionZ",
+                            "type": 1,
+                            "value": "170"
+                        },
+                        {
+                            "id": 3,
+                            "name": "ScaleX",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 4,
+                            "name": "ScaleY",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 5,
+                            "name": "ScaleZ",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 6,
+                            "name": "RotationX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 7,
+                            "name": "RotationY",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 8,
+                            "name": "RotationZ",
+                            "type": 1,
+                            "value": "0"
+                        }
+                    ]
+                },
+                {
+                    "name": "ChildOf",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Parent",
+                            "type": 0,
+                            "value": "27"
+                        }
+                    ]
+                },
+                {
+                    "name": "ArcWall3D",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Radius",
+                            "type": 1,
+                            "value": "156.9"
+                        },
+                        {
+                            "id": 1,
+                            "name": "StartAngle",
+                            "type": 1,
+                            "value": "-96"
+                        },
+                        {
+                            "id": 2,
+                            "name": "EndAngle",
+                            "type": 1,
+                            "value": "18.28"
+                        },
+                        {
+                            "id": 3,
+                            "name": "Height",
+                            "type": 1,
+                            "value": "30"
+                        },
+                        {
+                            "id": 4,
+                            "name": "KeepInside",
+                            "type": 3,
+                            "value": "True"
+                        }
+                    ]
+                }
+            ],
+            "id": 37,
+            "name": "Wall Turn ES outer"
+        },
+        {
+            "components": [
+                {
+                    "name": "Transform",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "PositionX",
+                            "type": 1,
+                            "value": "124"
+                        },
+                        {
+                            "id": 1,
+                            "name": "PositionY",
+                            "type": 1,
+                            "value": "14"
+                        },
+                        {
+                            "id": 2,
+                            "name": "PositionZ",
+                            "type": 1,
+                            "value": "218"
+                        },
+                        {
+                            "id": 3,
+                            "name": "ScaleX",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 4,
+                            "name": "ScaleY",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 5,
+                            "name": "ScaleZ",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 6,
+                            "name": "RotationX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 7,
+                            "name": "RotationY",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 8,
+                            "name": "RotationZ",
+                            "type": 1,
+                            "value": "0"
+                        }
+                    ]
+                },
+                {
+                    "name": "ChildOf",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Parent",
+                            "type": 0,
+                            "value": "27"
+                        }
+                    ]
+                },
+                {
+                    "name": "ArcWall3D",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Radius",
+                            "type": 1,
+                            "value": "173.4"
+                        },
+                        {
+                            "id": 1,
+                            "name": "StartAngle",
+                            "type": 1,
+                            "value": "-11.33"
+                        },
+                        {
+                            "id": 2,
+                            "name": "EndAngle",
+                            "type": 1,
+                            "value": "96"
+                        },
+                        {
+                            "id": 3,
+                            "name": "Height",
+                            "type": 1,
+                            "value": "30"
+                        },
+                        {
+                            "id": 4,
+                            "name": "KeepInside",
+                            "type": 3,
+                            "value": "False"
+                        }
+                    ]
+                }
+            ],
+            "id": 38,
+            "name": "Wall Turn EN inner"
+        },
+        {
+            "components": [
+                {
+                    "name": "Transform",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "PositionX",
+                            "type": 1,
+                            "value": "124"
+                        },
+                        {
+                            "id": 1,
+                            "name": "PositionY",
+                            "type": 1,
+                            "value": "14"
+                        },
+                        {
+                            "id": 2,
+                            "name": "PositionZ",
+                            "type": 1,
+                            "value": "218"
+                        },
+                        {
+                            "id": 3,
+                            "name": "ScaleX",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 4,
+                            "name": "ScaleY",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 5,
+                            "name": "ScaleZ",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 6,
+                            "name": "RotationX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 7,
+                            "name": "RotationY",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 8,
+                            "name": "RotationZ",
+                            "type": 1,
+                            "value": "0"
+                        }
+                    ]
+                },
+                {
+                    "name": "ChildOf",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Parent",
+                            "type": 0,
+                            "value": "27"
+                        }
+                    ]
+                },
+                {
+                    "name": "ArcWall3D",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Radius",
+                            "type": 1,
+                            "value": "198.4"
+                        },
+                        {
+                            "id": 1,
+                            "name": "StartAngle",
+                            "type": 1,
+                            "value": "-11.33"
+                        },
+                        {
+                            "id": 2,
+                            "name": "EndAngle",
+                            "type": 1,
+                            "value": "96"
+                        },
+                        {
+                            "id": 3,
+                            "name": "Height",
+                            "type": 1,
+                            "value": "30"
+                        },
+                        {
+                            "id": 4,
+                            "name": "KeepInside",
+                            "type": 3,
+                            "value": "True"
+                        }
+                    ]
+                }
+            ],
+            "id": 39,
+            "name": "Wall Turn EN outer"
+        },
+        {
+            "components": [
+                {
+                    "name": "Transform",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "PositionX",
+                            "type": 1,
+                            "value": "-348"
+                        },
+                        {
+                            "id": 1,
+                            "name": "PositionY",
+                            "type": 1,
+                            "value": "14"
+                        },
+                        {
+                            "id": 2,
+                            "name": "PositionZ",
+                            "type": 1,
+                            "value": "194"
+                        },
+                        {
+                            "id": 3,
+                            "name": "ScaleX",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 4,
+                            "name": "ScaleY",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 5,
+                            "name": "ScaleZ",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 6,
+                            "name": "RotationX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 7,
+                            "name": "RotationY",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 8,
+                            "name": "RotationZ",
+                            "type": 1,
+                            "value": "0"
+                        }
+                    ]
+                },
+                {
+                    "name": "ChildOf",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Parent",
+                            "type": 0,
+                            "value": "27"
+                        }
+                    ]
+                },
+                {
+                    "name": "ArcWall3D",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Radius",
+                            "type": 1,
+                            "value": "193.4"
+                        },
+                        {
+                            "id": 1,
+                            "name": "StartAngle",
+                            "type": 1,
+                            "value": "84"
+                        },
+                        {
+                            "id": 2,
+                            "name": "EndAngle",
+                            "type": 1,
+                            "value": "200.04"
+                        },
+                        {
+                            "id": 3,
+                            "name": "Height",
+                            "type": 1,
+                            "value": "30"
+                        },
+                        {
+                            "id": 4,
+                            "name": "KeepInside",
+                            "type": 3,
+                            "value": "False"
+                        }
+                    ]
+                }
+            ],
+            "id": 40,
+            "name": "Wall Turn WN inner"
+        },
+        {
+            "components": [
+                {
+                    "name": "Transform",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "PositionX",
+                            "type": 1,
+                            "value": "-348"
+                        },
+                        {
+                            "id": 1,
+                            "name": "PositionY",
+                            "type": 1,
+                            "value": "14"
+                        },
+                        {
+                            "id": 2,
+                            "name": "PositionZ",
+                            "type": 1,
+                            "value": "194"
+                        },
+                        {
+                            "id": 3,
+                            "name": "ScaleX",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 4,
+                            "name": "ScaleY",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 5,
+                            "name": "ScaleZ",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 6,
+                            "name": "RotationX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 7,
+                            "name": "RotationY",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 8,
+                            "name": "RotationZ",
+                            "type": 1,
+                            "value": "0"
+                        }
+                    ]
+                },
+                {
+                    "name": "ChildOf",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Parent",
+                            "type": 0,
+                            "value": "27"
+                        }
+                    ]
+                },
+                {
+                    "name": "ArcWall3D",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Radius",
+                            "type": 1,
+                            "value": "218.4"
+                        },
+                        {
+                            "id": 1,
+                            "name": "StartAngle",
+                            "type": 1,
+                            "value": "84"
+                        },
+                        {
+                            "id": 2,
+                            "name": "EndAngle",
+                            "type": 1,
+                            "value": "200.04"
+                        },
+                        {
+                            "id": 3,
+                            "name": "Height",
+                            "type": 1,
+                            "value": "30"
+                        },
+                        {
+                            "id": 4,
+                            "name": "KeepInside",
+                            "type": 3,
+                            "value": "True"
+                        }
+                    ]
+                }
+            ],
+            "id": 41,
+            "name": "Wall Turn WN outer"
+        },
+        {
+            "components": [
+                {
+                    "name": "Transform",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "PositionX",
+                            "type": 1,
+                            "value": "-412"
+                        },
+                        {
+                            "id": 1,
+                            "name": "PositionY",
+                            "type": 1,
+                            "value": "14"
+                        },
+                        {
+                            "id": 2,
+                            "name": "PositionZ",
+                            "type": 1,
+                            "value": "178"
+                        },
+                        {
+                            "id": 3,
+                            "name": "ScaleX",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 4,
+                            "name": "ScaleY",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 5,
+                            "name": "ScaleZ",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 6,
+                            "name": "RotationX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 7,
+                            "name": "RotationY",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 8,
+                            "name": "RotationZ",
+                            "type": 1,
+                            "value": "0"
+                        }
+                    ]
+                },
+                {
+                    "name": "ChildOf",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Parent",
+                            "type": 0,
+                            "value": "27"
+                        }
+                    ]
+                },
+                {
+                    "name": "ArcWall3D",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Radius",
+                            "type": 1,
+                            "value": "125.9"
+                        },
+                        {
+                            "id": 1,
+                            "name": "StartAngle",
+                            "type": 1,
+                            "value": "188.04"
+                        },
+                        {
+                            "id": 2,
+                            "name": "EndAngle",
+                            "type": 1,
+                            "value": "276"
+                        },
+                        {
+                            "id": 3,
+                            "name": "Height",
+                            "type": 1,
+                            "value": "30"
+                        },
+                        {
+                            "id": 4,
+                            "name": "KeepInside",
+                            "type": 3,
+                            "value": "False"
+                        }
+                    ]
+                }
+            ],
+            "id": 42,
+            "name": "Wall Turn WS inner"
+        },
+        {
+            "components": [
+                {
+                    "name": "Transform",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "PositionX",
+                            "type": 1,
+                            "value": "-412"
+                        },
+                        {
+                            "id": 1,
+                            "name": "PositionY",
+                            "type": 1,
+                            "value": "14"
+                        },
+                        {
+                            "id": 2,
+                            "name": "PositionZ",
+                            "type": 1,
+                            "value": "178"
+                        },
+                        {
+                            "id": 3,
+                            "name": "ScaleX",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 4,
+                            "name": "ScaleY",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 5,
+                            "name": "ScaleZ",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 6,
+                            "name": "RotationX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 7,
+                            "name": "RotationY",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 8,
+                            "name": "RotationZ",
+                            "type": 1,
+                            "value": "0"
+                        }
+                    ]
+                },
+                {
+                    "name": "ChildOf",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Parent",
+                            "type": 0,
+                            "value": "27"
+                        }
+                    ]
+                },
+                {
+                    "name": "ArcWall3D",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Radius",
+                            "type": 1,
+                            "value": "150.9"
+                        },
+                        {
+                            "id": 1,
+                            "name": "StartAngle",
+                            "type": 1,
+                            "value": "188.04"
+                        },
+                        {
+                            "id": 2,
+                            "name": "EndAngle",
+                            "type": 1,
+                            "value": "276"
+                        },
+                        {
+                            "id": 3,
+                            "name": "Height",
+                            "type": 1,
+                            "value": "30"
+                        },
+                        {
+                            "id": 4,
+                            "name": "KeepInside",
+                            "type": 3,
+                            "value": "True"
+                        }
+                    ]
+                }
+            ],
+            "id": 43,
+            "name": "Wall Turn WS outer"
+        },
+        {
+            "components": [
+                {
+                    "name": "Transform",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "PositionX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 1,
+                            "name": "PositionY",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 2,
+                            "name": "PositionZ",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 3,
+                            "name": "ScaleX",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 4,
+                            "name": "ScaleY",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 5,
+                            "name": "ScaleZ",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 6,
+                            "name": "RotationX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 7,
+                            "name": "RotationY",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 8,
+                            "name": "RotationZ",
+                            "type": 1,
+                            "value": "0"
+                        }
+                    ]
+                },
+                {
+                    "name": "ChildOf",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Parent",
+                            "type": 0,
+                            "value": "6"
+                        }
+                    ]
+                },
+                {
+                    "name": "ParticleEmitter3D",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Density",
+                            "type": 1,
+                            "value": "80"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Shape",
+                            "type": 5,
+                            "value": "Sphere"
+                        },
+                        {
+                            "id": 2,
+                            "name": "Width",
+                            "type": 1,
+                            "value": "0.07"
+                        },
+                        {
+                            "id": 3,
+                            "name": "Height",
+                            "type": 1,
+                            "value": "0.07"
+                        },
+                        {
+                            "id": 4,
+                            "name": "Depth",
+                            "type": 1,
+                            "value": "0.07"
+                        },
+                        {
+                            "id": 5,
+                            "name": "Radius",
+                            "type": 1,
+                            "value": "0.07"
+                        },
+                        {
+                            "id": 6,
+                            "name": "Lifetime",
+                            "type": 1,
+                            "value": "0.25"
+                        },
+                        {
+                            "id": 7,
+                            "name": "Speed",
+                            "type": 1,
+                            "value": "3"
+                        },
+                        {
+                            "id": 8,
+                            "name": "SpawnRadius",
+                            "type": 1,
+                            "value": "0.8"
+                        },
+                        {
+                            "id": 9,
+                            "name": "Color",
+                            "type": 4,
+                            "value": "Dirt"
+                        }
+                    ]
+                }
+            ],
+            "id": 44,
+            "name": "Rat Dust Left"
+        },
+        {
+            "components": [
+                {
+                    "name": "Transform",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "PositionX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 1,
+                            "name": "PositionY",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 2,
+                            "name": "PositionZ",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 3,
+                            "name": "ScaleX",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 4,
+                            "name": "ScaleY",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 5,
+                            "name": "ScaleZ",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 6,
+                            "name": "RotationX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 7,
+                            "name": "RotationY",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 8,
+                            "name": "RotationZ",
+                            "type": 1,
+                            "value": "0"
+                        }
+                    ]
+                },
+                {
+                    "name": "ChildOf",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Parent",
+                            "type": 0,
+                            "value": "6"
+                        }
+                    ]
+                },
+                {
+                    "name": "ParticleEmitter3D",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Density",
+                            "type": 1,
+                            "value": "80"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Shape",
+                            "type": 5,
+                            "value": "Sphere"
+                        },
+                        {
+                            "id": 2,
+                            "name": "Width",
+                            "type": 1,
+                            "value": "0.07"
+                        },
+                        {
+                            "id": 3,
+                            "name": "Height",
+                            "type": 1,
+                            "value": "0.07"
+                        },
+                        {
+                            "id": 4,
+                            "name": "Depth",
+                            "type": 1,
+                            "value": "0.07"
+                        },
+                        {
+                            "id": 5,
+                            "name": "Radius",
+                            "type": 1,
+                            "value": "0.07"
+                        },
+                        {
+                            "id": 6,
+                            "name": "Lifetime",
+                            "type": 1,
+                            "value": "0.25"
+                        },
+                        {
+                            "id": 7,
+                            "name": "Speed",
+                            "type": 1,
+                            "value": "3"
+                        },
+                        {
+                            "id": 8,
+                            "name": "SpawnRadius",
+                            "type": 1,
+                            "value": "0.8"
+                        },
+                        {
+                            "id": 9,
+                            "name": "Color",
+                            "type": 4,
+                            "value": "Dirt"
+                        }
+                    ]
+                }
+            ],
+            "id": 45,
+            "name": "Rat Dust Right"
         }
     ],
     "pluginSettings": {

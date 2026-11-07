@@ -57,7 +57,7 @@ class ComponentJson
             {"Magenta", {255, 0, 255, 255}}, {"Pink", {255, 192, 203, 255}},
             {"Brown", {139, 69, 19, 255}},   {"White", {255, 255, 255, 255}},
             {"Gray", {128, 128, 128, 255}},  {"Black", {0, 0, 0, 255}},
-            {"Transparent", {0, 0, 0, 0}},
+            {"Dirt", {118, 112, 102, 255}}, {"Transparent", {0, 0, 0, 0}},
         };
         auto iterator = colors.find(value(component, name, ""));
         return iterator == colors.end() ? fallback : iterator->second;

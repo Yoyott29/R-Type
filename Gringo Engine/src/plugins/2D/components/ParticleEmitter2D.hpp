@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2026
 ** Gringo Engine
 ** File description:
-** ParticleEmitter
+** ParticleEmitter2D
 */
 
 #pragma once
@@ -12,7 +12,7 @@
 #include <variant>
 #include <vector>
 
-struct Particle {
+struct Particle2D {
     float x;
     float y;
     float dx;
@@ -21,15 +21,15 @@ struct Particle {
 };
 
 // Spawns `density` particles per second around the entity's Transform, once started.
-// From a script: scene.getComponent<ParticleEmitter>(entity).start() / .stop()
-struct ParticleEmitter {
+// From a script: scene.getComponent<ParticleEmitter2D>(entity).start() / .stop()
+struct ParticleEmitter2D {
     float density = 10.0f;
     std::variant<BoxShape, CircleShape> shape = CircleShape{2.0f};
     float lifetime = 1.0f;
     float speed = 100.0f;
     ColorRGBA color{255, 255, 255, 255};
 
-    std::vector<Particle> particles;
+    std::vector<Particle2D> particles;
     bool emitting = false;
     float spawnAccumulator = 0.0f;
 
@@ -42,12 +42,12 @@ struct ParticleEmitter {
     bool isEmitting() const { return emitting; }
 };
 
-template <> struct ComponentDescription<ParticleEmitter> {
+template <> struct ComponentDescription<ParticleEmitter2D> {
     static inline const bool isDescribed = true;
 
     static ComponentDescriptor describe()
     {
-        return {"ParticleEmitter",
+        return {"ParticleEmitter2D",
                 {
                     {"Density", valueType::Float, "10"},
                     {"Shape", valueType::Choice, "Circle", {"Box", "Circle"}},

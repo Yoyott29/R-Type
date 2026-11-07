@@ -14,6 +14,9 @@
 #include "ComponentJson.hpp"
 #include "Model3D.hpp"
 #include "Model3DSystem.hpp"
+#include "ParticleEmitter3D.hpp"
+#include "ParticleEmitter3DSystem.hpp"
+#include "ParticleRender3DSystem.hpp"
 #include "ProjectAssets.hpp"
 
 void Plugin3D::registerComponents(Scene &scene)
@@ -56,6 +59,23 @@ void Plugin3D::registerComponents(Scene &scene)
         model.animationSpeed = ComponentJson::floatValue(data, "AnimationSpeed", 1.0f);
         target.addComponent(entity, std::move(model));
     });
+    // register the ParticleEmitter3D component. It starts stopped: a script calls start()
+    scene.registerComponent<ParticleEmitter3D>(
+        [](Scene &target, Entity entity, const nlohmann::json &data) {
+            ParticleEmitter3D emitter;
+            emitter.density = ComponentJson::floatValue(data, "Density", 10.0f);
+            if (ComponentJson::value(data, "Shape", "Cube") == "Sphere")
+                emitter.shape = SphereShape{ComponentJson::floatValue(data, "Radius", 0.1f)};
+            else
+                emitter.shape = CubeShape{ComponentJson::floatValue(data, "Width", 0.2f),
+                                          ComponentJson::floatValue(data, "Height", 0.2f),
+                                          ComponentJson::floatValue(data, "Depth", 0.2f)};
+            emitter.lifetime = ComponentJson::floatValue(data, "Lifetime", 1.0f);
+            emitter.speed = ComponentJson::floatValue(data, "Speed", 1.0f);
+            emitter.spawnRadius = ComponentJson::floatValue(data, "SpawnRadius", 0.0f);
+            emitter.color = ComponentJson::colorValue(data, "Color", {255, 255, 255, 255});
+            target.addComponent(entity, emitter);
+        });
 }
 
 void Plugin3D::build(Application &app)
@@ -80,6 +100,15 @@ void Plugin3D::build(Application &app)
     modelRequirements.set(app._scene.getComponentType<Model3D>());
     modelRequirements.set(app._scene.getComponentType<Transform>());
     app._scene.setSystemComponentSet<Model3DSystem>(modelRequirements);
+
+    // 3D particles: spawned and moved in FixedUpdate, drawn after the models (they fade out)
+    ComponentSet particleRequirements;
+    particleRequirements.set(app._scene.getComponentType<Transform>());
+    particleRequirements.set(app._scene.getComponentType<ParticleEmitter3D>());
+    app._scene.registerSystem<ParticleEmitter3DSystem>(FixedUpdate);
+    app._scene.setSystemComponentSet<ParticleEmitter3DSystem>(particleRequirements);
+    app._scene.registerSystem<ParticleRender3DSystem>(Render);
+    app._scene.setSystemComponentSet<ParticleRender3DSystem>(particleRequirements);
 }
 
 void Plugin3D::cleanup(Application &app) { (void)app; }

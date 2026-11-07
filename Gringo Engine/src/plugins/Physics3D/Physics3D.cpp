@@ -6,6 +6,8 @@
 */
 
 #include "Physics3D.hpp"
+#include "ArcWall3D.hpp"
+#include "ArcWall3DSystem.hpp"
 #include "Collider3D.hpp"
 #include "Collider3DSystem.hpp"
 #include "ComponentJson.hpp"
@@ -69,6 +71,17 @@ void Physics3D::registerComponents(Scene &scene)
             collider.isTrigger = ComponentJson::boolValue(data, "IsTrigger", false);
             target.addComponent(entity, collider);
         });
+    scene.registerComponent<ArcWall3D>([](Scene &target, Entity entity, const nlohmann::json &data) {
+        ArcWall3D wall;
+        wall.radius = ComponentJson::floatValue(data, "Radius", 10.0f);
+        if (wall.radius <= 0.0f)
+            throw std::invalid_argument("ArcWall3D Radius must be positive");
+        wall.startAngle = ComponentJson::floatValue(data, "StartAngle", 0.0f);
+        wall.endAngle = ComponentJson::floatValue(data, "EndAngle", 90.0f);
+        wall.height = ComponentJson::floatValue(data, "Height", 10.0f);
+        wall.keepInside = ComponentJson::boolValue(data, "KeepInside", true);
+        target.addComponent(entity, wall);
+    });
 }
 
 std::vector<PropertyDescriptor> Physics3D::settings() const
@@ -115,6 +128,13 @@ void Physics3D::build(Application &app)
     collider.set(app._scene.getComponentType<Transform>());
     collider.set(app._scene.getComponentType<Collider3D>());
     app._scene.setSystemComponentSet<Collider3DSystem>(collider);
+
+    // After the boxes: the arcs have the last word on where a body ends up
+    app._scene.registerSystem<ArcWall3DSystem>(FixedUpdate);
+    ComponentSet arcWall;
+    arcWall.set(app._scene.getComponentType<Transform>());
+    arcWall.set(app._scene.getComponentType<ArcWall3D>());
+    app._scene.setSystemComponentSet<ArcWall3DSystem>(arcWall);
 }
 
 void Physics3D::cleanup(Application &app) { (void)app; }
