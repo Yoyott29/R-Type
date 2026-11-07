@@ -18,23 +18,14 @@ std::size_t ThreadPool::defaultWorkerCount()
     return hardware > CALLER_THREADS ? hardware - CALLER_THREADS : MIN_WORKERS;
 }
 
-ThreadPool::ThreadPool(std::size_t workerCount)
+ThreadPool::ThreadPool(std::size_t workerCount) : _workerCount(workerCount)
 {
     _workers.reserve(workerCount);
     for (std::size_t i = 0; i < workerCount; ++i)
-        _workers.emplace_back([this] { workerLoop(); });
+        _workers.emplace_back([this](std::stop_token token) { workerLoop(token); });
 }
 
-ThreadPool::~ThreadPool()
-{
-    {
-        std::lock_guard<std::mutex> lock(_mutex);
-        _stopping = true;
-    }
-    _workAvailable.notify_all();
-    for (std::thread &worker : _workers)
-        worker.join();
-}
+ThreadPool::~ThreadPool() = default;
 
 void ThreadPool::submit(std::function<void()> task)
 {
@@ -81,17 +72,17 @@ void ThreadPool::notifyAll()
 
 std::size_t ThreadPool::workerCount() const
 {
-    return _workers.size();
+    return _workerCount;
 }
 
-void ThreadPool::workerLoop()
+void ThreadPool::workerLoop(std::stop_token token)
 {
     while (true) {
         std::function<void()> task;
         {
             std::unique_lock<std::mutex> lock(_mutex);
-            _workAvailable.wait(lock, [this] { return _stopping || !_tasks.empty(); });
-            if (_tasks.empty())
+            // Returns false only once a stop is requested and the queue is drained
+            if (!_workAvailable.wait(lock, token, [this] { return !_tasks.empty(); }))
                 return;
             task = popTask();
         }

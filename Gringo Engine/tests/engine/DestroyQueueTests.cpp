@@ -25,14 +25,14 @@ TEST_CASE(concurrentQueueDestroyLosesNothing)
         entities.push_back(scene.createEntity());
 
     const std::size_t share = kDestroyedCount / kDestroyThreads;
-    std::vector<std::thread> threads;
-    for (std::size_t t = 0; t < kDestroyThreads; ++t)
-        threads.emplace_back([&scene, &entities, t, share] {
-            for (std::size_t i = t * share; i < (t + 1) * share; ++i)
-                scene.queueDestroy(entities[i]);
-        });
-    for (std::thread &thread : threads)
-        thread.join();
+    {
+        std::vector<std::jthread> threads;
+        for (std::size_t t = 0; t < kDestroyThreads; ++t)
+            threads.emplace_back([&scene, &entities, t, share] {
+                for (std::size_t i = t * share; i < (t + 1) * share; ++i)
+                    scene.queueDestroy(entities[i]);
+            });
+    }
 
     scene.flushDestroyQueue();
     for (Entity entity : entities)

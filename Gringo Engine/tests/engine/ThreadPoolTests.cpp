@@ -17,6 +17,9 @@ namespace
 {
 constexpr std::size_t kTaskCount = 64;
 constexpr std::size_t kSingleWorker = 1;
+constexpr std::size_t kDrainWorkers = 4;
+constexpr std::size_t kDrainParents = 64;
+constexpr std::size_t kChildrenPerParent = 1;
 constexpr std::ptrdiff_t kLatchCount = 1;
 } // namespace
 
@@ -92,4 +95,19 @@ TEST_CASE(destructorRunsQueuedTasks)
             pool.submit([&] { ++counter; });
     }
     CHECK(counter.load() == kTaskCount);
+}
+
+TEST_CASE(destructorDrainsTasksSubmittedByTasks)
+{
+    std::atomic<std::size_t> counter{0};
+    {
+        ThreadPool pool(kDrainWorkers);
+        for (std::size_t i = 0; i < kDrainParents; ++i)
+            pool.submit([&] {
+                for (std::size_t child = 0; child < kChildrenPerParent; ++child)
+                    pool.submit([&] { ++counter; });
+                ++counter;
+            });
+    }
+    CHECK(counter.load() == kDrainParents + kDrainParents * kChildrenPerParent);
 }

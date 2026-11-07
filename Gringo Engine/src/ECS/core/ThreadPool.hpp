@@ -11,6 +11,7 @@
 #include <deque>
 #include <functional>
 #include <mutex>
+#include <stop_token>
 #include <thread>
 #include <vector>
 
@@ -41,15 +42,18 @@ class ThreadPool
     std::size_t workerCount() const;
 
   private:
-    void workerLoop();
+    void workerLoop(std::stop_token token);
     // _mutex held, queue not empty
     std::function<void()> popTask();
     void runTask(const std::function<void()> &task);
 
     std::deque<std::function<void()>> _tasks;
     std::mutex _mutex;
-    std::condition_variable _workAvailable;
+    std::condition_variable_any _workAvailable;
     std::condition_variable _progress;
-    bool _stopping = false;
-    std::vector<std::thread> _workers;
+    // Fixed at construction: safe to read while the destructor joins the workers
+    const std::size_t _workerCount;
+    // Must stay last: destroyed first, so the workers are joined before the mutex, condition
+    // variables and queue are destroyed
+    std::vector<std::jthread> _workers;
 };
