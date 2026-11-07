@@ -56,6 +56,8 @@ class EditorProperties
                         Vec2 buttonPosition, float fontSize, ObjectType objectType,
                         int objectId, int componentIndex, const std::string &propertyName,
                         int propertyId);
+    void cyclePrefab(const std::string &propertyValueName, ObjectType objectType, int objectId,
+                     int componentIndex, int propertyId);
     void cycleChoice(const std::string &propertyValueName, ObjectType objectType, int objectId,
                      int componentIndex, int propertyId);
     void toggleBool(const std::string &propertyValueName, ObjectType objectType, int objectId,

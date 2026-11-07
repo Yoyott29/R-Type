@@ -261,14 +261,17 @@ std::vector<Property> Parser::readScriptParameters(const std::filesystem::path &
         if (line.find(marker) == std::string::npos)
             continue;
 
-        // Take what is between { and } on that line
-        std::size_t open = line.find('{');
-        std::size_t close = line.find('}', open);
+        // Take what is between { and }: a long list can be wrapped on several lines
+        std::string list = line;
+        while (list.find('}') == std::string::npos && std::getline(input, line))
+            list += line;
+        std::size_t open = list.find('{');
+        std::size_t close = list.find('}', open);
         if (open == std::string::npos || close == std::string::npos)
             return parameters;
 
         // Split on commas, then drop spaces and quotes from each name
-        std::istringstream names(line.substr(open + 1, close - open - 1));
+        std::istringstream names(list.substr(open + 1, close - open - 1));
         std::string name;
         while (std::getline(names, name, ',')) {
             name.erase(std::remove_if(

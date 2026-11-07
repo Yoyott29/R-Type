@@ -13,6 +13,11 @@
 
 void Collider3DSystem::update(Scene &scene)
 {
+    for (Entity entity : _entities) {
+        if (dynamic(scene, entity))
+            scene.getComponent<RigidBody3D>(entity).grounded = false;
+    }
+
     std::set<Entity> checked;
     std::set<std::pair<Entity, Entity>> solidContacts;
     for (Entity entity : _entities) {
@@ -25,11 +30,14 @@ void Collider3DSystem::update(Scene &scene)
                 (otherCollider.mask & collider.layer) == 0)
                 continue;
             const float overlapX = (collider.width + otherCollider.width) / 2.0f -
-                                   std::abs(position.x - otherPosition.x);
+                                   std::abs(position.x + collider.offsetX - otherPosition.x -
+                                            otherCollider.offsetX);
             const float overlapY = (collider.height + otherCollider.height) / 2.0f -
-                                   std::abs(position.y - otherPosition.y);
+                                   std::abs(position.y + collider.offsetY - otherPosition.y -
+                                            otherCollider.offsetY);
             const float overlapZ = (collider.depth + otherCollider.depth) / 2.0f -
-                                   std::abs(position.z - otherPosition.z);
+                                   std::abs(position.z + collider.offsetZ - otherPosition.z -
+                                            otherCollider.offsetZ);
             if (overlapX <= 0.0f || overlapY <= 0.0f || overlapZ <= 0.0f)
                 continue;
             const bool trigger = collider.isTrigger || otherCollider.isTrigger;
@@ -42,7 +50,8 @@ void Collider3DSystem::update(Scene &scene)
             }
             const auto pair = std::minmax(entity, other);
             solidContacts.insert(pair);
-            resolve(scene, entity, other, position, otherPosition, overlapX, overlapY, overlapZ);
+            resolve(scene, entity, other, position, otherPosition, collider, otherCollider,
+                    overlapX, overlapY, overlapZ);
         }
         checked.insert(entity);
     }
@@ -56,7 +65,8 @@ bool Collider3DSystem::dynamic(Scene &scene, Entity entity)
 }
 
 void Collider3DSystem::resolve(Scene &scene, Entity first, Entity second, Transform &firstPosition,
-                               Transform &secondPosition, float overlapX, float overlapY,
+                               Transform &secondPosition, const Collider3D &firstCollider,
+                               const Collider3D &secondCollider, float overlapX, float overlapY,
                                float overlapZ)
 {
     const float inverseFirst = dynamic(scene, first) ? 1.0f / scene.getComponent<RigidBody3D>(first).mass : 0.0f;
@@ -67,10 +77,20 @@ void Collider3DSystem::resolve(Scene &scene, Entity first, Entity second, Transf
     const float depth = std::min({overlapX, overlapY, overlapZ});
     const bool xAxis = depth == overlapX;
     const bool yAxis = depth == overlapY;
-    const float delta = xAxis ? secondPosition.x - firstPosition.x :
-                        yAxis ? secondPosition.y - firstPosition.y :
-                                secondPosition.z - firstPosition.z;
+    const float deltaX = secondPosition.x + secondCollider.offsetX - firstPosition.x -
+                         firstCollider.offsetX;
+    const float deltaY = secondPosition.y + secondCollider.offsetY - firstPosition.y -
+                         firstCollider.offsetY;
+    const float deltaZ = secondPosition.z + secondCollider.offsetZ - firstPosition.z -
+                         firstCollider.offsetZ;
+    const float delta = xAxis ? deltaX : yAxis ? deltaY : deltaZ;
     const float normal = delta < 0.0f ? -1.0f : 1.0f;
+    if (yAxis) {
+        if (normal < 0.0f && dynamic(scene, first))
+            scene.getComponent<RigidBody3D>(first).grounded = true;
+        if (normal > 0.0f && dynamic(scene, second))
+            scene.getComponent<RigidBody3D>(second).grounded = true;
+    }
     const float pushFirst = depth * inverseFirst / total;
     const float pushSecond = depth * inverseSecond / total;
     if (xAxis) { firstPosition.x -= normal * pushFirst; secondPosition.x += normal * pushSecond; }

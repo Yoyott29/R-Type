@@ -9,6 +9,8 @@
 #include "AppAlive.hpp"
 #include "ChildOf.hpp"
 #include "HierarchySystem.hpp"
+#include "PrefabInstance.hpp"
+#include "PrefabInstanceSystem.hpp"
 #include "CommandLine.hpp"
 #include "ProjectSettings.hpp"
 #include "EngineError.hpp"
@@ -31,7 +33,12 @@ Application::Application()
     // setup basic components and resources
     _scene.registerComponent<Transform>();
     _scene.registerComponent<ChildOf>();
+    _scene.registerComponent<PrefabInstance>();
     _scene.registerSystem<HierarchySystem>(Update);
+    _scene.registerSystem<PrefabInstanceSystem>(PrepUpdate);
+    ComponentSet prefabInstances;
+    prefabInstances.set(_scene.getComponentType<PrefabInstance>());
+    _scene.setSystemComponentSet<PrefabInstanceSystem>(prefabInstances);
     _scene.addResource<AppAlive>();
     _scene.addResource<CommandLine>();
     _scene.addResource<ProjectSettings>();

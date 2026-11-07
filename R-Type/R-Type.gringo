@@ -1380,6 +1380,12 @@
                         },
                         {
                             "id": 7,
+                            "name": "ImagePath",
+                            "type": 7,
+                            "value": "NONE"
+                        },
+                        {
+                            "id": 8,
                             "name": "Script",
                             "type": 7,
                             "value": "StartButtonScript.hpp"
@@ -1526,6 +1532,12 @@
                         },
                         {
                             "id": 7,
+                            "name": "ImagePath",
+                            "type": 7,
+                            "value": "NONE"
+                        },
+                        {
+                            "id": 8,
                             "name": "Script",
                             "type": 7,
                             "value": "ColorFilterButtonScript.hpp"

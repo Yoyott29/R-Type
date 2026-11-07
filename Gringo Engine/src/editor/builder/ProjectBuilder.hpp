@@ -40,6 +40,8 @@ class ProjectBuilder
     missingFiles(const SceneObjects &sceneObjects, const std::filesystem::path &projectFolder,
                  const std::vector<ComponentDescriptor> &descriptors);
     static std::vector<std::string> hierarchyErrors(const SceneObjects &sceneObjects);
+    // Prefab components of the scene naming a prefab the project does not have
+    static std::vector<std::string> prefabErrors(const SceneObjects &sceneObjects);
     // The Parent of a ChildOf component, -1 if there is none or it is not a number
     static int parentIdOf(const std::vector<Component> &components);
     static std::string shellQuote(const std::string &value);

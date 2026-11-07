@@ -314,6 +314,11 @@ if(ENABLE_CLANG_TIDY)
             CXX_CLANG_TIDY
                 "${CLANG_TIDY_EXE};--config-file=${GRINGO_REPOSITORY_DIR}/Norms/.clang-tidy"
         )
+        # Only the code of the miniaudio library: not ours to fix
+        set_source_files_properties(
+            "${GRINGO_ENGINE_DIR}/src/plugins/Audio/Systems/MiniaudioImplementation.cpp"
+            PROPERTIES SKIP_LINTING ON
+        )
     else()
         message(WARNING "clang-tidy not found: static analysis skipped")
     endif()

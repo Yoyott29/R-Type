@@ -43,6 +43,7 @@ class RaylibRenderer : public Renderer<RaylibRenderer>
     bool isMouseButtonPressed(Mouse button) const override;
 
     void setColorFilter(ColorFilter filter) override;
+    void setCursorLocked(bool locked) override;
 
   private:
     static Color toRaylib(ColorRGBA color);
@@ -65,6 +66,7 @@ class RaylibRenderer : public Renderer<RaylibRenderer>
     void unloadFonts();
     // Frees the textures and closes the window if open (closeWindow and the destructor)
     void releaseWindow();
+    void applyCursorLock();
     void prepareFilterTarget();
     void drawFiltered();
     void unloadColorFilter();
@@ -77,6 +79,8 @@ class RaylibRenderer : public Renderer<RaylibRenderer>
     std::unordered_map<std::string, Model> _models;
     std::unordered_map<std::string, AnimationSet> _animations;
     ColorFilter _colorFilter = ColorFilter::None;
+    bool _cursorLockRequested = false;
+    bool _cursorLocked = false;
     RenderTexture2D _filterTarget{};
     Shader _filterShader{};
     int _filterModeLocation = -1;
