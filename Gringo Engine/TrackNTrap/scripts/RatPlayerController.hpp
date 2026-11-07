@@ -11,7 +11,6 @@
 #include "ChildOf.hpp"
 #include "Collider3D.hpp"
 #include "GameState.hpp"
-#include "IRenderer.hpp"
 #include "KeyboardInput.hpp"
 #include "Model3D.hpp"
 #include "RigidBody3D.hpp"
@@ -35,7 +34,8 @@
 #define SHADOW_WIDTH 1.7f
 #define SHADOW_FORWARD 0.8f
 #define SHADOW_THICKNESS 0.02f
-#define SHADOW_LIFT 0.03f
+// The floor boxes are up to ~0.27 under the visible track: lifted more than that to stay visible
+#define SHADOW_LIFT 0.3f
 #define SHADOW_FADE_HEIGHT 15.0f
 #define SHADOW_COLOR ColorRGBA{0, 0, 0, 70}
 
@@ -53,9 +53,10 @@
 #define DUST_FEET_HEIGHT 0.3f
 
 // "hit_sound" and "running_sound": editor ids of the entities with the AudioSource played when
-// the rat hits an obstacle, and looped while it runs
-std::vector<std::string> RatPlayerController_params = {"speed", "sensitivity", "jump_force",
-                                                       "hit_sound", "running_sound"};
+// the rat hits an obstacle, and looped while it runs. "camera": editor id of the camera ZQSD
+// moves relative to (Z away from it, S toward it)
+std::vector<std::string> RatPlayerController_params = {"speed", "jump_force", "hit_sound",
+                                                       "running_sound", "camera"};
 
 class RatPlayerController : public GringoEntityScript
 {
@@ -81,7 +82,6 @@ class RatPlayerController : public GringoEntityScript
         const KeyboardInput &keyboard = scene.getResource<KeyboardInput>();
         RigidBody3D &body = scene.getComponent<RigidBody3D>(entity);
         Velocity3D &velocity = scene.getComponent<Velocity3D>(entity);
-        IRenderer &renderer = scene.getResource<std::reference_wrapper<IRenderer>>().get();
 
         if (dead) {
             if (const std::optional<Entity> hit = findSound(scene, _hitSoundId))
@@ -91,21 +91,29 @@ class RatPlayerController : public GringoEntityScript
             dead = false;
         }
 
-        transform.rotationY += renderer.getMouseDelta().x * sensitivity;
-
-        if (transform.rotationY >= 360.0f)
-            transform.rotationY -= 360.0f;
-        if (transform.rotationY < 0.0f)
-            transform.rotationY += 360.0f;
-
-        const float radians = transform.rotationY * 3.14159265358979323846f / 180.0f;
-        const float forwardX = std::sin(radians);
-        const float forwardZ = -std::cos(radians);
+        // The way the camera looks, flat on the floor
+        float viewX = 0.0f;
+        float viewZ = 0.0f;
+        cameraView(scene, transform, viewX, viewZ);
+        float moveX = 0.0f;
+        float moveZ = 0.0f;
+        if (keyboard.isDown(Key::Z)) {
+            moveX += viewX;
+            moveZ += viewZ;
+        }
+        if (keyboard.isDown(Key::S)) {
+            moveX -= viewX;
+            moveZ -= viewZ;
+        }
+        const float length = std::hypot(moveX, moveZ);
+        const bool moving = length > 0.0f;
         const float movementSpeed = keyboard.isDown(Key::LeftShift) ? speed * 2.0f : speed;
-        const float forward = keyboard.isDown(Key::Z) ? movementSpeed : 0.0f;
-
-        velocity.dx = forward * forwardX;
-        velocity.dz = forward * forwardZ;
+        velocity.dx = moving ? moveX / length * movementSpeed : 0.0f;
+        velocity.dz = moving ? moveZ / length * movementSpeed : 0.0f;
+        // Faces where it runs: forward is (sin, -cos) of its rotation
+        if (moving)
+            transform.rotationY = std::atan2(moveX, -moveZ) * 180.0f / 3.14159265358979323846f;
+        const float radians = transform.rotationY * 3.14159265358979323846f / 180.0f;
 
         const bool jumpDown = keyboard.isDown(Key::Space);
         if (jumpDown && !_jumpWasDown && body.grounded)
@@ -115,8 +123,8 @@ class RatPlayerController : public GringoEntityScript
         Collider3D &collider = scene.getComponent<Collider3D>(entity);
         fitCollider(collider, transform, radians);
         updateShadow(scene, transform, collider, body.grounded);
-        setIdle(scene.getComponent<Model3D>(entity), forward == 0.0f);
-        const bool running = forward != 0.0f && body.grounded;
+        setIdle(scene.getComponent<Model3D>(entity), !moving);
+        const bool running = moving && body.grounded;
         updateDust(scene, entity, collider, running, keyboard.isDown(Key::LeftShift));
         updateRunningSound(scene, running);
     }
@@ -125,17 +133,35 @@ class RatPlayerController : public GringoEntityScript
     {
         if (name == "speed")
             speed = std::stof(value);
-        else if (name == "sensitivity")
-            sensitivity = std::stof(value);
         else if (name == "jump_force")
             jumpForce = std::stof(value);
         else if (name == "hit_sound")
             _hitSoundId = std::stoi(value);
         else if (name == "running_sound")
             _runningSoundId = std::stoi(value);
+        else if (name == "camera")
+            _cameraId = std::stoi(value);
     }
 
   private:
+    // The camera's way of looking at the rat, flat and of length 1. Without a camera: the way the
+    // rat faces
+    void cameraView(Scene &scene, const Transform &transform, float &viewX, float &viewZ) const
+    {
+        const float radians = transform.rotationY * 3.14159265358979323846f / 180.0f;
+        viewX = std::sin(radians);
+        viewZ = -std::cos(radians);
+        const std::optional<Entity> camera = scene.getResource<EditorEntityIds>().find(_cameraId);
+        if (!camera || !scene.hasComponent<Transform>(*camera))
+            return;
+        const Transform &eye = scene.getComponent<Transform>(*camera);
+        const float distance = std::hypot(transform.x - eye.x, transform.z - eye.z);
+        if (distance == 0.0f)
+            return;
+        viewX = (transform.x - eye.x) / distance;
+        viewZ = (transform.z - eye.z) / distance;
+    }
+
     // The entity of an editor id, if it exists and has an AudioSource
     static std::optional<Entity> findSound(Scene &scene, int editorId)
     {
@@ -256,7 +282,6 @@ class RatPlayerController : public GringoEntityScript
     }
 
     float speed = 6.0f;
-    float sensitivity = 0.2f;
     float jumpForce = 5.0f;
     Transform spawn;
     bool dead = false;
@@ -267,4 +292,5 @@ class RatPlayerController : public GringoEntityScript
     std::vector<float> _dustDensity;
     int _hitSoundId = -1;
     int _runningSoundId = -1;
+    int _cameraId = -1;
 };

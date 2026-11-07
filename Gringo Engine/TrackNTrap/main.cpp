@@ -19,6 +19,7 @@
 #include "CountdownScript.hpp"
 #include "KnifeSpin.hpp"
 #include "PlayButton.hpp"
+#include "RatCamera.hpp"
 #include "RatPlayerController.hpp"
 
 template <typename ButtonScript>
@@ -92,6 +93,11 @@ int main(int argc, char **argv)
                         applyParameters(instance, component);
                         scene.addComponent(entity, Script{instance, false});
                     }
+                    else if (path == "RatCamera.hpp") {
+                        auto instance = std::make_shared<RatCamera>();
+                        applyParameters(instance, component);
+                        scene.addComponent(entity, Script{instance, false});
+                    }
                     else if (path == "RatPlayerController.hpp") {
                         auto instance = std::make_shared<RatPlayerController>();
                         applyParameters(instance, component);
@@ -141,6 +147,14 @@ int main(int argc, char **argv)
                         // Each copy of the prefab gets its own script
                         prefab.addComponent(std::function<void(Scene &, Entity)>([component, applyParameters](Scene &target, Entity copy) {
                             auto instance = std::make_shared<KnifeSpin>();
+                            applyParameters(instance, component);
+                            target.addComponent(copy, Script{instance, false});
+                        }));
+                    }
+                    else if (path == "RatCamera.hpp") {
+                        // Each copy of the prefab gets its own script
+                        prefab.addComponent(std::function<void(Scene &, Entity)>([component, applyParameters](Scene &target, Entity copy) {
+                            auto instance = std::make_shared<RatCamera>();
                             applyParameters(instance, component);
                             target.addComponent(copy, Script{instance, false});
                         }));

@@ -259,16 +259,21 @@ void RaylibRenderer::drawModel3D(RendererCamera3D const &camera, RendererModel3D
         if (model.animation >= animationSet.count)
             throw EngineError("Animation index out of range for " + model.path);
         ModelAnimation &animation = animationSet.animations[model.animation];
-        if (model.animationFrame >= 0.0f)
-            animationSet.frame = std::min(model.animationFrame, 1.0f) *
-                                 static_cast<float>(std::max(animation.keyframeCount - 1, 0));
-        else
+        // A held frame is only for this draw: the clock is shared by every model of this file, the
+        // ones still playing go on from where they were
+        float frame = 0.0f;
+        if (model.animationFrame >= 0.0f) {
+            frame = std::min(model.animationFrame, 1.0f) *
+                    static_cast<float>(std::max(animation.keyframeCount - 1, 0));
+        } else {
             animationSet.frame += GetFrameTime() * std::max(model.animationSpeed, 0.0f) *
                                   static_cast<float>(animation.keyframeCount);
-        if (animation.keyframeCount > 0)
-            animationSet.frame =
-                std::fmod(animationSet.frame, static_cast<float>(animation.keyframeCount));
-        UpdateModelAnimation(iterator->second, animation, animationSet.frame);
+            if (animation.keyframeCount > 0)
+                animationSet.frame =
+                    std::fmod(animationSet.frame, static_cast<float>(animation.keyframeCount));
+            frame = animationSet.frame;
+        }
+        UpdateModelAnimation(iterator->second, animation, frame);
     }
     const float assetYaw = model.primitive == "Model" ? -90.0f : 0.0f;
     iterator->second.transform =

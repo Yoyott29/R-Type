@@ -57,6 +57,7 @@ void Plugin3D::registerComponents(Scene &scene)
         model.scale = ComponentJson::floatValue(data, "Scale", 1.0f);
         model.animation = ComponentJson::intValue(data, "Animation", -1);
         model.animationSpeed = ComponentJson::floatValue(data, "AnimationSpeed", 1.0f);
+        model.animationFrame = ComponentJson::floatValue(data, "AnimationFrame", -1.0f);
         target.addComponent(entity, std::move(model));
     });
     // register the ParticleEmitter3D component. It starts stopped: a script calls start()

@@ -55,6 +55,7 @@ void Physics3D::registerComponents(Scene &scene)
                 throw std::invalid_argument("RigidBody3D Mass must be positive");
             body.isStatic = ComponentJson::boolValue(data, "IsStatic", false);
             body.gravityScale = ComponentJson::floatValue(data, "GravityScale", 1.0f);
+            body.stepHeight = ComponentJson::floatValue(data, "StepHeight", 0.0f);
             target.addComponent(entity, body);
         });
     scene.registerComponent<Collider3D>(
@@ -80,6 +81,7 @@ void Physics3D::registerComponents(Scene &scene)
         wall.endAngle = ComponentJson::floatValue(data, "EndAngle", 90.0f);
         wall.height = ComponentJson::floatValue(data, "Height", 10.0f);
         wall.keepInside = ComponentJson::boolValue(data, "KeepInside", true);
+        wall.reach = ComponentJson::floatValue(data, "Reach", 0.0f);
         target.addComponent(entity, wall);
     });
 }

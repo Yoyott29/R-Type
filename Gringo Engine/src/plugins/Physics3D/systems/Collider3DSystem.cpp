@@ -9,6 +9,7 @@
 #include "RigidBody3D.hpp"
 #include <algorithm>
 #include <cmath>
+#include <limits>
 #include <utility>
 
 void Collider3DSystem::update(Scene &scene)
@@ -50,8 +51,13 @@ void Collider3DSystem::update(Scene &scene)
             }
             const auto pair = std::minmax(entity, other);
             solidContacts.insert(pair);
+            // On a low step: pushed up onto it, never sideways
+            const bool step =
+                climbs(scene, entity, position, collider, otherPosition, otherCollider) ||
+                climbs(scene, other, otherPosition, otherCollider, position, collider);
+            const float sideways = std::numeric_limits<float>::max();
             resolve(scene, entity, other, position, otherPosition, collider, otherCollider,
-                    overlapX, overlapY, overlapZ);
+                    step ? sideways : overlapX, overlapY, step ? sideways : overlapZ);
         }
         checked.insert(entity);
     }
@@ -62,6 +68,17 @@ bool Collider3DSystem::dynamic(Scene &scene, Entity entity)
 {
     return scene.hasComponent<RigidBody3D>(entity) && scene.hasComponent<Velocity3D>(entity) &&
            !scene.getComponent<RigidBody3D>(entity).isStatic;
+}
+
+bool Collider3DSystem::climbs(Scene &scene, Entity body, const Transform &bodyPosition,
+                              const Collider3D &bodyCollider, const Transform &stepPosition,
+                              const Collider3D &stepCollider)
+{
+    if (!dynamic(scene, body))
+        return false;
+    const float feet = bodyPosition.y + bodyCollider.offsetY - bodyCollider.height / 2.0f;
+    const float top = stepPosition.y + stepCollider.offsetY + stepCollider.height / 2.0f;
+    return top > feet && top - feet <= scene.getComponent<RigidBody3D>(body).stepHeight;
 }
 
 void Collider3DSystem::resolve(Scene &scene, Entity first, Entity second, Transform &firstPosition,
