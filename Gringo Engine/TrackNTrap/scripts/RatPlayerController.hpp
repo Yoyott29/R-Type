@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include "AudioSource.hpp"
 #include "ChildOf.hpp"
 #include "Collider3D.hpp"
 #include "GameState.hpp"
@@ -16,11 +17,13 @@
 #include "RigidBody3D.hpp"
 #include "Scene.hpp"
 #include "ParticleEmitter3D.hpp"
+#include "ProjectComponentManager.hpp"
 #include "Script.hpp"
 #include "Transform.hpp"
 #include "Velocity3D.hpp"
 #include <algorithm>
 #include <cmath>
+#include <optional>
 
 // Size of the model's body without the tail, nose in front of the center of the collider
 #define BODY_LENGTH 4.5f
@@ -49,7 +52,10 @@
 #define DUST_FEET_SIDE 0.35f
 #define DUST_FEET_HEIGHT 0.3f
 
-std::vector<std::string> RatPlayerController_params = {"speed", "sensitivity", "jump_force"};
+// "hit_sound" and "running_sound": editor ids of the entities with the AudioSource played when
+// the rat hits an obstacle, and looped while it runs
+std::vector<std::string> RatPlayerController_params = {"speed", "sensitivity", "jump_force",
+                                                       "hit_sound", "running_sound"};
 
 class RatPlayerController : public GringoEntityScript
 {
@@ -78,6 +84,8 @@ class RatPlayerController : public GringoEntityScript
         IRenderer &renderer = scene.getResource<std::reference_wrapper<IRenderer>>().get();
 
         if (dead) {
+            if (const std::optional<Entity> hit = findSound(scene, _hitSoundId))
+                scene.getComponent<AudioSource>(*hit).play();
             transform = spawn;
             velocity = Velocity3D{};
             dead = false;
@@ -108,8 +116,9 @@ class RatPlayerController : public GringoEntityScript
         fitCollider(collider, transform, radians);
         updateShadow(scene, transform, collider, body.grounded);
         setIdle(scene.getComponent<Model3D>(entity), forward == 0.0f);
-        updateDust(scene, entity, collider, forward != 0.0f && body.grounded,
-                   keyboard.isDown(Key::LeftShift));
+        const bool running = forward != 0.0f && body.grounded;
+        updateDust(scene, entity, collider, running, keyboard.isDown(Key::LeftShift));
+        updateRunningSound(scene, running);
     }
 
     void setParameter(const std::string &name, const std::string &value) override
@@ -120,9 +129,34 @@ class RatPlayerController : public GringoEntityScript
             sensitivity = std::stof(value);
         else if (name == "jump_force")
             jumpForce = std::stof(value);
+        else if (name == "hit_sound")
+            _hitSoundId = std::stoi(value);
+        else if (name == "running_sound")
+            _runningSoundId = std::stoi(value);
     }
 
   private:
+    // The entity of an editor id, if it exists and has an AudioSource
+    static std::optional<Entity> findSound(Scene &scene, int editorId)
+    {
+        const std::optional<Entity> sound = scene.getResource<EditorEntityIds>().find(editorId);
+        if (!sound || !scene.hasComponent<AudioSource>(*sound))
+            return std::nullopt;
+        return sound;
+    }
+
+    void updateRunningSound(Scene &scene, bool running)
+    {
+        const std::optional<Entity> entity = findSound(scene, _runningSoundId);
+        if (!entity)
+            return;
+        AudioSource &sound = scene.getComponent<AudioSource>(*entity);
+        if (running && !sound.isPlaying())
+            sound.play();
+        else if (!running && sound.isPlaying())
+            sound.stop();
+    }
+
     // Standing still: the run animation held on a frame with the feet on the ground
     static void setIdle(Model3D &model, bool idle)
     {
@@ -231,4 +265,6 @@ class RatPlayerController : public GringoEntityScript
     float _floorY = 0.0f;
     std::vector<Entity> _dust;
     std::vector<float> _dustDensity;
+    int _hitSoundId = -1;
+    int _runningSoundId = -1;
 };

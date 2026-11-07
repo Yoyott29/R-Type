@@ -1005,6 +1005,18 @@
                             "name": "jump_force",
                             "type": 2,
                             "value": "20"
+                        },
+                        {
+                            "id": 4,
+                            "name": "hit_sound",
+                            "type": 2,
+                            "value": "47"
+                        },
+                        {
+                            "id": 5,
+                            "name": "running_sound",
+                            "type": 2,
+                            "value": "48"
                         }
                     ]
                 }
@@ -1551,6 +1563,41 @@
                             "name": "startSize",
                             "type": 2,
                             "value": "700"
+                        },
+                        {
+                            "id": 3,
+                            "name": "music",
+                            "type": 2,
+                            "value": "46"
+                        }
+                    ]
+                },
+                {
+                    "name": "AudioSource",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Path",
+                            "type": 7,
+                            "value": "Beep.mp3"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Volume",
+                            "type": 0,
+                            "value": "100"
+                        },
+                        {
+                            "id": 2,
+                            "name": "Loop",
+                            "type": 3,
+                            "value": "False"
+                        },
+                        {
+                            "id": 3,
+                            "name": "PlayOnStart",
+                            "type": 3,
+                            "value": "False"
                         }
                     ]
                 }
@@ -5196,6 +5243,310 @@
             ],
             "id": 45,
             "name": "Rat Dust Right"
+        },
+        {
+            "components": [
+                {
+                    "name": "Transform",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "PositionX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 1,
+                            "name": "PositionY",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 2,
+                            "name": "PositionZ",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 3,
+                            "name": "ScaleX",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 4,
+                            "name": "ScaleY",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 5,
+                            "name": "ScaleZ",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 6,
+                            "name": "RotationX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 7,
+                            "name": "RotationY",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 8,
+                            "name": "RotationZ",
+                            "type": 1,
+                            "value": "0"
+                        }
+                    ]
+                },
+                {
+                    "name": "AudioSource",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Path",
+                            "type": 7,
+                            "value": "Main Theme.mp3"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Volume",
+                            "type": 0,
+                            "value": "85"
+                        },
+                        {
+                            "id": 2,
+                            "name": "Loop",
+                            "type": 3,
+                            "value": "True"
+                        },
+                        {
+                            "id": 3,
+                            "name": "PlayOnStart",
+                            "type": 3,
+                            "value": "True"
+                        }
+                    ]
+                }
+            ],
+            "id": 46,
+            "name": "Main Theme"
+        },
+        {
+            "components": [
+                {
+                    "name": "Transform",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "PositionX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 1,
+                            "name": "PositionY",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 2,
+                            "name": "PositionZ",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 3,
+                            "name": "ScaleX",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 4,
+                            "name": "ScaleY",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 5,
+                            "name": "ScaleZ",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 6,
+                            "name": "RotationX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 7,
+                            "name": "RotationY",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 8,
+                            "name": "RotationZ",
+                            "type": 1,
+                            "value": "0"
+                        }
+                    ]
+                },
+                {
+                    "name": "ChildOf",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Parent",
+                            "type": 0,
+                            "value": "6"
+                        }
+                    ]
+                },
+                {
+                    "name": "AudioSource",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Path",
+                            "type": 7,
+                            "value": "Hit.mp3"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Volume",
+                            "type": 0,
+                            "value": "100"
+                        },
+                        {
+                            "id": 2,
+                            "name": "Loop",
+                            "type": 3,
+                            "value": "False"
+                        },
+                        {
+                            "id": 3,
+                            "name": "PlayOnStart",
+                            "type": 3,
+                            "value": "False"
+                        }
+                    ]
+                }
+            ],
+            "id": 47,
+            "name": "Hit Sound"
+        },
+        {
+            "components": [
+                {
+                    "name": "Transform",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "PositionX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 1,
+                            "name": "PositionY",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 2,
+                            "name": "PositionZ",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 3,
+                            "name": "ScaleX",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 4,
+                            "name": "ScaleY",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 5,
+                            "name": "ScaleZ",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 6,
+                            "name": "RotationX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 7,
+                            "name": "RotationY",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 8,
+                            "name": "RotationZ",
+                            "type": 1,
+                            "value": "0"
+                        }
+                    ]
+                },
+                {
+                    "name": "ChildOf",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Parent",
+                            "type": 0,
+                            "value": "6"
+                        }
+                    ]
+                },
+                {
+                    "name": "AudioSource",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Path",
+                            "type": 7,
+                            "value": "Running.mp3"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Volume",
+                            "type": 0,
+                            "value": "50"
+                        },
+                        {
+                            "id": 2,
+                            "name": "Loop",
+                            "type": 3,
+                            "value": "True"
+                        },
+                        {
+                            "id": 3,
+                            "name": "PlayOnStart",
+                            "type": 3,
+                            "value": "False"
+                        }
+                    ]
+                }
+            ],
+            "id": 48,
+            "name": "Running Sound"
         }
     ],
     "pluginSettings": {
@@ -5215,7 +5566,8 @@
         "3D",
         "Physics3D",
         "Scripts",
-        "InputHandler"
+        "InputHandler",
+        "Audio"
     ],
     "prefabs": [
         {

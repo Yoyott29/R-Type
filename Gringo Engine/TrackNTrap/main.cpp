@@ -56,6 +56,7 @@ int main(int argc, char **argv)
         application.addPlugin("Physics3D");
         application.addPlugin("Scripts");
         application.addPlugin("InputHandler");
+        application.addPlugin("Audio");
         const auto applyParameters = [](const std::shared_ptr<GringoEntityScript> &script,
                                         const nlohmann::json &component) {
             for (const auto &property : component.value("properties", nlohmann::json::array())) {

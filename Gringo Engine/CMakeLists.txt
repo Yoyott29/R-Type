@@ -66,12 +66,17 @@ CPMAddPackage(
     DOWNLOAD_ONLY YES
 )
 
+# miniaudio.c is the library's own file that compiles its code (miniaudio.h with
+# MINIAUDIO_IMPLEMENTATION), built as C++ like the rest of the project. Position independent: it
+# is linked into the Audio plugin's .so
 if(miniaudio_ADDED)
-    add_library(miniaudio INTERFACE)
-    target_include_directories(miniaudio SYSTEM INTERFACE "${miniaudio_SOURCE_DIR}")
-    target_link_libraries(miniaudio INTERFACE Threads::Threads ${CMAKE_DL_LIBS})
+    add_library(miniaudio STATIC "${miniaudio_SOURCE_DIR}/miniaudio.c")
+    set_source_files_properties("${miniaudio_SOURCE_DIR}/miniaudio.c" PROPERTIES LANGUAGE CXX)
+    set_target_properties(miniaudio PROPERTIES POSITION_INDEPENDENT_CODE ON)
+    target_include_directories(miniaudio SYSTEM PUBLIC "${miniaudio_SOURCE_DIR}")
+    target_link_libraries(miniaudio PUBLIC Threads::Threads ${CMAKE_DL_LIBS})
     if(UNIX)
-        target_link_libraries(miniaudio INTERFACE m)
+        target_link_libraries(miniaudio PUBLIC m)
     endif()
 endif()
 
@@ -259,11 +264,6 @@ if(ENABLE_CLANG_TIDY)
     if(CLANG_TIDY_EXE)
         set_target_properties(${GRINGO_TARGETS} PROPERTIES
             CXX_CLANG_TIDY "${CLANG_TIDY_EXE}"
-        )
-        # Only the code of the miniaudio library: not ours to fix
-        set_source_files_properties(
-            "${CMAKE_CURRENT_SOURCE_DIR}/src/plugins/Audio/Systems/MiniaudioImplementation.cpp"
-            PROPERTIES SKIP_LINTING ON
         )
     else()
         message(WARNING "clang-tidy not found: static analysis skipped")
