@@ -21,7 +21,12 @@ void ButtonSystem::update(Scene &scene)
     for (Entity entity : _entities) {
         Transform const &position = scene.getComponent<Transform>(entity);
         UIButton const &button = scene.getComponent<UIButton>(entity);
-        renderer.drawRectangle(position.x, position.y, button.width, button.height, button.color);
+        const float width = static_cast<float>(button.width);
+        const float height = static_cast<float>(button.height);
+        if (button.imagePath.empty())
+            renderer.drawRectangle(position.x, position.y, width, height, button.color);
+        else
+            renderer.drawImage(button.imagePath, position.x, position.y, width, height);
         // Every draw call is centered on (x, y), so the text lands in the middle of the button
         renderer.drawText(position.x, position.y, button.content, button.fontSize,
                           button.textColor, button.fontPath);

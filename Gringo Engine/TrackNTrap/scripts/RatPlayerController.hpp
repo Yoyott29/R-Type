@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include "GameState.hpp"
 #include "IRenderer.hpp"
 #include "KeyboardInput.hpp"
 #include "Scene.hpp"
@@ -15,21 +16,26 @@
 #include "Velocity3D.hpp"
 #include <cmath>
 
+std::vector<std::string> RatPlayerController_params = {"speed", "sensitivity"};
+
 class RatPlayerController : public GringoEntityScript
 {
   public:
-    void onStart(Scene &, Entity &) override {}
+    void onStart(Scene &scene, Entity &) override
+    {
+        if (!scene.hasResource<GameState>())
+            scene.addResource<GameState>();
+    }
 
     void onUpdate(Scene &scene, Entity &entity) override
     {
+        if (!scene.getResource<GameState>().playing)
+            return;
         Transform &transform = scene.getComponent<Transform>(entity);
         const KeyboardInput &keyboard = scene.getResource<KeyboardInput>();
         Velocity3D &velocity = scene.getComponent<Velocity3D>(entity);
-        IRenderer &renderer =
-            scene.getResource<std::reference_wrapper<IRenderer>>().get();
+        IRenderer &renderer = scene.getResource<std::reference_wrapper<IRenderer>>().get();
 
-        constexpr float speed = 5.0f;
-        constexpr float sensitivity = 0.2f;
         transform.rotationY += renderer.getMouseDelta().x * sensitivity;
 
         if (transform.rotationY >= 360.0f)
@@ -58,5 +64,15 @@ class RatPlayerController : public GringoEntityScript
         velocity.dz = forward * forwardZ + lateral * rightZ;
     }
 
-    void setParameter(const std::string &, const std::string &) override {}
+    void setParameter(const std::string &name, const std::string &value) override
+    {
+        if (name == "speed")
+            speed = std::stof(value);
+        else if (name == "sensitivity")
+            sensitivity = std::stof(value);
+    }
+
+  private:
+    float speed = 5.0f;
+    float sensitivity = 0.2f;
 };

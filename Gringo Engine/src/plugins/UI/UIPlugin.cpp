@@ -25,6 +25,15 @@ static std::string fontPath(Scene &scene, const nlohmann::json &data)
     return ProjectAssets::resolve(scene, font);
 }
 
+// The "ImagePath" property, resolved in the project's assets; no file chosen: no image
+static std::string imagePath(Scene &scene, const nlohmann::json &data)
+{
+    const std::string image = ComponentJson::value(data, "ImagePath", NO_FILE);
+    if (image.empty() || image == NO_FILE)
+        return "";
+    return ProjectAssets::resolve(scene, image);
+}
+
 void UIPlugin::registerComponents(Scene &scene)
 {
     // register the UIText component, with how to read it from a .gringo file
@@ -45,7 +54,7 @@ void UIPlugin::registerComponents(Scene &scene)
                              ComponentJson::intValue(data, "FontSize", 24),
                              ComponentJson::colorValue(data, "Color", {255, 255, 255, 255}),
                              ComponentJson::colorValue(data, "TextColor", {0, 0, 0, 255}),
-                             {}, fontPath(target, data)});
+                             {}, fontPath(target, data), imagePath(target, data)});
     });
 }
 

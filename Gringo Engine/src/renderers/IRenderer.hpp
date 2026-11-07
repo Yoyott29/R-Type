@@ -7,8 +7,8 @@
 
 #pragma once
 #include "ColorRGBA.hpp"
-#include "keyboard.hpp"
 #include "PluginLoader.hpp"
+#include "keyboard.hpp"
 #include <memory>
 #include <string>
 
@@ -48,10 +48,10 @@ struct RendererModel3D {
 
 // The most basic functions a renderer gives: a window, drawing simple things and the keyboard.
 // A renderer (src/renderers/<Name>) derives from Renderer<T> below and implements this; plugins
-// (2D, UI, InputHandler...) build their features by calling it. The application owns the renderer the project chose, and puts it
-// in the scene as std::reference_wrapper<IRenderer>.
-// The game draws in a fixed world (openWindow's width x height), scaled to the window. Every
-// (x, y) given to a draw function is the CENTER of what is drawn
+// (2D, UI, InputHandler...) build their features by calling it. The application owns the renderer
+// the project chose, and puts it in the scene as std::reference_wrapper<IRenderer>. The game draws
+// in a fixed world (openWindow's width x height), scaled to the window. Every (x, y) given to a
+// draw function is the CENTER of what is drawn
 class IRenderer
 {
   public:
@@ -71,8 +71,8 @@ class IRenderer
     virtual void drawRectangle(float x, float y, float width, float height, ColorRGBA color) = 0;
     virtual void drawCircle(float x, float y, float radius, ColorRGBA color) = 0;
     // fontPath: a .ttf / .otf file; empty or not loadable: the renderer's built-in font
-    virtual void drawText(float x, float y, std::string const &text, int fontSize,
-                          ColorRGBA color, std::string const &fontPath) = 0;
+    virtual void drawText(float x, float y, std::string const &text, int fontSize, ColorRGBA color,
+                          std::string const &fontPath) = 0;
     // Draws an image file stretched to width x height
     virtual void drawImage(std::string const &path, float x, float y, float width,
                            float height) = 0;
@@ -95,7 +95,11 @@ class IRenderer
     // True only on the frame the button went down
     virtual bool isMouseButtonPressed(Mouse button) const = 0;
 
-    virtual void setColorFilter(ColorFilter filter) { (void)filter; }
+    virtual void setColorFilter(ColorFilter filter) = 0;
+
+    // Locked: the cursor is hidden and held in the window, getMouseDelta keeps reporting its moves.
+    // It applies on the next beginFrame
+    virtual void setCursorLocked(bool locked) = 0;
 };
 
 // Base class of every renderer: class RaylibRenderer : public Renderer<RaylibRenderer>. When the
