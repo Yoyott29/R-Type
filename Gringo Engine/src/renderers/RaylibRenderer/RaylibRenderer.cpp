@@ -259,8 +259,12 @@ void RaylibRenderer::drawModel3D(RendererCamera3D const &camera, RendererModel3D
         if (model.animation >= animationSet.count)
             throw EngineError("Animation index out of range for " + model.path);
         ModelAnimation &animation = animationSet.animations[model.animation];
-        animationSet.frame += GetFrameTime() * std::max(model.animationSpeed, 0.0f) *
-                              static_cast<float>(animation.keyframeCount);
+        if (model.animationFrame >= 0.0f)
+            animationSet.frame = std::min(model.animationFrame, 1.0f) *
+                                 static_cast<float>(std::max(animation.keyframeCount - 1, 0));
+        else
+            animationSet.frame += GetFrameTime() * std::max(model.animationSpeed, 0.0f) *
+                                  static_cast<float>(animation.keyframeCount);
         if (animation.keyframeCount > 0)
             animationSet.frame =
                 std::fmod(animationSet.frame, static_cast<float>(animation.keyframeCount));

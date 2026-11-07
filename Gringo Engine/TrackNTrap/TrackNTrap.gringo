@@ -904,7 +904,7 @@
                             "id": 0,
                             "name": "Mass",
                             "type": 1,
-                            "value": "1"
+                            "value": "4"
                         },
                         {
                             "id": 1,
@@ -999,6 +999,12 @@
                             "name": "sensitivity",
                             "type": 2,
                             "value": "0.1"
+                        },
+                        {
+                            "id": 3,
+                            "name": "jump_force",
+                            "type": 2,
+                            "value": "30"
                         }
                     ]
                 }
