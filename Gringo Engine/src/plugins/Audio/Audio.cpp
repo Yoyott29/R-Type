@@ -31,6 +31,8 @@ void Audio::build(Application &app)
     ComponentSet audioRequirements;
     audioRequirements.set(app._scene.getComponentType<AudioSource>());
     app._scene.setSystemComponentSet<AudioSystem>(audioRequirements);
+    // miniaudio is thread-safe and the sounds belong to the system
+    app._scene.setSystemAccess<AudioSystem>(app._scene.access().read<AudioSource>());
 }
 
 void Audio::cleanup(Application &app) { (void)app; }

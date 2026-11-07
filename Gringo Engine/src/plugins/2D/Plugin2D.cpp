@@ -60,6 +60,12 @@ void Plugin2D::build(Application &app)
     animationRequirements.set(app._scene.getComponentType<Animator>());
     animationRequirements.set(app._scene.getComponentType<Sprite>());
     app._scene.setSystemComponentSet<AnimationSystem>(animationRequirements);
+    // The library caches every clip it loads, so it is written
+    app._scene.setSystemAccess<AnimationSystem>(app._scene.access()
+                                                    .write<Animator>()
+                                                    .write<Sprite>()
+                                                    .writeResource<AnimationLibrary>()
+                                                    .readResource<ProjectAssets>());
 }
 
 void Plugin2D::cleanup(Application &app) { (void)app; }

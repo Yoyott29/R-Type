@@ -41,6 +41,8 @@ void ParticlesPlugin::build(Application &app)
     // spawns and moves the particles
     app._scene.registerSystem<ParticleEmitterSystem>(FixedUpdate);
     app._scene.setSystemComponentSet<ParticleEmitterSystem>(requirements);
+    app._scene.setSystemAccess<ParticleEmitterSystem>(
+        app._scene.access().read<Transform>().write<ParticleEmitter>());
 
     // draws them with the world
     app._scene.registerSystem<ParticleRenderSystem>(Render);

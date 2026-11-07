@@ -105,6 +105,10 @@ void Physics2D::build(Application &app)
     gravityRequirements.set(app._scene.getComponentType<RigidBody2D>());
     gravityRequirements.set(app._scene.getComponentType<Velocity>());
     app._scene.setSystemComponentSet<GravitySystem>(gravityRequirements);
+    app._scene.setSystemAccess<GravitySystem>(app._scene.access()
+                                                  .read<RigidBody2D>()
+                                                  .write<Velocity>()
+                                                  .readResource<Gravity2D>());
 
     // setup the MovementSystem and its component requirements
     auto movementSystem = app._scene.registerSystem<MovementSystem>(FixedUpdate);
@@ -112,6 +116,8 @@ void Physics2D::build(Application &app)
     movementRequirements.set(app._scene.getComponentType<Transform>());
     movementRequirements.set(app._scene.getComponentType<Velocity>());
     app._scene.setSystemComponentSet<MovementSystem>(movementRequirements);
+    app._scene.setSystemAccess<MovementSystem>(
+        app._scene.access().read<Velocity>().write<Transform>());
 
     // setup the Collider2DSystem, run after the movement
     app._scene.registerSystem<Collider2DSystem>(FixedUpdate);
