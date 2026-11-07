@@ -3,6 +3,7 @@
 #include "ComponentJson.hpp"
 #include "HierarchySystem.hpp"
 #include "PluginLoader.hpp"
+#include "PrefabInstance.hpp"
 #include "Transform.hpp"
 #include "ProjectAssets.hpp"
 #include <stdexcept>
@@ -25,6 +26,10 @@ ProjectComponentManager::ProjectComponentManager(Scene &scene, std::filesystem::
         transform.rotationY = ComponentJson::floatValue(data, "RotationY", legacyRotation);
         transform.rotationZ = ComponentJson::floatValue(data, "RotationZ", 0.0f);
         target.addComponent(entity, transform);
+    });
+    scene.registerComponent<PrefabInstance>([](Scene &target, Entity entity, const nlohmann::json &data) {
+        const std::string prefab = ComponentJson::value(data, "Prefab", NO_FILE);
+        target.addComponent(entity, PrefabInstance{prefab == NO_FILE ? "" : prefab});
     });
     scene.addResource<EditorEntityIds>();
     // A parent loaded after its child is found later, by linkChildren. A prefab instantiated

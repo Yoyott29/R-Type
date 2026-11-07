@@ -235,6 +235,24 @@ std::vector<std::string> ProjectBuilder::hierarchyErrors(const SceneObjects &sce
     return errors;
 }
 
+std::vector<std::string> ProjectBuilder::prefabErrors(const SceneObjects &sceneObjects)
+{
+    std::vector<std::string> errors;
+    const auto exists = [&sceneObjects](const std::string &name) {
+        return std::any_of(sceneObjects._prefabs.begin(), sceneObjects._prefabs.end(),
+                           [&name](const Prefab &prefab) { return prefab.name == name; });
+    };
+
+    for (const Entity &entity : sceneObjects._entities)
+        for (const Component &component : entity.components)
+            for (const Property &property : component.properties)
+                if (property.type == valueType::Prefab && property.value != NO_FILE &&
+                    !exists(property.value))
+                    errors.push_back("Impossible to build " + sceneObjects.projectName + ": entity " +
+                                     entity.name + " uses unknown prefab " + property.value);
+    return errors;
+}
+
 std::vector<std::string>
 ProjectBuilder::buildErrors(const SceneObjects &sceneObjects,
                             const std::filesystem::path &projectFolder,
@@ -242,6 +260,8 @@ ProjectBuilder::buildErrors(const SceneObjects &sceneObjects,
 {
     std::vector<std::string> errors = missingFiles(sceneObjects, projectFolder, descriptors);
     for (std::string &error : hierarchyErrors(sceneObjects))
+        errors.push_back(std::move(error));
+    for (std::string &error : prefabErrors(sceneObjects))
         errors.push_back(std::move(error));
     return errors;
 }
@@ -466,10 +486,15 @@ void ProjectBuilder::writeGeneratedMain(const std::filesystem::path &sourcePath,
         for (const std::string &script : scripts) {
             source << "                    " << (firstScript ? "if" : "else if")
                    << " (path == " << '"' << script << '"' << ") {\n"
-                   << "                        auto instance = std::make_shared<"
+                   << "                        // Each copy of the prefab gets its own script\n"
+                   << "                        prefab.addComponent(std::function<void(Scene &, "
+                      "Entity)>([component, applyParameters](Scene &target, Entity copy) {\n"
+                   << "                            auto instance = std::make_shared<"
                    << className(script) << ">();\n"
-                   << "                        applyParameters(instance, component);\n"
-                   << "                        prefab.addComponent(Script{instance, false});\n"
+                   << "                            applyParameters(instance, component);\n"
+                   << "                            target.addComponent(copy, Script{instance, "
+                      "false});\n"
+                   << "                        }));\n"
                    << "                    }\n";
             firstScript = false;
         }

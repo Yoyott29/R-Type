@@ -5,7 +5,6 @@
 ** AudioSourceSystem
 */
 
-#define MINIAUDIO_IMPLEMENTATION
 #include "AudioSystem.hpp"
 
 AudioSystem::~AudioSystem()

@@ -260,6 +260,11 @@ if(ENABLE_CLANG_TIDY)
         set_target_properties(${GRINGO_TARGETS} PROPERTIES
             CXX_CLANG_TIDY "${CLANG_TIDY_EXE}"
         )
+        # Only the code of the miniaudio library: not ours to fix
+        set_source_files_properties(
+            "${CMAKE_CURRENT_SOURCE_DIR}/src/plugins/Audio/Systems/MiniaudioImplementation.cpp"
+            PROPERTIES SKIP_LINTING ON
+        )
     else()
         message(WARNING "clang-tidy not found: static analysis skipped")
     endif()

@@ -97,6 +97,9 @@ void EditorProperties::createProperties(Component &component, int componentIndex
         else if (propertyType == valueType::File)
             onClick = std::bind(&EditorProperties::cycleFile, this, propertyValueName, objectType,
                                 objectId, componentIndex, propertyId);
+        else if (propertyType == valueType::Prefab)
+            onClick = std::bind(&EditorProperties::cyclePrefab, this, propertyValueName, objectType,
+                                objectId, componentIndex, propertyId);
 
         ColorRGBA rowColor = (propertyIndex % 2 == 0) ? BUTTON_COLOR2 : BUTTON_COLOR1;
 
@@ -198,6 +201,24 @@ void EditorProperties::cycleChoice(const std::string &propertyValueName, ObjectT
     // Other properties can depend on this choice (Shape: Width/Height or Radius)
     _editor._components.createComponents(
         _editor._components.getObjectComponents(objectType, objectId), objectType, objectId);
+}
+
+void EditorProperties::cyclePrefab(const std::string &propertyValueName, ObjectType objectType,
+                                   int objectId, int componentIndex, int propertyId)
+{
+    applyCurrentEdit();
+
+    if (!isPropertyValid(objectType, objectId, componentIndex, propertyId))
+        return;
+
+    std::vector<std::string> options = {NO_FILE};
+    for (const Prefab &prefab : _editor._prefabs)
+        options.push_back(prefab.name);
+
+    std::string &storedValue = getStoredValue(objectType, objectId, componentIndex, propertyId);
+
+    storedValue = nextOption(options, storedValue);
+    showNewValue(propertyValueName, storedValue);
 }
 
 bool EditorProperties::isPropertyVisible(const Component &component, const Property &property)

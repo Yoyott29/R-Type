@@ -61,6 +61,9 @@ void Physics3D::registerComponents(Scene &scene)
             collider.width = ComponentJson::floatValue(data, "Width", 1.0f);
             collider.height = ComponentJson::floatValue(data, "Height", 1.0f);
             collider.depth = ComponentJson::floatValue(data, "Depth", 1.0f);
+            collider.offsetX = ComponentJson::floatValue(data, "OffsetX", 0.0f);
+            collider.offsetY = ComponentJson::floatValue(data, "OffsetY", 0.0f);
+            collider.offsetZ = ComponentJson::floatValue(data, "OffsetZ", 0.0f);
             collider.layer = static_cast<std::uint32_t>(ComponentJson::intValue(data, "Layer", 1));
             collider.mask = Physics3D::maskValue(data);
             collider.isTrigger = ComponentJson::boolValue(data, "IsTrigger", false);

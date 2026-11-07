@@ -20,7 +20,8 @@ class Collider3DSystem : public System {
   private:
     static bool dynamic(Scene &scene, Entity entity);
     static void resolve(Scene &scene, Entity first, Entity second, Transform &firstPosition,
-                        Transform &secondPosition, const float overlapX, const float overlapY,
-                        const float overlapZ);
+                        Transform &secondPosition, const Collider3D &firstCollider,
+                        const Collider3D &secondCollider, const float overlapX,
+                        const float overlapY, const float overlapZ);
     std::set<std::pair<Entity, Entity>> _solidContacts;
 };

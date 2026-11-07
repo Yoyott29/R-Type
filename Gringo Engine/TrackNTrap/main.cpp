@@ -11,10 +11,13 @@
 #include <stdexcept>
 #include <string>
 #include <vector>
+#include "Prefab.hpp"
+#include "PrefabsManager.hpp"
 #include "Script.hpp"
 #include "UIButton.hpp"
 #include "CameraOrbit.hpp"
 #include "CountdownScript.hpp"
+#include "KnifeSpin.hpp"
 #include "PlayButton.hpp"
 #include "RatPlayerController.hpp"
 
@@ -45,6 +48,7 @@ int main(int argc, char **argv)
         scene.addResource<ProjectSettings>(ProjectSettings::fromJson(
             root.value("pluginSettings", nlohmann::json::object())));
         scene.addResource<BuildVariantName>(BuildVariantName{""});
+        scene.addResource<PrefabsManager>();
         application.setRenderer("RaylibRenderer", "TrackNTrap");
         application.addPlugin("2D");
         application.addPlugin("UI");
@@ -82,6 +86,11 @@ int main(int argc, char **argv)
                         applyParameters(instance, component);
                         scene.addComponent(entity, Script{instance, false});
                     }
+                    else if (path == "KnifeSpin.hpp") {
+                        auto instance = std::make_shared<KnifeSpin>();
+                        applyParameters(instance, component);
+                        scene.addComponent(entity, Script{instance, false});
+                    }
                     else if (path == "RatPlayerController.hpp") {
                         auto instance = std::make_shared<RatPlayerController>();
                         applyParameters(instance, component);
@@ -112,19 +121,36 @@ int main(int argc, char **argv)
                         if (property.value("name", "") == "Path")
                             path = property.value("value", "");
                     if (path == "CameraOrbit.hpp") {
-                        auto instance = std::make_shared<CameraOrbit>();
-                        applyParameters(instance, component);
-                        prefab.addComponent(Script{instance, false});
+                        // Each copy of the prefab gets its own script
+                        prefab.addComponent(std::function<void(Scene &, Entity)>([component, applyParameters](Scene &target, Entity copy) {
+                            auto instance = std::make_shared<CameraOrbit>();
+                            applyParameters(instance, component);
+                            target.addComponent(copy, Script{instance, false});
+                        }));
                     }
                     else if (path == "CountdownScript.hpp") {
-                        auto instance = std::make_shared<CountdownScript>();
-                        applyParameters(instance, component);
-                        prefab.addComponent(Script{instance, false});
+                        // Each copy of the prefab gets its own script
+                        prefab.addComponent(std::function<void(Scene &, Entity)>([component, applyParameters](Scene &target, Entity copy) {
+                            auto instance = std::make_shared<CountdownScript>();
+                            applyParameters(instance, component);
+                            target.addComponent(copy, Script{instance, false});
+                        }));
+                    }
+                    else if (path == "KnifeSpin.hpp") {
+                        // Each copy of the prefab gets its own script
+                        prefab.addComponent(std::function<void(Scene &, Entity)>([component, applyParameters](Scene &target, Entity copy) {
+                            auto instance = std::make_shared<KnifeSpin>();
+                            applyParameters(instance, component);
+                            target.addComponent(copy, Script{instance, false});
+                        }));
                     }
                     else if (path == "RatPlayerController.hpp") {
-                        auto instance = std::make_shared<RatPlayerController>();
-                        applyParameters(instance, component);
-                        prefab.addComponent(Script{instance, false});
+                        // Each copy of the prefab gets its own script
+                        prefab.addComponent(std::function<void(Scene &, Entity)>([component, applyParameters](Scene &target, Entity copy) {
+                            auto instance = std::make_shared<RatPlayerController>();
+                            applyParameters(instance, component);
+                            target.addComponent(copy, Script{instance, false});
+                        }));
                     }
                     else
                         throw std::runtime_error("Unknown script: " + path);

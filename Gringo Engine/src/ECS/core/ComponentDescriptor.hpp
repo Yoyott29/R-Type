@@ -26,6 +26,8 @@ enum class valueType {
     Choice = 5,
     // A file of the project: options = {folder, extensions...}, e.g. {"assets", ".png", ".jpg"}
     File = 7,
+    // The name of one of the project's prefabs
+    Prefab = 6,
 };
 
 // The editor shows a property only while another property of its component has a value, e.g.
