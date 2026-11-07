@@ -8,7 +8,19 @@
 #pragma once
 #include <cstdint>
 
-enum class Key : uint16_t { Z, S, Q, D, Up, Down, Left, Right, Space, Unknown };
+enum class Key : uint16_t {
+    Z,
+    S,
+    Q,
+    D,
+    Up,
+    Down,
+    Left,
+    Right,
+    Space,
+    LeftShift,
+    Unknown
+};
 
 enum class Mouse : uint8_t { Left, Right, Middle };
 

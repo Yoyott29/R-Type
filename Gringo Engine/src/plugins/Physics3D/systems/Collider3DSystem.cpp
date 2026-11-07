@@ -13,6 +13,11 @@
 
 void Collider3DSystem::update(Scene &scene)
 {
+    for (Entity entity : _entities) {
+        if (dynamic(scene, entity))
+            scene.getComponent<RigidBody3D>(entity).grounded = false;
+    }
+
     std::set<Entity> checked;
     std::set<std::pair<Entity, Entity>> solidContacts;
     for (Entity entity : _entities) {
@@ -71,6 +76,12 @@ void Collider3DSystem::resolve(Scene &scene, Entity first, Entity second, Transf
                         yAxis ? secondPosition.y - firstPosition.y :
                                 secondPosition.z - firstPosition.z;
     const float normal = delta < 0.0f ? -1.0f : 1.0f;
+    if (yAxis) {
+        if (normal < 0.0f && dynamic(scene, first))
+            scene.getComponent<RigidBody3D>(first).grounded = true;
+        if (normal > 0.0f && dynamic(scene, second))
+            scene.getComponent<RigidBody3D>(second).grounded = true;
+    }
     const float pushFirst = depth * inverseFirst / total;
     const float pushSecond = depth * inverseSecond / total;
     if (xAxis) { firstPosition.x -= normal * pushFirst; secondPosition.x += normal * pushSecond; }

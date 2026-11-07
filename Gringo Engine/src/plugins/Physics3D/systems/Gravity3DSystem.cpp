@@ -15,8 +15,9 @@ void Gravity3DSystem::update(Scene &scene)
         if (body.isStatic || body.gravityScale == 0.0f)
             continue;
         Velocity3D &velocity = scene.getComponent<Velocity3D>(entity);
-        velocity.dx += gravity.x * body.gravityScale * FIXED_DELTA_TIME;
-        velocity.dy += gravity.y * body.gravityScale * FIXED_DELTA_TIME;
-        velocity.dz += gravity.z * body.gravityScale * FIXED_DELTA_TIME;
+        const float gravityScale = body.gravityScale * body.mass;
+        velocity.dx += gravity.x * gravityScale * FIXED_DELTA_TIME;
+        velocity.dy += gravity.y * gravityScale * FIXED_DELTA_TIME;
+        velocity.dz += gravity.z * gravityScale * FIXED_DELTA_TIME;
     }
 }

@@ -54,7 +54,6 @@ void RaylibRenderer::openWindow(int width, int height, std::string const &title)
     InitWindow(width, height, title.c_str());
     if (!IsWindowReady())
         throw EngineError("Could not open the window");
-    // DisableCursor();
     SetTargetFPS(60);
 }
 
@@ -206,8 +205,7 @@ void RaylibRenderer::drawModel3D(RendererCamera3D const &camera, RendererModel3D
 {
     const ::Camera3D raylibCamera{{camera.positionX, camera.positionY, camera.positionZ},
                                   {camera.targetX, camera.targetY, camera.targetZ},
-                                  {camera.upX, camera.upY, camera.upZ},
-                                  camera.fieldOfView,
+                                  {camera.upX, camera.upY, camera.upZ}, camera.fieldOfView,
                                   CAMERA_PERSPECTIVE};
     EndMode2D();
     BeginMode3D(raylibCamera);
@@ -309,27 +307,18 @@ Color RaylibRenderer::toRaylib(ColorRGBA color) { return {color.r, color.g, colo
 KeyboardKey RaylibRenderer::toRaylib(Key key)
 {
     switch (key) {
-    // Map the AZERTY physical keys to the engine's logical ZQSD actions.
-    case Key::Z:
-        return KEY_W;
-    case Key::S:
-        return KEY_S;
-    case Key::Q:
-        return KEY_A;
-    case Key::D:
-        return KEY_D;
-    case Key::Up:
-        return KEY_UP;
-    case Key::Down:
-        return KEY_DOWN;
-    case Key::Left:
-        return KEY_LEFT;
-    case Key::Right:
-        return KEY_RIGHT;
-    case Key::Space:
-        return KEY_SPACE;
-    case Key::Unknown:
-        break;
+        // Map the AZERTY physical keys to the engine's logical ZQSD actions.
+        case Key::Z: return KEY_W;
+        case Key::S: return KEY_S;
+        case Key::Q: return KEY_A;
+        case Key::D: return KEY_D;
+        case Key::Up: return KEY_UP;
+        case Key::Down: return KEY_DOWN;
+        case Key::Left: return KEY_LEFT;
+        case Key::Right: return KEY_RIGHT;
+        case Key::Space: return KEY_SPACE;
+        case Key::LeftShift: return KEY_LEFT_SHIFT;
+        case Key::Unknown: break;
     }
     return KEY_NULL;
 }
@@ -337,12 +326,9 @@ KeyboardKey RaylibRenderer::toRaylib(Key key)
 MouseButton RaylibRenderer::toRaylib(Mouse button)
 {
     switch (button) {
-    case Mouse::Left:
-        return MOUSE_BUTTON_LEFT;
-    case Mouse::Right:
-        return MOUSE_BUTTON_RIGHT;
-    case Mouse::Middle:
-        return MOUSE_BUTTON_MIDDLE;
+        case Mouse::Left: return MOUSE_BUTTON_LEFT;
+        case Mouse::Right: return MOUSE_BUTTON_RIGHT;
+        case Mouse::Middle: return MOUSE_BUTTON_MIDDLE;
     }
     return MOUSE_BUTTON_LEFT;
 }

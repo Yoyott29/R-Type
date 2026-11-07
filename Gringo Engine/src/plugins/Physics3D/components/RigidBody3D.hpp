@@ -12,6 +12,7 @@ struct RigidBody3D {
     float mass = 1.0f;
     bool isStatic = false;
     float gravityScale = 1.0f;
+    bool grounded = false;
 };
 
 template <> struct ComponentDescription<RigidBody3D> {
