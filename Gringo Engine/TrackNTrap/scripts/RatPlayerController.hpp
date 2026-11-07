@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include "Collider3D.hpp"
 #include "GameState.hpp"
 #include "IRenderer.hpp"
 #include "KeyboardInput.hpp"
@@ -21,20 +22,31 @@ std::vector<std::string> RatPlayerController_params = {"speed", "sensitivity"};
 class RatPlayerController : public GringoEntityScript
 {
   public:
-    void onStart(Scene &scene, Entity &) override
+    void onStart(Scene &scene, Entity &entity) override
     {
         if (!scene.hasResource<GameState>())
             scene.addResource<GameState>();
+        spawn = scene.getComponent<Transform>(entity);
+        // Only called for triggers: the floor is solid, every trigger kills the rat
+        scene.getComponent<Collider3D>(entity).onCollision = [this](Entity, Entity) {
+            dead = true;
+        };
     }
 
     void onUpdate(Scene &scene, Entity &entity) override
     {
-        if (!scene.getResource<GameState>().playing)
+        if (!scene.getResource<GameState>().canMove)
             return;
         Transform &transform = scene.getComponent<Transform>(entity);
         const KeyboardInput &keyboard = scene.getResource<KeyboardInput>();
         Velocity3D &velocity = scene.getComponent<Velocity3D>(entity);
         IRenderer &renderer = scene.getResource<std::reference_wrapper<IRenderer>>().get();
+
+        if (dead) {
+            transform = spawn;
+            velocity = Velocity3D{};
+            dead = false;
+        }
 
         transform.rotationY += renderer.getMouseDelta().x * sensitivity;
 
@@ -46,22 +58,12 @@ class RatPlayerController : public GringoEntityScript
         const float radians = transform.rotationY * 3.14159265358979323846f / 180.0f;
         const float forwardX = std::sin(radians);
         const float forwardZ = -std::cos(radians);
-        const float rightX = std::cos(radians);
-        const float rightZ = std::sin(radians);
-        float forward = 0.0f;
-        float lateral = 0.0f;
+        const float forward = keyboard.isDown(Key::Z) ? speed : 0.0f;
 
-        if (keyboard.isDown(Key::Z))
-            forward += speed;
-        if (keyboard.isDown(Key::S))
-            forward -= speed;
-        if (keyboard.isDown(Key::D))
-            lateral += speed;
-        if (keyboard.isDown(Key::Q))
-            lateral -= speed;
+        velocity.dx = forward * forwardX;
+        velocity.dz = forward * forwardZ;
 
-        velocity.dx = forward * forwardX + lateral * rightX;
-        velocity.dz = forward * forwardZ + lateral * rightZ;
+        fitCollider(scene.getComponent<Collider3D>(entity), transform, radians);
     }
 
     void setParameter(const std::string &name, const std::string &value) override
@@ -73,6 +75,24 @@ class RatPlayerController : public GringoEntityScript
     }
 
   private:
+    // Colliders do not rotate: the box around the body, turned like the rat
+    static void fitCollider(Collider3D &collider, const Transform &transform, float radians)
+    {
+        const float length = BODY_LENGTH * transform.scaleX;
+        const float width = BODY_WIDTH * transform.scaleX;
+        const float sine = std::abs(std::sin(radians));
+        const float cosine = std::abs(std::cos(radians));
+
+        collider.width = length * sine + width * cosine;
+        collider.depth = length * cosine + width * sine;
+    }
+
+    // Size of the model's body without the tail, nose in front of the center of the collider
+    static constexpr float BODY_LENGTH = 4.5f;
+    static constexpr float BODY_WIDTH = 1.1f;
+
     float speed = 5.0f;
     float sensitivity = 0.2f;
+    Transform spawn;
+    bool dead = false;
 };

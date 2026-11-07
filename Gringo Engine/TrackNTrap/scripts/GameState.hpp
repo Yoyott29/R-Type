@@ -3,6 +3,7 @@
 
 struct GameState {
     bool playing = false;
+    bool canMove = false;
 };
 
 #endif /* !GAMESTATE_HPP_ */

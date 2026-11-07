@@ -14,6 +14,7 @@
 #include "Script.hpp"
 #include "UIButton.hpp"
 #include "CameraOrbit.hpp"
+#include "CountdownScript.hpp"
 #include "PlayButton.hpp"
 #include "RatPlayerController.hpp"
 
@@ -76,6 +77,11 @@ int main(int argc, char **argv)
                         applyParameters(instance, component);
                         scene.addComponent(entity, Script{instance, false});
                     }
+                    else if (path == "CountdownScript.hpp") {
+                        auto instance = std::make_shared<CountdownScript>();
+                        applyParameters(instance, component);
+                        scene.addComponent(entity, Script{instance, false});
+                    }
                     else if (path == "RatPlayerController.hpp") {
                         auto instance = std::make_shared<RatPlayerController>();
                         applyParameters(instance, component);
@@ -107,6 +113,11 @@ int main(int argc, char **argv)
                             path = property.value("value", "");
                     if (path == "CameraOrbit.hpp") {
                         auto instance = std::make_shared<CameraOrbit>();
+                        applyParameters(instance, component);
+                        prefab.addComponent(Script{instance, false});
+                    }
+                    else if (path == "CountdownScript.hpp") {
+                        auto instance = std::make_shared<CountdownScript>();
                         applyParameters(instance, component);
                         prefab.addComponent(Script{instance, false});
                     }
