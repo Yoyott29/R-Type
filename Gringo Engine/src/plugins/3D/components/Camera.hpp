@@ -24,10 +24,15 @@ template <> struct ComponentDescription<Camera> {
     static ComponentDescriptor describe()
     {
         return {"Camera",
-                {{"TargetX", valueType::Float, "0"}, {"TargetY", valueType::Float, "0"},
-                 {"TargetZ", valueType::Float, "0"}, {"UpX", valueType::Float, "0"},
-                 {"UpY", valueType::Float, "1"}, {"UpZ", valueType::Float, "0"},
-                 {"FieldOfView", valueType::Float, "45"}, {"Active", valueType::Bool, "True"}},
-                {59, 75, 96, 255}, "3D"};
+                {{"TargetX", valueType::Float, "0"},
+                 {"TargetY", valueType::Float, "0"},
+                 {"TargetZ", valueType::Float, "0"},
+                 {"UpX", valueType::Float, "0"},
+                 {"UpY", valueType::Float, "1"},
+                 {"UpZ", valueType::Float, "0"},
+                 {"FieldOfView", valueType::Float, "45"},
+                 {"Active", valueType::Bool, "True"}},
+                {59, 75, 96, 255},
+                "3D"};
     }
 };

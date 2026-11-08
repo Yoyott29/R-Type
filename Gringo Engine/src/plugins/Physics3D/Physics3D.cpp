@@ -14,9 +14,9 @@
 #include "Gravity3D.hpp"
 #include "Gravity3DSystem.hpp"
 #include "Movement3DSystem.hpp"
-#include "Transform.hpp"
 #include "ProjectSettings.hpp"
 #include "RigidBody3D.hpp"
+#include "Transform.hpp"
 #include "Velocity3D.hpp"
 #include <limits>
 #include <stdexcept>
@@ -42,11 +42,12 @@ std::uint32_t Physics3D::maskValue(const nlohmann::json &component)
 
 void Physics3D::registerComponents(Scene &scene)
 {
-    scene.registerComponent<Velocity3D>([](Scene &target, Entity entity, const nlohmann::json &data) {
-        target.addComponent(entity, Velocity3D{ComponentJson::floatValue(data, "Dx", 0.0f),
-                                               ComponentJson::floatValue(data, "Dy", 0.0f),
-                                               ComponentJson::floatValue(data, "Dz", 0.0f)});
-    });
+    scene.registerComponent<Velocity3D>(
+        [](Scene &target, Entity entity, const nlohmann::json &data) {
+            target.addComponent(entity, Velocity3D{ComponentJson::floatValue(data, "Dx", 0.0f),
+                                                   ComponentJson::floatValue(data, "Dy", 0.0f),
+                                                   ComponentJson::floatValue(data, "Dz", 0.0f)});
+        });
     scene.registerComponent<RigidBody3D>(
         [](Scene &target, Entity entity, const nlohmann::json &data) {
             RigidBody3D body;
@@ -73,18 +74,19 @@ void Physics3D::registerComponents(Scene &scene)
             collider.rotates = ComponentJson::boolValue(data, "Rotates", false);
             target.addComponent(entity, collider);
         });
-    scene.registerComponent<ArcWall3D>([](Scene &target, Entity entity, const nlohmann::json &data) {
-        ArcWall3D wall;
-        wall.radius = ComponentJson::floatValue(data, "Radius", 10.0f);
-        if (wall.radius <= 0.0f)
-            throw std::invalid_argument("ArcWall3D Radius must be positive");
-        wall.startAngle = ComponentJson::floatValue(data, "StartAngle", 0.0f);
-        wall.endAngle = ComponentJson::floatValue(data, "EndAngle", 90.0f);
-        wall.height = ComponentJson::floatValue(data, "Height", 10.0f);
-        wall.keepInside = ComponentJson::boolValue(data, "KeepInside", true);
-        wall.reach = ComponentJson::floatValue(data, "Reach", 0.0f);
-        target.addComponent(entity, wall);
-    });
+    scene.registerComponent<ArcWall3D>(
+        [](Scene &target, Entity entity, const nlohmann::json &data) {
+            ArcWall3D wall;
+            wall.radius = ComponentJson::floatValue(data, "Radius", 10.0f);
+            if (wall.radius <= 0.0f)
+                throw std::invalid_argument("ArcWall3D Radius must be positive");
+            wall.startAngle = ComponentJson::floatValue(data, "StartAngle", 0.0f);
+            wall.endAngle = ComponentJson::floatValue(data, "EndAngle", 90.0f);
+            wall.height = ComponentJson::floatValue(data, "Height", 10.0f);
+            wall.keepInside = ComponentJson::boolValue(data, "KeepInside", true);
+            wall.reach = ComponentJson::floatValue(data, "Reach", 0.0f);
+            target.addComponent(entity, wall);
+        });
 }
 
 std::vector<PropertyDescriptor> Physics3D::settings() const
@@ -119,10 +121,8 @@ void Physics3D::build(Application &app)
     gravity.set(app._scene.getComponentType<RigidBody3D>());
     gravity.set(app._scene.getComponentType<Velocity3D>());
     app._scene.setSystemComponentSet<Gravity3DSystem>(gravity);
-    app._scene.setSystemAccess<Gravity3DSystem>(app._scene.access()
-                                                    .read<RigidBody3D>()
-                                                    .write<Velocity3D>()
-                                                    .readResource<Gravity3D>());
+    app._scene.setSystemAccess<Gravity3DSystem>(
+        app._scene.access().read<RigidBody3D>().write<Velocity3D>().readResource<Gravity3D>());
 
     app._scene.registerSystem<Movement3DSystem>(FixedUpdate);
     ComponentSet movement;

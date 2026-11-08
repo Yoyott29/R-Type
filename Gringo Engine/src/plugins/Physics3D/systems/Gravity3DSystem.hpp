@@ -13,7 +13,8 @@
 #include "Time.hpp"
 #include "Velocity3D.hpp"
 
-class Gravity3DSystem : public System {
+class Gravity3DSystem : public System
+{
   public:
     void update(Scene &scene) override;
 };

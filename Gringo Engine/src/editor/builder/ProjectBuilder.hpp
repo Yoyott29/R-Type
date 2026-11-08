@@ -3,8 +3,8 @@
 #include "BuildVariant.hpp"
 #include "ComponentDescriptor.hpp"
 #include <filesystem>
-#include <ostream>
 #include <initializer_list>
+#include <ostream>
 #include <set>
 #include <string>
 #include <vector>

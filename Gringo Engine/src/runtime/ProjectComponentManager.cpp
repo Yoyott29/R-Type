@@ -4,8 +4,8 @@
 #include "HierarchySystem.hpp"
 #include "PluginLoader.hpp"
 #include "PrefabInstance.hpp"
-#include "Transform.hpp"
 #include "ProjectAssets.hpp"
+#include "Transform.hpp"
 #include <stdexcept>
 
 // Plugin components are not handled here: each plugin registers its own deserializer in
@@ -13,24 +13,26 @@
 ProjectComponentManager::ProjectComponentManager(Scene &scene, std::filesystem::path projectFolder)
 {
     scene.addResource<ProjectAssets>(ProjectAssets{std::move(projectFolder)});
-    scene.registerComponent<Transform>([](Scene &target, Entity entity, const nlohmann::json &data) {
-        Transform transform;
-        transform.x = ComponentJson::floatValue(data, "PositionX", 0.0f);
-        transform.y = ComponentJson::floatValue(data, "PositionY", 0.0f);
-        transform.z = ComponentJson::floatValue(data, "PositionZ", 0.0f);
-        transform.scaleX = ComponentJson::floatValue(data, "ScaleX", 1.0f);
-        transform.scaleY = ComponentJson::floatValue(data, "ScaleY", 1.0f);
-        transform.scaleZ = ComponentJson::floatValue(data, "ScaleZ", 1.0f);
-        const float legacyRotation = ComponentJson::floatValue(data, "Rotation", 0.0f);
-        transform.rotationX = ComponentJson::floatValue(data, "RotationX", 0.0f);
-        transform.rotationY = ComponentJson::floatValue(data, "RotationY", legacyRotation);
-        transform.rotationZ = ComponentJson::floatValue(data, "RotationZ", 0.0f);
-        target.addComponent(entity, transform);
-    });
-    scene.registerComponent<PrefabInstance>([](Scene &target, Entity entity, const nlohmann::json &data) {
-        const std::string prefab = ComponentJson::value(data, "Prefab", NO_FILE);
-        target.addComponent(entity, PrefabInstance{prefab == NO_FILE ? "" : prefab});
-    });
+    scene.registerComponent<Transform>(
+        [](Scene &target, Entity entity, const nlohmann::json &data) {
+            Transform transform;
+            transform.x = ComponentJson::floatValue(data, "PositionX", 0.0f);
+            transform.y = ComponentJson::floatValue(data, "PositionY", 0.0f);
+            transform.z = ComponentJson::floatValue(data, "PositionZ", 0.0f);
+            transform.scaleX = ComponentJson::floatValue(data, "ScaleX", 1.0f);
+            transform.scaleY = ComponentJson::floatValue(data, "ScaleY", 1.0f);
+            transform.scaleZ = ComponentJson::floatValue(data, "ScaleZ", 1.0f);
+            const float legacyRotation = ComponentJson::floatValue(data, "Rotation", 0.0f);
+            transform.rotationX = ComponentJson::floatValue(data, "RotationX", 0.0f);
+            transform.rotationY = ComponentJson::floatValue(data, "RotationY", legacyRotation);
+            transform.rotationZ = ComponentJson::floatValue(data, "RotationZ", 0.0f);
+            target.addComponent(entity, transform);
+        });
+    scene.registerComponent<PrefabInstance>(
+        [](Scene &target, Entity entity, const nlohmann::json &data) {
+            const std::string prefab = ComponentJson::value(data, "Prefab", NO_FILE);
+            target.addComponent(entity, PrefabInstance{prefab == NO_FILE ? "" : prefab});
+        });
     scene.addResource<EditorEntityIds>();
     // A parent loaded after its child is found later, by linkChildren. A prefab instantiated
     // during the game finds its parent (a scene entity) right away

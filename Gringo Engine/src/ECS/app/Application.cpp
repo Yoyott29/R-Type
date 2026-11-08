@@ -8,19 +8,19 @@
 #include "Application.hpp"
 #include "AppAlive.hpp"
 #include "ChildOf.hpp"
+#include "CommandLine.hpp"
+#include "EngineError.hpp"
+#include "EventBus.hpp"
+#include "GameClock.hpp"
 #include "HierarchySystem.hpp"
 #include "PrefabInstance.hpp"
 #include "PrefabInstanceSystem.hpp"
-#include "CommandLine.hpp"
 #include "ProjectSettings.hpp"
-#include "EngineError.hpp"
-#include "GameClock.hpp"
-#include "EventBus.hpp"
 #include "Transform.hpp"
 #include <csignal>
+#include <functional>
 #include <thread>
 #include <utility>
-#include <functional>
 
 #define WORLD_WIDTH 1920
 #define WORLD_HEIGHT 1080

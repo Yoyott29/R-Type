@@ -23,9 +23,11 @@ template <> struct ComponentDescription<RigidBody3D> {
     static ComponentDescriptor describe()
     {
         return {"RigidBody3D",
-                {{"Mass", valueType::Float, "1"}, {"IsStatic", valueType::Bool, "False"},
+                {{"Mass", valueType::Float, "1"},
+                 {"IsStatic", valueType::Bool, "False"},
                  {"GravityScale", valueType::Float, "1"},
                  {"StepHeight", valueType::Float, "0"}},
-                {63, 55, 51, 255}, "Physics3D"};
+                {63, 55, 51, 255},
+                "Physics3D"};
     }
 };

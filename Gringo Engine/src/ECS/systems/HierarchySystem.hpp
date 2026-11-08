@@ -7,9 +7,9 @@
 
 #pragma once
 #include "ChildOf.hpp"
-#include "Transform.hpp"
 #include "Scene.hpp"
 #include "System.hpp"
+#include "Transform.hpp"
 #include <algorithm>
 #include <vector>
 

@@ -33,8 +33,8 @@ std::filesystem::path modulePath(HMODULE module)
     std::wstring buffer(MAX_PATH, L'\0');
     DWORD length = 0;
 
-    while ((length = GetModuleFileNameW(module, buffer.data(), static_cast<DWORD>(buffer.size()))) ==
-           buffer.size())
+    while ((length = GetModuleFileNameW(module, buffer.data(),
+                                        static_cast<DWORD>(buffer.size()))) == buffer.size())
         buffer.resize(buffer.size() * 2);
     if (length == 0)
         throw EngineError("Could not find a module path: " + lastError());

@@ -28,11 +28,11 @@ jobs:
       - name: Check formatting
         run: |
           clang-format --version
-          shopt -s globstar nullglob
-          files=(src/**/*.cpp src/**/*.hpp)
-          if (( ${#files[@]} )); then
-            clang-format --style=file:Norms/.clang-format --dry-run -Werror "${files[@]}"
-          fi
+          # Every tracked C++ file (engine, plugins, editor, tests, R-Type, TrackNTrap), except the
+          # *_main.cpp files the editor generates
+          mapfile -d '' files < <(git ls-files -z -- '*.cpp' '*.hpp' ':(exclude)*_main.cpp')
+          echo "Checking ${#files[@]} files"
+          clang-format --style=file:Norms/.clang-format --dry-run -Werror "${files[@]}"
 
   tests:
     if: github.repository != 'EpitechPGE3-2026/G-ING-500-LIL-5-1-rtype-4'

@@ -31,7 +31,10 @@ template <> struct ComponentDescription<Model3D> {
     {
         return {"3DModel",
                 {{"Primitive", valueType::Choice, "Cube", {"Cube", "Sphere", "Model"}},
-                 {"ModelPath", valueType::File, NO_FILE, {"assets", ".obj", ".glb", ".gltf"},
+                 {"ModelPath",
+                  valueType::File,
+                  NO_FILE,
+                  {"assets", ".obj", ".glb", ".gltf"},
                   {"Primitive", "Model"}},
                  {"TexturePath", valueType::File, NO_FILE, {"assets", ".png", ".jpg", ".jpeg"}},
                  {"Color", valueType::Color, "White"},
@@ -42,6 +45,7 @@ template <> struct ComponentDescription<Model3D> {
                  {"Animation", valueType::Int, "-1"},
                  {"AnimationSpeed", valueType::Float, "1"},
                  {"AnimationFrame", valueType::Float, "-1"}},
-                {75, 95, 65, 255}, "3D"};
+                {75, 95, 65, 255},
+                "3D"};
     }
 };

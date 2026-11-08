@@ -13,10 +13,10 @@
 #include "ParticleEmitter2D.hpp"
 #include "ParticleEmitter2DSystem.hpp"
 #include "ParticleRender2DSystem.hpp"
-#include "Transform.hpp"
 #include "ProjectAssets.hpp"
-#include "SpriteSystem.hpp"
 #include "Sprite.hpp"
+#include "SpriteSystem.hpp"
+#include "Transform.hpp"
 
 void Plugin2D::registerComponents(Scene &scene)
 {

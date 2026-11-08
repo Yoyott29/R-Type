@@ -10,7 +10,7 @@
 MainMenu::MainMenu(IEditorRenderer &renderer) : AMenu(renderer)
 {
     _currentMenu = MenuType::MainMenu;
-    
+
     MainMenu::initTexts();
     MainMenu::initButtons();
 }
@@ -26,9 +26,12 @@ void MainMenu::initButtons()
     addButton(
         "New Game", {660, 540}, 300, 100, 30, [this]() { _switchMenu = MenuType::TemplateMenu; },
         BUTTON_COLOR1, BUTTON_COLOR3, TEXT_COLOR);
-    addButton("Load Game", {1260, 540}, 300, 100, 30, [this]() { _switchMenu = MenuType::LoadMenu; }, BUTTON_COLOR1, BUTTON_COLOR3, TEXT_COLOR);
     addButton(
-        "Exit", {1800, 50}, 200, 50, 20, [this]() { _isRunning = false; }, BUTTON_COLOR1, BUTTON_COLOR3, TEXT_COLOR);
+        "Load Game", {1260, 540}, 300, 100, 30, [this]() { _switchMenu = MenuType::LoadMenu; },
+        BUTTON_COLOR1, BUTTON_COLOR3, TEXT_COLOR);
+    addButton(
+        "Exit", {1800, 50}, 200, 50, 20, [this]() { _isRunning = false; }, BUTTON_COLOR1,
+        BUTTON_COLOR3, TEXT_COLOR);
 }
 
 void MainMenu::initRectangles() {}

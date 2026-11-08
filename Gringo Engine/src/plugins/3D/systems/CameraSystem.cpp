@@ -14,10 +14,9 @@ void CameraSystem::update(Scene &scene)
         if (!camera.active)
             continue;
         const Transform &position = scene.getComponent<Transform>(entity);
-        scene.getResource<ActiveCamera3D>().value = {position.x, position.y, position.z,
-                                                     camera.targetX, camera.targetY, camera.targetZ,
-                                                     camera.upX, camera.upY, camera.upZ,
-                                                     camera.fieldOfView};
+        scene.getResource<ActiveCamera3D>().value = {
+            position.x,     position.y, position.z, camera.targetX, camera.targetY,
+            camera.targetZ, camera.upX, camera.upY, camera.upZ,     camera.fieldOfView};
         break;
     }
 }

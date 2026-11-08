@@ -5,9 +5,9 @@
 #include "nlohmann/json.hpp"
 #include <filesystem>
 #include <map>
+#include <optional>
 #include <set>
 #include <string>
-#include <optional>
 #include <utility>
 
 // Scene resource: the game entity created for each editor entity id (the "id" in .gringo files),

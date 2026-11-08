@@ -8,11 +8,12 @@
 #pragma once
 #include "ActiveCamera3D.hpp"
 #include "Camera.hpp"
-#include "Transform.hpp"
 #include "Scene.hpp"
 #include "System.hpp"
+#include "Transform.hpp"
 
-class CameraSystem : public System {
+class CameraSystem : public System
+{
   public:
     void update(Scene &scene) override;
 };

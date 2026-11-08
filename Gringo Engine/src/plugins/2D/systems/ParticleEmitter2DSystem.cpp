@@ -7,8 +7,8 @@
 
 #include "ParticleEmitter2DSystem.hpp"
 #include "ParticleEmitter2D.hpp"
-#include "Transform.hpp"
 #include "Time.hpp"
+#include "Transform.hpp"
 #include <algorithm>
 #include <cmath>
 #include <cstdlib>
@@ -30,7 +30,8 @@ void ParticleEmitter2DSystem::update(Scene &scene)
             particle.y += particle.dy * FIXED_DELTA_TIME;
             particle.life -= FIXED_DELTA_TIME;
         }
-        std::erase_if(emitter.particles, [](Particle2D const &particle) { return particle.life <= 0.0f; });
+        std::erase_if(emitter.particles,
+                      [](Particle2D const &particle) { return particle.life <= 0.0f; });
 
         if (!emitter.emitting)
             continue;

@@ -14,10 +14,10 @@
 #include "Parser.hpp"
 #include "PluginLoader.hpp"
 #include "iostream"
-#include <map>
-#include <string>
 #include <filesystem>
 #include <functional>
+#include <map>
+#include <string>
 #include <vector>
 
 #ifndef EDITORMENU_HPP_
@@ -67,11 +67,11 @@ struct EditingText {
 class EditorMenu : public AMenu
 {
   public:
-    EditorMenu(IEditorRenderer &renderer, std::string templateName, std::string projectName,
-               Parser &parser, SceneObjects sceneObjects,
-               const std::vector<ComponentDescriptor> &componentDescriptors,
-               const std::map<std::string, std::vector<PropertyDescriptor>>
-                   &pluginSettingDescriptors);
+    EditorMenu(
+        IEditorRenderer &renderer, std::string templateName, std::string projectName,
+        Parser &parser, SceneObjects sceneObjects,
+        const std::vector<ComponentDescriptor> &componentDescriptors,
+        const std::map<std::string, std::vector<PropertyDescriptor>> &pluginSettingDescriptors);
     ~EditorMenu() override;
 
     void update() override;

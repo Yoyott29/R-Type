@@ -40,8 +40,8 @@ void SystemManager::rebuildGraphs()
             const System &instance = *system;
             accesses.push_back(findAccess(std::type_index(typeid(instance))));
         }
-        _graphs.emplace(label, std::make_shared<const ScheduleGraph>(
-                                   buildScheduleGraph(systems, accesses)));
+        _graphs.emplace(
+            label, std::make_shared<const ScheduleGraph>(buildScheduleGraph(systems, accesses)));
     }
 }
 

@@ -25,7 +25,8 @@
 
 #define RAT_PREFAB_START "Rat"
 
-struct StartRequest {};
+struct StartRequest {
+};
 
 struct RatStatus {
     int lap = 1;

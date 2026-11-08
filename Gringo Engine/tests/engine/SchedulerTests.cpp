@@ -113,7 +113,10 @@ struct OverlapState {
 };
 
 template <std::size_t Index> struct LatchSystem : System {
-    void update(Scene &) override { OverlapState::overlapped[Index] = arriveAndWait(*OverlapState::latch); }
+    void update(Scene &) override
+    {
+        OverlapState::overlapped[Index] = arriveAndWait(*OverlapState::latch);
+    }
 };
 
 // Records its index in the first phase, waits on the latch in the overlap phase
@@ -276,7 +279,8 @@ TEST_CASE(conflictingSystemsKeepOrder)
     Scene scene;
     OrderLog::reset();
     scene.registerComponent<Position>();
-    registerChain(scene, scene.access().write<Position>(), std::make_index_sequence<kChainLength>{});
+    registerChain(scene, scene.access().write<Position>(),
+                  std::make_index_sequence<kChainLength>{});
     scene.registerSystem<NoopSystem>();
     scene.setSystemAccess<NoopSystem>(scene.access());
     scene.runSchedule(Update);

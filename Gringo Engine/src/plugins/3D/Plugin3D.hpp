@@ -8,7 +8,8 @@
 #pragma once
 #include "Application.hpp"
 
-class Plugin3D : public Plugin<Plugin3D> {
+class Plugin3D : public Plugin<Plugin3D>
+{
   public:
     void registerComponents(Scene &scene) override;
     void build(Application &app) override;

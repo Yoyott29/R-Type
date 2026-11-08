@@ -2,8 +2,8 @@
 #define CHEESESPAWNER_HPP_
 
 #include "Cheeses.hpp"
-#include "PrefabsManager.hpp"
 #include "Net.hpp"
+#include "PrefabsManager.hpp"
 #include "Scene.hpp"
 #include "Script.hpp"
 #include "Time.hpp"
@@ -154,7 +154,8 @@ class CheeseSpawner : public GringoEntityScript
         int index = free.at(std::rand() % static_cast<int>(free.size()));
         Spot spot = SPOTS.at(index);
         // Between -CHEESE_SIDE_RANGE and CHEESE_SIDE_RANGE
-        float side = -CHEESE_SIDE_RANGE + 2.0f * CHEESE_SIDE_RANGE * std::rand() / static_cast<float>(RAND_MAX);
+        float side = -CHEESE_SIDE_RANGE +
+                     2.0f * CHEESE_SIDE_RANGE * std::rand() / static_cast<float>(RAND_MAX);
         Entity cheese = scene.getResource<PrefabsManager>().InstantiatePrefab(_prefab, scene);
 
         if (!scene.hasComponent<Transform>(cheese))
@@ -163,8 +164,8 @@ class CheeseSpawner : public GringoEntityScript
         transform.x += spot.x + std::cos(spot.across * CHEESE_DEGREES_TO_RADIANS) * side;
         transform.z += spot.z + std::sin(spot.across * CHEESE_DEGREES_TO_RADIANS) * side;
         transform.rotationY += 360.0f * std::rand() / static_cast<float>(RAND_MAX);
-        _floating.push_back(
-            {cheese, index, transform.y + spot.y + _height, std::rand() / static_cast<float>(RAND_MAX)});
+        _floating.push_back({cheese, index, transform.y + spot.y + _height,
+                             std::rand() / static_cast<float>(RAND_MAX)});
         scene.getResource<Cheeses>().add(cheese);
     }
 

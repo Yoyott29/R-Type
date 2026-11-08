@@ -22,10 +22,9 @@ void AMenu::addButton(const std::string &name, Vec2 center, int width, int heigh
                       ColorRGBA textColor, std::optional<std::string> text)
 {
     // No text given: the button shows its name. A given empty text stays empty
-    _buttons.emplace(name, Button{UiRectangle{center, width, height, buttonColor, 0}, hoveredColor,
-                                  false, true,
-                                  Text{center, fontSize, text.value_or(name), textColor, true},
-                                  onClick});
+    _buttons.emplace(
+        name, Button{UiRectangle{center, width, height, buttonColor, 0}, hoveredColor, false, true,
+                     Text{center, fontSize, text.value_or(name), textColor, true}, onClick});
 }
 
 void AMenu::addRectangle(const std::string &name, Vec2 center, int width, int height,
@@ -115,9 +114,9 @@ void AMenu::drawRectangles() const
     // Lowest draw order first
     // Stable: rectangles with the same draw order keep one order, whatever is added or removed
     std::stable_sort(sortedRectangles.begin(), sortedRectangles.end(),
-              [](const UiRectangle &left, const UiRectangle &right) {
-                  return left.drawOrder < right.drawOrder;
-              });
+                     [](const UiRectangle &left, const UiRectangle &right) {
+                         return left.drawOrder < right.drawOrder;
+                     });
 
     for (const UiRectangle &rectangle : sortedRectangles)
         _renderer.drawRectangle(rectangle.position, rectangle.width, rectangle.height,

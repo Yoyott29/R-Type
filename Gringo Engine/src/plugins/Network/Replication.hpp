@@ -9,8 +9,8 @@
 #include "ByteStream.hpp"
 #include "ChildOf.hpp"
 #include "EngineError.hpp"
-#include "Transform.hpp"
 #include "Scene.hpp"
+#include "Transform.hpp"
 #include <cstddef>
 #include <cstdint>
 #include <functional>

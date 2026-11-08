@@ -7,13 +7,14 @@
 
 #pragma once
 #include "Collider3D.hpp"
-#include "Transform.hpp"
 #include "Scene.hpp"
 #include "System.hpp"
+#include "Transform.hpp"
 #include "Velocity3D.hpp"
 #include <set>
 
-class Collider3DSystem : public System {
+class Collider3DSystem : public System
+{
   public:
     void update(Scene &scene) override;
 
@@ -50,7 +51,7 @@ class Collider3DSystem : public System {
     // at most
     static bool climbs(Scene &scene, Entity body, const Box &bodyBox, const Box &stepBox);
     static void resolve(Scene &scene, Entity first, Entity second, Transform &firstPosition,
-                        Transform &secondPosition, float overlapX, float overlapY,
-                        float overlapZ, Vector delta);
+                        Transform &secondPosition, float overlapX, float overlapY, float overlapZ,
+                        Vector delta);
     std::set<std::pair<Entity, Entity>> _solidContacts;
 };

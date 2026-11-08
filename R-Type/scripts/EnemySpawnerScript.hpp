@@ -2,13 +2,13 @@
 #define ENEMYSPAWNERSCRIPT_HPP_
 
 #include "MatchState.hpp"
-#include "Transform.hpp"
 #include "PrefabsManager.hpp"
 #include "Scene.hpp"
 #include "Script.hpp"
 #include "Time.hpp"
-#include <cstdlib>
+#include "Transform.hpp"
 #include <chrono>
+#include <cstdlib>
 
 inline const std::vector<std::string> EnemySpawnerScript_params = {"Prefab", "Wave"};
 
@@ -31,8 +31,8 @@ class EnemySpawnerScript : public GringoEntityScript
 
 inline EnemySpawnerScript::EnemySpawnerScript()
 {
-    std::srand(static_cast<unsigned int>(
-        std::chrono::system_clock::now().time_since_epoch().count()));
+    std::srand(
+        static_cast<unsigned int>(std::chrono::system_clock::now().time_since_epoch().count()));
     _waveDelay = static_cast<float>(std::rand() % 10) * 0.1f + 0.5f;
 }
 

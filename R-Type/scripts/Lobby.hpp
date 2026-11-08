@@ -14,7 +14,8 @@
 #include <string>
 #include <vector>
 
-struct StartRequest {};
+struct StartRequest {
+};
 
 namespace Lobby
 {

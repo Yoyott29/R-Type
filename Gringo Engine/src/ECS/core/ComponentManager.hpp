@@ -9,8 +9,8 @@
 #include "ComponentDescriptor.hpp"
 #include "ComponentPool.hpp"
 #include "EngineError.hpp"
-#include <memory>
 #include <functional>
+#include <memory>
 #include <nlohmann/json_fwd.hpp>
 #include <string>
 #include <typeindex>
@@ -22,8 +22,7 @@ class Scene;
 class ComponentManager
 {
   public:
-    using ComponentDeserializer =
-        std::function<void(Scene &, Entity, const nlohmann::json &)>;
+    using ComponentDeserializer = std::function<void(Scene &, Entity, const nlohmann::json &)>;
 
     // Idempotent: every plugin registers the components it uses, a second call is a no-op
     template <typename Component> void registerComponent()
@@ -51,8 +50,7 @@ class ComponentManager
             _descriptors.push_back(ComponentDescription<Component>::describe());
     }
 
-    template <typename Component>
-    void registerComponent(ComponentDeserializer deserializer)
+    template <typename Component> void registerComponent(ComponentDeserializer deserializer)
     {
         registerComponent<Component>();
         const auto &descriptor = ComponentDescription<Component>::describe();
@@ -60,8 +58,8 @@ class ComponentManager
     }
 
     void addComponentFromJson(Scene &scene, Entity entity, const nlohmann::json &component);
-    std::function<void(Scene &, Entity)> componentInitializer(
-        const nlohmann::json &component) const;
+    std::function<void(Scene &, Entity)>
+    componentInitializer(const nlohmann::json &component) const;
 
     const std::vector<ComponentDescriptor> &getDescriptors() const { return _descriptors; }
 

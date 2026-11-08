@@ -6,7 +6,8 @@
 #include "System.hpp"
 #include "Transform.hpp"
 
-class CameraFollowSystem : public System {
+class CameraFollowSystem : public System
+{
   public:
     void update(Scene &scene) override;
 };

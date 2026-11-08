@@ -35,7 +35,8 @@ class EventBus
     }
 
   private:
-    template <typename Event> using Callbacks = std::map<std::size_t, std::function<void(Event const &)>>;
+    template <typename Event>
+    using Callbacks = std::map<std::size_t, std::function<void(Event const &)>>;
 
     // The callbacks of one event type, created empty the first time it is used
     template <typename Event> Callbacks<Event> &listeners()

@@ -1,8 +1,8 @@
 #ifndef OBSTACLESPAWNER_HPP_
 #define OBSTACLESPAWNER_HPP_
 
-#include "PrefabsManager.hpp"
 #include "Net.hpp"
+#include "PrefabsManager.hpp"
 #include "Scene.hpp"
 #include "Script.hpp"
 #include "Transform.hpp"

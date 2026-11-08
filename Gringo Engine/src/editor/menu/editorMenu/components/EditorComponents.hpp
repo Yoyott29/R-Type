@@ -45,7 +45,6 @@ class EditorComponents
     std::vector<std::string> _pickerButtonNames;
 
     bool _deleteObject = false;
-
 };
 
 #endif /* !EDITORCOMPONENTS_HPP_ */

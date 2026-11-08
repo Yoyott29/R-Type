@@ -34,13 +34,17 @@ template <> struct ComponentDescription<Collider3D> {
     static ComponentDescriptor describe()
     {
         return {"Collider3D",
-                {{"Width", valueType::Float, "1"}, {"Height", valueType::Float, "1"},
-                 {"Depth", valueType::Float, "1"}, {"OffsetX", valueType::Float, "0"},
-                 {"OffsetY", valueType::Float, "0"}, {"OffsetZ", valueType::Float, "0"},
+                {{"Width", valueType::Float, "1"},
+                 {"Height", valueType::Float, "1"},
+                 {"Depth", valueType::Float, "1"},
+                 {"OffsetX", valueType::Float, "0"},
+                 {"OffsetY", valueType::Float, "0"},
+                 {"OffsetZ", valueType::Float, "0"},
                  {"Layer", valueType::Int, "1"},
                  {"TypeCollisions", valueType::String, "All layers"},
                  {"IsTrigger", valueType::Bool, "False"},
                  {"Rotates", valueType::Bool, "False"}},
-                {58, 57, 61, 255}, "Physics3D"};
+                {58, 57, 61, 255},
+                "Physics3D"};
     }
 };

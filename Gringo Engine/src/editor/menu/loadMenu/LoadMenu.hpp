@@ -8,24 +8,25 @@
 #ifndef LOADMENU_HPP_
 #define LOADMENU_HPP_
 
-#include "Parser.hpp"
 #include "AMenu.hpp"
+#include "Parser.hpp"
 
-class LoadMenu : public AMenu {
-    public:
-        LoadMenu(IEditorRenderer &renderer, Parser &parser);
-        ~LoadMenu();
-        SceneObjects getSceneObjects() const { return _sceneObjects; }
+class LoadMenu : public AMenu
+{
+  public:
+    LoadMenu(IEditorRenderer &renderer, Parser &parser);
+    ~LoadMenu();
+    SceneObjects getSceneObjects() const { return _sceneObjects; }
 
-    protected:
-        void initTexts() override;
-        void initButtons() override;
-        void initRectangles() override;
+  protected:
+    void initTexts() override;
+    void initButtons() override;
+    void initRectangles() override;
 
-    private:
-        std::vector<std::string> _savedFiles;
-        SceneObjects _sceneObjects;
-        Parser &_parser;
+  private:
+    std::vector<std::string> _savedFiles;
+    SceneObjects _sceneObjects;
+    Parser &_parser;
 };
 
 #endif /* !LOADMENU_HPP_ */

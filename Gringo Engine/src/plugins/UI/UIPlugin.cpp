@@ -6,12 +6,12 @@
 */
 
 #include "UIPlugin.hpp"
-#include "ProjectAssets.hpp"
 #include "ButtonClickSystem.hpp"
 #include "ButtonSystem.hpp"
 #include "ComponentJson.hpp"
-#include "Transform.hpp"
+#include "ProjectAssets.hpp"
 #include "TextSystem.hpp"
+#include "Transform.hpp"
 #include "UIButton.hpp"
 #include "UIText.hpp"
 #include <memory>
@@ -47,14 +47,16 @@ void UIPlugin::registerComponents(Scene &scene)
     // register the UIButton component, with how to read it from a .gringo file. Its script is a
     // game class: the generated main creates it from the "Script" property
     scene.registerComponent<UIButton>([](Scene &target, Entity entity, const nlohmann::json &data) {
-        target.addComponent(
-            entity, UIButton{ComponentJson::value(data, "Content", ""),
-                             ComponentJson::intValue(data, "Width", 100),
-                             ComponentJson::intValue(data, "Height", 50),
-                             ComponentJson::intValue(data, "FontSize", 24),
-                             ComponentJson::colorValue(data, "Color", {255, 255, 255, 255}),
-                             ComponentJson::colorValue(data, "TextColor", {0, 0, 0, 255}),
-                             {}, fontPath(target, data), imagePath(target, data)});
+        target.addComponent(entity,
+                            UIButton{ComponentJson::value(data, "Content", ""),
+                                     ComponentJson::intValue(data, "Width", 100),
+                                     ComponentJson::intValue(data, "Height", 50),
+                                     ComponentJson::intValue(data, "FontSize", 24),
+                                     ComponentJson::colorValue(data, "Color", {255, 255, 255, 255}),
+                                     ComponentJson::colorValue(data, "TextColor", {0, 0, 0, 255}),
+                                     {},
+                                     fontPath(target, data),
+                                     imagePath(target, data)});
     });
 }
 

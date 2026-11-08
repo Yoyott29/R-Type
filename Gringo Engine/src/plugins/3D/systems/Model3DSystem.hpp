@@ -9,11 +9,12 @@
 #include "ActiveCamera3D.hpp"
 #include "IRenderer.hpp"
 #include "Model3D.hpp"
-#include "Transform.hpp"
 #include "Scene.hpp"
 #include "System.hpp"
+#include "Transform.hpp"
 
-class Model3DSystem : public System {
+class Model3DSystem : public System
+{
   public:
     void update(Scene &scene) override;
 };

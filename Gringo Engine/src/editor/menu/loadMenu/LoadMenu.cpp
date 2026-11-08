@@ -7,8 +7,7 @@
 
 #include "LoadMenu.hpp"
 
-LoadMenu::LoadMenu(IEditorRenderer &renderer, Parser &parser)
-    : AMenu(renderer), _parser(parser)
+LoadMenu::LoadMenu(IEditorRenderer &renderer, Parser &parser) : AMenu(renderer), _parser(parser)
 {
     _currentMenu = MenuType::LoadMenu;
 
@@ -19,9 +18,7 @@ LoadMenu::LoadMenu(IEditorRenderer &renderer, Parser &parser)
     LoadMenu::initRectangles();
 }
 
-LoadMenu::~LoadMenu()
-{
-}
+LoadMenu::~LoadMenu() {}
 
 void LoadMenu::initTexts()
 {
@@ -38,15 +35,17 @@ void LoadMenu::initButtons()
     int columns = 4;
     int button_count = 0;
     addButton(
-        "Back", {1800, 50}, 200, 50, 20, [this]() { _switchMenu = MenuType::MainMenu; }, BUTTON_COLOR1,
-        BUTTON_COLOR3, TEXT_COLOR);
+        "Back", {1800, 50}, 200, 50, 20, [this]() { _switchMenu = MenuType::MainMenu; },
+        BUTTON_COLOR1, BUTTON_COLOR3, TEXT_COLOR);
     for (const auto &file : _savedFiles) {
         std::filesystem::path projectPath(file);
         std::string projectName = projectPath.stem().string();
-        addButton( file, {button_x, button_y}, button_width, button_height, 20,
+        addButton(
+            file, {button_x, button_y}, button_width, button_height, 20,
             [this, file]() {
-                _sceneObjects = _parser.loadFile(file); 
-                _switchMenu = MenuType::EditorMenu; },
+                _sceneObjects = _parser.loadFile(file);
+                _switchMenu = MenuType::EditorMenu;
+            },
             BUTTON_COLOR1, BUTTON_COLOR3, TEXT_COLOR, projectName);
 
         button_x += button_width + button_spacing;
@@ -58,6 +57,4 @@ void LoadMenu::initButtons()
     }
 }
 
-void LoadMenu::initRectangles()
-{
-}
+void LoadMenu::initRectangles() {}

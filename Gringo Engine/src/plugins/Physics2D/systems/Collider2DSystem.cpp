@@ -23,7 +23,8 @@ void Collider2DSystem::update(Scene &scene)
 {
     std::set<std::pair<Entity, Entity>> solidContacts;
 
-    // Serial, in the brute force order: the exact test sees the positions already resolved this step
+    // Serial, in the brute force order: the exact test sees the positions already resolved this
+    // step
     for (const auto &[entity, otherEntity] : findCandidatePairs(scene)) {
         Transform &position = scene.getComponent<Transform>(entity);
         Collider2D &collider = scene.getComponent<Collider2D>(entity);
@@ -87,22 +88,25 @@ std::vector<std::pair<Entity, Entity>> Collider2DSystem::findCandidatePairs(Scen
     std::vector<std::pair<Entity, Entity>> pairs;
     std::mutex pairsMutex;
     // Touching boxes are kept (<=): the exact test rejects them, the broad phase must not miss any
-    scene.parallelFor(bounds.size(), [&](std::size_t begin, std::size_t end) {
-        std::vector<std::pair<Entity, Entity>> found;
-        for (std::size_t i = begin; i < end; ++i) {
-            const ColliderBounds &a = bounds[i];
-            for (std::size_t j = i + 1; j < bounds.size() && bounds[j].minX <= a.maxX; ++j) {
-                const ColliderBounds &b = bounds[j];
-                if (b.minY > a.maxY || a.minY > b.maxY)
-                    continue;
-                if ((a.mask & b.layer) == 0 && (b.mask & a.layer) == 0)
-                    continue;
-                found.emplace_back(std::max(a.entity, b.entity), std::min(a.entity, b.entity));
+    scene.parallelFor(
+        bounds.size(),
+        [&](std::size_t begin, std::size_t end) {
+            std::vector<std::pair<Entity, Entity>> found;
+            for (std::size_t i = begin; i < end; ++i) {
+                const ColliderBounds &a = bounds[i];
+                for (std::size_t j = i + 1; j < bounds.size() && bounds[j].minX <= a.maxX; ++j) {
+                    const ColliderBounds &b = bounds[j];
+                    if (b.minY > a.maxY || a.minY > b.maxY)
+                        continue;
+                    if ((a.mask & b.layer) == 0 && (b.mask & a.layer) == 0)
+                        continue;
+                    found.emplace_back(std::max(a.entity, b.entity), std::min(a.entity, b.entity));
+                }
             }
-        }
-        const std::lock_guard<std::mutex> lock(pairsMutex);
-        pairs.insert(pairs.end(), found.begin(), found.end());
-    }, SWEEP_MIN_CHUNK);
+            const std::lock_guard<std::mutex> lock(pairsMutex);
+            pairs.insert(pairs.end(), found.begin(), found.end());
+        },
+        SWEEP_MIN_CHUNK);
     std::sort(pairs.begin(), pairs.end());
     return pairs;
 }

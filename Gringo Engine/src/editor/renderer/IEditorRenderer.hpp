@@ -27,6 +27,5 @@ class IEditorRenderer
     virtual bool isKeyPressed(KeyboardKeys key) const = 0;
     virtual int getNextCharacter() const = 0;
     virtual void drawRectangle(Vec2 pos, int width, int height, ColorRGBA color) = 0;
-    virtual void drawText(const std::string &text, Vec2 pos, int fontSize,
-                          ColorRGBA color) = 0;
+    virtual void drawText(const std::string &text, Vec2 pos, int fontSize, ColorRGBA color) = 0;
 };

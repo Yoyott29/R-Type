@@ -19,8 +19,10 @@ template <> struct ComponentDescription<Velocity3D> {
     static ComponentDescriptor describe()
     {
         return {"Velocity3D",
-                {{"Dx", valueType::Float, "0"}, {"Dy", valueType::Float, "0"},
+                {{"Dx", valueType::Float, "0"},
+                 {"Dy", valueType::Float, "0"},
                  {"Dz", valueType::Float, "0"}},
-                {68, 61, 56, 255}, "Physics3D"};
+                {68, 61, 56, 255},
+                "Physics3D"};
     }
 };

@@ -38,8 +38,8 @@ void NameMenu::initTexts()
 void NameMenu::initButtons()
 {
     addButton(
-        "Back", {1800, 50}, 200, 50, 20, [this]() { _switchMenu = MenuType::TemplateMenu; }, BUTTON_COLOR1,
-        BUTTON_COLOR3, TEXT_COLOR);
+        "Back", {1800, 50}, 200, 50, 20, [this]() { _switchMenu = MenuType::TemplateMenu; },
+        BUTTON_COLOR1, BUTTON_COLOR3, TEXT_COLOR);
     if (!_rendererChoices.empty())
         addButton(
             "Renderer", {960, 610}, 500, 60, 28, [this]() { nextRenderer(); }, BUTTON_COLOR2,
@@ -57,10 +57,7 @@ std::string NameMenu::getRenderer() const
     return _rendererChoices.empty() ? "" : _rendererChoices[_rendererIndex];
 }
 
-void NameMenu::initRectangles()
-{
-    addRectangle("InputBox", {960, 400}, 900, 80, BUTTON_COLOR4);
-}
+void NameMenu::initRectangles() { addRectangle("InputBox", {960, 400}, 900, 80, BUTTON_COLOR4); }
 
 void NameMenu::update()
 {

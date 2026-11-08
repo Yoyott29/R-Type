@@ -208,8 +208,7 @@ class Scene
         return result;
     }
 
-    template <typename Component, typename Next, typename... Rest>
-    ComponentSet componentSet() const
+    template <typename Component, typename Next, typename... Rest> ComponentSet componentSet() const
     {
         ComponentSet result = componentSet<Next, Rest...>();
         result.set(_componentManager->getComponentType<Component>());

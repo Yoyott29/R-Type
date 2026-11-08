@@ -70,10 +70,7 @@ void ThreadPool::notifyAll()
     _progress.notify_all();
 }
 
-std::size_t ThreadPool::workerCount() const
-{
-    return _workerCount;
-}
+std::size_t ThreadPool::workerCount() const { return _workerCount; }
 
 void ThreadPool::workerLoop(const std::stop_token &token)
 {

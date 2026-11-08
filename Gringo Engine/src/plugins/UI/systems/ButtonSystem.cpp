@@ -28,7 +28,7 @@ void ButtonSystem::update(Scene &scene)
         else
             renderer.drawImage(button.imagePath, position.x, position.y, width, height);
         // Every draw call is centered on (x, y), so the text lands in the middle of the button
-        renderer.drawText(position.x, position.y, button.content, button.fontSize,
-                          button.textColor, button.fontPath);
+        renderer.drawText(position.x, position.y, button.content, button.fontSize, button.textColor,
+                          button.fontPath);
     }
 }

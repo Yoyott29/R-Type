@@ -23,10 +23,7 @@ constexpr std::size_t kChildrenPerParent = 1;
 constexpr std::ptrdiff_t kLatchCount = 1;
 } // namespace
 
-TEST_CASE(defaultWorkerCountIsAtLeastOne)
-{
-    CHECK(ThreadPool::defaultWorkerCount() >= 1);
-}
+TEST_CASE(defaultWorkerCountIsAtLeastOne) { CHECK(ThreadPool::defaultWorkerCount() >= 1); }
 
 TEST_CASE(submittedTasksAllRunOnWorkers)
 {

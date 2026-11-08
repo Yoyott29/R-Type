@@ -25,10 +25,12 @@ void ParticleRender3DSystem::update(Scene &scene)
     for (Entity entity : _entities) {
         const ParticleEmitter3D &emitter = scene.getComponent<ParticleEmitter3D>(entity);
         for (const Particle3D &particle : emitter.particles) {
-            const float remaining = emitter.lifetime > 0.0f ? particle.life / emitter.lifetime : 0.0f;
+            const float remaining =
+                emitter.lifetime > 0.0f ? particle.life / emitter.lifetime : 0.0f;
             RendererModel3D model;
             model.color = emitter.color;
-            model.color.a = static_cast<unsigned char>(emitter.color.a * std::clamp(remaining, 0.0f, 1.0f));
+            model.color.a =
+                static_cast<unsigned char>(emitter.color.a * std::clamp(remaining, 0.0f, 1.0f));
             std::visit(
                 [&model](const auto &shape) {
                     if constexpr (std::is_same_v<std::decay_t<decltype(shape)>, SphereShape>) {

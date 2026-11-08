@@ -25,7 +25,7 @@
 #include "NetComponents.hpp"
 #endif
 
-inline const std::vector<std::string> PlayerScript_params = {"speed", "health"};
+inline const std::vector<std::string> PlayerScript_params = {"speed"};
 
 class PlayerScript : public GringoEntityScript
 {

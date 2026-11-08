@@ -45,8 +45,8 @@ class AMenu
     void addButton(const std::string &name, Vec2 center, int width, int height, int fontSize,
                    std::function<void()> onClick, ColorRGBA buttonColor, ColorRGBA hoveredColor,
                    ColorRGBA textColor, std::optional<std::string> text = std::nullopt);
-    void addRectangle(const std::string &name, Vec2 center, int width, int height,
-                      ColorRGBA color, int drawOrder = 0);
+    void addRectangle(const std::string &name, Vec2 center, int width, int height, ColorRGBA color,
+                      int drawOrder = 0);
 
     void removeText(const std::string &name) { _texts.erase(name); }
     void removeButton(const std::string &name) { _buttons.erase(name); }

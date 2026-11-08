@@ -24,7 +24,8 @@ void ParticleRender2DSystem::update(Scene &scene)
         ParticleEmitter2D const &emitter = scene.getComponent<ParticleEmitter2D>(entity);
         for (Particle2D const &particle : emitter.particles) {
             ColorRGBA color = emitter.color;
-            const float remaining = emitter.lifetime > 0.0f ? particle.life / emitter.lifetime : 0.0f;
+            const float remaining =
+                emitter.lifetime > 0.0f ? particle.life / emitter.lifetime : 0.0f;
             color.a = static_cast<decltype(color.a)>(color.a * std::clamp(remaining, 0.0f, 1.0f));
             std::visit(
                 [&](auto const &shape) {

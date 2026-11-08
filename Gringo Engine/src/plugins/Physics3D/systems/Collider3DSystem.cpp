@@ -44,7 +44,8 @@ Collider3DSystem::Vector Collider3DSystem::turn(Vector vector, const Transform &
 Collider3DSystem::Box Collider3DSystem::box(const Transform &position, const Collider3D &collider)
 {
     Box result;
-    Vector offset = turn({collider.offsetX, collider.offsetY, collider.offsetZ}, position, collider);
+    Vector offset =
+        turn({collider.offsetX, collider.offsetY, collider.offsetZ}, position, collider);
 
     result.center = {position.x + offset.x, position.y + offset.y, position.z + offset.z};
     result.axisX = turn({1.0f, 0.0f, 0.0f}, position, collider);
@@ -161,8 +162,8 @@ void Collider3DSystem::update(Scene &scene)
             const auto pair = std::minmax(entity, other);
             solidContacts.insert(pair);
             // On a low step: pushed up onto it, never sideways
-            const bool step = climbs(scene, entity, first, second) ||
-                              climbs(scene, other, second, first);
+            const bool step =
+                climbs(scene, entity, first, second) || climbs(scene, other, second, first);
             if (step) {
                 overlapX = std::numeric_limits<float>::max();
                 overlapZ = std::numeric_limits<float>::max();
@@ -194,8 +195,10 @@ void Collider3DSystem::resolve(Scene &scene, Entity first, Entity second, Transf
                                Transform &secondPosition, float overlapX, float overlapY,
                                float overlapZ, Vector delta)
 {
-    const float inverseFirst = dynamic(scene, first) ? 1.0f / scene.getComponent<RigidBody3D>(first).mass : 0.0f;
-    const float inverseSecond = dynamic(scene, second) ? 1.0f / scene.getComponent<RigidBody3D>(second).mass : 0.0f;
+    const float inverseFirst =
+        dynamic(scene, first) ? 1.0f / scene.getComponent<RigidBody3D>(first).mass : 0.0f;
+    const float inverseSecond =
+        dynamic(scene, second) ? 1.0f / scene.getComponent<RigidBody3D>(second).mass : 0.0f;
     const float total = inverseFirst + inverseSecond;
     if (total == 0.0f)
         return;
@@ -212,16 +215,23 @@ void Collider3DSystem::resolve(Scene &scene, Entity first, Entity second, Transf
     }
     const float pushFirst = depth * inverseFirst / total;
     const float pushSecond = depth * inverseSecond / total;
-    if (xAxis) { firstPosition.x -= normal * pushFirst; secondPosition.x += normal * pushSecond; }
-    else if (yAxis) { firstPosition.y -= normal * pushFirst; secondPosition.y += normal * pushSecond; }
-    else { firstPosition.z -= normal * pushFirst; secondPosition.z += normal * pushSecond; }
+    if (xAxis) {
+        firstPosition.x -= normal * pushFirst;
+        secondPosition.x += normal * pushSecond;
+    } else if (yAxis) {
+        firstPosition.y -= normal * pushFirst;
+        secondPosition.y += normal * pushSecond;
+    } else {
+        firstPosition.z -= normal * pushFirst;
+        secondPosition.z += normal * pushSecond;
+    }
 
-    const Velocity3D firstVelocity =
-        scene.hasComponent<Velocity3D>(first) ? scene.getComponent<Velocity3D>(first)
-                                               : Velocity3D{};
-    const Velocity3D secondVelocity =
-        scene.hasComponent<Velocity3D>(second) ? scene.getComponent<Velocity3D>(second)
-                                                : Velocity3D{};
+    const Velocity3D firstVelocity = scene.hasComponent<Velocity3D>(first)
+                                         ? scene.getComponent<Velocity3D>(first)
+                                         : Velocity3D{};
+    const Velocity3D secondVelocity = scene.hasComponent<Velocity3D>(second)
+                                          ? scene.getComponent<Velocity3D>(second)
+                                          : Velocity3D{};
     const float relativeVelocity =
         (secondVelocity.dx - firstVelocity.dx) * (xAxis ? normal : 0.0f) +
         (secondVelocity.dy - firstVelocity.dy) * (yAxis ? normal : 0.0f) +

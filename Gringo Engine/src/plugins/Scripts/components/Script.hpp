@@ -30,7 +30,8 @@ struct Script {
     bool isRunning = false;
 };
 
-template <> struct AllowMultiple<Script> : std::true_type {};
+template <> struct AllowMultiple<Script> : std::true_type {
+};
 
 template <> struct ComponentDescription<Script> {
     static inline const bool isDescribed = true;

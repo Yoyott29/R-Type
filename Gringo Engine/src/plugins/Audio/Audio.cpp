@@ -13,18 +13,18 @@
 
 void Audio::registerComponents(Scene &scene)
 {
-    scene.registerComponent<AudioSource>([](Scene &target, Entity entity,
-                                            const nlohmann::json &data) {
-        AudioSource source;
-        const std::string path = ComponentJson::value(data, "Path", NO_FILE);
-        if (path != NO_FILE)
-            source.path = ProjectAssets::resolve(target, path);
-        source.volume = ComponentJson::intValue(data, "Volume", 100);
-        source.loop = ComponentJson::boolValue(data, "Loop", false);
-        if (ComponentJson::boolValue(data, "PlayOnStart", true))
-            source.play();
-        target.addComponent(entity, source);
-    });
+    scene.registerComponent<AudioSource>(
+        [](Scene &target, Entity entity, const nlohmann::json &data) {
+            AudioSource source;
+            const std::string path = ComponentJson::value(data, "Path", NO_FILE);
+            if (path != NO_FILE)
+                source.path = ProjectAssets::resolve(target, path);
+            source.volume = ComponentJson::intValue(data, "Volume", 100);
+            source.loop = ComponentJson::boolValue(data, "Loop", false);
+            if (ComponentJson::boolValue(data, "PlayOnStart", true))
+                source.play();
+            target.addComponent(entity, source);
+        });
 }
 
 void Audio::build(Application &app)

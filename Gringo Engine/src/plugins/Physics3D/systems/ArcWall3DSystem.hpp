@@ -18,7 +18,8 @@
 // Pushes the moving bodies (non static RigidBody3D with a Velocity3D and a solid Collider3D)
 // back to the allowed side of every ArcWall3D, and stops their speed toward the wall. Runs
 // after Collider3DSystem
-class ArcWall3DSystem : public System {
+class ArcWall3DSystem : public System
+{
   public:
     void update(Scene &scene) override;
 

@@ -52,10 +52,9 @@ class EditorProperties
     void applyCurrentEdit();
 
   private:
-    void selectProperty(const std::string &propertyValueName, valueType type,
-                        Vec2 buttonPosition, float fontSize, ObjectType objectType,
-                        int objectId, int componentIndex, const std::string &propertyName,
-                        int propertyId);
+    void selectProperty(const std::string &propertyValueName, valueType type, Vec2 buttonPosition,
+                        float fontSize, ObjectType objectType, int objectId, int componentIndex,
+                        const std::string &propertyName, int propertyId);
     void cyclePrefab(const std::string &propertyValueName, ObjectType objectType, int objectId,
                      int componentIndex, int propertyId);
     void cycleChoice(const std::string &propertyValueName, ObjectType objectType, int objectId,
@@ -85,7 +84,7 @@ class EditorProperties
         {"Magenta", {255, 0, 255, 255}}, {"Pink", {255, 192, 203, 255}},
         {"Brown", {139, 69, 19, 255}},   {"White", {255, 255, 255, 255}},
         {"Gray", {128, 128, 128, 255}},  {"Black", {0, 0, 0, 255}},
-        {"Dirt", {118, 112, 102, 255}}, {"Transparent", {0, 0, 0, 0}},
+        {"Dirt", {118, 112, 102, 255}},  {"Transparent", {0, 0, 0, 0}},
     };
 };
 

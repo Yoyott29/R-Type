@@ -158,8 +158,8 @@ void EditorProperties::showNewValue(const std::string &propertyValueName,
 }
 
 void EditorProperties::selectProperty(const std::string &propertyValueName, valueType type,
-                                      Vec2 buttonPosition, float fontSize,
-                                      ObjectType objectType, int objectId, int componentIndex,
+                                      Vec2 buttonPosition, float fontSize, ObjectType objectType,
+                                      int objectId, int componentIndex,
                                       const std::string &propertyName, int propertyId)
 {
     applyCurrentEdit();
@@ -194,8 +194,9 @@ void EditorProperties::cycleChoice(const std::string &propertyValueName, ObjectT
     if (!isPropertyValid(objectType, objectId, componentIndex, propertyId))
         return;
 
-    Property &property = _editor._components.getObjectComponents(objectType, objectId)[componentIndex]
-                             .properties[propertyId];
+    Property &property =
+        _editor._components.getObjectComponents(objectType, objectId)[componentIndex]
+            .properties[propertyId];
     property.value = nextOption(property.options, property.value);
     (void)propertyValueName;
     // Other properties can depend on this choice (Shape: Width/Height or Radius)
@@ -447,9 +448,8 @@ std::vector<std::string> EditorProperties::getProjectFiles(const std::vector<std
             Parser::getProjectFolder(_editor._projectFilePath, _editor._projectName) / options[0];
         std::error_code error;
         for (const auto &entry : std::filesystem::directory_iterator(folder, error))
-            if (entry.is_regular_file() &&
-                std::find(options.begin() + 1, options.end(), entry.path().extension()) !=
-                    options.end())
+            if (entry.is_regular_file() && std::find(options.begin() + 1, options.end(),
+                                                     entry.path().extension()) != options.end())
                 files.push_back(entry.path().filename().string());
         std::sort(files.begin(), files.end());
     }
@@ -495,9 +495,9 @@ std::size_t EditorProperties::ownPropertyCount(const Component &component) const
 void EditorProperties::applyScriptParameters(Component &component, const std::string &scriptName)
 {
     // Keeps the component's own properties, drops the parameters of the previous script
-    component.properties.erase(
-        component.properties.begin() + static_cast<std::ptrdiff_t>(ownPropertyCount(component)),
-        component.properties.end());
+    component.properties.erase(component.properties.begin() +
+                                   static_cast<std::ptrdiff_t>(ownPropertyCount(component)),
+                               component.properties.end());
 
     if (scriptName == NO_FILE)
         return;

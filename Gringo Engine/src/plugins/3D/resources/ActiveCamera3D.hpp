@@ -9,6 +9,5 @@
 #include "IRenderer.hpp"
 
 struct ActiveCamera3D {
-    RendererCamera3D value{0.0f, 0.0f, 10.0f, 0.0f, 0.0f,
-                           0.0f, 0.0f, 1.0f, 0.0f, 45.0f};
+    RendererCamera3D value{0.0f, 0.0f, 10.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 45.0f};
 };

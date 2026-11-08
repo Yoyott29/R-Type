@@ -7,10 +7,10 @@
 
 #pragma once
 #include "IRenderer.hpp"
-#include "Transform.hpp"
 #include "Scene.hpp"
 #include "Sprite.hpp"
 #include "System.hpp"
+#include "Transform.hpp"
 
 // Runs in the Render schedule: draws every Sprite through the renderer, by drawOrder
 class SpriteSystem : public System

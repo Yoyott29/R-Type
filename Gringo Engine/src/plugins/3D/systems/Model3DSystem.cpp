@@ -21,10 +21,10 @@ void Model3DSystem::update(Scene &scene)
             continue;
         renderer.drawModel3D(camera,
                              {model.path, model.primitive, model.texturePath, model.color,
-                              model.width, model.height, model.depth, model.scale,
-                              position.scaleX, position.scaleY, position.scaleZ,
-                              position.rotationX, position.rotationY, position.rotationZ,
-                              model.animation, model.animationSpeed, model.animationFrame},
+                              model.width, model.height, model.depth, model.scale, position.scaleX,
+                              position.scaleY, position.scaleZ, position.rotationX,
+                              position.rotationY, position.rotationZ, model.animation,
+                              model.animationSpeed, model.animationFrame},
                              position.x, position.y, position.z);
     }
 }

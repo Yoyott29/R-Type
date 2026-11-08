@@ -16,6 +16,7 @@ template <> struct ComponentDescription<CameraFollow3D> {
                 {{"Distance", valueType::Float, "8"},
                  {"Height", valueType::Float, "3"},
                  {"TargetHeight", valueType::Float, "1"}},
-                {59, 75, 96, 255}, "3D"};
+                {59, 75, 96, 255},
+                "3D"};
     }
 };

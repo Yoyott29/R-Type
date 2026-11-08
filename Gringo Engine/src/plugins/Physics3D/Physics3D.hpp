@@ -12,7 +12,8 @@
 #include <string>
 #include <vector>
 
-class Physics3D : public Plugin<Physics3D> {
+class Physics3D : public Plugin<Physics3D>
+{
   public:
     void registerComponents(Scene &scene) override;
     void build(Application &app) override;

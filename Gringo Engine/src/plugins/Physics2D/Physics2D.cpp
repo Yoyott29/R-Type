@@ -8,14 +8,14 @@
 #include "Physics2D.hpp"
 #include "Collider2D.hpp"
 #include "Collider2DSystem.hpp"
+#include "ComponentJson.hpp"
 #include "Gravity2D.hpp"
 #include "GravitySystem.hpp"
 #include "MovementSystem.hpp"
-#include "Transform.hpp"
 #include "ProjectSettings.hpp"
 #include "RigidBody2D.hpp"
+#include "Transform.hpp"
 #include "Velocity.hpp"
-#include "ComponentJson.hpp"
 #include <cstdint>
 #include <limits>
 #include <stdexcept>
@@ -42,7 +42,8 @@ std::uint32_t Physics2D::maskValue(const nlohmann::json &component)
 
 void Physics2D::registerComponents(Scene &scene)
 {
-    // register the Velocity, Collider2D and RigidBody2D components, with how to read them from a .gringo file
+    // register the Velocity, Collider2D and RigidBody2D components, with how to read them from a
+    // .gringo file
     scene.registerComponent<Velocity>([](Scene &target, Entity entity, const nlohmann::json &data) {
         target.addComponent(entity, Velocity{ComponentJson::floatValue(data, "Dx", 0.0f),
                                              ComponentJson::floatValue(data, "Dy", 0.0f)});
@@ -96,8 +97,8 @@ float Physics2D::floatSetting(Scene &scene, const std::string &key) const
 
 void Physics2D::build(Application &app)
 {
-    app._scene.addResource<Gravity2D>(Gravity2D{floatSetting(app._scene, "GravityX"),
-                                                floatSetting(app._scene, "GravityY")});
+    app._scene.addResource<Gravity2D>(
+        Gravity2D{floatSetting(app._scene, "GravityX"), floatSetting(app._scene, "GravityY")});
 
     // setup the GravitySystem, run before the movement so it uses the new velocity
     app._scene.registerSystem<GravitySystem>(FixedUpdate);
@@ -105,10 +106,8 @@ void Physics2D::build(Application &app)
     gravityRequirements.set(app._scene.getComponentType<RigidBody2D>());
     gravityRequirements.set(app._scene.getComponentType<Velocity>());
     app._scene.setSystemComponentSet<GravitySystem>(gravityRequirements);
-    app._scene.setSystemAccess<GravitySystem>(app._scene.access()
-                                                  .read<RigidBody2D>()
-                                                  .write<Velocity>()
-                                                  .readResource<Gravity2D>());
+    app._scene.setSystemAccess<GravitySystem>(
+        app._scene.access().read<RigidBody2D>().write<Velocity>().readResource<Gravity2D>());
 
     // setup the MovementSystem and its component requirements
     auto movementSystem = app._scene.registerSystem<MovementSystem>(FixedUpdate);

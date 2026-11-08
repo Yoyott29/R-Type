@@ -11,15 +11,14 @@
 #include <iostream>
 #include <utility>
 
-EditorMenu::EditorMenu(IEditorRenderer &renderer, std::string templateName, std::string projectName,
-                       Parser &parser, SceneObjects sceneObjects,
-                       const std::vector<ComponentDescriptor> &componentDescriptors,
-                       const std::map<std::string, std::vector<PropertyDescriptor>>
-                           &pluginSettingDescriptors)
+EditorMenu::EditorMenu(
+    IEditorRenderer &renderer, std::string templateName, std::string projectName, Parser &parser,
+    SceneObjects sceneObjects, const std::vector<ComponentDescriptor> &componentDescriptors,
+    const std::map<std::string, std::vector<PropertyDescriptor>> &pluginSettingDescriptors)
     : AMenu(renderer), _template(templateName), _projectName(projectName), _parser(parser),
       _componentDescriptors(componentDescriptors), _projectFilePath(sceneObjects.projectFilePath),
-      _activePlugins(sceneObjects.activePlugins),
-      _availablePlugins(PluginLoader{}.listNames()), _projectRenderer(sceneObjects.renderer),
+      _activePlugins(sceneObjects.activePlugins), _availablePlugins(PluginLoader{}.listNames()),
+      _projectRenderer(sceneObjects.renderer),
       _availableRenderers(PluginLoader{"renderers"}.listNames()),
       _pluginSettings(sceneObjects.pluginSettings),
       _pluginSettingDescriptors(pluginSettingDescriptors), _objects(*this), _components(*this),
@@ -51,8 +50,7 @@ EditorMenu::~EditorMenu()
 {
     try {
         _properties.applyCurrentEdit();
-        _parser.saveFile(_projectName + ".gringo",
-                         getSceneObjects());
+        _parser.saveFile(_projectName + ".gringo", getSceneObjects());
     } catch (...) {
     }
 }
@@ -97,16 +95,17 @@ void EditorMenu::updateBuildButton()
 {
     // Every component needs the plugin that registered it (descriptor.plugin, empty for the engine)
     const auto pluginsActiveFor = [this](const std::vector<Component> &components) {
-        return std::all_of(components.begin(), components.end(), [this](const Component &component) {
-            const auto descriptor = std::find_if(
-                _componentDescriptors.begin(), _componentDescriptors.end(),
-                [&component](const ComponentDescriptor &candidate) {
-                    return candidate.name == component.name;
-                });
-            if (descriptor == _componentDescriptors.end())
-                return false;
-            return descriptor->plugin.empty() || hasActivePlugin(descriptor->plugin);
-        });
+        return std::all_of(
+            components.begin(), components.end(), [this](const Component &component) {
+                const auto descriptor =
+                    std::find_if(_componentDescriptors.begin(), _componentDescriptors.end(),
+                                 [&component](const ComponentDescriptor &candidate) {
+                                     return candidate.name == component.name;
+                                 });
+                if (descriptor == _componentDescriptors.end())
+                    return false;
+                return descriptor->plugin.empty() || hasActivePlugin(descriptor->plugin);
+            });
     };
     const bool componentsValid =
         std::all_of(_entities.begin(), _entities.end(),
@@ -128,8 +127,7 @@ void EditorMenu::updateBuildButton()
 void EditorMenu::saveProject()
 {
     _properties.applyCurrentEdit();
-    _parser.saveFile(_projectName + ".gringo",
-                     getSceneObjects());
+    _parser.saveFile(_projectName + ".gringo", getSceneObjects());
     _projectFilePath = _parser.getLastSavedPath();
 
     const std::string message = "File saved...";
@@ -293,9 +291,9 @@ void EditorMenu::updateSettingEdit()
          character = _renderer.getNextCharacter()) {
         const bool digit = character >= '0' && character <= '9';
         const bool allowed =
-            _settingEdit.type == valueType::String ? character >= 32 && character <= 126
+            _settingEdit.type == valueType::String  ? character >= 32 && character <= 126
             : _settingEdit.type == valueType::Float ? digit || character == '-' || character == '.'
-                                                     : digit || character == '-';
+                                                    : digit || character == '-';
         if (allowed && text.size() < 64)
             text += static_cast<char>(character);
     }
@@ -501,11 +499,10 @@ void EditorMenu::initEntities(SceneObjects sceneObjects)
     }
 
     if (_template == "3D") {
-        _entities = {{0, "Camera",
-                      {createComponent("Transform", {"0", "3", "8"}),
-                       createComponent("Camera"),
-                       createComponent("CameraFollow3D"),
-                       createComponent("ChildOf", {"1"})}},
+        _entities = {{0,
+                      "Camera",
+                      {createComponent("Transform", {"0", "3", "8"}), createComponent("Camera"),
+                       createComponent("CameraFollow3D"), createComponent("ChildOf", {"1"})}},
                      {1, "Cube", {createComponent("Transform"), createComponent("3DModel")}}};
         return;
     }
@@ -518,10 +515,10 @@ void EditorMenu::initEntities(SceneObjects sceneObjects)
 
 void EditorMenu::ensureRequiredComponent(std::vector<Component> &components)
 {
-    const bool present = std::any_of(components.begin(), components.end(),
-                                     [](const Component &component) {
-                                         return component.name == REQUIRED_COMPONENT;
-                                     });
+    const bool present =
+        std::any_of(components.begin(), components.end(), [](const Component &component) {
+            return component.name == REQUIRED_COMPONENT;
+        });
     if (!present)
         components.insert(components.begin(), createComponent(REQUIRED_COMPONENT));
 }
@@ -538,11 +535,10 @@ void EditorMenu::initComponentTemplates()
         int propertyId = 0;
 
         for (const PropertyDescriptor &propertyDescriptor : componentDescriptor.properties) {
-            componentTemplate.properties.push_back({propertyId, propertyDescriptor.name,
-                                                    propertyDescriptor.defaultValue,
-                                                    propertyDescriptor.type,
-                                                    propertyDescriptor.options,
-                                                    propertyDescriptor.visibleWhen});
+            componentTemplate.properties.push_back(
+                {propertyId, propertyDescriptor.name, propertyDescriptor.defaultValue,
+                 propertyDescriptor.type, propertyDescriptor.options,
+                 propertyDescriptor.visibleWhen});
             propertyId++;
         }
         _componentTemplates.push_back(componentTemplate);
