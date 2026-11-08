@@ -25,7 +25,9 @@
 #define RACE_NORTH_Z 380.0f
 #define RACE_WEST_X -450.0f
 
-inline const std::vector<std::string> RaceDirector_params = {"laps", "countdown", "info"};
+// "endDelay": seconds the result stays on screen before the server closes and kicks everybody
+inline const std::vector<std::string> RaceDirector_params = {"laps", "countdown", "info",
+                                                             "endDelay"};
 
 class RaceDirector : public GringoEntityScript
 {
@@ -36,6 +38,8 @@ class RaceDirector : public GringoEntityScript
             _laps = std::stoi(value);
         else if (name == "countdown")
             _countdown = std::stof(value);
+        else if (name == "endDelay")
+            _endDelay = std::stof(value);
         else if (name == "info")
             _infoPrefab = value;
     }
@@ -82,6 +86,12 @@ class RaceDirector : public GringoEntityScript
         } else if (status.phase == RACE_RUNNING) {
             status.time += FIXED_DELTA_TIME;
             countLaps(scene, status, state);
+        } else if (status.phase == RACE_FINISHED) {
+            // Time to read who won, then the server closes: its clients are disconnected on the
+            // way out
+            _endDelay -= FIXED_DELTA_TIME;
+            if (_endDelay <= 0.0f)
+                scene.getResource<AppAlive>().alive = false;
         }
     }
 
@@ -175,6 +185,7 @@ class RaceDirector : public GringoEntityScript
 
     int _laps = 3;
     float _countdown = 3.0f;
+    float _endDelay = 5.0f;
     std::string _infoPrefab = "RaceInfo";
     Entity _info{};
     PeerId _host = NO_PEER;

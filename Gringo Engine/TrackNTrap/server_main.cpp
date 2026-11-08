@@ -1,23 +1,7 @@
 #include "Application.hpp"
-#include "BroomSpin.hpp"
 #include "BuildVariantName.hpp"
-#include "CameraOrbit.hpp"
-#include "CheeseSpawner.hpp"
-#include "CountdownScript.hpp"
-#include "Hud.hpp"
-#include "KnifeSpin.hpp"
-#include "LobbyMenu.hpp"
-#include "ObstacleSpawner.hpp"
-#include "Prefab.hpp"
-#include "PrefabsManager.hpp"
 #include "ProjectComponentManager.hpp"
 #include "ProjectSettings.hpp"
-#include "RaceDirector.hpp"
-#include "RatCamera.hpp"
-#include "RatPlayerController.hpp"
-#include "Script.hpp"
-#include "SpatulaSlap.hpp"
-#include "TrapPlacer.hpp"
 #include "nlohmann/json.hpp"
 #include <cstdlib>
 #include <ctime>
@@ -29,6 +13,22 @@
 #include <stdexcept>
 #include <string>
 #include <vector>
+#include "Prefab.hpp"
+#include "PrefabsManager.hpp"
+#include "Script.hpp"
+#include "BroomSpin.hpp"
+#include "CameraOrbit.hpp"
+#include "CheeseSpawner.hpp"
+#include "CountdownScript.hpp"
+#include "Hud.hpp"
+#include "KnifeSpin.hpp"
+#include "LobbyMenu.hpp"
+#include "ObstacleSpawner.hpp"
+#include "RaceDirector.hpp"
+#include "RatCamera.hpp"
+#include "RatPlayerController.hpp"
+#include "SpatulaSlap.hpp"
+#include "TrapPlacer.hpp"
 
 int main(int argc, char **argv)
 {
@@ -43,8 +43,8 @@ int main(int argc, char **argv)
         file >> root;
         Application application(std::vector<std::string>(argv + 1, argv + argc));
         Scene &scene = application._scene;
-        scene.addResource<ProjectSettings>(
-            ProjectSettings::fromJson(root.value("pluginSettings", nlohmann::json::object())));
+        scene.addResource<ProjectSettings>(ProjectSettings::fromJson(
+            root.value("pluginSettings", nlohmann::json::object())));
         scene.addResource<BuildVariantName>(BuildVariantName{"server"});
         scene.addResource<PrefabsManager>();
         application.addPlugin("Physics3D");
@@ -59,17 +59,14 @@ int main(int argc, char **argv)
             }
         };
         ProjectComponentManager components(scene, projectPath.parent_path());
-        components.ignore({"3DModel", "Animator", "AudioSource", "Button", "Camera",
-                           "CameraFollow3D", "ParticleEmitter2D", "ParticleEmitter3D", "Sprite",
-                           "Text"});
+        components.ignore({"3DModel", "Animator", "AudioSource", "Button", "Camera", "CameraFollow3D", "ParticleEmitter2D", "ParticleEmitter3D", "Sprite", "Text"});
         for (const auto &entityData : root.value("entities", nlohmann::json::array())) {
             Entity entity = scene.createEntity();
             components.addEntityId(scene, entityData.value("id", -1), entity);
             for (const auto &component : entityData.value("components", nlohmann::json::array())) {
                 if (component.value("name", "") == "Script") {
                     std::string path;
-                    for (const auto &property :
-                         component.value("properties", nlohmann::json::array()))
+                    for (const auto &property : component.value("properties", nlohmann::json::array()))
                         if (property.value("name", "") == "Path")
                             path = property.value("value", "");
                     if (path == "NONE")
@@ -78,55 +75,68 @@ int main(int argc, char **argv)
                         auto instance = std::make_shared<BroomSpin>();
                         applyParameters(instance, component);
                         scene.addComponent(entity, Script{instance, false});
-                    } else if (path == "CameraOrbit.hpp") {
+                    }
+                    else if (path == "CameraOrbit.hpp") {
                         auto instance = std::make_shared<CameraOrbit>();
                         applyParameters(instance, component);
                         scene.addComponent(entity, Script{instance, false});
-                    } else if (path == "CheeseSpawner.hpp") {
+                    }
+                    else if (path == "CheeseSpawner.hpp") {
                         auto instance = std::make_shared<CheeseSpawner>();
                         applyParameters(instance, component);
                         scene.addComponent(entity, Script{instance, false});
-                    } else if (path == "CountdownScript.hpp") {
+                    }
+                    else if (path == "CountdownScript.hpp") {
                         auto instance = std::make_shared<CountdownScript>();
                         applyParameters(instance, component);
                         scene.addComponent(entity, Script{instance, false});
-                    } else if (path == "Hud.hpp") {
+                    }
+                    else if (path == "Hud.hpp") {
                         auto instance = std::make_shared<Hud>();
                         applyParameters(instance, component);
                         scene.addComponent(entity, Script{instance, false});
-                    } else if (path == "KnifeSpin.hpp") {
+                    }
+                    else if (path == "KnifeSpin.hpp") {
                         auto instance = std::make_shared<KnifeSpin>();
                         applyParameters(instance, component);
                         scene.addComponent(entity, Script{instance, false});
-                    } else if (path == "LobbyMenu.hpp") {
+                    }
+                    else if (path == "LobbyMenu.hpp") {
                         auto instance = std::make_shared<LobbyMenu>();
                         applyParameters(instance, component);
                         scene.addComponent(entity, Script{instance, false});
-                    } else if (path == "ObstacleSpawner.hpp") {
+                    }
+                    else if (path == "ObstacleSpawner.hpp") {
                         auto instance = std::make_shared<ObstacleSpawner>();
                         applyParameters(instance, component);
                         scene.addComponent(entity, Script{instance, false});
-                    } else if (path == "RaceDirector.hpp") {
+                    }
+                    else if (path == "RaceDirector.hpp") {
                         auto instance = std::make_shared<RaceDirector>();
                         applyParameters(instance, component);
                         scene.addComponent(entity, Script{instance, false});
-                    } else if (path == "RatCamera.hpp") {
+                    }
+                    else if (path == "RatCamera.hpp") {
                         auto instance = std::make_shared<RatCamera>();
                         applyParameters(instance, component);
                         scene.addComponent(entity, Script{instance, false});
-                    } else if (path == "RatPlayerController.hpp") {
+                    }
+                    else if (path == "RatPlayerController.hpp") {
                         auto instance = std::make_shared<RatPlayerController>();
                         applyParameters(instance, component);
                         scene.addComponent(entity, Script{instance, false});
-                    } else if (path == "SpatulaSlap.hpp") {
+                    }
+                    else if (path == "SpatulaSlap.hpp") {
                         auto instance = std::make_shared<SpatulaSlap>();
                         applyParameters(instance, component);
                         scene.addComponent(entity, Script{instance, false});
-                    } else if (path == "TrapPlacer.hpp") {
+                    }
+                    else if (path == "TrapPlacer.hpp") {
                         auto instance = std::make_shared<TrapPlacer>();
                         applyParameters(instance, component);
                         scene.addComponent(entity, Script{instance, false});
-                    } else
+                    }
+                    else
                         throw std::runtime_error("Unknown script: " + path);
                 } else {
                     components.addToScene(scene, entity, component);
@@ -139,122 +149,120 @@ int main(int argc, char **argv)
             for (const auto &component : prefabData.value("components", nlohmann::json::array())) {
                 if (component.value("name", "") == "Script") {
                     std::string path;
-                    for (const auto &property :
-                         component.value("properties", nlohmann::json::array()))
+                    for (const auto &property : component.value("properties", nlohmann::json::array()))
                         if (property.value("name", "") == "Path")
                             path = property.value("value", "");
                     if (path == "BroomSpin.hpp") {
-
-                        prefab.addComponent(std::function<void(Scene &, Entity)>(
-                            [component, applyParameters](Scene &target, Entity copy) {
-                                auto instance = std::make_shared<BroomSpin>();
-                                applyParameters(instance, component);
-                                target.addComponent(copy, Script{instance, false});
-                            }));
-                    } else if (path == "CameraOrbit.hpp") {
-
-                        prefab.addComponent(std::function<void(Scene &, Entity)>(
-                            [component, applyParameters](Scene &target, Entity copy) {
-                                auto instance = std::make_shared<CameraOrbit>();
-                                applyParameters(instance, component);
-                                target.addComponent(copy, Script{instance, false});
-                            }));
-                    } else if (path == "CheeseSpawner.hpp") {
-
-                        prefab.addComponent(std::function<void(Scene &, Entity)>(
-                            [component, applyParameters](Scene &target, Entity copy) {
-                                auto instance = std::make_shared<CheeseSpawner>();
-                                applyParameters(instance, component);
-                                target.addComponent(copy, Script{instance, false});
-                            }));
-                    } else if (path == "CountdownScript.hpp") {
-
-                        prefab.addComponent(std::function<void(Scene &, Entity)>(
-                            [component, applyParameters](Scene &target, Entity copy) {
-                                auto instance = std::make_shared<CountdownScript>();
-                                applyParameters(instance, component);
-                                target.addComponent(copy, Script{instance, false});
-                            }));
-                    } else if (path == "Hud.hpp") {
-
-                        prefab.addComponent(std::function<void(Scene &, Entity)>(
-                            [component, applyParameters](Scene &target, Entity copy) {
-                                auto instance = std::make_shared<Hud>();
-                                applyParameters(instance, component);
-                                target.addComponent(copy, Script{instance, false});
-                            }));
-                    } else if (path == "KnifeSpin.hpp") {
-
-                        prefab.addComponent(std::function<void(Scene &, Entity)>(
-                            [component, applyParameters](Scene &target, Entity copy) {
-                                auto instance = std::make_shared<KnifeSpin>();
-                                applyParameters(instance, component);
-                                target.addComponent(copy, Script{instance, false});
-                            }));
-                    } else if (path == "LobbyMenu.hpp") {
-
-                        prefab.addComponent(std::function<void(Scene &, Entity)>(
-                            [component, applyParameters](Scene &target, Entity copy) {
-                                auto instance = std::make_shared<LobbyMenu>();
-                                applyParameters(instance, component);
-                                target.addComponent(copy, Script{instance, false});
-                            }));
-                    } else if (path == "ObstacleSpawner.hpp") {
-
-                        prefab.addComponent(std::function<void(Scene &, Entity)>(
-                            [component, applyParameters](Scene &target, Entity copy) {
-                                auto instance = std::make_shared<ObstacleSpawner>();
-                                applyParameters(instance, component);
-                                target.addComponent(copy, Script{instance, false});
-                            }));
-                    } else if (path == "RaceDirector.hpp") {
-
-                        prefab.addComponent(std::function<void(Scene &, Entity)>(
-                            [component, applyParameters](Scene &target, Entity copy) {
-                                auto instance = std::make_shared<RaceDirector>();
-                                applyParameters(instance, component);
-                                target.addComponent(copy, Script{instance, false});
-                            }));
-                    } else if (path == "RatCamera.hpp") {
-
-                        prefab.addComponent(std::function<void(Scene &, Entity)>(
-                            [component, applyParameters](Scene &target, Entity copy) {
-                                auto instance = std::make_shared<RatCamera>();
-                                applyParameters(instance, component);
-                                target.addComponent(copy, Script{instance, false});
-                            }));
-                    } else if (path == "RatPlayerController.hpp") {
-
-                        prefab.addComponent(std::function<void(Scene &, Entity)>(
-                            [component, applyParameters](Scene &target, Entity copy) {
-                                auto instance = std::make_shared<RatPlayerController>();
-                                applyParameters(instance, component);
-                                target.addComponent(copy, Script{instance, false});
-                            }));
-                    } else if (path == "SpatulaSlap.hpp") {
-
-                        prefab.addComponent(std::function<void(Scene &, Entity)>(
-                            [component, applyParameters](Scene &target, Entity copy) {
-                                auto instance = std::make_shared<SpatulaSlap>();
-                                applyParameters(instance, component);
-                                target.addComponent(copy, Script{instance, false});
-                            }));
-                    } else if (path == "TrapPlacer.hpp") {
-
-                        prefab.addComponent(std::function<void(Scene &, Entity)>(
-                            [component, applyParameters](Scene &target, Entity copy) {
-                                auto instance = std::make_shared<TrapPlacer>();
-                                applyParameters(instance, component);
-                                target.addComponent(copy, Script{instance, false});
-                            }));
-                    } else
+                        // Each copy of the prefab gets its own script
+                        prefab.addComponent(std::function<void(Scene &, Entity)>([component, applyParameters](Scene &target, Entity copy) {
+                            auto instance = std::make_shared<BroomSpin>();
+                            applyParameters(instance, component);
+                            target.addComponent(copy, Script{instance, false});
+                        }));
+                    }
+                    else if (path == "CameraOrbit.hpp") {
+                        // Each copy of the prefab gets its own script
+                        prefab.addComponent(std::function<void(Scene &, Entity)>([component, applyParameters](Scene &target, Entity copy) {
+                            auto instance = std::make_shared<CameraOrbit>();
+                            applyParameters(instance, component);
+                            target.addComponent(copy, Script{instance, false});
+                        }));
+                    }
+                    else if (path == "CheeseSpawner.hpp") {
+                        // Each copy of the prefab gets its own script
+                        prefab.addComponent(std::function<void(Scene &, Entity)>([component, applyParameters](Scene &target, Entity copy) {
+                            auto instance = std::make_shared<CheeseSpawner>();
+                            applyParameters(instance, component);
+                            target.addComponent(copy, Script{instance, false});
+                        }));
+                    }
+                    else if (path == "CountdownScript.hpp") {
+                        // Each copy of the prefab gets its own script
+                        prefab.addComponent(std::function<void(Scene &, Entity)>([component, applyParameters](Scene &target, Entity copy) {
+                            auto instance = std::make_shared<CountdownScript>();
+                            applyParameters(instance, component);
+                            target.addComponent(copy, Script{instance, false});
+                        }));
+                    }
+                    else if (path == "Hud.hpp") {
+                        // Each copy of the prefab gets its own script
+                        prefab.addComponent(std::function<void(Scene &, Entity)>([component, applyParameters](Scene &target, Entity copy) {
+                            auto instance = std::make_shared<Hud>();
+                            applyParameters(instance, component);
+                            target.addComponent(copy, Script{instance, false});
+                        }));
+                    }
+                    else if (path == "KnifeSpin.hpp") {
+                        // Each copy of the prefab gets its own script
+                        prefab.addComponent(std::function<void(Scene &, Entity)>([component, applyParameters](Scene &target, Entity copy) {
+                            auto instance = std::make_shared<KnifeSpin>();
+                            applyParameters(instance, component);
+                            target.addComponent(copy, Script{instance, false});
+                        }));
+                    }
+                    else if (path == "LobbyMenu.hpp") {
+                        // Each copy of the prefab gets its own script
+                        prefab.addComponent(std::function<void(Scene &, Entity)>([component, applyParameters](Scene &target, Entity copy) {
+                            auto instance = std::make_shared<LobbyMenu>();
+                            applyParameters(instance, component);
+                            target.addComponent(copy, Script{instance, false});
+                        }));
+                    }
+                    else if (path == "ObstacleSpawner.hpp") {
+                        // Each copy of the prefab gets its own script
+                        prefab.addComponent(std::function<void(Scene &, Entity)>([component, applyParameters](Scene &target, Entity copy) {
+                            auto instance = std::make_shared<ObstacleSpawner>();
+                            applyParameters(instance, component);
+                            target.addComponent(copy, Script{instance, false});
+                        }));
+                    }
+                    else if (path == "RaceDirector.hpp") {
+                        // Each copy of the prefab gets its own script
+                        prefab.addComponent(std::function<void(Scene &, Entity)>([component, applyParameters](Scene &target, Entity copy) {
+                            auto instance = std::make_shared<RaceDirector>();
+                            applyParameters(instance, component);
+                            target.addComponent(copy, Script{instance, false});
+                        }));
+                    }
+                    else if (path == "RatCamera.hpp") {
+                        // Each copy of the prefab gets its own script
+                        prefab.addComponent(std::function<void(Scene &, Entity)>([component, applyParameters](Scene &target, Entity copy) {
+                            auto instance = std::make_shared<RatCamera>();
+                            applyParameters(instance, component);
+                            target.addComponent(copy, Script{instance, false});
+                        }));
+                    }
+                    else if (path == "RatPlayerController.hpp") {
+                        // Each copy of the prefab gets its own script
+                        prefab.addComponent(std::function<void(Scene &, Entity)>([component, applyParameters](Scene &target, Entity copy) {
+                            auto instance = std::make_shared<RatPlayerController>();
+                            applyParameters(instance, component);
+                            target.addComponent(copy, Script{instance, false});
+                        }));
+                    }
+                    else if (path == "SpatulaSlap.hpp") {
+                        // Each copy of the prefab gets its own script
+                        prefab.addComponent(std::function<void(Scene &, Entity)>([component, applyParameters](Scene &target, Entity copy) {
+                            auto instance = std::make_shared<SpatulaSlap>();
+                            applyParameters(instance, component);
+                            target.addComponent(copy, Script{instance, false});
+                        }));
+                    }
+                    else if (path == "TrapPlacer.hpp") {
+                        // Each copy of the prefab gets its own script
+                        prefab.addComponent(std::function<void(Scene &, Entity)>([component, applyParameters](Scene &target, Entity copy) {
+                            auto instance = std::make_shared<TrapPlacer>();
+                            applyParameters(instance, component);
+                            target.addComponent(copy, Script{instance, false});
+                        }));
+                    }
+                    else
                         throw std::runtime_error("Unknown script: " + path);
                 } else {
                     components.addToPrefab(prefab, scene, component);
                 }
             }
-            application._scene.getResource<PrefabsManager>().createPrefab(
-                prefabData.value("name", ""), prefab);
+            application._scene.getResource<PrefabsManager>().createPrefab(prefabData.value("name", ""), prefab);
         }
         application.run();
     } catch (const std::exception &error) {
