@@ -13,12 +13,14 @@ MainMenu::MainMenu(IEditorRenderer &renderer) : AMenu(renderer)
 
     MainMenu::initTexts();
     MainMenu::initButtons();
+    // The pixel art logo (148 x 144), twice its size, above the title
+    addImage("logo", {960, 180}, 296, 288, "gringo_logo.png");
 }
 
 void MainMenu::initTexts()
 {
-    addText("title", {960, 300}, 60, "GRINGO ENGINE", TEXT_COLOR);
-    addText("subtitle", {960, 350}, 30, "Welcome to the Gringo Engine!", TEXT_COLOR);
+    addText("title", {960, 370}, 60, "GRINGO ENGINE", TEXT_COLOR);
+    addText("subtitle", {960, 420}, 30, "Welcome to the Gringo Engine!", TEXT_COLOR);
 }
 
 void MainMenu::initButtons()

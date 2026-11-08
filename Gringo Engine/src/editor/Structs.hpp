@@ -86,6 +86,14 @@ struct UiRectangle {
     int drawOrder;
 };
 
+// A picture of the editor's Assets folder, drawn centered on position at width x height
+struct UiImage {
+    Vec2 position;
+    int width;
+    int height;
+    std::string file;
+};
+
 struct Button {
     UiRectangle rectangle;
     ColorRGBA hoveredColor;

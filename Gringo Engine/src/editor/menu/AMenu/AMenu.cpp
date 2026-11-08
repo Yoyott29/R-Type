@@ -33,6 +33,19 @@ void AMenu::addRectangle(const std::string &name, Vec2 center, int width, int he
     _rectangles.emplace(name, UiRectangle{center, width, height, color, drawOrder});
 }
 
+void AMenu::addImage(const std::string &name, Vec2 center, int width, int height,
+                     const std::string &file)
+{
+    _images.emplace(name, UiImage{center, width, height, file});
+}
+
+void AMenu::drawImages() const
+{
+    for (const auto &entry : _images)
+        _renderer.drawImage(entry.second.file, entry.second.position, entry.second.width,
+                            entry.second.height);
+}
+
 void AMenu::drawTexts() const
 {
     for (const auto &[name, text] : _texts)
@@ -158,6 +171,7 @@ ColorRGBA AMenu::checkHoveredButton(Button &button)
 void AMenu::update()
 {
     drawRectangles();
+    drawImages();
     drawTexts();
     handleButtons();
 }

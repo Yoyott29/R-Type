@@ -47,10 +47,14 @@ class AMenu
                    ColorRGBA textColor, std::optional<std::string> text = std::nullopt);
     void addRectangle(const std::string &name, Vec2 center, int width, int height, ColorRGBA color,
                       int drawOrder = 0);
+    // file: a picture of the editor's Assets folder
+    void addImage(const std::string &name, Vec2 center, int width, int height,
+                  const std::string &file);
 
     void removeText(const std::string &name) { _texts.erase(name); }
     void removeButton(const std::string &name) { _buttons.erase(name); }
     void removeRectangle(const std::string &name) { _rectangles.erase(name); }
+    void removeImage(const std::string &name) { _images.erase(name); }
 
     void setButtonText(const std::string &Name, const std::string &newText);
     void setButtonEnabled(const std::string &name, bool enabled);
@@ -62,10 +66,12 @@ class AMenu
     virtual void drawTexts() const;
     virtual void handleButtons();
     virtual void drawRectangles() const;
+    virtual void drawImages() const;
 
     std::map<std::string, Button> _buttons;
     std::map<std::string, Text> _texts;
     std::map<std::string, UiRectangle> _rectangles;
+    std::map<std::string, UiImage> _images;
     bool _isRunning;
     IEditorRenderer &_renderer;
     MenuType _switchMenu = MenuType::None;

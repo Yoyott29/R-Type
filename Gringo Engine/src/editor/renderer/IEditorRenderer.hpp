@@ -28,4 +28,6 @@ class IEditorRenderer
     virtual int getNextCharacter() const = 0;
     virtual void drawRectangle(Vec2 pos, int width, int height, ColorRGBA color) = 0;
     virtual void drawText(const std::string &text, Vec2 pos, int fontSize, ColorRGBA color) = 0;
+    // file: a picture of the editor's Assets folder, drawn centered on pos at width x height
+    virtual void drawImage(const std::string &file, Vec2 pos, int width, int height) = 0;
 };
