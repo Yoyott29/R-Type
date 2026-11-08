@@ -22,16 +22,18 @@ class EnemyShootScript : public GringoEntityScript
     void onStart(Scene &scene, Entity &entity) override;
     void onUpdate(Scene &scene, Entity &entity) override;
 
+    static std::optional<Transform> nearestPlayer(Scene &scene, const Transform &from);
+
   private:
-    static constexpr float FIRST_COOLDOWN = 1.0f;
+    static constexpr float FIRST_MIN_COOLDOWN = 0.5f;
+    static constexpr float FIRST_MAX_COOLDOWN = 1.5f;
     static constexpr float MIN_COOLDOWN = 2.0f;
     static constexpr float MAX_COOLDOWN = 4.0f;
     static constexpr float BULLET_SPEED = 400.0f;
     static constexpr std::uint32_t PLAYER_LAYER = 1;
 
     static bool isClientSide(Scene &scene);
-    static float randomCooldown();
-    static std::optional<Transform> nearestPlayer(Scene &scene, const Transform &from);
+    static float randomCooldown(float min, float max);
     static void shoot(Scene &scene, const Transform &from, const Transform &target);
 
     float _cooldown = 0.0f;
@@ -43,15 +45,18 @@ inline bool EnemyShootScript::isClientSide(Scene &scene)
            scene.getResource<BuildVariantName>().name == "client";
 }
 
-inline float EnemyShootScript::randomCooldown()
+inline float EnemyShootScript::randomCooldown(float min, float max)
 {
     static std::mt19937 generator{std::random_device{}()};
-    std::uniform_real_distribution<float> distribution(MIN_COOLDOWN, MAX_COOLDOWN);
+    std::uniform_real_distribution<float> distribution(min, max);
 
     return distribution(generator);
 }
 
-inline void EnemyShootScript::onStart(Scene &, Entity &) { _cooldown = FIRST_COOLDOWN; }
+inline void EnemyShootScript::onStart(Scene &, Entity &)
+{
+    _cooldown = randomCooldown(FIRST_MIN_COOLDOWN, FIRST_MAX_COOLDOWN);
+}
 
 inline void EnemyShootScript::onUpdate(Scene &scene, Entity &entity)
 {
@@ -60,7 +65,7 @@ inline void EnemyShootScript::onUpdate(Scene &scene, Entity &entity)
     _cooldown -= FIXED_DELTA_TIME;
     if (_cooldown > 0.0f)
         return;
-    _cooldown = randomCooldown();
+    _cooldown = randomCooldown(MIN_COOLDOWN, MAX_COOLDOWN);
     const Transform from = scene.getComponent<Transform>(entity);
     const std::optional<Transform> target = nearestPlayer(scene, from);
     if (target)
