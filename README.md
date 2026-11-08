@@ -104,46 +104,6 @@ You need:
 How to install them is explained in the [WINDOWS](#windows) and
 [LINUX](#linux) sections below.
 
-## How it works
-
-Run every command of the WINDOWS and LINUX sections from the repository root
-(the folder that holds this README), unless told otherwise.
-
-- **R-Type** is a server and a client. The first build downloads the
-  dependencies listed above.
-- **Starting a game**: start the server first, then one client per player,
-  each in its own terminal. A client tries to connect for about 5 seconds, then
-  quits if no server answers. The game finds its files from the location of the
-  executable, so you can start it from any folder.
-- **Address and port**: both programs use `127.0.0.1:4242` by default, so the
-  server only accepts clients from the same machine. Give a single argument to
-  change the port, or an IPv4 address and a port. The client and the server
-  must use the same port. To play over a network, start the server on `0.0.0.0`
-  (every network interface) and give the clients the IP address of the machine
-  running the server (`192.168.1.20` in the examples below).
-- **Tests**: the project test suite (`tests/tests.sh`) builds the project, then
-  starts the real server and client to check their arguments, logs, connection
-  and shutdown. The engine unit tests (scheduler, thread pool, network
-  protocol...) are built separately with CTest.
-- **Gringo editor** (`Gringo`): it lets you create or open a project (a
-  `.gringo` file), add entities and prefabs, set their components, choose the
-  project's plugins, and build the project. It is built with the engine library
-  and its plugins next to it, in `Gringo Engine/`. It can also build a project
-  from the command line (`Gringo --build <file.gringo>`): it generates the
-  project's `client_main.cpp` and `server_main.cpp`, then compiles them. Run it
-  after changing `R-Type/R-Type.gringo` or adding a script, then rebuild
-  R-Type.
-- **TrackNTrap** is a 3D race for up to four players, made with the same
-  engine to show that it is not tied to R-Type. Rats race around a kitchen
-  track full of knives, brooms, and spatulas, and drop mouse traps on the track
-  for the others. It lives in `Gringo Engine/TrackNTrap/`, is built with the
-  editor (build the editor first), and creates `trackntrap_server` and
-  `trackntrap_client` in `Gringo Engine/TrackNTrap/`. They take the same
-  `[ip] [port]` arguments as R-Type.
-
-How to play (lobby, controls, gameplay) is explained in the
-[user documentation](https://r-type-project-documentation.vercel.app/user/getting-started).
-
 ## WINDOWS
 
 ### 1. Install the C++ toolchain
