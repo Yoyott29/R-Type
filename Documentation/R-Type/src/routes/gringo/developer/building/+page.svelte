@@ -1,11 +1,21 @@
 <script>
-	const code0 = `./Gringo\\ Engine/build_engine.sh
+	import Platform from '$lib/components/Platform.svelte';
+
+	const pre =
+		'mt-3 overflow-x-auto rounded-md border border-[#1e2b26] bg-[#121a17] p-4 font-mono text-[13.5px] leading-6';
+
+	const winBuild = `cmake -S "Gringo Engine" -B "Gringo Engine\\build" -A x64
+cmake --build "Gringo Engine\\build" --config Release --target Gringo -j`;
+	const winTests = `cmake -S "Gringo Engine" -B build-unit -A x64 -DGRINGO_BUILD_TESTS=ON
+cmake --build build-unit --config Release --target engine_tests network_tests -j
+ctest --test-dir build-unit -C Release --output-on-failure`;
+	const linuxBuild = `./Gringo\\ Engine/build_engine.sh
 
 # the same, by hand
 cmake -S "Gringo Engine" -B "Gringo Engine/build"
 cmake --build "Gringo Engine/build" --target Gringo -j`;
-	const code1 = `cmake -S "Gringo Engine" -B build-unit -DGRINGO_BUILD_TESTS=ON
-cmake --build build-unit --target engine_tests network_tests
+	const linuxTests = `cmake -S "Gringo Engine" -B build-unit -DGRINGO_BUILD_TESTS=ON
+cmake --build build-unit --target engine_tests network_tests -j
 ctest --test-dir build-unit --output-on-failure`;
 </script>
 
@@ -20,8 +30,20 @@ ctest --test-dir build-unit --output-on-failure`;
 	<code>Gringo Engine/</code> is its own CMake project: it builds without the rest of the repository.
 </p>
 
-<pre
-	class="mt-3 overflow-x-auto rounded-md border border-[#1e2b26] bg-[#121a17] p-4 font-mono text-[13.5px] leading-6"><code>{code0}</code></pre>
+<Platform os="windows">
+	<p class="mt-3 leading-7">
+		From a <strong>Developer PowerShell for VS 2022</strong>, at the root of the repository.
+		<code>build_engine.sh</code> is a Bash script: call CMake directly. Visual Studio is a
+		multi-config generator, so the configuration is chosen at build time with
+		<code>--config Release</code>.
+	</p>
+	<pre class={pre}><code>{winBuild}</code></pre>
+</Platform>
+
+<Platform os="linux">
+	<p class="mt-3 leading-7">From the root of the repository:</p>
+	<pre class={pre}><code>{linuxBuild}</code></pre>
+</Platform>
 
 <h2 class="mt-9 text-lg font-semibold">Dependencies</h2>
 
@@ -59,13 +81,19 @@ ctest --test-dir build-unit --output-on-failure`;
 	</table>
 </div>
 
-<pre
-	class="mt-3 overflow-x-auto rounded-md border border-[#1e2b26] bg-[#121a17] p-4 font-mono text-[13.5px] leading-6"><code>{code1}</code></pre>
+<Platform os="windows">
+	<p class="mt-3 leading-7">The CI runs exactly these on <code>windows-latest</code>:</p>
+	<pre class={pre}><code>{winTests}</code></pre>
+</Platform>
+
+<Platform os="linux">
+	<pre class={pre}><code>{linuxTests}</code></pre>
+</Platform>
 
 <h2 class="mt-9 text-lg font-semibold">Building a game</h2>
 
 <p class="mt-3 max-w-[100ch] leading-7">
-	The editor builds games with this same CMake project: it passes <code>GRINGO_GAME_TARGET</code>, <code>GRINGO_GAME_SOURCE</code> (the generated main), <code>GRINGO_GAME_SCRIPT_DIR</code>, <code>GRINGO_GAME_PLUGINS</code>, <code>GRINGO_GAME_RENDERER</code> and <code>GRINGO_GAME_OUTPUT_DIR</code>, and the project adds one more executable. The plugins listed get their include directories and a <code>GRINGO_USE_&lt;PLUGIN&gt;</code> define, so a script can test <code>#ifdef GRINGO_USE_NETWORK</code>.
+	The editor builds games with this same CMake project, on Linux and on Windows (where it also builds with <code>--config Release</code> and copies <code>gringo_engine.dll</code> next to the game, since Windows has no rpath): it passes <code>GRINGO_GAME_TARGET</code>, <code>GRINGO_GAME_SOURCE</code> (the generated main), <code>GRINGO_GAME_SCRIPT_DIR</code>, <code>GRINGO_GAME_PLUGINS</code>, <code>GRINGO_GAME_RENDERER</code> and <code>GRINGO_GAME_OUTPUT_DIR</code>, and the project adds one more executable. The plugins listed get their include directories and a <code>GRINGO_USE_&lt;PLUGIN&gt;</code> define, so a script can test <code>#ifdef GRINGO_USE_NETWORK</code>.
 </p>
 
 <p class="mt-3 max-w-[100ch] leading-7">

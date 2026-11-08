@@ -36,7 +36,7 @@ void NetReceiveSystem::update(Scene &scene)
     for (auto const &event : incoming.connected) {
         connected.send(event);
         if (server)
-            std::cout << "Player " << event.peer << " connected" << std::endl;
+            std::cout << "Player " << event.peer << " connected\n";
         else
             scene.getResource<LocalPeer>().id = transport.localPeer().value_or(NO_PEER);
     }
@@ -44,8 +44,7 @@ void NetReceiveSystem::update(Scene &scene)
         disconnected.send(event);
         if (server)
             std::cout << "Player " << event.peer
-                      << (event.reason == DisconnectReason::Timeout ? " timed out" : " left")
-                      << std::endl;
+                      << (event.reason == DisconnectReason::Timeout ? " timed out" : " left") << '\n';
         else
             scene.getResource<LocalPeer>().id = NO_PEER;
     }

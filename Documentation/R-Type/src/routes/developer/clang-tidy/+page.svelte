@@ -24,7 +24,7 @@ endif()`;
 cmake --build build`;
 
 	const ciExample = `cmake -B build-tidy -DENABLE_CLANG_TIDY=ON
-cmake --build build-tidy --parallel`;
+cmake --build build-tidy -j`;
 
 	const suppressExample = `// NOLINT silences every check on this line
 int value = compute(); // NOLINT

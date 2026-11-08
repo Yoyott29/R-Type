@@ -10,8 +10,22 @@
 #include <set>
 #include <stdexcept>
 
+// std::system runs the command with cmd.exe on Windows and /bin/sh elsewhere: each has its own
+// quoting. cmd.exe does not understand single quotes, so a path holding a space (Gringo Engine)
+// would be split in two
 std::string ProjectBuilder::shellQuote(const std::string &value)
 {
+#if defined(_WIN32)
+    // Double quotes; a Windows path cannot hold one, but escape it for CMake's own parser anyway
+    std::string result = "\"";
+    for (char character : value) {
+        if (character == '"')
+            result += "\\\"";
+        else
+            result += character;
+    }
+    return result + "\"";
+#else
     std::string result = "'";
     for (char character : value) {
         if (character == '\'')
@@ -20,6 +34,7 @@ std::string ProjectBuilder::shellQuote(const std::string &value)
             result += character;
     }
     return result + "'";
+#endif
 }
 
 std::string ProjectBuilder::cppStringLiteral(const std::string &value)
@@ -613,17 +628,19 @@ std::string ProjectBuilder::build(const std::string &projectPath, const SceneObj
 
         const std::string renderer = variant.headless ? "" : sceneObjects.renderer;
         std::string command =
-            "cmake -S " + shellQuote(resolvedEngineDirectory.string()) + " -B " +
-            shellQuote(buildDirectory.string()) +
+            "cmake -S " + shellQuote(resolvedEngineDirectory.generic_string()) + " -B " +
+            shellQuote(buildDirectory.generic_string()) +
             " "
             "-DGRINGO_GAME_TARGET=" +
             shellQuote(variantTarget) +
-            " -DGRINGO_GAME_OUTPUT_DIR=" + shellQuote(projectFolder.string()) +
-            " -DGRINGO_GAME_SOURCE=" + shellQuote(generatedSource.string()) +
-            " -DGRINGO_GAME_SCRIPT_DIR=" + shellQuote((projectFolder / "scripts").string()) +
+            " -DGRINGO_GAME_OUTPUT_DIR=" + shellQuote(projectFolder.generic_string()) +
+            " -DGRINGO_GAME_SOURCE=" + shellQuote(generatedSource.generic_string()) +
+            " -DGRINGO_GAME_SCRIPT_DIR=" + shellQuote((projectFolder / "scripts").generic_string()) +
             " -DGRINGO_GAME_PLUGINS=" + shellQuote(pluginList) +
             " -DGRINGO_GAME_RENDERER=" + shellQuote(renderer) + " && cmake --build " +
-            shellQuote(buildDirectory.string()) + " --target " + shellQuote(variantTarget) + " -j";
+            shellQuote(buildDirectory.generic_string()) + " --target " + shellQuote(variantTarget) +
+            // Visual Studio builds Debug unless told otherwise; single-config generators ignore it
+            " --config Release -j";
         if (std::system(command.c_str()) != 0)
             throw std::runtime_error("Failed to build project executable: " + variantTarget);
     }

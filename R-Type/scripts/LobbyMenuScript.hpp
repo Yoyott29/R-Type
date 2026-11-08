@@ -2,10 +2,15 @@
 #define LOBBYMENUSCRIPT_HPP_
 
 #include "ActionInput.hpp"
+#include "Difficulty.hpp"
+#include "DifficultyButtonScript.hpp"
 #include "Lobby.hpp"
 #include "Scene.hpp"
 #include "Script.hpp"
 #include "Settings.hpp"
+#include "UIButton.hpp"
+#include <optional>
+#include <string>
 
 class LobbyMenuScript : public GringoEntityScript
 {
@@ -14,7 +19,12 @@ class LobbyMenuScript : public GringoEntityScript
     void onUpdate(Scene &scene, Entity &entity) override;
 
   private:
+    static inline const std::string DIFFICULTY_LABEL_PREFIX = "DIFFICULTY: ";
+
+    void refreshDifficultyLabel(Scene &scene);
+
     bool _hidden = false;
+    std::optional<DifficultyLevel> _shownDifficulty;
 };
 
 inline void LobbyMenuScript::onStart(Scene &, Entity &) {}
@@ -29,8 +39,27 @@ inline void LobbyMenuScript::onUpdate(Scene &scene, Entity &entity)
         scene.removeResource<StartRequest>();
     if (hidden)
         return;
-    if (scene.hasResource<StartRequest>() && scene.hasResource<ActionInput>())
-        scene.getResource<ActionInput>().active.set(Lobby::ACTION_START);
+    refreshDifficultyLabel(scene);
+    if (!scene.hasResource<ActionInput>())
+        return;
+    ActionInput &input = scene.getResource<ActionInput>();
+    if (scene.hasResource<StartRequest>())
+        input.active.set(Lobby::ACTION_START);
+    if (scene.hasResource<DifficultyRequest>())
+        Difficulties::encode(input, scene.getResource<DifficultyRequest>().level);
+}
+
+inline void LobbyMenuScript::refreshDifficultyLabel(Scene &scene)
+{
+    const DifficultyLevel level = Difficulties::fromMarker(scene).value_or(DEFAULT_DIFFICULTY);
+    if (_shownDifficulty == level)
+        return;
+    _shownDifficulty = level;
+    for (Entity entity : scene.view<UIButton>()) {
+        UIButton &button = scene.getComponent<UIButton>(entity);
+        if (dynamic_cast<const DifficultyButtonScript *>(button.script.get()))
+            button.content = DIFFICULTY_LABEL_PREFIX + Difficulties::settingsOf(level).label;
+    }
 }
 
 #endif /* !LOBBYMENUSCRIPT_HPP_ */

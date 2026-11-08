@@ -14,7 +14,6 @@ void RaylibRenderer::initWindow(int width, int height, const std::string &title)
     SetExitKey(KEY_NULL);
     SetTraceLogLevel(LOG_NONE);
     InitWindow(width, height, title.c_str());
-    ToggleFullscreen();
     SetTargetFPS(60);
     _font = LoadFontEx(assetPath("Font.ttf").c_str(), 60, nullptr, 0);
 }

@@ -26,7 +26,7 @@ void ParticleRender2DSystem::update(Scene &scene)
             ColorRGBA color = emitter.color;
             const float remaining =
                 emitter.lifetime > 0.0f ? particle.life / emitter.lifetime : 0.0f;
-            color.a = static_cast<decltype(color.a)>(color.a * std::clamp(remaining, 0.0f, 1.0f));
+            color.a = static_cast<decltype(color.a)>(static_cast<float>(color.a) * std::clamp(remaining, 0.0f, 1.0f));
             std::visit(
                 [&](auto const &shape) {
                     if constexpr (std::is_same_v<std::decay_t<decltype(shape)>, CircleShape>)

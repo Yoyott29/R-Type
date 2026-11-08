@@ -1,4 +1,9 @@
 <script>
+	import Platform from '$lib/components/Platform.svelte';
+
+	const pre =
+		'mt-3 overflow-x-auto rounded-md border border-[#1e2b26] bg-[#121a17] p-4 font-mono text-[13.5px] leading-6';
+	const winTnt = `& ".\\Gringo Engine\\Gringo.exe" --build "Gringo Engine\\TrackNTrap\\TrackNTrap.gringo"`;
 	const code0 = `./Gringo\\ Engine/Gringo --build "Gringo Engine/TrackNTrap/TrackNTrap.gringo"`;
 </script>
 
@@ -13,8 +18,16 @@
 	Script parameters are changed in the editor: open <code>TrackNTrap.gringo</code> with <strong>Load Game</strong>, select the entity or prefab, and edit the values under its Script component. After any change, build again and commit the regenerated mains:
 </p>
 
-<pre
-	class="mt-3 overflow-x-auto rounded-md border border-[#1e2b26] bg-[#121a17] p-4 font-mono text-[13.5px] leading-6"><code>{code0}</code></pre>
+<Platform os="windows">
+	<p class="mt-3 leading-7">
+		From a <strong>Developer PowerShell for VS 2022</strong>, at the root of the repository (the editor calls CMake and MSVC, so it needs that terminal):
+	</p>
+	<pre class={pre}><code>{winTnt}</code></pre>
+</Platform>
+
+<Platform os="linux">
+	<pre class={pre}><code>{code0}</code></pre>
+</Platform>
 
 <h2 class="mt-9 text-lg font-semibold">Tune the race</h2>
 
