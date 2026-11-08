@@ -65,7 +65,7 @@ jobs:
           for dir in "Gringo Engine/build" "R-Type/build"; do
             cmake -S "Gringo Engine" -B "$dir" -DENABLE_CLANG_TIDY=OFF -DCPM_SOURCE_CACHE="$CPM_SOURCE_CACHE"
           done
-          cmake --build "Gringo Engine/build" --target Gringo --parallel
+          cmake --build "Gringo Engine/build" --target Gringo -j
           "Gringo Engine/Gringo" --build R-Type/R-Type.gringo
 
       - name: Run tests
@@ -76,13 +76,13 @@ jobs:
         run: |
           cmake -S "Gringo Engine" -B build-unit -DGRINGO_BUILD_TESTS=ON -DENABLE_CLANG_TIDY=OFF \
                 -DCPM_SOURCE_CACHE="$CPM_SOURCE_CACHE"
-          cmake --build build-unit --target engine_tests network_tests --parallel
+          cmake --build build-unit --target engine_tests network_tests -j
           ctest --test-dir build-unit --output-on-failure
 
       - name: clang-tidy (build with analysis)
         run: |
           cmake -B build-tidy -DENABLE_CLANG_TIDY=ON
-          cmake --build build-tidy --parallel
+          cmake --build build-tidy -j
 
   # Same build as the README's Windows instructions (MSVC, x64, Release), then the engine unit tests
   # and a check that the server really starts (it finds its DLLs, plugins and R-Type.gringo).
@@ -110,7 +110,7 @@ jobs:
           $cache = "$env:CPM_SOURCE_CACHE" -replace '\\', '/'
           cmake -S . -B build -A x64 -DENABLE_CLANG_TIDY=OFF "-DCPM_SOURCE_CACHE=$cache"
           if ($LASTEXITCODE -ne 0) { exit 1 }
-          cmake --build build --config Release --target r-type_client r-type_server --parallel
+          cmake --build build --config Release --target r-type_client r-type_server -j
           if ($LASTEXITCODE -ne 0) { exit 1 }
 
       - name: Engine unit tests
@@ -119,7 +119,7 @@ jobs:
           cmake -S "Gringo Engine" -B build-unit -A x64 -DGRINGO_BUILD_TESTS=ON `
                 -DENABLE_CLANG_TIDY=OFF "-DCPM_SOURCE_CACHE=$cache"
           if ($LASTEXITCODE -ne 0) { exit 1 }
-          cmake --build build-unit --config Release --target engine_tests network_tests --parallel
+          cmake --build build-unit --config Release --target engine_tests network_tests -j
           if ($LASTEXITCODE -ne 0) { exit 1 }
           ctest --test-dir build-unit -C Release --output-on-failure
           if ($LASTEXITCODE -ne 0) { exit 1 }

@@ -7,7 +7,7 @@
 	const winServer = `& ".\\Gringo Engine\\TrackNTrap\\trackntrap_server.exe"`;
 	const winClient = `& ".\\Gringo Engine\\TrackNTrap\\trackntrap_client.exe"`;
 	const winEditor = `cmake -S "Gringo Engine" -B "Gringo Engine\\build" -A x64
-cmake --build "Gringo Engine\\build" --config Release --target Gringo --parallel`;
+cmake --build "Gringo Engine\\build" --config Release --target Gringo -j`;
 
 	const linuxBuild = `./Gringo\\ Engine/build_engine.sh
 ./Gringo\\ Engine/Gringo --build "Gringo Engine/TrackNTrap/TrackNTrap.gringo"`;

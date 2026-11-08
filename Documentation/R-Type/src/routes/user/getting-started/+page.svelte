@@ -12,7 +12,7 @@ git --version`;
 	const winBuild = `git clone https://github.com/EpitechPGE3-2026/G-ING-500-LIL-5-1-rtype-4
 cd G-ING-500-LIL-5-1-rtype-4
 cmake -S . -B build -A x64
-cmake --build build --config Release --target r-type_client r-type_server --parallel`;
+cmake --build build --config Release --target r-type_client r-type_server -j`;
 	const winRun = `.\\r-type_server.exe
 .\\r-type_client.exe`;
 	const winArgs = `.\\r-type_server.exe [ip] [port]   # the address to listen on

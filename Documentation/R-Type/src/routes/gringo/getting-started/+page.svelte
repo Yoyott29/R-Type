@@ -7,7 +7,7 @@
 & ".\\Gringo Engine\\Gringo.exe" --build "Gringo Engine\\TrackNTrap\\TrackNTrap.gringo"`;
 
 	const winBuild = `cmake -S "Gringo Engine" -B "Gringo Engine\\build" -A x64
-cmake --build "Gringo Engine\\build" --config Release --target Gringo --parallel`;
+cmake --build "Gringo Engine\\build" --config Release --target Gringo -j`;
 	const winOpen = `cd "Gringo Engine"
 .\\Gringo.exe`;
 	const linuxBuild = `./Gringo\\ Engine/build_engine.sh`;

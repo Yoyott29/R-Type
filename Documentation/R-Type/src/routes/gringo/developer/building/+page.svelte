@@ -5,9 +5,9 @@
 		'mt-3 overflow-x-auto rounded-md border border-[#1e2b26] bg-[#121a17] p-4 font-mono text-[13.5px] leading-6';
 
 	const winBuild = `cmake -S "Gringo Engine" -B "Gringo Engine\\build" -A x64
-cmake --build "Gringo Engine\\build" --config Release --target Gringo --parallel`;
+cmake --build "Gringo Engine\\build" --config Release --target Gringo -j`;
 	const winTests = `cmake -S "Gringo Engine" -B build-unit -A x64 -DGRINGO_BUILD_TESTS=ON
-cmake --build build-unit --config Release --target engine_tests network_tests --parallel
+cmake --build build-unit --config Release --target engine_tests network_tests -j
 ctest --test-dir build-unit -C Release --output-on-failure`;
 	const linuxBuild = `./Gringo\\ Engine/build_engine.sh
 

@@ -4,7 +4,7 @@
 	const pre =
 		'mt-3 overflow-x-auto rounded-md border border-[#1e2b26] bg-[#121a17] p-4 font-mono text-[13.5px] leading-6';
 	const winCode = `cmake -S . -B build -A x64
-cmake --build build --config Release --target r-type_client r-type_server --parallel`;
+cmake --build build --config Release --target r-type_client r-type_server -j`;
 	const code0 = `./build_rtype.sh
 
 # the same, by hand

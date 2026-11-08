@@ -7,10 +7,10 @@
   pull_request:
     branches: [main]`;
 	const winCode = `cmake -S "Gringo Engine" -B build-unit -A x64 -DGRINGO_BUILD_TESTS=ON -DENABLE_CLANG_TIDY=OFF
-cmake --build build-unit --config Release --target engine_tests network_tests --parallel
+cmake --build build-unit --config Release --target engine_tests network_tests -j
 ctest --test-dir build-unit -C Release --output-on-failure`;
 	const code1 = `cmake -S "Gringo Engine" -B build-unit -DGRINGO_BUILD_TESTS=ON -DENABLE_CLANG_TIDY=OFF
-cmake --build build-unit --target engine_tests network_tests --parallel
+cmake --build build-unit --target engine_tests network_tests -j
 ctest --test-dir build-unit --output-on-failure`;
 </script>
 
