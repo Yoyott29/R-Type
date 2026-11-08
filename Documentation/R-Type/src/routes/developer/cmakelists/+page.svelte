@@ -1,4 +1,5 @@
 <script>
+	import LinuxOnly from '$lib/components/LinuxOnly.svelte';
 	import Platform from '$lib/components/Platform.svelte';
 
 	const pre =
@@ -36,6 +37,7 @@ rtype_add_game(r-type_server \${GRINGO_REPOSITORY_DIR}/R-Type/server_main.cpp ""
 
 <Platform os="linux">
 	<pre class={pre}><code>{code0}</code></pre>
+	<LinuxOnly />
 </Platform>
 
 <h2 class="mt-9 text-lg font-semibold">1. Project settings</h2>

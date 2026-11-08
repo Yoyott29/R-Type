@@ -1,4 +1,5 @@
 <script>
+	import LinuxOnly from '$lib/components/LinuxOnly.svelte';
 	import Platform from '$lib/components/Platform.svelte';
 
 	const pre =
@@ -59,6 +60,7 @@ cmake --build "Gringo Engine\\build" --config Release --target Gringo -j`;
 		editor, the second one builds the game.
 	</p>
 	<pre class={pre}><code>{linuxBuild}</code></pre>
+	<LinuxOnly />
 	<p class="mt-3 leading-7">
 		The first build downloads the dependencies and takes a few minutes. It creates two programs in
 		<code>Gringo Engine/TrackNTrap/</code>: <code>trackntrap_server</code> and

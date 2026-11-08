@@ -1,4 +1,5 @@
 <script>
+	import LinuxOnly from '$lib/components/LinuxOnly.svelte';
 	import Platform from '$lib/components/Platform.svelte';
 
 	const pre =
@@ -100,6 +101,7 @@ cd G-ING-500-LIL-5-1-rtype-4
 
 <Platform os="linux">
 	<pre class={pre}><code>{linuxBuild}</code></pre>
+	<LinuxOnly />
 	<p class="mt-3 leading-7">
 		<code>build_rtype.sh</code> configures the root CMake project and builds both programs in parallel. It creates <code>r-type_server</code> and <code>r-type_client</code> in the root of the repository. The engine library, <code>libgringo_engine.so</code>, and the plugins (<code>.so</code> files) are written in <code>Gringo Engine/</code>.
 	</p>

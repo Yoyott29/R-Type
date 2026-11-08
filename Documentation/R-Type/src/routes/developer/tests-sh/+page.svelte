@@ -1,4 +1,5 @@
 <script>
+	import LinuxOnly from '$lib/components/LinuxOnly.svelte';
 	const code0 = `./tests/tests.sh`;
 	const code1 = `# A port that is not a number is refused with exit code 84 and an error message
 test_server_args_port_not_a_number() {
@@ -22,6 +23,7 @@ run_test "server: port not a number" test_server_args_port_not_a_number`;
 
 <pre
 	class="mt-3 overflow-x-auto rounded-md border border-[#1e2b26] bg-[#121a17] p-4 font-mono text-[13.5px] leading-6"><code>{code0}</code></pre>
+<LinuxOnly>On Windows, run the engine unit tests instead (see <a href="/developer/running-tests" class="text-accent hover:underline">Tests</a>).</LinuxOnly>
 
 <h2 class="mt-9 text-lg font-semibold">The run_test function</h2>
 

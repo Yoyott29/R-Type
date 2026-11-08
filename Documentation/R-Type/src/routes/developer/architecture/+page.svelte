@@ -1,4 +1,5 @@
 <script>
+	import LinuxOnly from '$lib/components/LinuxOnly.svelte';
 	import Platform from '$lib/components/Platform.svelte';
 
 	const pre =
@@ -66,6 +67,7 @@ cmake --build build --config Release --target r-type_client r-type_server -j`;
 
 <Platform os="linux">
 	<pre class={pre}><code>{code2}</code></pre>
+	<LinuxOnly />
 </Platform>
 
 <h2 class="mt-9 text-lg font-semibold">The scene</h2>

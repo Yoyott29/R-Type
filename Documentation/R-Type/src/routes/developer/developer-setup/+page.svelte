@@ -1,4 +1,5 @@
 <script>
+	import LinuxOnly from '$lib/components/LinuxOnly.svelte';
 	const runExample = `./"Developer Setup/setup.sh"`;
 
 	const stepsExample = `[1/4] Installing clang-format 21.1.8...
@@ -52,6 +53,7 @@ chmod +x .githooks/*`;
 	folder. On Linux it uses {@render c('sudo')} when you are not root.
 </p>
 {@render code(runExample)}
+<LinuxOnly>There is no Windows version of this script: install the tools by hand.</LinuxOnly>
 <p class="mt-3 max-w-[100ch] leading-7">
 	Only <strong class="font-semibold">Linux</strong> and
 	<strong class="font-semibold">Windows</strong> (Git Bash, MSYS or Cygwin) are supported. Any

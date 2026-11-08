@@ -1,4 +1,5 @@
 <script>
+	import LinuxOnly from '$lib/components/LinuxOnly.svelte';
 	import Platform from '$lib/components/Platform.svelte';
 
 	const pre =
@@ -43,6 +44,7 @@ ctest --test-dir build-unit --output-on-failure`;
 <Platform os="linux">
 	<p class="mt-3 leading-7">From the root of the repository:</p>
 	<pre class={pre}><code>{linuxBuild}</code></pre>
+	<LinuxOnly />
 </Platform>
 
 <h2 class="mt-9 text-lg font-semibold">Dependencies</h2>

@@ -1,4 +1,5 @@
 <script>
+	import LinuxOnly from '$lib/components/LinuxOnly.svelte';
 	import Platform from '$lib/components/Platform.svelte';
 
 	const pre =
@@ -78,6 +79,7 @@ cmake --build "Gringo Engine\\build" --config Release --target Gringo -j`;
 
 <Platform os="linux">
 	<pre class={pre}><code>{linuxBuild}</code></pre>
+	<LinuxOnly />
 	<p class="mt-3 leading-7">It creates, in <code>Gringo Engine/</code>:</p>
 	<ul class="mt-3 list-disc space-y-1.5 pl-6 leading-7">
 		<li><code>Gringo</code>: the editor.</li>
