@@ -44,7 +44,8 @@ void NetReceiveSystem::update(Scene &scene)
         disconnected.send(event);
         if (server)
             std::cout << "Player " << event.peer
-                      << (event.reason == DisconnectReason::Timeout ? " timed out" : " left") << '\n';
+                      << (event.reason == DisconnectReason::Timeout ? " timed out" : " left")
+                      << '\n';
         else
             scene.getResource<LocalPeer>().id = NO_PEER;
     }

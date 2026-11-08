@@ -58,6 +58,5 @@ void AnimationSystem::showFrame(Sprite &sprite, const Animator &animator,
     const int row = cell / clip.columns;
     sprite.texturePath = clip.texturePath;
     sprite.region = {static_cast<float>(column) * clip.frameWidth,
-                     static_cast<float>(row) * clip.frameHeight, clip.frameWidth,
-                     clip.frameHeight};
+                     static_cast<float>(row) * clip.frameHeight, clip.frameWidth, clip.frameHeight};
 }

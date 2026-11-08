@@ -635,7 +635,8 @@ std::string ProjectBuilder::build(const std::string &projectPath, const SceneObj
             shellQuote(variantTarget) +
             " -DGRINGO_GAME_OUTPUT_DIR=" + shellQuote(projectFolder.generic_string()) +
             " -DGRINGO_GAME_SOURCE=" + shellQuote(generatedSource.generic_string()) +
-            " -DGRINGO_GAME_SCRIPT_DIR=" + shellQuote((projectFolder / "scripts").generic_string()) +
+            " -DGRINGO_GAME_SCRIPT_DIR=" +
+            shellQuote((projectFolder / "scripts").generic_string()) +
             " -DGRINGO_GAME_PLUGINS=" + shellQuote(pluginList) +
             " -DGRINGO_GAME_RENDERER=" + shellQuote(renderer) + " && cmake --build " +
             shellQuote(buildDirectory.generic_string()) + " --target " + shellQuote(variantTarget) +

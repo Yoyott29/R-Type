@@ -22,7 +22,8 @@ void RaylibRenderer::initWindow(int width, int height, const std::string &title)
     if (position.x < origin.x - 100 || position.y < origin.y - 100 ||
         position.x > origin.x + static_cast<float>(GetMonitorWidth(monitor)) ||
         position.y > origin.y + static_cast<float>(GetMonitorHeight(monitor)))
-        SetWindowPosition(static_cast<int>(origin.x), static_cast<int>(origin.y) + 40); // below the title bar
+        SetWindowPosition(static_cast<int>(origin.x),
+                          static_cast<int>(origin.y) + 40); // below the title bar
     SetTargetFPS(60);
     _font = LoadFontEx(assetPath("Font.ttf").c_str(), 60, nullptr, 0);
 }
