@@ -1,7 +1,7 @@
 {
     "texture": "Explosion.png",
-    "frameWidth": 38.0,
-    "frameHeight": 30,
+    "frameWidth": 32.0,
+    "frameHeight": 32,
     "frames": 6,
     "fps": 12,
     "loop": false
