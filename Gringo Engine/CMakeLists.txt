@@ -13,7 +13,13 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 set(CMAKE_BUILD_WITH_INSTALL_RPATH ON)
 set(CMAKE_INSTALL_RPATH "\$ORIGIN")
 
-set(GRINGO_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}")
+# A game build writes the engine, plugins and renderers next to the game: Windows locks the .dll
+# files a running editor has loaded, so they cannot be overwritten in Gringo Engine/
+if(DEFINED GRINGO_GAME_OUTPUT_DIR AND NOT "${GRINGO_GAME_OUTPUT_DIR}" STREQUAL "")
+    set(GRINGO_OUTPUT_DIRECTORY "${GRINGO_GAME_OUTPUT_DIR}")
+else()
+    set(GRINGO_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}")
+endif()
 set(GRINGO_PLUGIN_DIRECTORY "${GRINGO_OUTPUT_DIRECTORY}/plugins")
 set(GRINGO_RENDERER_DIRECTORY "${GRINGO_OUTPUT_DIRECTORY}/renderers")
 # $<0:> keeps MSVC from adding a Release/ or Debug/ subfolder to every output directory
@@ -228,19 +234,12 @@ if(DEFINED GRINGO_GAME_TARGET AND NOT "${GRINGO_GAME_TARGET}" STREQUAL "" AND
     if(DEFINED GRINGO_GAME_OUTPUT_DIR AND NOT "${GRINGO_GAME_OUTPUT_DIR}" STREQUAL "")
         set_target_properties(${GRINGO_GAME_TARGET} PROPERTIES
             RUNTIME_OUTPUT_DIRECTORY "${GRINGO_GAME_OUTPUT_DIR}$<0:>"
-            INSTALL_RPATH "\$ORIGIN/..;\$ORIGIN/../Gringo Engine"
+            INSTALL_RPATH "\$ORIGIN;\$ORIGIN/..;\$ORIGIN/../Gringo Engine"
         )
     endif()
     target_link_libraries(${GRINGO_GAME_TARGET} PRIVATE
         gringo_engine nlohmann_json::nlohmann_json
     )
-    # Windows has no rpath: gringo_engine.dll must sit next to the game's .exe
-    if(WIN32)
-        add_custom_command(TARGET ${GRINGO_GAME_TARGET} POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different
-                "$<TARGET_FILE:gringo_engine>" "$<TARGET_FILE_DIR:${GRINGO_GAME_TARGET}>"
-        )
-    endif()
 
     # GRINGO_GAME_PLUGINS: the plugins active in the project (headers + GRINGO_USE_<NAME>)
     gringo_use_plugins(${GRINGO_GAME_TARGET} ${GRINGO_GAME_PLUGINS})

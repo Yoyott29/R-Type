@@ -8,6 +8,10 @@
 /renderers/
 /Square/
 *trackntrap*
+/TrackNTrap/*.so
+/TrackNTrap/*.dll
+/TrackNTrap/plugins/
+/TrackNTrap/renderers/
 
 # CPM dependency cache
 */build/
