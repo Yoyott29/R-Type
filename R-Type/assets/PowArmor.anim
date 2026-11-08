@@ -1,0 +1,8 @@
+{
+    "texture": "PowArmor.png",
+    "frameWidth": 27.0,
+    "frameHeight": 32,
+    "frames": 7,
+    "fps": 10,
+    "loop": true
+}

@@ -92,7 +92,7 @@ target_link_libraries(\${PROJECT_NAME} PRIVATE fmt::fmt)`;
 	available, which the project uses to link the library and find its headers. Asio 1.30.2 is
 	header-only: {@render c('DOWNLOAD_ONLY YES')} only downloads it, and the project wraps
 	{@render c('asio_SOURCE_DIR')} in its own {@render c('asio')} interface target (see
-	<a href="/developer/cmakelists" class="text-[#ff8a3d] hover:underline">How CMakeLists works</a>).
+	<a href="/developer/cmakelists" class="text-accent hover:underline">How CMakeLists works</a>).
 </p>
 {@render code(addExample)}
 

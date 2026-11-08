@@ -1,4 +1,5 @@
 <script>
+	import LinuxOnly from '$lib/components/LinuxOnly.svelte';
 	const runExample = `./"Developer Setup/setup.sh"`;
 
 	const stepsExample = `[1/4] Installing clang-format 21.1.8...
@@ -52,6 +53,7 @@ chmod +x .githooks/*`;
 	folder. On Linux it uses {@render c('sudo')} when you are not root.
 </p>
 {@render code(runExample)}
+<LinuxOnly>There is no Windows version of this script: install the tools by hand.</LinuxOnly>
 <p class="mt-3 max-w-[100ch] leading-7">
 	Only <strong class="font-semibold">Linux</strong> and
 	<strong class="font-semibold">Windows</strong> (Git Bash, MSYS or Cygwin) are supported. Any
@@ -69,7 +71,7 @@ chmod +x .githooks/*`;
 	{@render c('--break-system-packages')} if the system Python refuses it). A pinned
 	version matters because two versions can format the same file differently, and the CI would then
 	reject code that looked correct on your machine. See the
-	<a href="/developer/clang-format" class="text-[#ff8a3d] hover:underline">clang-format</a> page.
+	<a href="/developer/clang-format" class="text-accent hover:underline">clang-format</a> page.
 </p>
 
 <h3 class="mt-6 font-semibold">2. clang-tidy</h3>
@@ -77,7 +79,7 @@ chmod +x .githooks/*`;
 	The tool is installed with the package manager of your system: {@render c('apt-get')},
 	{@render c('dnf')} or {@render c('pacman')} on Linux, and {@render c('winget')} or
 	{@render c('choco')} (LLVM package) on Windows. See the
-	<a href="/developer/clang-tidy" class="text-[#ff8a3d] hover:underline">clang-tidy</a> page.
+	<a href="/developer/clang-tidy" class="text-accent hover:underline">clang-tidy</a> page.
 </p>
 
 <h3 class="mt-6 font-semibold">3. VS Code settings</h3>
@@ -96,7 +98,7 @@ chmod +x .githooks/*`;
 <p class="mt-3 max-w-[100ch] leading-7">
 	The script tells git to read hooks from the versioned {@render c('.githooks')} folder and makes
 	them executable. See the
-	<a href="/developer/githooks" class="text-[#ff8a3d] hover:underline">.githooks</a> page.
+	<a href="/developer/githooks" class="text-accent hover:underline">.githooks</a> page.
 </p>
 {@render code(hooksExample)}
 
@@ -110,7 +112,7 @@ chmod +x .githooks/*`;
 	<li>
 		The script does not install the libraries needed to build the game. On Linux, also install the
 		OpenGL and X11 development packages listed in
-		<a href="/user/getting-started" class="text-[#ff8a3d] hover:underline">Getting started</a>.
+		<a href="/user/getting-started" class="text-accent hover:underline">Getting started</a>.
 	</li>
 	<li>
 		Install the <strong class="font-semibold">C/C++</strong> extension

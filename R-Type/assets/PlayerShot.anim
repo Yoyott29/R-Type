@@ -1,0 +1,8 @@
+{
+    "texture": "PlayerShot.png",
+    "frameWidth": 16.0,
+    "frameHeight": 12,
+    "frames": 3,
+    "fps": 12,
+    "loop": false
+}

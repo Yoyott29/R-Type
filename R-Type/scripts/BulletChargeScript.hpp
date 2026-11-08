@@ -1,0 +1,62 @@
+#ifndef BULLETCHARGESCRIPT_HPP_
+#define BULLETCHARGESCRIPT_HPP_
+
+#include "BossState.hpp"
+#include "BuildVariantName.hpp"
+#include "Collider2D.hpp"
+#include "EnemyScript.hpp"
+#include "GameScore.hpp"
+#include "Scene.hpp"
+#include "Script.hpp"
+#include <string>
+#include <vector>
+
+inline const std::vector<std::string> BulletChargeScript_params = {"Damage"};
+
+class BulletChargeScript : public GringoEntityScript
+{
+  public:
+    void onStart(Scene &scene, Entity &entity) override;
+    void onUpdate(Scene &scene, Entity &entity) override;
+    void setParameter(const std::string &name, const std::string &value) override;
+
+  private:
+    static bool isClientSide(Scene &scene);
+
+    int _damage = 1;
+};
+
+inline void BulletChargeScript::setParameter(const std::string &name, const std::string &value)
+{
+    if (name == "Damage")
+        _damage = std::stoi(value);
+}
+
+inline bool BulletChargeScript::isClientSide(Scene &scene)
+{
+    return scene.hasResource<BuildVariantName>() &&
+           scene.getResource<BuildVariantName>().name == "client";
+}
+
+inline void BulletChargeScript::onStart(Scene &scene, Entity &entity)
+{
+    if (isClientSide(scene))
+        return;
+    const int damage = _damage;
+    scene.getComponent<Collider2D>(entity).onCollision = [&scene, damage](Entity bullet,
+                                                                          Entity other) {
+        if (!scene.isEntityAlive(other))
+            return;
+        if (scene.getComponent<Collider2D>(other).layer == BOSS_LAYER) {
+            hitBoss(scene, damage);
+            scene.queueDestroy(bullet);
+            return;
+        }
+        scene.getResource<GameScore>().value += 100;
+        EnemyScript::kill(scene, other);
+    };
+}
+
+inline void BulletChargeScript::onUpdate(Scene &, Entity &) {}
+
+#endif /* !BULLETCHARGESCRIPT_HPP_ */

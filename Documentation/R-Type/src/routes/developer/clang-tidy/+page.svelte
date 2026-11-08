@@ -24,7 +24,7 @@ endif()`;
 cmake --build build`;
 
 	const ciExample = `cmake -B build-tidy -DENABLE_CLANG_TIDY=ON
-cmake --build build-tidy --parallel`;
+cmake --build build-tidy -j`;
 
 	const suppressExample = `// NOLINT silences every check on this line
 int value = compute(); // NOLINT
@@ -88,7 +88,7 @@ int other = compute(); // NOLINT(bugprone-narrowing-conversions)`;
 	</li>
 	<li>
 		If clang-tidy is not installed, CMake prints a warning and builds without it. The
-		<a href="/developer/developer-setup" class="text-[#ff8a3d] hover:underline">Developer Setup</a>
+		<a href="/developer/developer-setup" class="text-accent hover:underline">Developer Setup</a>
 		script installs it.
 	</li>
 </ul>
@@ -104,7 +104,7 @@ int other = compute(); // NOLINT(bugprone-narrowing-conversions)`;
 <p class="mt-3 max-w-[100ch] leading-7">
 	After the tests, the {@render c('tests')} job builds the project again in a separate folder with
 	analysis enabled. See
-	<a href="/developer/running-tests" class="text-[#ff8a3d] hover:underline">Running Tests</a>.
+	<a href="/developer/running-tests" class="text-accent hover:underline">Running Tests</a>.
 </p>
 {@render code(ciExample)}
 

@@ -1,0 +1,8 @@
+{
+    "texture": "BossBullet.png",
+    "frameWidth": 22.0,
+    "frameHeight": 20,
+    "frames": 4,
+    "fps": 12,
+    "loop": true
+}

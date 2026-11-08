@@ -3,10 +3,16 @@
 	import favicon from '$lib/assets/Favicon.png';
 	import Sidebar from '$lib/components/Sidebar.svelte';
 	import { afterNavigate } from '$app/navigation';
+	import { docProject } from '$lib/project.svelte.js';
 
 	let { children } = $props();
 
 	let main = $state();
+
+	// The accent color follows the selected project (see the data-project rules in layout.css)
+	$effect(() => {
+		document.documentElement.dataset.project = docProject.current;
+	});
 
 	afterNavigate(() => {
 		main?.scrollTo(0, 0);
@@ -17,13 +23,13 @@
 	<link rel="icon" href={favicon} />
 	<meta
 		name="description"
-		content="Documentation of R-Type, a networked shoot 'em up in C++17 with a custom ECS engine: how to play, the architecture, the UDP protocol and the development workflow."
+		content="Documentation of R-Type, a networked shoot 'em up in C++20 built with the Gringo ECS engine: how to play, the architecture, the UDP protocol and the development workflow."
 	/>
 </svelte:head>
 
 <a
 	href="#content"
-	class="sr-only z-50 rounded bg-[#ff8a3d] px-3 py-2 text-[#0d1210] focus:not-sr-only focus:fixed focus:top-2 focus:left-2"
+	class="sr-only z-50 rounded bg-accent px-3 py-2 text-[#0d1210] focus:not-sr-only focus:fixed focus:top-2 focus:left-2"
 	>Skip to content</a
 >
 

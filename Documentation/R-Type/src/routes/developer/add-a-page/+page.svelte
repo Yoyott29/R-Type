@@ -32,10 +32,9 @@ src/routes/
 	{ title: 'Developer Environment' }, // index 1
 	{ title: 'Build and Tests' },       // index 2
 	{ title: 'GitHub Workflows' },      // index 3
-	{ title: 'ECS' },                   // index 4
-	{ title: 'Network' },               // index 5
-	{ title: 'Documentation' },         // index 6
-	{ title: 'My new section' }         // index 7
+	{ title: 'Guides' },                // index 4
+	{ title: 'Documentation' },         // index 5
+	{ title: 'My new section' }         // index 6
 ];
 
 const developerPages = [
@@ -90,6 +89,13 @@ const developerPages = [
 	{@render c('/user')} or {@render c('/developer')} prefix. The {@render c('section')} is the index
 	of the section in {@render c('userSections')} or {@render c('developerSections')}, starting at 0.
 </p>
+<p class="mt-3 max-w-[100ch] leading-7">
+	These two lists are the R-Type documentation. TrackNTrap and Gringo have their own lists in the same
+	file ({@render c('trackntrapUserPages')}, {@render c('trackntrapDeveloperPages')},
+	{@render c('gringoUserPages')}, {@render c('gringoDeveloperPages')} and their sections), with paths
+	starting with {@render c('/trackntrap/')} or {@render c('/gringo/')}; {@render c('sidebarFor')} picks
+	the lists of the selected project.
+</p>
 {@render code(registerExample)}
 
 <h2 class="mt-9 text-lg font-semibold">Adding a new section</h2>
@@ -116,7 +122,7 @@ const developerPages = [
 	</li>
 	<li>
 		Write in English, keep the {@render c('code')} and {@render c('c')} snippets of the other pages,
-		and link related pages with relative links such as {@render c('/developer/ecs')}.
+		and link related pages with relative links such as {@render c('/gringo/developer/ecs')}.
 	</li>
 	<li>
 		To preview the site, run {@render c('npm install')} once then {@render c('npm run dev')} in

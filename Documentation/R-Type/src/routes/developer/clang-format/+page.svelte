@@ -6,17 +6,17 @@ BreakBeforeBraces: Linux
 InsertNewlineAtEOF: true`;
 
 	const manualExample = `# format one file
-clang-format --style=file:Norms/.clang-format -i src/main.cpp
+clang-format --style=file:Norms/.clang-format -i R-Type/scripts/PlayerScript.hpp
 
 # check a file without changing it
-clang-format --style=file:Norms/.clang-format --dry-run -Werror src/main.cpp`;
+clang-format --style=file:Norms/.clang-format --dry-run -Werror R-Type/scripts/PlayerScript.hpp`;
 
-	const allExample = `find src -name '*.cpp' -o -name '*.hpp' \\
-  | xargs clang-format --style=file:Norms/.clang-format -i`;
+	const allExample = `git ls-files -z -- '*.cpp' '*.hpp' ':(exclude)*_main.cpp' \\
+  | xargs -0 clang-format --style=file:Norms/.clang-format -i`;
 
-	const ciExample = `shopt -s globstar nullglob   # bash: makes src/** search every sub-folder
-clang-format --style=file:Norms/.clang-format --dry-run -Werror \\
-  src/**/*.cpp src/**/*.hpp`;
+	const ciExample = `# every tracked C++ file, except the *_main.cpp files the editor generates
+mapfile -d '' files < <(git ls-files -z -- '*.cpp' '*.hpp' ':(exclude)*_main.cpp')
+clang-format --style=file:Norms/.clang-format --dry-run -Werror "\${files[@]}"`;
 </script>
 
 <svelte:head>
@@ -60,14 +60,14 @@ clang-format --style=file:Norms/.clang-format --dry-run -Werror \\
 <ul class="mt-3 max-w-[100ch] list-disc space-y-1.5 pl-5 leading-7">
 	<li>
 		<strong class="font-semibold">When you save a file in VS Code.</strong> The
-		<a href="/developer/developer-setup" class="text-[#ff8a3d] hover:underline">Developer Setup</a>
+		<a href="/developer/developer-setup" class="text-accent hover:underline">Developer Setup</a>
 		script configures this.
 	</li>
 	<li>
 		<strong class="font-semibold">In the CI.</strong> The {@render c('lint')} job of
 		{@render c('tests.yml')} checks every {@render c('.cpp')} and {@render c('.hpp')} file in
 		{@render c('src')}. A single difference fails the job and blocks the pull request. See
-		<a href="/developer/running-tests" class="text-[#ff8a3d] hover:underline">Running Tests</a>.
+		<a href="/developer/running-tests" class="text-accent hover:underline">Running Tests</a>.
 	</li>
 </ul>
 {@render code(ciExample)}

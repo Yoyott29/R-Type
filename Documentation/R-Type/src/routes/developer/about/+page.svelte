@@ -1,15 +1,17 @@
 <script>
 	const treeExample = `R-Type/
-├── .github/workflows/       # GitHub Actions
+├── .github/                 # GitHub Actions workflows, templates, contribution guides
 ├── .githooks/               # local git hooks
 ├── Documentation/R-Type/    # this documentation site
-├── Assets/                  # textures (players, Bydos, bullet)
 ├── Developer Setup/         # developer setup script
+├── Gringo Engine/           # the engine: core, plugins, renderers, editor, unit tests
+│   └── TrackNTrap/          # the second game made with the engine
 ├── Norms/                   # clang-format and clang-tidy rules
-├── src/                     # C++ source code
-├── tests/                   # tests/tests.sh
-├── CMakeLists.txt           # build configuration
+├── R-Type/                  # the game: R-Type.gringo, scripts/, assets/, generated mains
+├── tests/                   # tests.sh and the network simulation scripts
+├── CMakeLists.txt           # builds r-type_client and r-type_server
 ├── CPM.cmake                # downloads the CPM package manager
+├── build_rtype.sh           # configures and builds R-Type
 ├── LICENSE                  # MIT
 └── README.md`;
 </script>
@@ -30,7 +32,7 @@
 		>{text}</code
 	>{/snippet}
 
-{#snippet a(href, text)}<a {href} class="text-[#ff8a3d] hover:underline">{text}</a>{/snippet}
+{#snippet a(href, text)}<a {href} class="text-accent hover:underline">{text}</a>{/snippet}
 
 <h1 class="text-3xl font-semibold">About</h1>
 <p class="mt-1 mb-8 text-[15px] text-[#7f9189]">
@@ -47,8 +49,9 @@
 <p class="mt-3 max-w-[100ch] leading-7">
 	The project lives in one repository, with the code, the tests, the automation and this
 	documentation side by side. The C++ code is organized around an ECS architecture: the engine
-	contains the reusable core, while the R-Type application connects the renderer and gameplay
-	systems:
+	contains the reusable core, documented in the
+	<a href="/gringo/developer/architecture" class="text-accent hover:underline">Gringo developer documentation</a>,
+	while the R-Type application connects the renderer and gameplay systems:
 </p>
 {@render code(treeExample)}
 

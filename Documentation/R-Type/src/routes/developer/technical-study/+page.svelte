@@ -32,9 +32,9 @@
 	};
 
 	const sync = {
-		head: ['', 'Full snapshot every tick (chosen)', 'Delta snapshots', 'Lockstep (inputs only)'],
+		head: ['', 'Full state, 30 times per second (chosen)', 'Delta snapshots', 'Lockstep (inputs only)'],
 		rows: [
-			['Packet loss', 'harmless: the next tick replaces everything', 'needs acknowledgements and a base snapshot', 'blocks every player until the input arrives'],
+			['Packet loss', 'harmless: the next state replaces it, removals are sent 3 times', 'needs acknowledgements and a base snapshot', 'blocks every player until the input arrives'],
 			['Bandwidth', 'highest', 'low', 'lowest'],
 			['Complexity', 'lowest', 'medium (history, acks)', 'high (determinism on every machine)'],
 			['Authority', 'server only', 'server only', 'every client simulates']
@@ -54,14 +54,15 @@
 	const threats = {
 		head: ['Threat', 'What protects us today', 'Still open'],
 		rows: [
-			['Malformed packet (too short, too long, unknown type)', 'fixed 1024 byte buffer, exact sizes for CONNECT and INPUT, unknown types ignored, exceptions caught per packet on the server', 'the client throws on an unknown entity type or player id and stops'],
-			['Buffer overflow', 'every read is bounded by the received length and the std::array size', ''],
-			['Input flood from one player', 'the InputQueue keeps 2 inputs, the server applies 1 per tick', ''],
-			['CONNECT flood', '4 slots, extra clients get SERVER_FULL', 'the set of eliminated addresses grows with every new address'],
-			['Spoofed source address', 'none: a player is its ip and port', 'a spoofed DISCONNECT or INPUT acts for that player'],
-			['Reflection', 'answers to CONNECT are 2 bytes', 'a spoofed CONNECT makes the server send snapshots to the victim for 2 s'],
+			['Malformed packet (too short, too long, unknown kind)', 'datagrams over 1200 bytes, with a wrong protocol id or an unknown kind are dropped; a message that does not decode exactly is dropped as a whole; reserved messages sent the wrong way are ignored', ''],
+			['Buffer overflow', 'every read goes through ByteReader, which checks the remaining length and throws, caught per datagram', ''],
+			['Input flood from one player', 'the server keeps only the newest input of each player and ignores older ticks', ''],
+			['Datagram flood', 'the socket thread keeps at most 1024 datagrams between two frames and drops the rest', 'a flood still uses the bandwidth'],
+			['Connection flood', '4 slots, extra clients are rejected as Full, and none are accepted during a match', ''],
+			['Spoofed source address', 'none: a player is its ip and port', 'a spoofed Disconnect or input acts for that player'],
+			['Reflection', 'a rejection is 6 bytes; the game state is only sent to accepted peers', 'a spoofed ConnectRequest makes the server answer the victim'],
 			['Cheating client', 'the server is the only authority: the client only sends keys', ''],
-			['Vulnerable dependency', 'raylib, Asio and CPM are pinned, CPM.cmake is checked with SHA256', 'no automatic alert when a new CVE is published']
+			['Vulnerable dependency', 'raylib, Asio, miniaudio, nlohmann/json and CPM are pinned to a version, CPM.cmake is checked with SHA256', 'no automatic alert when a new CVE is published']
 		]
 	};
 </script>
@@ -75,7 +76,7 @@
 		>{text}</code
 	>{/snippet}
 
-{#snippet a(href, text)}<a {href} class="text-[#ff8a3d] hover:underline">{text}</a>{/snippet}
+{#snippet a(href, text)}<a {href} class="text-accent hover:underline">{text}</a>{/snippet}
 
 {#snippet table(t)}
 	<div class="mt-3 overflow-x-auto rounded-md border border-[#1e2b26]">
@@ -113,18 +114,18 @@
 	next part of the project.
 </p>
 
-<h2 class="mt-9 text-lg font-semibold">1. Language: C++17</h2>
+<h2 class="mt-9 text-lg font-semibold">1. Language: C++20</h2>
 <ul class="mt-3 max-w-[100ch] list-disc space-y-1.5 pl-5 leading-7">
 	<li>C++ is imposed by the project. It gives full control over memory and data layout, which an ECS needs.</li>
 	<li>
-		C++17 is the newest standard fully supported by GCC, Clang and MSVC on both target systems. The
-		code uses its features directly: {@render c('std::variant')} and {@render c('std::visit')} for
-		shapes, {@render c('if constexpr')} in the protocol helpers, {@render c('std::optional')} for
-		input queues, structured bindings, and {@render c('std::from_chars')} to parse the port.
+		C++20 is fully supported by GCC, Clang and MSVC on both target systems, and the code uses it:
+		{@render c('std::span')} to read datagrams without copying them, {@render c('std::bit_cast')} to
+		encode floats in the protocol, {@render c('std::jthread')} and {@render c('std::stop_token')} for
+		the thread pool, {@render c('std::erase_if')} and {@render c('contains')} on containers, along with
+		{@render c('std::variant')} for shapes and {@render c('if constexpr')} in the templates.
 	</li>
 	<li>
-		C++20 (concepts, modules, {@render c('std::span')}) would help, but nothing in the prototype needs
-		it, and module support is still uneven between compilers.
+		C++20 modules and C++23 are left out: their support is still uneven between the three compilers.
 	</li>
 </ul>
 
@@ -155,32 +156,36 @@
 	blocks every following one until it is sent again (head-of-line blocking). With UDP, a lost
 	snapshot is simply replaced by the next one. The project requires UDP for the game, and the
 	prototype uses no TCP at all: connecting, leaving and playing all go through the same UDP socket.
-	The connection is made reliable by sending {@render c('CONNECT')} again every second until it is
-	answered.
+	The connection is made reliable by sending {@render c('ConnectRequest')} again every 200 ms, up to 25
+	times, until it is answered; a peer that sends nothing for 5 seconds is dropped.
 </p>
 <h3 class="mt-6 font-semibold">Library: Asio standalone</h3>
 {@render table(network)}
 <p class="mt-3 max-w-[100ch] leading-7">
-	Asio gives one abstraction over BSD sockets and Winsock, without the rest of Boost. The server uses
-	a blocking {@render c('receive_from')} in its own thread; the client uses a non-blocking socket read
-	once per frame, so neither side needs an event loop.
+	Asio gives one abstraction over BSD sockets and Winsock, without the rest of Boost. Both sides use the
+	same {@render c('UdpSocket')}: an Asio {@render c('io_context')} on its own thread receives with
+	{@render c('async_receive_from')} into a queue, and {@render c('NetReceiveSystem')} drains it once
+	per frame, so the game loop never blocks on the network.
 </p>
 <h3 class="mt-6 font-semibold">Protocol: custom binary</h3>
 <p class="mt-2 max-w-[100ch] leading-7">
 	A text protocol (JSON, lines of text) would be easy to read but 3 to 5 times bigger and needs
 	parsing. Serialization libraries (Protocol Buffers, FlatBuffers) add a code generator and a
-	dependency. A small binary format, written with {@render c('writeValue')} / {@render c('readValue')}
-	in big-endian, is compact, has a fixed size per packet type, and is easy to check. See
-	{@render a('/developer/network-protocol', 'How the protocol works')}.
+	dependency. A small binary format, written with {@render c('ByteWriter')} / {@render c('ByteReader')}
+	in little-endian, is compact and easy to check: a 5 byte header, then messages made of a type, a
+	length and a payload. See
+	{@render a('/gringo/developer/network-protocol', 'How the protocol works')}.
 </p>
-<h3 class="mt-6 font-semibold">State synchronisation: full snapshots</h3>
+<h3 class="mt-6 font-semibold">State synchronisation: full state, 30 times per second</h3>
 {@render table(sync)}
 <p class="mt-3 max-w-[100ch] leading-7">
-	Full snapshots make the server the only authority and survive any packet loss, which is what a
-	first prototype needs. Cost: each entity is 25 bytes, so 60 entities are about 1.5 KB per tick, or
-	about 90 KB/s per player at 60 ticks per second. The server already keeps the last 64 snapshots
-	({@render c('_snapshotHistory')}) and the clients send back {@render c('lastSnapshotTick')}, which
-	is what delta snapshots will need.
+	Every other tick, the server sends the state of each replicated entity: its network id, owner,
+	prefab name and one block per replicated component (the {@render c('Transform')} is 36 bytes). The
+	client creates a copy of the prefab once and then only updates it, so sprites and animations are
+	never sent. It makes the server the only authority and survives any packet loss. Cost: about 70
+	bytes per entity, so 60 entities are about 4 KB per snapshot, or about 125 KB/s per player.
+	Delta snapshots would need a snapshot history on the server and acknowledgements from the clients,
+	neither exists yet.
 </p>
 
 <h2 class="mt-9 text-lg font-semibold">5. Algorithms and data structures</h2>
@@ -189,7 +194,7 @@
 	<li>
 		<strong>Entity Component System</strong>, recommended by the project. Compared with a class
 		hierarchy (Player, Enemy... inheriting from Entity), behaviour comes from the components an entity
-		has, so a new kind of entity needs no new class. See {@render a('/developer/ecs', 'How the ECS works')}.
+		has, so a new kind of entity needs no new class. See {@render a('/gringo/developer/ecs', 'How the ECS works')}.
 	</li>
 	<li>
 		<strong>Sparse set</strong> per component type: a packed {@render c('std::vector')} of components
@@ -205,17 +210,23 @@
 		O(1), and ids stay below {@render c('MAX_ENTITIES')} (4096) so arrays can be indexed directly.
 	</li>
 	<li>
-		<strong>Fixed timestep with an accumulator</strong> on the client ("Fix your timestep"), and a
-		tick clock computed from the start time on the server, so no rounding error builds up and the
-		game speed never depends on the CPU speed.
+		<strong>Fixed timestep</strong> on both sides: the game runs exactly 60 ticks per second on a
+		clock computed from the start time, so no rounding error builds up, and after a stall at most 15
+		late ticks are caught up. The game speed never depends on the CPU speed.
 	</li>
 	<li>
-		<strong>Producer / consumer queue</strong> between the network thread and the game thread, with a
-		mutex.
+		<strong>Producer / consumer queue</strong> between the socket I/O thread and
+		{@render c('NetReceiveSystem')}, with a mutex, capped at 1024 datagrams.
 	</li>
 	<li>
-		<strong>Collision tests</strong>: box against box (AABB), circle against circle (squared
-		distances, no square root) and box against circle (closest point), checked pair by pair.
+		<strong>Dependency graph scheduling</strong>: systems that declare disjoint accesses run
+		together on a thread pool, see
+		{@render a('/gringo/developer/ecs-systems#parallel-systems', 'Running systems in parallel')}.
+	</li>
+	<li>
+		<strong>Collision tests</strong>: a sort and sweep on x finds the pairs that may touch (run in
+		parallel with {@render c('parallelFor')}), then box against box (AABB), circle against circle and
+		box against circle tests check them.
 	</li>
 	<li>
 		<strong>Design patterns</strong>: plugin ({@render c('IPlugin')}), bridge / strategy
@@ -232,31 +243,29 @@
 		(an enemy has two {@render c('Script')}s).
 	</li>
 	<li>
-		<strong>Input queue that keeps the 2 newest inputs</strong>: when a client sends faster than the
-		server ticks, old inputs are dropped instead of piling up, which keeps the input lag under two
-		ticks.
+		<strong>Newest input only</strong>: the server keeps the newest input of each player and ignores
+		older ticks, so a late or duplicated packet never moves a ship backwards.
 	</li>
 	<li>
-		<strong>Snapshot fragments with the same tick</strong>: a snapshot bigger than one datagram is cut
-		into parts of 40 entities. The client keeps only the newest tick, so after a freeze it does not
-		replay old frames.
+		<strong>Message packing</strong>: the messages of a frame are packed first-fit into datagrams of
+		at most 1200 bytes, below the usual network MTU, so nothing is fragmented by IP.
 	</li>
 	<li>
-		<strong>Snapshot history as a ring buffer</strong> of 64 entries indexed by
-		{@render c('tick % 64')}: no allocation per tick, a fixed amount of memory.
+		<strong>Ordered state</strong>: each state carries its tick, and the client ignores a state older
+		than the newest one it has, so a late packet never moves an entity back.
 	</li>
 </ul>
 <h3 class="mt-6 font-semibold">Limits</h3>
 <ul class="mt-3 max-w-[100ch] list-disc space-y-1.5 pl-5 leading-7">
-	<li>Collision is O(n²). A uniform grid would be the next step if the number of entities grows.</li>
+	<li>The sort and sweep is fast when entities are spread along x; a uniform grid would scale better if many entities share the same x.</li>
 	<li>Entity ids have no generation counter, so a stored id can point to a newer entity after a destroy.</li>
-	<li>The client rebuilds every entity on each snapshot. A network id per entity would let it update them instead.</li>
+	<li>Every replicated entity is sent in each snapshot, even when it did not move: delta compression would save bandwidth.</li>
 </ul>
 
 <h2 class="mt-9 text-lg font-semibold">6. Storage</h2>
 <p class="mt-3 max-w-[100ch] leading-7">
 	The prototype stores nothing: the game state lives in memory for the time of a session, the
-	textures are read-only PNG files in {@render c('Assets/')}, and the settings are command-line
+	textures are read-only PNG files in {@render c('R-Type/assets/')}, and the settings are command-line
 	arguments. There is nothing to back up and nothing that can be corrupted. When scores, accounts or
 	levels are added, these are the options:
 </p>
@@ -275,23 +284,56 @@
 <h3 class="mt-6 font-semibold">How it is checked</h3>
 <ul class="mt-3 max-w-[100ch] list-disc space-y-1.5 pl-5 leading-7">
 	<li>
-		{@render c('tests/tests.sh')} has a Robustness section run on every pull request to main: unknown
-		packets, one-byte packets, huge packets, garbage floods, input floods, clients that vanish, many
-		sessions. See {@render a('/developer/tests-sh', 'How tests.sh works')}.
+		Every pull request to {@render c('main')} runs the CI on Linux and Windows (see
+		{@render a('/developer/running-tests', 'Running Tests')}): nothing is merged without it.
 	</li>
-	<li>clang-tidy runs on every build and in the CI to catch bugs such as unchecked conversions.</li>
+	<li>
+		The network unit tests ({@render c('network_tests')}) feed the decoders malformed data: an
+		entity state cut at every possible length or with one byte too many, a prefab name over 64
+		bytes, a truncated component block, and states that arrive late or after their despawn. All must
+		be rejected without effect.
+	</li>
+	<li>
+		{@render c('tests/tests.sh')} checks that every kind of bad command line argument is refused
+		with exit code 84, that a used port fails cleanly, that the server stops cleanly on a signal, and
+		that a client killed without warning is dropped by the server. See
+		{@render a('/developer/tests-sh', 'How tests.sh works')}.
+	</li>
+	<li>clang-tidy runs on every build and in the CI to catch bugs such as unchecked conversions, and clang-format checks every file.</li>
 	<li>Dependencies are pinned to a version, and the CPM bootstrap is checked against a SHA256 hash.</li>
 </ul>
-<h3 class="mt-6 font-semibold">Long-term monitoring (not in place yet)</h3>
+<h3 class="mt-6 font-semibold">Long-term monitoring</h3>
+<p class="mt-3 max-w-[100ch] leading-7">In place:</p>
 <ul class="mt-3 max-w-[100ch] list-disc space-y-1.5 pl-5 leading-7">
-	<li>Watch the raylib and Asio security advisories, or enable GitHub Dependabot alerts, before updating the pinned tags.</li>
-	<li>Add a CI build with AddressSanitizer and UndefinedBehaviorSanitizer while the tests run.</li>
-	<li>Fuzz the packet parsers of the client and the server.</li>
-	<li>Add a per-address rate limit, a session token in each packet against spoofing, and a cap on the eliminated addresses.</li>
+	<li>
+		<strong>Continuous checks</strong>: the same tests, static analysis and builds run on every pull
+		request, so a change that breaks the parsers or the protocol is seen before it is merged.
+	</li>
+	<li>
+		<strong>Runtime logs</strong>: the server prints every connection, departure and timeout
+		({@render c('Player 1 connected')}, {@render c('Player 1 timed out')}), and the network plugin
+		reports anomalies on stderr, once per kind, without flooding: oversized sends, reserved
+		messages of an unknown type, a full player list, the mirror limit reached.
+	</li>
+	<li>
+		<strong>Traffic statistics</strong>: the transport counts, per peer and per second, the packets
+		received, missing, late and duplicated, and prints them once per second when
+		{@render c('logStats')} is turned on in {@render c('NetworkConfig')}.
+	</li>
+	<li>
+		<strong>Pinned dependencies</strong>: a dependency only changes when its version is changed by
+		hand in a reviewed pull request, after reading its release notes and security advisories.
+	</li>
+</ul>
+<p class="mt-3 max-w-[100ch] leading-7">Next steps, in order of value:</p>
+<ul class="mt-3 max-w-[100ch] list-disc space-y-1.5 pl-5 leading-7">
+	<li>Enable GitHub Dependabot alerts, to be warned when a pinned dependency gets a security advisory.</li>
+	<li>Fuzz the packet and message parsers, and run the tests under AddressSanitizer and UndefinedBehaviorSanitizer in the CI.</li>
+	<li>Add a per-address rate limit and a session token in each packet against spoofed addresses.</li>
 </ul>
 
 <h2 class="mt-9 text-lg font-semibold">8. Accessibility</h2>
 <p class="mt-3 max-w-[100ch] leading-7">
-	What the game and this documentation offer, and what is missing, is described on the
+	What the game and this documentation offer is described on the
 	{@render a('/user/accessibility', 'Accessibility')} page.
 </p>

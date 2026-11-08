@@ -1,0 +1,8 @@
+{
+    "texture": "Bydos1Anim.png",
+    "frameWidth": 21.0,
+    "frameHeight": 24,
+    "frames": 8,
+    "fps": 12,
+    "loop": true
+}
