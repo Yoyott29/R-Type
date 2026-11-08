@@ -72,9 +72,10 @@ PostUpdate  Replication, NetSend                     InputSend, NetSend`;
 <p class="mt-3 max-w-[100ch] leading-7">
 	{@render c('SideFilter')} destroys the entities whose {@render c('Mode')} is not for this side;
 	{@render c('Replication')} and {@render c('Mirror')} are in
-	{@render a('/developer/network-replication', 'How replication works')}. One plugin thread owns the
-	asio socket (receive queue capped at 1024 datagrams); the Scene stays on the main thread, without
-	locks.
+	{@render a('/developer/network-replication', 'How replication works')}. The {@render c('UdpSocket')} resource
+	owns the asio socket on its own I/O thread (receive queue capped at 1024 datagrams). The receive,
+	send and input send systems all write {@render c('NetTransport')}, so the scheduler runs them one
+	at a time and the socket needs no other lock.
 </p>
 
 <h2 class="mt-9 text-lg font-semibold">Errors</h2>

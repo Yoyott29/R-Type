@@ -8,6 +8,8 @@
 #include "Scene.hpp"
 #include "ChildOf.hpp"
 #include "nlohmann/json.hpp"
+#include <algorithm>
+#include <vector>
 
 Scene::Scene()
     : _entityManager(std::make_unique<EntityManager>()),
@@ -32,10 +34,17 @@ void Scene::destroyEntity(Entity entity)
 
     // Its children go with it, and theirs with them. Done right away, so a new entity reusing
     // this id cannot become their parent
-    if (_componentManager->isRegistered<ChildOf>())
-        for (Entity child : view<ChildOf>())
-            if (getComponent<ChildOf>(child).parent == entity)
-                destroyEntity(child);
+    if (!_componentManager->isRegistered<ChildOf>())
+        return;
+    // Gathered first: destroying a child changes the ChildOf storage being read. Sorted, so they
+    // go in entity order, as before
+    std::vector<Entity> children;
+    for (Entity child : _componentManager->entitiesWith<ChildOf>())
+        if (_componentManager->getComponent<ChildOf>(child).parent == entity)
+            children.push_back(child);
+    std::sort(children.begin(), children.end());
+    for (Entity child : children)
+        destroyEntity(child);
 }
 
 void Scene::runSchedule(ScheduleLabel label) { _systemManager->runSchedule(label, *this); }

@@ -64,6 +64,9 @@ template <typename Component> class ComponentPool : public IComponentPool
         return _packedComponents[_entityToPackedIndices[entity][index]];
     }
 
+    // The owner of each stored component, in storage order: an entity appears once per component
+    const std::vector<Entity> &entities() const { return _packedIndexToEntity; }
+
     void destroyEntity(Entity entity) override
     {
         if (has(entity))

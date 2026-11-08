@@ -12,6 +12,7 @@
 #include "NetworkConfig.hpp"
 #include "ReservedInbox.hpp"
 #include "UdpSocket.hpp"
+#include <iostream>
 #include <string>
 #include <utility>
 
@@ -34,12 +35,18 @@ void NetReceiveSystem::update(Scene &scene)
     bool const server = role == NetRole::Server;
     for (auto const &event : incoming.connected) {
         connected.send(event);
-        if (!server)
+        if (server)
+            std::cout << "Player " << event.peer << " connected" << std::endl;
+        else
             scene.getResource<LocalPeer>().id = transport.localPeer().value_or(NO_PEER);
     }
     for (auto const &event : incoming.disconnected) {
         disconnected.send(event);
-        if (!server)
+        if (server)
+            std::cout << "Player " << event.peer
+                      << (event.reason == DisconnectReason::Timeout ? " timed out" : " left")
+                      << std::endl;
+        else
             scene.getResource<LocalPeer>().id = NO_PEER;
     }
     inbox.messages.clear();

@@ -17,6 +17,7 @@
 #include "GameClock.hpp"
 #include "EventBus.hpp"
 #include "Transform.hpp"
+#include <csignal>
 #include <thread>
 #include <utility>
 #include <functional>
@@ -27,6 +28,11 @@
 #define MAX_CATCH_UP_TICKS 15
 
 static const ColorRGBA BACKGROUND_COLOR{0, 0, 0, 255};
+
+// Set by SIGINT / SIGTERM: run() then stops like when AppAlive is false
+static volatile std::sig_atomic_t stopRequested = 0;
+
+static void onStopSignal(int) { stopRequested = 1; }
 
 Application::Application()
 {
@@ -96,9 +102,11 @@ void Application::renderFrame()
 void Application::run()
 {
     checkRendererRequirements();
+    std::signal(SIGINT, onStopSignal);
+    std::signal(SIGTERM, onStopSignal);
     _clock.start();
 
-    while (_scene.getResource<AppAlive>().alive) {
+    while (_scene.getResource<AppAlive>().alive && !stopRequested) {
         _scene.runSchedule(PrepUpdate);
         _scene.runSchedule(StateTransition);
         for (int ticks = 0; _clock.isTickDue(); ++ticks) {

@@ -58,19 +58,20 @@ write<T>        write<U>        yes
 scene.parallelFor(count, [](std::size_t begin, std::size_t end) { ... });`;
 
 	const runExample = `// Application::run()
-while (_scene.getResource<AppAlive>().alive) {
-    ...
-    accumulator += frameTime;
-
+while (_scene.getResource<AppAlive>().alive && !stopRequested) {   // SIGINT / SIGTERM stop it
     _scene.runSchedule(PrepUpdate);
     _scene.runSchedule(StateTransition);
-    while (accumulator >= FIXED_DELTA_TIME) {
+    for (int ticks = 0; _clock.isTickDue(); ++ticks) {   // at most MAX_CATCH_UP_TICKS (15)
         _scene.runSchedule(FixedUpdate);
         _scene.flushDestroyQueue();
-        accumulator -= FIXED_DELTA_TIME;
+        _clock.advance();
     }
     _scene.runSchedule(Update);
     _scene.runSchedule(PostUpdate);
+    if (_renderer)
+        renderFrame();                                  // Render, Overlay
+    else
+        std::this_thread::sleep_until(_clock.getNextTickTime());
 }`;
 
 	const movementExample = `void MovementSystem::update(Scene &scene)
@@ -227,14 +228,13 @@ _scene.setSystemComponentSet<OffScreenSystem>(offScreenRequirements);`;
 	accesses can run at the same time (see
 	<a href="#parallel-systems" class="text-[#ff8a3d] hover:underline">Running systems in parallel</a>).
 	A run works on a snapshot of the schedule, so a system can register or remove a system (itself
-	included) during its {@render c('update')}: the change takes effect on the next run. On the client, {@render c('Application::run()')}
-	runs the labels in this order, with {@render c('FixedUpdate')} run zero or more times per frame by
-	an accumulator, each step followed by {@render c('flushDestroyQueue()')}:
+	included) during its {@render c('update')}: the change takes effect on the next run. {@render c('Application::run()')} runs the
+	labels in this order on the main thread, with {@render c('FixedUpdate')} run once per due 1/60 s
+	tick, each followed by {@render c('flushDestroyQueue()')}:
 </p>
 {@render code(runExample)}
 <p class="mt-3 max-w-[100ch] leading-7">
-	The server ({@render c('GameLoop::run()')} in {@render c('src/server/game/game_loop.cpp')}) only
-	runs {@render c('FixedUpdate')}, once per tick, then flushes the destroy queue. A system loops over
+	The server runs the same loop without a renderer and sleeps until the next tick. A system loops over
 	{@render c('_entities')} and reads its components from the {@render c('Scene')}:
 </p>
 {@render code(movementExample)}
@@ -287,8 +287,8 @@ _scene.setSystemComponentSet<OffScreenSystem>(offScreenRequirements);`;
 	Inside one system, {@render c('scene.parallelFor')} ({@render c('src/ECS/core/ParallelFor.hpp')})
 	splits a loop over the pool. The work is cut into contiguous chunks of at least
 	{@render c('PARALLEL_FOR_MIN_CHUNK')} (64) items, the calling thread runs the first one, and the
-	call returns once every chunk is done. Below the minimum chunk size it simply runs the loop on the
-	calling thread. The body must be safe to run on disjoint items at the same time; the first
+	call returns once every chunk is done. Up to {@render c('minChunk')} items, it simply runs the loop
+	on the calling thread. The body must be safe to run on disjoint items at the same time; the first
 	exception thrown by a chunk is rethrown once every chunk has ended:
 </p>
 {@render code(parallelForExample)}
@@ -296,10 +296,12 @@ _scene.setSystemComponentSet<OffScreenSystem>(offScreenRequirements);`;
 	The engine plugins declare their accesses for the systems that can safely run in parallel:
 	{@render c('GravitySystem')} and {@render c('MovementSystem')} (Physics2D),
 	{@render c('Gravity3DSystem')} and {@render c('Movement3DSystem')} (Physics3D),
-	{@render c('AnimationSystem')} (2D), {@render c('CameraFollowSystem')} (3D),
-	{@render c('AudioSystem')}, {@render c('ParticleEmitterSystem')} and the network send, receive
-	and event systems. The colliders, the renderers and the systems registered by R-Type itself
-	declare nothing and stay exclusive.
+	{@render c('AnimationSystem')} and {@render c('ParticleEmitter2DSystem')} (2D),
+	{@render c('CameraFollowSystem')} and {@render c('ParticleEmitter3DSystem')} (3D),
+	{@render c('AudioSystem')}, and {@render c('NetReceiveSystem')}, {@render c('NetSendSystem')},
+	{@render c('InputSendSystem')} and {@render c('EventUpdateSystem')} (Network). The colliders, the
+	renderers and the systems registered by R-Type itself declare nothing and stay exclusive. The
+	gravity, movement and {@render c('Collider2DSystem')} loops use {@render c('parallelFor')}.
 </p>
 
 <h2 class="mt-9 text-lg font-semibold">Plugins</h2>

@@ -10,13 +10,14 @@
 void GravitySystem::update(Scene &scene)
 {
     const Gravity2D &gravity = scene.getResource<Gravity2D>();
+    const std::vector<Entity> entities(_entities.begin(), _entities.end());
 
-    for (Entity entity : _entities) {
+    scene.parallelFor(entities, [&](Entity entity) {
         const RigidBody2D &body = scene.getComponent<RigidBody2D>(entity);
         if (body.isStatic || body.gravityScale == 0.0f)
-            continue;
+            return;
         Velocity &velocity = scene.getComponent<Velocity>(entity);
         velocity.dx += gravity.x * body.gravityScale * FIXED_DELTA_TIME;
         velocity.dy += gravity.y * body.gravityScale * FIXED_DELTA_TIME;
-    }
+    });
 }

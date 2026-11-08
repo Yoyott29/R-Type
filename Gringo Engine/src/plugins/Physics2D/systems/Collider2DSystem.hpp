@@ -13,9 +13,11 @@
 #include "System.hpp"
 #include "Velocity.hpp"
 #include <algorithm>
+#include <cstdint>
 #include <optional>
 #include <set>
 #include <utility>
+#include <vector>
 
 // How two colliders overlap: normal (unit vector going from A to B) and depth (how far they are
 // inside each other, in pixels). Moving B by normal * depth separates them
@@ -46,6 +48,25 @@ class Collider2DSystem : public System
                                          const Transform &positionB, const BoxShape &colliderB);
 
   private:
+    // A collider's bounding box and filter, gathered once per step so the parallel broad phase
+    // reads no scene data
+    struct ColliderBounds {
+        Entity entity;
+        float minX;
+        float minY;
+        float maxX;
+        float maxY;
+        std::uint32_t layer;
+        std::uint32_t mask;
+    };
+
+    static ColliderBounds computeBounds(Entity entity, const Transform &position,
+                                        const Collider2D &collider);
+    // Sort and sweep on x, run on the pool: the pairs whose bounding boxes overlap and where one
+    // side's mask accepts the other, as (larger entity, smaller entity), sorted, so they come in
+    // the order the brute force loop visited them
+    std::vector<std::pair<Entity, Entity>> findCandidatePairs(Scene &scene);
+
     // Trigger pair: calls the onCollision of each side whose mask accepts the other
     void handleTrigger(Entity entity, const Collider2D &collider, bool entityWants,
                        Entity otherEntity, const Collider2D &otherCollider, bool otherWants);

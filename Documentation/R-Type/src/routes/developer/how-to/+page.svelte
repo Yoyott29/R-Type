@@ -40,7 +40,7 @@ constexpr uint8_t PROTOCOL_VERSION = 4;   // the format changed
 case rtype_protocol::PAUSE:
     if (n != 1 || !playerId)
         break;               // check the size before reading anything
-    ...                      // hand it to the game thread, never touch the Scene here
+    ...
     break;
 
 // 3. client: ReadSocket::handlePacket() for a server -> client packet,
@@ -152,8 +152,7 @@ addPlugin(std::make_shared<Audio>());`;
 	</li>
 	<li>Add its size as a constant, and raise {@render c('PROTOCOL_VERSION')}.</li>
 	<li>
-		Handle it on the receiving side. Always check the size first, and on the server, only queue the
-		message for the game thread.
+		Handle it on the receiving side. Always check the size first.
 	</li>
 	<li>
 		Document it in {@render a('/developer/network-protocol', 'How the protocol works')}, update

@@ -7,47 +7,104 @@
 
 #include "Collider2DSystem.hpp"
 #include <cmath>
+#include <mutex>
 #include <set>
 #include <variant>
 
+namespace
+{
+// Colliders swept per chunk: measured, the pool costs more than it saves under a few hundred
+constexpr std::size_t SWEEP_MIN_CHUNK = 512;
+} // namespace
+
+// The broad phase runs on the step's starting positions: a pair pushed into contact by an earlier
+// resolution of the same step is only found on the next step
 void Collider2DSystem::update(Scene &scene)
 {
-    std::set<Entity> checkedEntities;
     std::set<std::pair<Entity, Entity>> solidContacts;
 
-    for (Entity entity : _entities) {
+    // Serial, in the brute force order: the exact test sees the positions already resolved this step
+    for (const auto &[entity, otherEntity] : findCandidatePairs(scene)) {
         Transform &position = scene.getComponent<Transform>(entity);
         Collider2D &collider = scene.getComponent<Collider2D>(entity);
+        Collider2D &otherCollider = scene.getComponent<Collider2D>(otherEntity);
+        Transform &otherPosition = scene.getComponent<Transform>(otherEntity);
+        const bool entityWants = (collider.mask & otherCollider.layer) != 0;
+        const bool otherWants = (otherCollider.mask & collider.layer) != 0;
 
-        for (Entity otherEntity : checkedEntities) {
-            Collider2D &otherCollider = scene.getComponent<Collider2D>(otherEntity);
-            bool entityWants = (collider.mask & otherCollider.layer) != 0;
-            bool otherWants = (otherCollider.mask & collider.layer) != 0;
-            if (!entityWants && !otherWants)
-                continue;
-            Transform &otherPosition = scene.getComponent<Transform>(otherEntity);
+        const std::optional<Contact> contact =
+            checkCollisions(position, collider, otherPosition, otherCollider);
+        if (!contact)
+            continue;
 
-            const std::optional<Contact> contact =
-                checkCollisions(position, collider, otherPosition, otherCollider);
-            if (!contact)
-                continue;
-
-            // one trigger is enough for the pair to be a trigger contact
-            if (collider.isTrigger || otherCollider.isTrigger) {
-                handleTrigger(entity, collider, entityWants, otherEntity, otherCollider,
-                              otherWants);
-                continue;
-            }
-            std::pair<Entity, Entity> pair = std::minmax(entity, otherEntity);
-            solidContacts.insert(pair);
-            if (!_solidContacts.contains(pair))
-                handleSolidEnter(scene, entity, otherEntity);
-            resolveSolid(scene, entity, position, otherEntity, otherPosition, *contact);
+        // one trigger is enough for the pair to be a trigger contact
+        if (collider.isTrigger || otherCollider.isTrigger) {
+            handleTrigger(entity, collider, entityWants, otherEntity, otherCollider, otherWants);
+            continue;
         }
-
-        checkedEntities.insert(entity);
+        std::pair<Entity, Entity> pair = std::minmax(entity, otherEntity);
+        solidContacts.insert(pair);
+        if (!_solidContacts.contains(pair))
+            handleSolidEnter(scene, entity, otherEntity);
+        resolveSolid(scene, entity, position, otherEntity, otherPosition, *contact);
     }
     _solidContacts = std::move(solidContacts);
+}
+
+Collider2DSystem::ColliderBounds Collider2DSystem::computeBounds(Entity entity,
+                                                                 const Transform &position,
+                                                                 const Collider2D &collider)
+{
+    float halfWidth = 0.0f;
+    float halfHeight = 0.0f;
+    if (const BoxShape *box = std::get_if<BoxShape>(&collider.shape)) {
+        halfWidth = box->width / 2.0f;
+        halfHeight = box->height / 2.0f;
+    } else {
+        const CircleShape &circle = std::get<CircleShape>(collider.shape);
+        halfWidth = circle.radius;
+        halfHeight = circle.radius;
+    }
+    return {entity,
+            position.x - halfWidth,
+            position.y - halfHeight,
+            position.x + halfWidth,
+            position.y + halfHeight,
+            collider.layer,
+            collider.mask};
+}
+
+std::vector<std::pair<Entity, Entity>> Collider2DSystem::findCandidatePairs(Scene &scene)
+{
+    std::vector<ColliderBounds> bounds;
+    bounds.reserve(_entities.size());
+    for (Entity entity : _entities)
+        bounds.push_back(computeBounds(entity, scene.getComponent<Transform>(entity),
+                                       scene.getComponent<Collider2D>(entity)));
+    std::sort(bounds.begin(), bounds.end(),
+              [](const ColliderBounds &a, const ColliderBounds &b) { return a.minX < b.minX; });
+
+    std::vector<std::pair<Entity, Entity>> pairs;
+    std::mutex pairsMutex;
+    // Touching boxes are kept (<=): the exact test rejects them, the broad phase must not miss any
+    scene.parallelFor(bounds.size(), [&](std::size_t begin, std::size_t end) {
+        std::vector<std::pair<Entity, Entity>> found;
+        for (std::size_t i = begin; i < end; ++i) {
+            const ColliderBounds &a = bounds[i];
+            for (std::size_t j = i + 1; j < bounds.size() && bounds[j].minX <= a.maxX; ++j) {
+                const ColliderBounds &b = bounds[j];
+                if (b.minY > a.maxY || a.minY > b.maxY)
+                    continue;
+                if ((a.mask & b.layer) == 0 && (b.mask & a.layer) == 0)
+                    continue;
+                found.emplace_back(std::max(a.entity, b.entity), std::min(a.entity, b.entity));
+            }
+        }
+        const std::lock_guard<std::mutex> lock(pairsMutex);
+        pairs.insert(pairs.end(), found.begin(), found.end());
+    }, SWEEP_MIN_CHUNK);
+    std::sort(pairs.begin(), pairs.end());
+    return pairs;
 }
 
 void Collider2DSystem::handleTrigger(Entity entity, const Collider2D &collider, bool entityWants,

@@ -2,13 +2,12 @@
 	const tickExample = `client frame (about 60 per second)                 server tick (exactly 60 per second)
 PrepUpdate       GetInput: keyboard -> KeyboardInput
                  TryConnect: CONNECT until accepted
-StateTransition  SendInput: INPUT ───────UDP───────> network thread: InputQueue of the player
-                                                    game thread:
-                                                      timeouts, new players
-                                                      pop one input per player -> Velocity, bullet
+StateTransition  SendInput: INPUT ───────UDP───────> UdpSocket I/O thread: receive queue
+                                                    main thread:
+                                                      PrepUpdate: NetReceive, Player, RemoteInput
                                                       FixedUpdate: Movement, Script, Collider2D
                                                       flushDestroyQueue
-                 ReadSocket: rebuild <────UDP─────── SNAPSHOT of the tick
+                 ReadSocket: rebuild <────UDP─────── PostUpdate: Replication, NetSend
 FixedUpdate      (no entity to simulate)
 PostUpdate       RenderSystem -> IRenderer -> raylib`;
 
@@ -122,15 +121,15 @@ engine core           src/engine                          only the C++ standard 
 		<text x="570" y="40" fill="#ff8a3d" font-size="16" font-weight="700">SERVER  r-type_server</text>
 
 		<rect x="570" y="60" width="360" height="60" rx="6" fill="#121a17" stroke="#3fbed6" />
-		<text x="585" y="85" fill="#d8e4de" font-size="14" font-weight="600">Game logic: GameLoop + Game</text>
-		<text x="585" y="105" fill="#7f9189" font-size="12">game thread, 60 ticks/s, prefabs, waves</text>
+		<text x="585" y="85" fill="#d8e4de" font-size="14" font-weight="600">Game: Application (headless)</text>
+		<text x="585" y="105" fill="#7f9189" font-size="12">main thread, 60 ticks/s, scripts, prefabs</text>
 
 		<rect x="570" y="135" width="174" height="120" rx="6" fill="#121a17" stroke="#3fbed6" />
-		<text x="580" y="158" fill="#d8e4de" font-size="13" font-weight="600">Network thread</text>
-		<text x="580" y="180" fill="#7f9189" font-size="11">Network::receiveLoop</text>
-		<text x="580" y="196" fill="#7f9189" font-size="11">players, timeouts</text>
-		<text x="580" y="212" fill="#7f9189" font-size="11">InputQueue (per player)</text>
-		<text x="580" y="228" fill="#7f9189" font-size="11">sendSnapshot</text>
+		<text x="580" y="158" fill="#d8e4de" font-size="13" font-weight="600">Network plugin</text>
+		<text x="580" y="180" fill="#7f9189" font-size="11">UdpSocket (I/O thread)</text>
+		<text x="580" y="196" fill="#7f9189" font-size="11">NetReceive, NetSend</text>
+		<text x="580" y="212" fill="#7f9189" font-size="11">Player, RemoteInput</text>
+		<text x="580" y="228" fill="#7f9189" font-size="11">Replication</text>
 
 		<rect x="756" y="135" width="174" height="120" rx="6" fill="#121a17" stroke="#3fbed6" />
 		<text x="766" y="158" fill="#d8e4de" font-size="13" font-weight="600">Physics2D systems</text>
@@ -176,9 +175,8 @@ engine core           src/engine                          only the C++ standard 
 		{@render c('GetInput')}. See {@render a('/developer/game-loop', 'How the game loop works')}.
 	</li>
 	<li>
-		<strong>Networking</strong>: the Network plugin on the client, the {@render c('Network')} class and
-		its thread on the server. Both only exchange the packets of
-		{@render c('src/common/rtype_protocol.hpp')}. See
+		<strong>Networking</strong>: the Network plugin, on both sides. Its {@render c('UdpSocket')} resource
+		runs the only thread outside the game loop and its thread pool. See
 		{@render a('/developer/network', 'How the network works')}.
 	</li>
 	<li>
@@ -205,7 +203,8 @@ engine core           src/engine                          only the C++ standard 
 		{@render c('build')}. The client {@render c('Application')} only lists the plugins it wants.
 	</li>
 	<li>
-		On the server, the network thread never touches the Scene: it only fills the input queues, see
+		The {@render c('UdpSocket')} I/O thread never touches the Scene: it only fills a receive queue
+		that {@render c('NetReceiveSystem')} drains, see
 		{@render a('/developer/network', 'How the network works')}.
 	</li>
 </ul>

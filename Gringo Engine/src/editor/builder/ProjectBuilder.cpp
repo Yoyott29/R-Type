@@ -623,7 +623,7 @@ std::string ProjectBuilder::build(const std::string &projectPath, const SceneObj
             " -DGRINGO_GAME_SCRIPT_DIR=" + shellQuote((projectFolder / "scripts").string()) +
             " -DGRINGO_GAME_PLUGINS=" + shellQuote(pluginList) +
             " -DGRINGO_GAME_RENDERER=" + shellQuote(renderer) + " && cmake --build " +
-            shellQuote(buildDirectory.string()) + " --target " + shellQuote(variantTarget);
+            shellQuote(buildDirectory.string()) + " --target " + shellQuote(variantTarget) + " -j";
         if (std::system(command.c_str()) != 0)
             throw std::runtime_error("Failed to build project executable: " + variantTarget);
     }
