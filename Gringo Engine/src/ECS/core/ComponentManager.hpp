@@ -113,6 +113,12 @@ class ComponentManager
         return getComponentPool<Component>().count(entity);
     }
 
+    // The entities holding a Component, without scanning every entity slot
+    template <typename Component> const std::vector<Entity> &entitiesWith()
+    {
+        return getComponentPool<Component>().entities();
+    }
+
     void entityDestroyed(Entity entity)
     {
         for (auto const &pair : _componentPools)
