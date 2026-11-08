@@ -10,6 +10,7 @@
 #include "NetworkConfig.hpp"
 #include "Networked.hpp"
 #include "Scene.hpp"
+#include "Transform.hpp"
 #include <algorithm>
 #include <cstddef>
 #include <optional>
@@ -23,6 +24,17 @@ namespace Lobby
 {
 inline constexpr std::size_t ACTION_START = 4;
 inline const std::string MUSIC_PREFAB = "StageMusic";
+inline constexpr float HIDDEN_OFFSET_Y = 5000.0f;
+
+// Moves a menu (and its children) off screen or back. False when it already was in that state
+inline bool setHidden(Scene &scene, Entity menu, bool &state, bool hidden)
+{
+    if (hidden == state)
+        return false;
+    state = hidden;
+    scene.getComponent<Transform>(menu).y += hidden ? HIDDEN_OFFSET_Y : -HIDDEN_OFFSET_Y;
+    return true;
+}
 
 inline bool isClient(Scene &scene)
 {
