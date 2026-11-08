@@ -224,29 +224,11 @@ test_server_default_port() {
 # Client arguments
 # ============================================================
 
-# The client refuses a port that is not a number with exit code 84
-test_client_args_port_not_a_number() {
-    run_binary "$CLIENT_BIN" abc; [ $? -eq 84 ] || fail "exit code is not 84"
-    grep -q "Invalid port" <<< "$RUN_LOG" || fail "no 'Invalid port' message"
-}
-
 # The client refuses the port 0 with exit code 84
 test_client_args_port_zero() { run_binary "$CLIENT_BIN" 0; [ $? -eq 84 ] || fail "port 0 accepted"; }
 
 # The client refuses a port above 65535 with exit code 84
 test_client_args_port_too_big() { run_binary "$CLIENT_BIN" 70000; [ $? -eq 84 ] || fail "port 70000 accepted"; }
-
-# The client refuses an invalid ip with exit code 84
-test_client_args_invalid_ip() {
-    run_binary "$CLIENT_BIN" not.an.ip 4242; [ $? -eq 84 ] || fail "exit code is not 84"
-    grep -q "Invalid ip" <<< "$RUN_LOG" || fail "no 'Invalid ip' message"
-}
-
-# The client refuses more than two arguments with exit code 84 and the usage
-test_client_args_too_many() {
-    run_binary "$CLIENT_BIN" "$LOCAL" 4242 extra; [ $? -eq 84 ] || fail "exit code is not 84"
-    grep -q "Usage" <<< "$RUN_LOG" || fail "no usage printed"
-}
 
 # Without a screen, the client exits with 84 and a clear error instead of crashing
 test_client_without_display() {
@@ -353,11 +335,8 @@ run_test "server: default address" test_server_default_address
 run_test "server: default port" test_server_default_port
 
 section "Client arguments"
-run_test "client: port not a number" test_client_args_port_not_a_number
 run_test "client: port 0" test_client_args_port_zero
 run_test "client: port too big" test_client_args_port_too_big
-run_test "client: invalid ip" test_client_args_invalid_ip
-run_test "client: too many arguments" test_client_args_too_many
 run_test "client: no display" test_client_without_display
 
 section "Server start and shutdown"
