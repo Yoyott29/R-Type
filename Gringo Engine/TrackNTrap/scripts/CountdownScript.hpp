@@ -17,8 +17,6 @@
 #define FADE_START 0.7f
 #define GO_SECONDS 1.0f
 
-// The countdown's own AudioSource beeps on each number. "music" is the editor id of the entity
-// with the main theme: silent during the countdown, played again on GO
 inline std::vector<std::string> CountdownScript_params = {"seconds", "startSize", "music"};
 
 class CountdownScript : public GringoEntityScript
@@ -52,7 +50,7 @@ class CountdownScript : public GringoEntityScript
         if (!_started) {
             _started = true;
             if (const std::optional<Entity> music = findMusic(scene))
-                scene.getComponent<AudioSource>(*music).stop();
+                scene.getComponent<AudioSource>(music.value()).stop();
         }
         _remaining -= FIXED_DELTA_TIME;
         if (_remaining > 0.0f) {
@@ -70,7 +68,7 @@ class CountdownScript : public GringoEntityScript
         if (!state.canMove) {
             state.canMove = true;
             if (const std::optional<Entity> music = findMusic(scene))
-                scene.getComponent<AudioSource>(*music).play();
+                scene.getComponent<AudioSource>(music.value()).play();
         }
         if (_remaining > -GO_SECONDS) {
             text.content = "GO";
@@ -82,7 +80,6 @@ class CountdownScript : public GringoEntityScript
     }
 
   private:
-    // The entity with the main theme, if it exists and has an AudioSource
     std::optional<Entity> findMusic(Scene &scene) const
     {
         const std::optional<Entity> music = scene.getResource<EditorEntityIds>().find(_musicId);

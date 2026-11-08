@@ -1,28 +1,18 @@
 #ifndef SPATULASLAP_HPP_
 #define SPATULASLAP_HPP_
 
-#include "Collider3D.hpp"
+#include "Hazards.hpp"
 #include "ParticleEmitter3D.hpp"
 #include "Scene.hpp"
 #include "Script.hpp"
 #include "Time.hpp"
 #include "Transform.hpp"
-#include <algorithm>
+#include "Vector3.hpp"
 #include <cmath>
 #include <cstdlib>
-#include <ctime>
-#include <optional>
 #include <string>
 #include <vector>
 
-#define SPATULA_MIN_X -113.25f
-#define SPATULA_MAX_X 120.158f
-#define SPATULA_MIN_Y 15.567f
-#define SPATULA_MAX_Y 781.799f
-#define SPATULA_MIN_Z -28.099f
-#define SPATULA_MAX_Z 13.69f
-
-// Middle of the spatula head in spatula.glb: where the particles burst out when it hits the floor
 #define SPATULA_HEAD_CENTER_X 3.454f
 #define SPATULA_HEAD_CENTER_Y 541.273f
 #define SPATULA_HEAD_CENTER_Z -7.204f
@@ -32,12 +22,9 @@
 
 #define SPATULA_ASSET_YAW -90.0f
 
-// "BurstTime": seconds the spatula's ParticleEmitter3D emits under the head on each slap
-inline const std::vector<std::string> SpatulaSlap_params = {"MinDelay", "MaxDelay", "SlapTime",
-                                                            "HoldTime", "RaiseTime", "BurstTime"};
+inline const std::vector<std::string> SpatulaSlap_params = {
+    "MinDelay", "MaxDelay", "SlapTime", "HoldTime", "RaiseTime", "BurstTime", "StunTime"};
 
-// Stands up at 90 degrees, waits a random time, then slams flat on the floor and slowly raises
-// back. With RotationY = 0 it falls towards +X: turn the entity to choose where it slaps.
 class SpatulaSlap : public GringoEntityScript
 {
   public:
@@ -55,21 +42,20 @@ class SpatulaSlap : public GringoEntityScript
             _raiseTime = std::stof(value);
         else if (name == "BurstTime")
             _burstTime = std::stof(value);
+        else if (name == "StunTime")
+            _stunTime = std::stof(value);
     }
 
     void onStart(Scene &scene, Entity &entity) override
     {
-        static bool seeded = false;
-
-        if (!seeded) {
-            std::srand(static_cast<unsigned int>(std::time(nullptr)));
-            seeded = true;
-        }
         _baseRotationX = scene.getComponent<Transform>(entity).rotationX;
         _state = State::Waiting;
-        _timer = random(_minDelay, _maxDelay);
+        _timer = randomDelay();
         apply(scene, entity, SPATULA_UPRIGHT_ANGLE);
         createImpact(scene, entity);
+        if (!scene.hasResource<Hazards>())
+            scene.addResource<Hazards>();
+        scene.getResource<Hazards>().add(entity, {Hazard::Effect::Stun, _stunTime});
     }
 
     void onUpdate(Scene &scene, Entity &entity) override
@@ -92,7 +78,7 @@ class SpatulaSlap : public GringoEntityScript
             break;
         case State::Raising:
             if (_timer <= 0.0f)
-                next(State::Waiting, random(_minDelay, _maxDelay));
+                next(State::Waiting, randomDelay());
             break;
         }
         apply(scene, entity, angle());
@@ -102,8 +88,6 @@ class SpatulaSlap : public GringoEntityScript
   private:
     enum class State { Waiting, Slapping, Holding, Raising };
 
-    // The emitter follows its entity's Transform, the spatula's is the handle: the emitter moves to
-    // an entity of its own, placed under the head on each slap
     void createImpact(Scene &scene, Entity spatula)
     {
         if (!scene.hasComponent<ParticleEmitter3D>(spatula))
@@ -114,25 +98,26 @@ class SpatulaSlap : public GringoEntityScript
         emitter.particles.clear();
         scene.removeComponent<ParticleEmitter3D>(spatula);
         _impact = scene.createEntity();
-        scene.addComponent(*_impact, Transform{});
-        scene.addComponent(*_impact, emitter);
+        _hasImpact = true;
+        scene.addComponent(_impact, Transform{});
+        scene.addComponent(_impact, emitter);
     }
 
     void updateImpact(Scene &scene, Entity spatula)
     {
-        if (!_impact)
+        if (!_hasImpact)
             return;
-        ParticleEmitter3D &emitter = scene.getComponent<ParticleEmitter3D>(*_impact);
+        ParticleEmitter3D &emitter = scene.getComponent<ParticleEmitter3D>(_impact);
 
         if (_burst > 0.0f && !emitter.isEmitting()) {
-            const Transform &transform = scene.getComponent<Transform>(spatula);
-            Transform &impact = scene.getComponent<Transform>(*_impact);
-            float head[3] = {SPATULA_HEAD_CENTER_X, SPATULA_HEAD_CENTER_Y, SPATULA_HEAD_CENTER_Z};
+            Transform &transform = scene.getComponent<Transform>(spatula);
+            Transform &impact = scene.getComponent<Transform>(_impact);
+            Vector3 head = place(
+                {SPATULA_HEAD_CENTER_X, SPATULA_HEAD_CENTER_Y, SPATULA_HEAD_CENTER_Z}, transform);
 
-            place(head, transform);
-            impact.x = transform.x + head[0];
-            impact.y = transform.y + head[1];
-            impact.z = transform.z + head[2];
+            impact.x = transform.x + head.x;
+            impact.y = transform.y + head.y;
+            impact.z = transform.z + head.z;
             emitter.start();
         }
         _burst -= FIXED_DELTA_TIME;
@@ -140,26 +125,34 @@ class SpatulaSlap : public GringoEntityScript
             emitter.stop();
     }
 
+    float randomDelay()
+    {
+        return _minDelay + (_maxDelay - _minDelay) * std::rand() / static_cast<float>(RAND_MAX);
+    }
+
     void next(State state, float duration)
     {
         _state = state;
-        _duration = std::max(duration, FIXED_DELTA_TIME);
+        _duration = duration;
+        if (_duration < FIXED_DELTA_TIME)
+            _duration = FIXED_DELTA_TIME;
         _timer = _duration;
     }
 
-    // Angle between the blade and the floor: 90 standing, 0 flat
     float angle() const
     {
-        const float progress = std::clamp(1.0f - _timer / _duration, 0.0f, 1.0f);
+        float progress = 1.0f - _timer / _duration;
+        if (progress < 0.0f)
+            progress = 0.0f;
+        if (progress > 1.0f)
+            progress = 1.0f;
 
         switch (_state) {
         case State::Slapping:
-            // Accelerates like a swing, hits the floor at full speed
             return SPATULA_UPRIGHT_ANGLE * (1.0f - progress * progress);
         case State::Holding:
             return 0.0f;
         case State::Raising:
-            // Slows down when getting back up
             return SPATULA_UPRIGHT_ANGLE * (1.0f - (1.0f - progress) * (1.0f - progress));
         default:
             return SPATULA_UPRIGHT_ANGLE;
@@ -168,57 +161,30 @@ class SpatulaSlap : public GringoEntityScript
 
     void apply(Scene &scene, Entity &entity, float upAngle)
     {
-        Transform &spatula = scene.getComponent<Transform>(entity);
-        Collider3D &collider = scene.getComponent<Collider3D>(entity);
-        float minimum[3] = {0.0f, 0.0f, 0.0f};
-        float maximum[3] = {0.0f, 0.0f, 0.0f};
-
-        spatula.rotationX = _baseRotationX - (SPATULA_UPRIGHT_ANGLE - upAngle);
-        for (int corner = 0; corner < 8; ++corner) {
-            float point[3] = {corner & 1 ? SPATULA_MAX_X : SPATULA_MIN_X,
-                              corner & 2 ? SPATULA_MAX_Y : SPATULA_MIN_Y,
-                              corner & 4 ? SPATULA_MAX_Z : SPATULA_MIN_Z};
-
-            place(point, spatula);
-            for (int axis = 0; axis < 3; ++axis) {
-                minimum[axis] = corner == 0 ? point[axis] : std::min(minimum[axis], point[axis]);
-                maximum[axis] = corner == 0 ? point[axis] : std::max(maximum[axis], point[axis]);
-            }
-        }
-        collider.offsetX = (minimum[0] + maximum[0]) / 2.0f;
-        collider.offsetY = (minimum[1] + maximum[1]) / 2.0f;
-        collider.offsetZ = (minimum[2] + maximum[2]) / 2.0f;
-        collider.width = maximum[0] - minimum[0];
-        collider.height = maximum[1] - minimum[1];
-        collider.depth = maximum[2] - minimum[2];
+        scene.getComponent<Transform>(entity).rotationX =
+            _baseRotationX - (SPATULA_UPRIGHT_ANGLE - upAngle);
     }
 
-    // Model point to world offset, in the renderer's order: scale, X, asset yaw, Z, then yaw
-    static void place(float (&point)[3], const Transform &spatula)
+    static Vector3 place(Vector3 point, const Transform &spatula)
     {
-        point[0] *= spatula.scaleX;
-        point[1] *= spatula.scaleY;
-        point[2] *= spatula.scaleZ;
-        rotate(point[1], point[2], spatula.rotationX);
-        rotate(point[2], point[0], SPATULA_ASSET_YAW);
-        rotate(point[0], point[1], spatula.rotationZ);
-        rotate(point[2], point[0], -spatula.rotationY);
+        point.x *= spatula.scaleX;
+        point.y *= spatula.scaleY;
+        point.z *= spatula.scaleZ;
+        rotate(point.y, point.z, spatula.rotationX);
+        rotate(point.z, point.x, SPATULA_ASSET_YAW);
+        rotate(point.x, point.y, spatula.rotationZ);
+        rotate(point.z, point.x, -spatula.rotationY);
+        return point;
     }
 
-    // Turns (first, second) by degrees, from first towards second
     static void rotate(float &first, float &second, float degrees)
     {
-        const float sine = std::sin(degrees * SPATULA_DEGREES_TO_RADIANS);
-        const float cosine = std::cos(degrees * SPATULA_DEGREES_TO_RADIANS);
-        const float turnedFirst = cosine * first - sine * second;
+        float sine = std::sin(degrees * SPATULA_DEGREES_TO_RADIANS);
+        float cosine = std::cos(degrees * SPATULA_DEGREES_TO_RADIANS);
+        float turnedFirst = cosine * first - sine * second;
 
         second = sine * first + cosine * second;
         first = turnedFirst;
-    }
-
-    static float random(float min, float max)
-    {
-        return min + (max - min) * static_cast<float>(std::rand()) / RAND_MAX;
     }
 
     float _minDelay = 1.0f;
@@ -227,8 +193,10 @@ class SpatulaSlap : public GringoEntityScript
     float _holdTime = 0.4f;
     float _raiseTime = 1.0f;
     float _burstTime = 0.1f;
+    float _stunTime = 2.0f;
     float _burst = 0.0f;
-    std::optional<Entity> _impact;
+    Entity _impact{};
+    bool _hasImpact = false;
     float _baseRotationX = 0.0f;
     float _timer = 0.0f;
     float _duration = 1.0f;

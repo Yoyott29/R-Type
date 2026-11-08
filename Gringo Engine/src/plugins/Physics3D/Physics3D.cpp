@@ -70,6 +70,7 @@ void Physics3D::registerComponents(Scene &scene)
             collider.layer = static_cast<std::uint32_t>(ComponentJson::intValue(data, "Layer", 1));
             collider.mask = Physics3D::maskValue(data);
             collider.isTrigger = ComponentJson::boolValue(data, "IsTrigger", false);
+            collider.rotates = ComponentJson::boolValue(data, "Rotates", false);
             target.addComponent(entity, collider);
         });
     scene.registerComponent<ArcWall3D>([](Scene &target, Entity entity, const nlohmann::json &data) {

@@ -11,33 +11,18 @@
 #include "Script.hpp"
 #include "Time.hpp"
 #include "Transform.hpp"
-#include "TrapImmunity.hpp"
+#include "Traps.hpp"
 #include "UIButton.hpp"
-#include <algorithm>
+#include "Velocity3D.hpp"
 #include <cmath>
-#include <optional>
 #include <sstream>
 #include <string>
 #include <vector>
 
-// Bounds of MouseTrap.glb as drawn (after the renderer's asset yaw), board bottom at Y 0
-#define TRAP_MIN_X -1.031f
-#define TRAP_MAX_X 0.747f
-#define TRAP_MIN_Y -0.038f
-#define TRAP_MAX_Y 0.348f
-#define TRAP_MIN_Z -0.749f
-#define TRAP_MAX_Z 0.442f
 #define TRAP_DEGREES_TO_RADIANS (3.14159265f / 180.0f)
 
-// "prefab": the trap prefab. "count": traps per game. "distance": how far in front of the rat it
-// lands. "immunity": seconds the trap can't kill the rat that placed it. "hud": editor ids of the
-// HUD buttons, comma separated, hidden on the menu. "counter": the one whose text is "X<traps
-// left>". "key": the one showing the key, hidden when no trap is left
-inline const std::vector<std::string> TrapPlacer_params = {"prefab", "count", "distance",
-                                                           "immunity", "hud", "counter", "key"};
-
-// On the rat: E drops a trap on the floor in front of it, up to "count" per game. The trap is a
-// trigger, so any rat running into it dies, the one that placed it too once its immunity is over
+inline const std::vector<std::string> TrapPlacer_params = {
+    "prefab", "count", "distance", "speed", "lifetime", "immunity", "hud", "counter", "key"};
 class TrapPlacer : public GringoEntityScript
 {
   public:
@@ -49,6 +34,10 @@ class TrapPlacer : public GringoEntityScript
             _left = std::stoi(value);
         else if (name == "distance")
             _distance = std::stof(value);
+        else if (name == "speed")
+            _speed = std::stof(value);
+        else if (name == "lifetime")
+            _lifetime = std::stof(value);
         else if (name == "immunity")
             _immunity = std::stof(value);
         else if (name == "hud")
@@ -61,18 +50,20 @@ class TrapPlacer : public GringoEntityScript
 
     void onStart(Scene &scene, Entity &) override
     {
-        const EditorEntityIds &ids = scene.getResource<EditorEntityIds>();
+        EditorEntityIds &ids = scene.getResource<EditorEntityIds>();
 
-        if (!scene.hasResource<TrapImmunity>())
-            scene.addResource<TrapImmunity>();
+        if (!scene.hasResource<Traps>())
+            scene.addResource<Traps>();
         for (int id : _hudIds) {
-            const std::optional<Entity> entity = ids.find(id);
-
-            if (!entity || !scene.hasComponent<UIButton>(*entity))
+            // No entity with this editor id
+            if (ids.entities.count(id) == 0)
                 continue;
-            UIButton &button = scene.getComponent<UIButton>(*entity);
-            _hud.push_back({*entity, id, button.width, button.height, button.content});
-            show(button, false);
+            Entity entity = ids.entities.at(id);
+            if (!scene.hasComponent<UIButton>(entity))
+                continue;
+            UIButton &button = scene.getComponent<UIButton>(entity);
+            _hud.push_back({entity, id, button.width, button.height, button.content});
+            hide(button);
         }
     }
 
@@ -80,20 +71,23 @@ class TrapPlacer : public GringoEntityScript
     {
         if (!scene.hasResource<GameState>() || !scene.getResource<GameState>().playing)
             return;
-        scene.getResource<TrapImmunity>().elapse(FIXED_DELTA_TIME);
+        Traps &traps = scene.getResource<Traps>();
+
+        traps.elapse(FIXED_DELTA_TIME);
+        for (Entity done : traps.takeDone())
+            scene.queueDestroy(done);
         if (!_hudShown) {
             _hudShown = true;
-            for (const Panel &panel : _hud)
-                show(scene.getComponent<UIButton>(panel.entity), true, panel);
+            for (Panel &panel : _hud)
+                show(scene.getComponent<UIButton>(panel.entity), panel);
             updateHud(scene);
         }
-        const Transform &rat = scene.getComponent<Transform>(entity);
-        const Collider3D &collider = scene.getComponent<Collider3D>(entity);
+        Transform &rat = scene.getComponent<Transform>(entity);
+        Collider3D &collider = scene.getComponent<Collider3D>(entity);
 
-        // Where the feet are when on the floor: a trap dropped mid-jump still lands there
         if (scene.getComponent<RigidBody3D>(entity).grounded)
             _floorY = rat.y + collider.offsetY - collider.height / 2.0f;
-        const bool pressed = scene.getResource<KeyboardInput>().isDown(Key::E);
+        bool pressed = scene.getResource<KeyboardInput>().isDown(Key::E);
         if (pressed && !_wasPressed && _left > 0 && scene.getResource<GameState>().canMove)
             place(scene, entity, rat);
         _wasPressed = pressed;
@@ -108,79 +102,64 @@ class TrapPlacer : public GringoEntityScript
         std::string content;
     };
 
-    void place(Scene &scene, Entity rat, const Transform &ratTransform)
+    void place(Scene &scene, Entity rat, Transform &ratTransform)
     {
         if (!scene.getResource<PrefabsManager>().hasPrefab(_prefab))
             return;
-        const float radians = ratTransform.rotationY * TRAP_DEGREES_TO_RADIANS;
-        const Entity trap = scene.getResource<PrefabsManager>().InstantiatePrefab(_prefab, scene);
+        float radians = ratTransform.rotationY * TRAP_DEGREES_TO_RADIANS;
+        Entity trap = scene.getResource<PrefabsManager>().InstantiatePrefab(_prefab, scene);
 
         if (!scene.hasComponent<Transform>(trap))
             scene.addComponent(trap, Transform{});
         Transform &transform = scene.getComponent<Transform>(trap);
-        // The rat faces (sin, -cos) of its rotation; the trap's long side follows it
-        transform.x += ratTransform.x + std::sin(radians) * _distance;
+        float forwardX = std::sin(radians);
+        float forwardZ = -std::cos(radians);
+
+        transform.x += ratTransform.x + forwardX * _distance;
         transform.y += _floorY;
-        transform.z += ratTransform.z - std::cos(radians) * _distance;
+        transform.z += ratTransform.z + forwardZ * _distance;
         transform.rotationY += ratTransform.rotationY - 90.0f;
-        if (scene.hasComponent<Collider3D>(trap))
-            fit(scene.getComponent<Collider3D>(trap), transform);
-        scene.getResource<TrapImmunity>().entries.push_back({rat, trap, _immunity});
+        Velocity3D velocity;
+        velocity.dx = forwardX * _speed;
+        velocity.dz = forwardZ * _speed;
+        if (scene.hasComponent<Velocity3D>(trap))
+            scene.getComponent<Velocity3D>(trap) = velocity;
+        else
+            scene.addComponent(trap, velocity);
+        scene.getResource<Traps>().add(trap, rat, _immunity, _lifetime);
         --_left;
         updateHud(scene);
     }
 
     void updateHud(Scene &scene)
     {
-        for (const Panel &panel : _hud) {
+        for (Panel &panel : _hud) {
             UIButton &button = scene.getComponent<UIButton>(panel.entity);
 
-            if (panel.id == _counterId)
+            if (panel.id == _counterId) {
                 button.content = "X" + std::to_string(_left);
-            else if (panel.id == _keyId)
-                show(button, _left > 0, panel);
+            } else if (panel.id == _keyId) {
+                if (_left > 0)
+                    show(button, panel);
+                else
+                    hide(button);
+            }
         }
     }
 
-    // A button can't be turned off: hidden, it has no size and no text
-    static void show(UIButton &button, bool visible, const Panel &panel = {})
+    static void hide(UIButton &button)
     {
-        button.width = visible ? panel.width : 0;
-        button.height = visible ? panel.height : 0;
-        if (!visible)
-            button.content.clear();
-        else if (button.content.empty())
+        button.width = 0;
+        button.height = 0;
+        button.content.clear();
+    }
+
+    static void show(UIButton &button, Panel &panel)
+    {
+        button.width = panel.width;
+        button.height = panel.height;
+        if (button.content.empty())
             button.content = panel.content;
-    }
-
-    // Collider around the turned trap: (x, z) turned like the renderer's yaw
-    static void fit(Collider3D &collider, const Transform &trap)
-    {
-        const float radians = -trap.rotationY * TRAP_DEGREES_TO_RADIANS;
-        const float sine = std::sin(radians);
-        const float cosine = std::cos(radians);
-        float minimumX = 0.0f;
-        float maximumX = 0.0f;
-        float minimumZ = 0.0f;
-        float maximumZ = 0.0f;
-
-        for (int corner = 0; corner < 4; ++corner) {
-            const float x = (corner & 1 ? TRAP_MAX_X : TRAP_MIN_X) * trap.scaleX;
-            const float z = (corner & 2 ? TRAP_MAX_Z : TRAP_MIN_Z) * trap.scaleZ;
-            const float turnedX = cosine * x + sine * z;
-            const float turnedZ = -sine * x + cosine * z;
-
-            minimumX = corner == 0 ? turnedX : std::min(minimumX, turnedX);
-            maximumX = corner == 0 ? turnedX : std::max(maximumX, turnedX);
-            minimumZ = corner == 0 ? turnedZ : std::min(minimumZ, turnedZ);
-            maximumZ = corner == 0 ? turnedZ : std::max(maximumZ, turnedZ);
-        }
-        collider.width = maximumX - minimumX;
-        collider.height = (TRAP_MAX_Y - TRAP_MIN_Y) * trap.scaleY;
-        collider.depth = maximumZ - minimumZ;
-        collider.offsetX = (minimumX + maximumX) / 2.0f;
-        collider.offsetY = (TRAP_MIN_Y + TRAP_MAX_Y) / 2.0f * trap.scaleY;
-        collider.offsetZ = (minimumZ + maximumZ) / 2.0f;
     }
 
     static std::vector<int> parseIds(const std::string &value)
@@ -196,8 +175,10 @@ class TrapPlacer : public GringoEntityScript
     }
 
     std::string _prefab = "MouseTrap";
-    int _left = 3;
+    int _left = 5;
     float _distance = 12.0f;
+    float _speed = 150.0f;
+    float _lifetime = 6.0f;
     float _immunity = 5.0f;
     std::vector<int> _hudIds;
     int _counterId = -1;

@@ -8,56 +8,50 @@
 #pragma once
 
 #include "AudioSource.hpp"
+#include "Cheeses.hpp"
 #include "ChildOf.hpp"
 #include "Collider3D.hpp"
 #include "GameState.hpp"
+#include "Hazards.hpp"
 #include "KeyboardInput.hpp"
 #include "Model3D.hpp"
-#include "RigidBody3D.hpp"
-#include "Scene.hpp"
 #include "ParticleEmitter3D.hpp"
 #include "ProjectComponentManager.hpp"
+#include "RigidBody3D.hpp"
+#include "Scene.hpp"
 #include "Script.hpp"
+#include "Time.hpp"
 #include "Transform.hpp"
-#include "TrapImmunity.hpp"
+#include "Traps.hpp"
 #include "Velocity3D.hpp"
 #include <algorithm>
 #include <cmath>
 #include <optional>
 
-// Size of the model's body without the tail, nose in front of the center of the collider
 #define BODY_LENGTH 4.5f
 #define BODY_WIDTH 1.1f
 
-// Shadow size and forward shift in model units (scaled like the rat), lifted above the
-// floor to avoid z-fighting
 #define SHADOW_LENGTH 4.2f
 #define SHADOW_WIDTH 1.7f
 #define SHADOW_FORWARD 0.8f
 #define SHADOW_THICKNESS 0.02f
-// The floor boxes are up to ~0.27 under the visible track: lifted more than that to stay visible
+
 #define SHADOW_LIFT 0.3f
 #define SHADOW_FADE_HEIGHT 15.0f
 #define SHADOW_COLOR ColorRGBA{0, 0, 0, 70}
 
-// Point of the run animation (0 to 1) shown while the rat stands still: all four feet on the
-// ground, under the body
 #define STANDING_FRAME 0.58f
 
-// Dust under the back feet: the ParticleEmitter3D of two children of the rat (the first one on
-// the left foot, the second on the right one), started while it runs on the ground, with their
-// density times this while sprinting. The feet in model units (scaled like the rat): behind the
-// centre, to each side, and above the bottom of the collider
-#define DUST_SPRINT_DENSITY 2.0f
+#define DUST_BOOST_DENSITY 2.0f
+#define DUST_BOOST_COLOR ColorRGBA{40, 120, 255, 255}
 #define DUST_FEET_BEHIND 0.8f
 #define DUST_FEET_SIDE 0.35f
 #define DUST_FEET_HEIGHT 0.3f
 
-// "hit_sound" and "running_sound": editor ids of the entities with the AudioSource played when
-// the rat hits an obstacle, and looped while it runs. "camera": editor id of the camera ZQSD
-// moves relative to (Z away from it, S toward it)
-std::vector<std::string> RatPlayerController_params = {"speed", "jump_force", "hit_sound",
-                                                       "running_sound", "camera"};
+#define RAT_PLAYER_CONTROLLER_DEGREES_TO_RADIANS (3.14159265f / 180.0f)
+
+std::vector<std::string> RatPlayerController_params = {
+    "speed", "jump_force", "hit_sound", "running_sound", "camera", "boost_speed", "boost_time"};
 
 class RatPlayerController : public GringoEntityScript
 {
@@ -67,13 +61,26 @@ class RatPlayerController : public GringoEntityScript
         if (!scene.hasResource<GameState>())
             scene.addResource<GameState>();
         spawn = scene.getComponent<Transform>(entity);
-        // Only called for triggers: the floor is solid, every trigger kills the rat
-        // except a trap it has just placed
+
         scene.getComponent<Collider3D>(entity).onCollision = [this, &scene](Entity rat,
                                                                             Entity other) {
-            if (scene.hasResource<TrapImmunity>() &&
-                scene.getResource<TrapImmunity>().covers(rat, other))
+            if (scene.hasResource<Cheeses>() && scene.getResource<Cheeses>().eat(other)) {
+                scene.getComponent<Collider3D>(other).layer = 0;
+                _boost = _boostTime;
                 return;
+            }
+            if (scene.hasResource<Traps>()) {
+                Traps &traps = scene.getResource<Traps>();
+
+                if (traps.covers(rat, other))
+                    return;
+                if (traps.hit(other))
+                    scene.getComponent<Collider3D>(other).layer = 0;
+            }
+            if (scene.hasResource<Hazards>() && scene.getResource<Hazards>().has(other)) {
+                suffer(scene.getResource<Hazards>().get(other));
+                return;
+            }
             dead = true;
         };
         createShadow(scene, entity);
@@ -82,6 +89,10 @@ class RatPlayerController : public GringoEntityScript
 
     void onUpdate(Scene &scene, Entity &entity) override
     {
+        if (scene.getResource<GameState>().finished) {
+            stopAtFinish(scene, entity);
+            return;
+        }
         if (!scene.getResource<GameState>().canMove)
             return;
         Transform &transform = scene.getComponent<Transform>(entity);
@@ -89,15 +100,30 @@ class RatPlayerController : public GringoEntityScript
         RigidBody3D &body = scene.getComponent<RigidBody3D>(entity);
         Velocity3D &velocity = scene.getComponent<Velocity3D>(entity);
 
+        const bool respawned = dead;
         if (dead) {
             if (const std::optional<Entity> hit = findSound(scene, _hitSoundId))
                 scene.getComponent<AudioSource>(*hit).play();
             transform = spawn;
             velocity = Velocity3D{};
             dead = false;
+            _boost = 0.0f;
+            _stun = 0.0f;
+            _slow = 0.0f;
+            ++scene.getResource<GameState>().respawns;
         }
+        if (_hitSound) {
+            _hitSound = false;
+            if (const std::optional<Entity> hit = findSound(scene, _hitSoundId))
+                scene.getComponent<AudioSource>(*hit).play();
+        }
+        _stun = std::max(_stun - FIXED_DELTA_TIME, 0.0f);
+        _slow = std::max(_slow - FIXED_DELTA_TIME, 0.0f);
+        const bool stunned = _stun > 0.0f;
+        _boost = std::max(_boost - FIXED_DELTA_TIME, 0.0f);
+        const bool boosted = _boost > 0.0f;
+        scene.getResource<GameState>().boosted = boosted;
 
-        // The way the camera looks, flat on the floor
         float viewX = 0.0f;
         float viewZ = 0.0f;
         cameraView(scene, transform, viewX, viewZ);
@@ -112,17 +138,18 @@ class RatPlayerController : public GringoEntityScript
             moveZ -= viewZ;
         }
         const float length = std::hypot(moveX, moveZ);
-        const bool moving = length > 0.0f;
-        const float movementSpeed = keyboard.isDown(Key::LeftShift) ? speed * 2.0f : speed;
+        const bool moving = length > 0.0f && !stunned && !respawned;
+        const float movementSpeed =
+            speed * (boosted ? _boostSpeed : 1.0f) * (_slow > 0.0f ? _slowFactor : 1.0f);
         velocity.dx = moving ? moveX / length * movementSpeed : 0.0f;
         velocity.dz = moving ? moveZ / length * movementSpeed : 0.0f;
-        // Faces where it runs: forward is (sin, -cos) of its rotation
+
         if (moving)
             transform.rotationY = std::atan2(moveX, -moveZ) * 180.0f / 3.14159265358979323846f;
-        const float radians = transform.rotationY * 3.14159265358979323846f / 180.0f;
+        const float radians = transform.rotationY * RAT_PLAYER_CONTROLLER_DEGREES_TO_RADIANS;
 
         const bool jumpDown = keyboard.isDown(Key::Space);
-        if (jumpDown && !_jumpWasDown && body.grounded)
+        if (jumpDown && !_jumpWasDown && body.grounded && !stunned && !respawned)
             velocity.dy = jumpForce;
         _jumpWasDown = jumpDown;
 
@@ -131,7 +158,7 @@ class RatPlayerController : public GringoEntityScript
         updateShadow(scene, transform, collider, body.grounded);
         setIdle(scene.getComponent<Model3D>(entity), !moving);
         const bool running = moving && body.grounded;
-        updateDust(scene, entity, collider, running, keyboard.isDown(Key::LeftShift));
+        updateDust(scene, entity, collider, running, boosted);
         updateRunningSound(scene, running);
     }
 
@@ -147,11 +174,13 @@ class RatPlayerController : public GringoEntityScript
             _runningSoundId = std::stoi(value);
         else if (name == "camera")
             _cameraId = std::stoi(value);
+        else if (name == "boost_speed")
+            _boostSpeed = std::stof(value);
+        else if (name == "boost_time")
+            _boostTime = std::stof(value);
     }
 
   private:
-    // The camera's way of looking at the rat, flat and of length 1. Without a camera: the way the
-    // rat faces
     void cameraView(Scene &scene, const Transform &transform, float &viewX, float &viewZ) const
     {
         const float radians = transform.rotationY * 3.14159265358979323846f / 180.0f;
@@ -168,13 +197,41 @@ class RatPlayerController : public GringoEntityScript
         viewZ = (transform.z - eye.z) / distance;
     }
 
-    // The entity of an editor id, if it exists and has an AudioSource
     static std::optional<Entity> findSound(Scene &scene, int editorId)
     {
         const std::optional<Entity> sound = scene.getResource<EditorEntityIds>().find(editorId);
         if (!sound || !scene.hasComponent<AudioSource>(*sound))
             return std::nullopt;
         return sound;
+    }
+
+    void suffer(const Hazard &hazard)
+    {
+        if (hazard.effect == Hazard::Effect::Stun) {
+            if (_stun > 0.0f)
+                return;
+            _stun = hazard.duration;
+        } else {
+            if (_slow <= 0.0f)
+                _hitSound = true;
+            _slow = hazard.duration;
+            _slowFactor = hazard.factor;
+            return;
+        }
+        _hitSound = true;
+    }
+
+    void stopAtFinish(Scene &scene, Entity entity)
+    {
+        Velocity3D &velocity = scene.getComponent<Velocity3D>(entity);
+
+        velocity.dx = 0.0f;
+        velocity.dz = 0.0f;
+        _boost = 0.0f;
+        scene.getResource<GameState>().boosted = false;
+        setIdle(scene.getComponent<Model3D>(entity), true);
+        updateDust(scene, entity, scene.getComponent<Collider3D>(entity), false, false);
+        updateRunningSound(scene, false);
     }
 
     void updateRunningSound(Scene &scene, bool running)
@@ -189,16 +246,13 @@ class RatPlayerController : public GringoEntityScript
             sound.stop();
     }
 
-    // Standing still: the run animation held on a frame with the feet on the ground
     static void setIdle(Model3D &model, bool idle)
     {
         model.animationFrame = idle ? STANDING_FRAME : -1.0f;
     }
 
-    // Flat dark ellipse on the floor, under the rat: shows where it will land while jumping
     void createShadow(Scene &scene, Entity entity)
     {
-        // Copies: adding components can move the component storage
         const Transform transform = scene.getComponent<Transform>(entity);
         const Collider3D &collider = scene.getComponent<Collider3D>(entity);
         _floorY = transform.y + collider.offsetY - collider.height / 2.0f;
@@ -215,10 +269,8 @@ class RatPlayerController : public GringoEntityScript
                       bool grounded)
     {
         const float feetY = transform.y + collider.offsetY - collider.height / 2.0f;
-        // Only grounded tells where the floor is: keep the last one while in the air
         if (grounded)
             _floorY = feetY;
-        // Smaller the higher the rat is
         const float shrink = std::clamp(1.0f - (feetY - _floorY) / SHADOW_FADE_HEIGHT, 0.3f, 1.0f);
         const float radians = transform.rotationY * 3.14159265358979323846f / 180.0f;
         const float forward = SHADOW_FORWARD * transform.scaleX;
@@ -232,8 +284,6 @@ class RatPlayerController : public GringoEntityScript
         shadow.scaleZ = SHADOW_LENGTH * transform.scaleX * shrink;
     }
 
-    // The children of the rat with a ParticleEmitter3D, looked for until found (the children
-    // know their parent once the scene is loaded)
     void findDust(Scene &scene, Entity entity)
     {
         for (Entity child : scene.view<ChildOf, ParticleEmitter3D>()) {
@@ -241,11 +291,12 @@ class RatPlayerController : public GringoEntityScript
                 continue;
             _dust.push_back(child);
             _dustDensity.push_back(scene.getComponent<ParticleEmitter3D>(child).density);
+            _dustColor.push_back(scene.getComponent<ParticleEmitter3D>(child).color);
         }
     }
 
     void updateDust(Scene &scene, Entity entity, const Collider3D &collider, bool running,
-                    bool sprinting)
+                    bool boosted)
     {
         if (_dust.empty())
             findDust(scene, entity);
@@ -255,19 +306,18 @@ class RatPlayerController : public GringoEntityScript
         const float forwardZ = -std::cos(radians);
         const float behind = DUST_FEET_BEHIND * transform.scaleX;
         const float side = DUST_FEET_SIDE * transform.scaleX;
-        for (std::size_t i = 0; i < _dust.size(); ++i) {
-            // Turned with the rat: ChildOf only follows the parent's position
+        for (int i = 0; i < static_cast<int>(_dust.size()); ++i) {
             const float foot = i == 0 ? -side : side;
             Transform &position = scene.getComponent<Transform>(_dust[i]);
             position.x = transform.x - forwardX * behind - forwardZ * foot;
             position.y = transform.y + collider.offsetY - collider.height / 2.0f +
                          DUST_FEET_HEIGHT * transform.scaleY;
             position.z = transform.z - forwardZ * behind + forwardX * foot;
-            // Already where it belongs: the hierarchy must not move it again with the rat
             scene.getComponent<ChildOf>(_dust[i]).lastParentPosition = transform;
 
             ParticleEmitter3D &dust = scene.getComponent<ParticleEmitter3D>(_dust[i]);
-            dust.density = sprinting ? _dustDensity[i] * DUST_SPRINT_DENSITY : _dustDensity[i];
+            dust.density = boosted ? _dustDensity[i] * DUST_BOOST_DENSITY : _dustDensity[i];
+            dust.color = boosted ? DUST_BOOST_COLOR : _dustColor[i];
             if (running && !dust.isEmitting())
                 dust.start();
             else if (!running && dust.isEmitting())
@@ -275,7 +325,6 @@ class RatPlayerController : public GringoEntityScript
         }
     }
 
-    // Colliders do not rotate: the box around the body, turned like the rat
     static void fitCollider(Collider3D &collider, const Transform &transform, float radians)
     {
         const float length = BODY_LENGTH * transform.scaleX;
@@ -296,7 +345,15 @@ class RatPlayerController : public GringoEntityScript
     float _floorY = 0.0f;
     std::vector<Entity> _dust;
     std::vector<float> _dustDensity;
+    std::vector<ColorRGBA> _dustColor;
     int _hitSoundId = -1;
+    float _boostSpeed = 2.0f;
+    float _boostTime = 2.0f;
+    float _boost = 0.0f;
+    float _stun = 0.0f;
+    float _slow = 0.0f;
+    float _slowFactor = 1.0f;
+    bool _hitSound = false;
     int _runningSoundId = -1;
     int _cameraId = -1;
 };

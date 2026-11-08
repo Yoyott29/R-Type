@@ -1,14 +1,12 @@
 #ifndef KNIFESPIN_HPP_
 #define KNIFESPIN_HPP_
 
-#include "Collider3D.hpp"
 #include "Scene.hpp"
 #include "Script.hpp"
 #include "Time.hpp"
 #include "Transform.hpp"
 #include <cmath>
 #include <cstdlib>
-#include <ctime>
 #include <string>
 #include <vector>
 
@@ -16,13 +14,9 @@
 
 #define MIDDLE_X 0.0845f
 #define MIDDLE_Y 0.0325f
-#define TIP_X 0.1705f
-#define TIP_Y 0.0625f
-#define THICKNESS 0.05f
 
-// "MoveAngle": direction of the back and forth, in degrees on the floor: 0 along Z, 90 along X
-inline const std::vector<std::string> KnifeSpin_params = {"RotationSpeed", "MoveSpeed",
-                                                          "MoveRange", "MoveAngle"};
+inline const std::vector<std::string> KnifeSpin_params = {"RotationSpeed", "MoveSpeed", "MoveRange",
+                                                          "MoveAngle"};
 
 class KnifeSpin : public GringoEntityScript
 {
@@ -44,41 +38,32 @@ class KnifeSpin : public GringoEntityScript
         Transform &knife = scene.getComponent<Transform>(entity);
         const Transform middle = turned(MIDDLE_X, MIDDLE_Y, knife);
 
-        static bool seeded = false;
-
-        if (!seeded) {
-            std::srand(static_cast<unsigned int>(std::time(nullptr)));
-            seeded = true;
-        }
         _centerX = knife.x + middle.x;
         _centerY = knife.y + middle.y;
         _centerZ = knife.z;
         _moveX = std::sin(_moveAngle * DEGREES_TO_RADIANS);
         _moveZ = std::cos(_moveAngle * DEGREES_TO_RADIANS);
-        _moveDirection = random(-1.0f, 1.0f) < 0.0f ? -1.0f : 1.0f;
-        _offset = random(-_moveRange, _moveRange);
+        _moveDirection = std::rand() % 2 == 0 ? -1.0f : 1.0f;
+        _offset = randomBetween(-_moveRange, _moveRange);
     }
 
     void onUpdate(Scene &scene, Entity &entity) override
     {
         _timer -= FIXED_DELTA_TIME;
         if (_timer <= 0.0f) {
-            _spinX = random(-_rotationSpeed, _rotationSpeed);
-            _spinY = random(-_rotationSpeed, _rotationSpeed);
-            _spinZ = random(-_rotationSpeed, _rotationSpeed);
-            _timer = random(1.0f, 2.5f);
+            _spinX = randomBetween(-_rotationSpeed, _rotationSpeed);
+            _spinY = randomBetween(-_rotationSpeed, _rotationSpeed);
+            _spinZ = randomBetween(-_rotationSpeed, _rotationSpeed);
+            _timer = randomBetween(1.0f, 2.5f);
         }
 
         Transform &knife = scene.getComponent<Transform>(entity);
-        Collider3D &collider = scene.getComponent<Collider3D>(entity);
 
         knife.rotationX = std::fmod(knife.rotationX + _spinX * FIXED_DELTA_TIME, 360.0f);
         knife.rotationY = std::fmod(knife.rotationY + _spinY * FIXED_DELTA_TIME, 360.0f);
         knife.rotationZ = std::fmod(knife.rotationZ + _spinZ * FIXED_DELTA_TIME, 360.0f);
 
         const Transform middle = turned(MIDDLE_X, MIDDLE_Y, knife);
-        const Transform tip = turned(TIP_X, TIP_Y, knife);
-        const float thickness = THICKNESS * knife.scaleX;
 
         if (_offset < -_moveRange) {
             _offset = -_moveRange;
@@ -92,18 +77,12 @@ class KnifeSpin : public GringoEntityScript
         knife.x = _centerX + _offset * _moveX - middle.x;
         knife.y = _centerY - middle.y;
         knife.z = _centerZ + _offset * _moveZ;
-        collider.offsetX = middle.x;
-        collider.offsetY = middle.y;
-        collider.offsetZ = middle.z;
-        collider.width = 2.0f * std::abs(tip.x) + thickness;
-        collider.height = 2.0f * std::abs(tip.y) + thickness;
-        collider.depth = 2.0f * std::abs(tip.z) + thickness;
     }
 
   private:
-    static float random(float min, float max)
+    static float randomBetween(float min, float max)
     {
-        return min + (max - min) * static_cast<float>(std::rand()) / RAND_MAX;
+        return min + (max - min) * std::rand() / static_cast<float>(RAND_MAX);
     }
 
     static void rotate(float &first, float &second, float degrees)
