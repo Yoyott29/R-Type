@@ -1,7 +1,19 @@
 <script>
+	import Platform from '$lib/components/Platform.svelte';
+
+	const pre =
+		'mt-3 overflow-x-auto rounded-md border border-[#1e2b26] bg-[#121a17] p-4 font-mono text-[13.5px] leading-6';
+	const winRegen = `& ".\\Gringo Engine\\Gringo.exe" --build R-Type\\R-Type.gringo   # regenerates the mains
+cmake --build build --config Release --target r-type_client r-type_server --parallel`;
+	const winCode = `cmake -S . -B build -A x64
+cmake --build build --config Release --target r-type_client r-type_server --parallel`;
 	const code0 = `./Gringo\\ Engine/Gringo --build R-Type/R-Type.gringo   # regenerates the mains
 ./build_rtype.sh
 ./tests/tests.sh`;
+	const winOpen = `cd "Gringo Engine"
+.\\Gringo.exe`;
+	const linuxOpen = `cd "Gringo Engine"
+./Gringo`;
 </script>
 
 <svelte:head>
@@ -15,11 +27,30 @@
 	R-Type is changed through its scene (<code>R-Type/R-Type.gringo</code>, edited with the Gringo editor) and its scripts (<code>R-Type/scripts/</code>). After any change:
 </p>
 
-<pre
-	class="mt-3 overflow-x-auto rounded-md border border-[#1e2b26] bg-[#121a17] p-4 font-mono text-[13.5px] leading-6"><code>{code0}</code></pre>
+<Platform os="windows">
+	<p class="mt-3 leading-7">From a <strong>Developer PowerShell for VS 2022</strong>, at the root of the repository (the second command expects the <code>build</code> folder configured as in <a href="/user/getting-started" class="text-accent hover:underline">Getting started</a>):</p>
+	<pre class={pre}><code>{winRegen}</code></pre>
+	<p class="mt-3 leading-7"><code>tests/tests.sh</code> is Linux only; run the engine unit tests as described in <a href="/developer/running-tests" class="text-accent hover:underline">Tests</a>.</p>
+</Platform>
+
+<Platform os="linux">
+	<pre class={pre}><code>{code0}</code></pre>
+</Platform>
 
 <p class="mt-3 max-w-[100ch] leading-7">
-	To open the scene in the editor: <code>cd "Gringo Engine" &amp;&amp; ./Gringo</code>, then <strong>Load Game</strong> and <code>R-Type</code>. See the <a href="/gringo/creating-a-project" class="text-accent hover:underline">Gringo user documentation</a> for the editor itself.
+	To open the scene in the editor, start it from the <code>Gringo Engine</code> folder, then click <strong>Load Game</strong> and <code>R-Type</code>:
+</p>
+
+<Platform os="windows">
+	<pre class={pre}><code>{winOpen}</code></pre>
+</Platform>
+
+<Platform os="linux">
+	<pre class={pre}><code>{linuxOpen}</code></pre>
+</Platform>
+
+<p class="mt-5 max-w-[100ch] leading-7">
+	See the <a href="/gringo/creating-a-project" class="text-accent hover:underline">Gringo user documentation</a> for the editor itself.
 </p>
 
 <h2 class="mt-9 text-lg font-semibold">Tune the game</h2>

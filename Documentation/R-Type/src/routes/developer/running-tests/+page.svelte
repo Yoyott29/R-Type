@@ -1,7 +1,14 @@
 <script>
+	import Platform from '$lib/components/Platform.svelte';
+
+	const pre =
+		'mt-3 overflow-x-auto rounded-md border border-[#1e2b26] bg-[#121a17] p-4 font-mono text-[13.5px] leading-6';
 	const code0 = `on:
   pull_request:
     branches: [main]`;
+	const winCode = `cmake -S "Gringo Engine" -B build-unit -A x64 -DGRINGO_BUILD_TESTS=ON -DENABLE_CLANG_TIDY=OFF
+cmake --build build-unit --config Release --target engine_tests network_tests --parallel
+ctest --test-dir build-unit -C Release --output-on-failure`;
 	const code1 = `cmake -S "Gringo Engine" -B build-unit -DGRINGO_BUILD_TESTS=ON -DENABLE_CLANG_TIDY=OFF
 cmake --build build-unit --target engine_tests network_tests --parallel
 ctest --test-dir build-unit --output-on-failure`;
@@ -48,8 +55,14 @@ ctest --test-dir build-unit --output-on-failure`;
 
 <h2 class="mt-9 text-lg font-semibold">The engine unit tests</h2>
 
-<pre
-	class="mt-3 overflow-x-auto rounded-md border border-[#1e2b26] bg-[#121a17] p-4 font-mono text-[13.5px] leading-6"><code>{code1}</code></pre>
+<Platform os="windows">
+	<p class="mt-3 leading-7">From a <strong>Developer PowerShell for VS 2022</strong>, as the <code>windows</code> job does:</p>
+	<pre class={pre}><code>{winCode}</code></pre>
+</Platform>
+
+<Platform os="linux">
+	<pre class={pre}><code>{code1}</code></pre>
+</Platform>
 
 <p class="mt-3 max-w-[100ch] leading-7">
 	<code>engine_tests</code> covers the scheduler, the thread pool, <code>parallelFor</code> and the destroy queue; <code>network_tests</code> the packet parsing, messages, transport, sockets, replication and players. Run the same commands locally before a pull request that changes the engine.

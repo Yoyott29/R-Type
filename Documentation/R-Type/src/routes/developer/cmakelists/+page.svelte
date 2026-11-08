@@ -1,4 +1,10 @@
 <script>
+	import Platform from '$lib/components/Platform.svelte';
+
+	const pre =
+		'mt-3 overflow-x-auto rounded-md border border-[#1e2b26] bg-[#121a17] p-4 font-mono text-[13.5px] leading-6';
+	const winCode = `cmake -S . -B build -A x64
+cmake --build build --config Release --target r-type_client r-type_server --parallel`;
 	const code0 = `./build_rtype.sh
 
 # the same, by hand
@@ -21,8 +27,16 @@ rtype_add_game(r-type_server \${GRINGO_REPOSITORY_DIR}/R-Type/server_main.cpp ""
 	The root <code>CMakeLists.txt</code> builds the two R-Type programs and everything they load. The engine has its own standalone CMake project in <code>Gringo Engine/</code> (see <a href="/gringo/developer/building" class="text-accent hover:underline">Building the Engine</a>); the root one repeats its engine and plugin rules so R-Type builds in one step.
 </p>
 
-<pre
-	class="mt-3 overflow-x-auto rounded-md border border-[#1e2b26] bg-[#121a17] p-4 font-mono text-[13.5px] leading-6"><code>{code0}</code></pre>
+<Platform os="windows">
+	<p class="mt-3 leading-7">
+		From a <strong>Developer PowerShell for VS 2022</strong>. Visual Studio is a multi-config generator: the configuration is chosen when building, with <code>--config Release</code>.
+	</p>
+	<pre class={pre}><code>{winCode}</code></pre>
+</Platform>
+
+<Platform os="linux">
+	<pre class={pre}><code>{code0}</code></pre>
+</Platform>
 
 <h2 class="mt-9 text-lg font-semibold">1. Project settings</h2>
 

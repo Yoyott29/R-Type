@@ -234,6 +234,13 @@ if(DEFINED GRINGO_GAME_TARGET AND NOT "${GRINGO_GAME_TARGET}" STREQUAL "" AND
     target_link_libraries(${GRINGO_GAME_TARGET} PRIVATE
         gringo_engine nlohmann_json::nlohmann_json
     )
+    # Windows has no rpath: gringo_engine.dll must sit next to the game's .exe
+    if(WIN32)
+        add_custom_command(TARGET ${GRINGO_GAME_TARGET} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                "$<TARGET_FILE:gringo_engine>" "$<TARGET_FILE_DIR:${GRINGO_GAME_TARGET}>"
+        )
+    endif()
 
     # GRINGO_GAME_PLUGINS: the plugins active in the project (headers + GRINGO_USE_<NAME>)
     gringo_use_plugins(${GRINGO_GAME_TARGET} ${GRINGO_GAME_PLUGINS})

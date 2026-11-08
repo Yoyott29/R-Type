@@ -1,4 +1,10 @@
 <script>
+	import Platform from '$lib/components/Platform.svelte';
+
+	const pre =
+		'mt-3 overflow-x-auto rounded-md border border-[#1e2b26] bg-[#121a17] p-4 font-mono text-[13.5px] leading-6';
+	const winCode = `host       .\\r-type_server.exe 0.0.0.0 4242
+player     .\\r-type_client.exe 192.168.1.20 4242     # the LAN address of the host`;
 	const code0 = `host       ./r-type_server 0.0.0.0 4242
 player     ./r-type_client 192.168.1.20 4242     # the LAN address of the host`;
 </script>
@@ -18,8 +24,19 @@ player     ./r-type_client 192.168.1.20 4242     # the LAN address of the host`;
 	<li>Start one client per player, with the host's address and port. At most four clients.</li>
 </ul>
 
-<pre
-	class="mt-3 overflow-x-auto rounded-md border border-[#1e2b26] bg-[#121a17] p-4 font-mono text-[13.5px] leading-6"><code>{code0}</code></pre>
+<Platform os="windows">
+	<pre class={pre}><code>{winCode}</code></pre>
+	<p class="mt-3 leading-7">
+		When Windows Firewall asks the first time the server starts, allow it on private networks. To find the host's LAN address, run <code>ipconfig</code> and read the <strong>IPv4 Address</strong> line.
+	</p>
+</Platform>
+
+<Platform os="linux">
+	<pre class={pre}><code>{code0}</code></pre>
+	<p class="mt-3 leading-7">
+		To find the host's LAN address, run <code>hostname -I</code>. If a firewall such as <code>ufw</code> is active, open the port: <code>sudo ufw allow 4242/udp</code>.
+	</p>
+</Platform>
 
 <p class="mt-3 max-w-[100ch] leading-7">
 	The arguments are <code>[ip] port</code>; without them, both programs use <code>127.0.0.1:4242</code>.

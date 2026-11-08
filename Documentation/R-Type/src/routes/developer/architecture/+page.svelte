@@ -1,4 +1,10 @@
 <script>
+	import Platform from '$lib/components/Platform.svelte';
+
+	const pre =
+		'mt-3 overflow-x-auto rounded-md border border-[#1e2b26] bg-[#121a17] p-4 font-mono text-[13.5px] leading-6';
+	const winRegen = `& ".\\Gringo Engine\\Gringo.exe" --build R-Type\\R-Type.gringo   # regenerates the mains
+cmake --build build --config Release --target r-type_client r-type_server --parallel`;
 	const code0 = `        r-type_client                                   r-type_server (headless)
  ┌──────────────────────────────┐                ┌──────────────────────────────┐
  │ R-Type scene + scripts       │                │ R-Type scene + scripts       │
@@ -53,8 +59,14 @@
 	After changing the scene or a script's parameters, generate the mains again and commit them:
 </p>
 
-<pre
-	class="mt-3 overflow-x-auto rounded-md border border-[#1e2b26] bg-[#121a17] p-4 font-mono text-[13.5px] leading-6"><code>{code2}</code></pre>
+<Platform os="windows">
+	<p class="mt-3 leading-7">From a <strong>Developer PowerShell for VS 2022</strong>, at the root of the repository:</p>
+	<pre class={pre}><code>{winRegen}</code></pre>
+</Platform>
+
+<Platform os="linux">
+	<pre class={pre}><code>{code2}</code></pre>
+</Platform>
 
 <h2 class="mt-9 text-lg font-semibold">The scene</h2>
 
