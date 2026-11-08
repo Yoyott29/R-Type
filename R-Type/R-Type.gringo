@@ -96,6 +96,17 @@
                     ]
                 },
                 {
+                    "name": "Script",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Path",
+                            "type": 7,
+                            "value": "BossDirectorScript.hpp"
+                        }
+                    ]
+                },
+                {
                     "name": "Networked",
                     "properties": [
                         {
@@ -3287,7 +3298,7 @@
                             "id": 5,
                             "name": "TypeCollisions",
                             "type": 2,
-                            "value": "2"
+                            "value": "34"
                         },
                         {
                             "id": 6,
@@ -3862,7 +3873,7 @@
                             "id": 5,
                             "name": "TypeCollisions",
                             "type": 2,
-                            "value": "2"
+                            "value": "34"
                         },
                         {
                             "id": 6,
@@ -3949,7 +3960,7 @@
                             "id": 1,
                             "name": "Damage",
                             "type": 2,
-                            "value": "1"
+                            "value": "2"
                         }
                     ]
                 },
@@ -4100,7 +4111,7 @@
                             "id": 5,
                             "name": "TypeCollisions",
                             "type": 2,
-                            "value": "2"
+                            "value": "34"
                         },
                         {
                             "id": 6,
@@ -4187,7 +4198,7 @@
                             "id": 1,
                             "name": "Damage",
                             "type": 2,
-                            "value": "2"
+                            "value": "4"
                         }
                     ]
                 },
@@ -4338,7 +4349,7 @@
                             "id": 5,
                             "name": "TypeCollisions",
                             "type": 2,
-                            "value": "2"
+                            "value": "34"
                         },
                         {
                             "id": 6,
@@ -4425,7 +4436,7 @@
                             "id": 1,
                             "name": "Damage",
                             "type": 2,
-                            "value": "3"
+                            "value": "6"
                         }
                     ]
                 },
@@ -4576,7 +4587,7 @@
                             "id": 5,
                             "name": "TypeCollisions",
                             "type": 2,
-                            "value": "2"
+                            "value": "34"
                         },
                         {
                             "id": 6,
@@ -4663,7 +4674,7 @@
                             "id": 1,
                             "name": "Damage",
                             "type": 2,
-                            "value": "4"
+                            "value": "8"
                         }
                     ]
                 },
@@ -4814,7 +4825,7 @@
                             "id": 5,
                             "name": "TypeCollisions",
                             "type": 2,
-                            "value": "2"
+                            "value": "34"
                         },
                         {
                             "id": 6,
@@ -4901,7 +4912,7 @@
                             "id": 1,
                             "name": "Damage",
                             "type": 2,
-                            "value": "5"
+                            "value": "10"
                         }
                     ]
                 },
@@ -5011,13 +5022,13 @@
                             "id": 1,
                             "name": "Width",
                             "type": 1,
-                            "value": "114"
+                            "value": "96"
                         },
                         {
                             "id": 2,
                             "name": "Height",
                             "type": 1,
-                            "value": "90"
+                            "value": "96"
                         },
                         {
                             "id": 3,
@@ -5209,7 +5220,7 @@
                             "id": 5,
                             "name": "TypeCollisions",
                             "type": 2,
-                            "value": "2"
+                            "value": "34"
                         },
                         {
                             "id": 6,
@@ -5232,13 +5243,13 @@
                             "id": 1,
                             "name": "Width",
                             "type": 1,
-                            "value": "60"
+                            "value": "48"
                         },
                         {
                             "id": 2,
                             "name": "Height",
                             "type": 1,
-                            "value": "60"
+                            "value": "54"
                         },
                         {
                             "id": 3,
@@ -5441,7 +5452,7 @@
                             "id": 5,
                             "name": "TypeCollisions",
                             "type": 2,
-                            "value": "2"
+                            "value": "34"
                         },
                         {
                             "id": 6,
@@ -5464,13 +5475,13 @@
                             "id": 1,
                             "name": "Width",
                             "type": 1,
-                            "value": "60"
+                            "value": "48"
                         },
                         {
                             "id": 2,
                             "name": "Height",
                             "type": 1,
-                            "value": "60"
+                            "value": "54"
                         },
                         {
                             "id": 3,
@@ -6033,6 +6044,2074 @@
             ],
             "id": 19,
             "name": "PowArmor"
+        },
+        {
+            "components": [
+                {
+                    "name": "Transform",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "PositionX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 1,
+                            "name": "PositionY",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 2,
+                            "name": "PositionZ",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 3,
+                            "name": "ScaleX",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 4,
+                            "name": "ScaleY",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 5,
+                            "name": "ScaleZ",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 6,
+                            "name": "RotationX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 7,
+                            "name": "RotationY",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 8,
+                            "name": "RotationZ",
+                            "type": 1,
+                            "value": "0"
+                        }
+                    ]
+                },
+                {
+                    "name": "Collider2D",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Shape",
+                            "type": 5,
+                            "value": "Box"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Width",
+                            "type": 1,
+                            "value": "220"
+                        },
+                        {
+                            "id": 2,
+                            "name": "Height",
+                            "type": 1,
+                            "value": "380"
+                        },
+                        {
+                            "id": 3,
+                            "name": "Radius",
+                            "type": 1,
+                            "value": "20"
+                        },
+                        {
+                            "id": 4,
+                            "name": "Layer",
+                            "type": 0,
+                            "value": "32"
+                        },
+                        {
+                            "id": 5,
+                            "name": "TypeCollisions",
+                            "type": 2,
+                            "value": "1"
+                        },
+                        {
+                            "id": 6,
+                            "name": "IsTrigger",
+                            "type": 3,
+                            "value": "True"
+                        }
+                    ]
+                },
+                {
+                    "name": "Sprite",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Shape",
+                            "type": 5,
+                            "value": "Box"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Width",
+                            "type": 1,
+                            "value": "310"
+                        },
+                        {
+                            "id": 2,
+                            "name": "Height",
+                            "type": 1,
+                            "value": "408"
+                        },
+                        {
+                            "id": 3,
+                            "name": "Radius",
+                            "type": 1,
+                            "value": "5"
+                        },
+                        {
+                            "id": 4,
+                            "name": "Color",
+                            "type": 4,
+                            "value": "White"
+                        },
+                        {
+                            "id": 5,
+                            "name": "DrawOrder",
+                            "type": 0,
+                            "value": "0"
+                        },
+                        {
+                            "id": 6,
+                            "name": "TexturePath",
+                            "type": 7,
+                            "value": "assets/BossStage1.png"
+                        }
+                    ]
+                },
+                {
+                    "name": "Animator",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Animation",
+                            "type": 7,
+                            "value": "assets/BossStage1.anim"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Speed",
+                            "type": 1,
+                            "value": "1"
+                        }
+                    ]
+                },
+                {
+                    "name": "Script",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Path",
+                            "type": 7,
+                            "value": "BossPartScript.hpp"
+                        }
+                    ]
+                },
+                {
+                    "name": "Networked",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Mode",
+                            "type": 5,
+                            "value": "Replicated"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Prefab",
+                            "type": 2,
+                            "value": "BossStage1"
+                        }
+                    ]
+                }
+            ],
+            "id": 20,
+            "name": "BossStage1"
+        },
+        {
+            "components": [
+                {
+                    "name": "Transform",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "PositionX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 1,
+                            "name": "PositionY",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 2,
+                            "name": "PositionZ",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 3,
+                            "name": "ScaleX",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 4,
+                            "name": "ScaleY",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 5,
+                            "name": "ScaleZ",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 6,
+                            "name": "RotationX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 7,
+                            "name": "RotationY",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 8,
+                            "name": "RotationZ",
+                            "type": 1,
+                            "value": "0"
+                        }
+                    ]
+                },
+                {
+                    "name": "Collider2D",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Shape",
+                            "type": 5,
+                            "value": "Box"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Width",
+                            "type": 1,
+                            "value": "220"
+                        },
+                        {
+                            "id": 2,
+                            "name": "Height",
+                            "type": 1,
+                            "value": "380"
+                        },
+                        {
+                            "id": 3,
+                            "name": "Radius",
+                            "type": 1,
+                            "value": "20"
+                        },
+                        {
+                            "id": 4,
+                            "name": "Layer",
+                            "type": 0,
+                            "value": "32"
+                        },
+                        {
+                            "id": 5,
+                            "name": "TypeCollisions",
+                            "type": 2,
+                            "value": "1"
+                        },
+                        {
+                            "id": 6,
+                            "name": "IsTrigger",
+                            "type": 3,
+                            "value": "True"
+                        }
+                    ]
+                },
+                {
+                    "name": "Sprite",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Shape",
+                            "type": 5,
+                            "value": "Box"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Width",
+                            "type": 1,
+                            "value": "310"
+                        },
+                        {
+                            "id": 2,
+                            "name": "Height",
+                            "type": 1,
+                            "value": "408"
+                        },
+                        {
+                            "id": 3,
+                            "name": "Radius",
+                            "type": 1,
+                            "value": "5"
+                        },
+                        {
+                            "id": 4,
+                            "name": "Color",
+                            "type": 4,
+                            "value": "White"
+                        },
+                        {
+                            "id": 5,
+                            "name": "DrawOrder",
+                            "type": 0,
+                            "value": "0"
+                        },
+                        {
+                            "id": 6,
+                            "name": "TexturePath",
+                            "type": 7,
+                            "value": "assets/BossStage2.png"
+                        }
+                    ]
+                },
+                {
+                    "name": "Animator",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Animation",
+                            "type": 7,
+                            "value": "assets/BossStage2.anim"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Speed",
+                            "type": 1,
+                            "value": "1"
+                        }
+                    ]
+                },
+                {
+                    "name": "Script",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Path",
+                            "type": 7,
+                            "value": "BossPartScript.hpp"
+                        }
+                    ]
+                },
+                {
+                    "name": "Networked",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Mode",
+                            "type": 5,
+                            "value": "Replicated"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Prefab",
+                            "type": 2,
+                            "value": "BossStage2"
+                        }
+                    ]
+                }
+            ],
+            "id": 21,
+            "name": "BossStage2"
+        },
+        {
+            "components": [
+                {
+                    "name": "Transform",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "PositionX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 1,
+                            "name": "PositionY",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 2,
+                            "name": "PositionZ",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 3,
+                            "name": "ScaleX",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 4,
+                            "name": "ScaleY",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 5,
+                            "name": "ScaleZ",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 6,
+                            "name": "RotationX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 7,
+                            "name": "RotationY",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 8,
+                            "name": "RotationZ",
+                            "type": 1,
+                            "value": "0"
+                        }
+                    ]
+                },
+                {
+                    "name": "Collider2D",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Shape",
+                            "type": 5,
+                            "value": "Box"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Width",
+                            "type": 1,
+                            "value": "220"
+                        },
+                        {
+                            "id": 2,
+                            "name": "Height",
+                            "type": 1,
+                            "value": "380"
+                        },
+                        {
+                            "id": 3,
+                            "name": "Radius",
+                            "type": 1,
+                            "value": "20"
+                        },
+                        {
+                            "id": 4,
+                            "name": "Layer",
+                            "type": 0,
+                            "value": "32"
+                        },
+                        {
+                            "id": 5,
+                            "name": "TypeCollisions",
+                            "type": 2,
+                            "value": "1"
+                        },
+                        {
+                            "id": 6,
+                            "name": "IsTrigger",
+                            "type": 3,
+                            "value": "True"
+                        }
+                    ]
+                },
+                {
+                    "name": "Sprite",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Shape",
+                            "type": 5,
+                            "value": "Box"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Width",
+                            "type": 1,
+                            "value": "310"
+                        },
+                        {
+                            "id": 2,
+                            "name": "Height",
+                            "type": 1,
+                            "value": "408"
+                        },
+                        {
+                            "id": 3,
+                            "name": "Radius",
+                            "type": 1,
+                            "value": "5"
+                        },
+                        {
+                            "id": 4,
+                            "name": "Color",
+                            "type": 4,
+                            "value": "White"
+                        },
+                        {
+                            "id": 5,
+                            "name": "DrawOrder",
+                            "type": 0,
+                            "value": "0"
+                        },
+                        {
+                            "id": 6,
+                            "name": "TexturePath",
+                            "type": 7,
+                            "value": "assets/BossStage3.png"
+                        }
+                    ]
+                },
+                {
+                    "name": "Animator",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Animation",
+                            "type": 7,
+                            "value": "assets/BossStage3.anim"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Speed",
+                            "type": 1,
+                            "value": "1"
+                        }
+                    ]
+                },
+                {
+                    "name": "Script",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Path",
+                            "type": 7,
+                            "value": "BossPartScript.hpp"
+                        }
+                    ]
+                },
+                {
+                    "name": "Networked",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Mode",
+                            "type": 5,
+                            "value": "Replicated"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Prefab",
+                            "type": 2,
+                            "value": "BossStage3"
+                        }
+                    ]
+                }
+            ],
+            "id": 22,
+            "name": "BossStage3"
+        },
+        {
+            "components": [
+                {
+                    "name": "Transform",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "PositionX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 1,
+                            "name": "PositionY",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 2,
+                            "name": "PositionZ",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 3,
+                            "name": "ScaleX",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 4,
+                            "name": "ScaleY",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 5,
+                            "name": "ScaleZ",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 6,
+                            "name": "RotationX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 7,
+                            "name": "RotationY",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 8,
+                            "name": "RotationZ",
+                            "type": 1,
+                            "value": "0"
+                        }
+                    ]
+                },
+                {
+                    "name": "Collider2D",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Shape",
+                            "type": 5,
+                            "value": "Box"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Width",
+                            "type": 1,
+                            "value": "220"
+                        },
+                        {
+                            "id": 2,
+                            "name": "Height",
+                            "type": 1,
+                            "value": "380"
+                        },
+                        {
+                            "id": 3,
+                            "name": "Radius",
+                            "type": 1,
+                            "value": "20"
+                        },
+                        {
+                            "id": 4,
+                            "name": "Layer",
+                            "type": 0,
+                            "value": "32"
+                        },
+                        {
+                            "id": 5,
+                            "name": "TypeCollisions",
+                            "type": 2,
+                            "value": "1"
+                        },
+                        {
+                            "id": 6,
+                            "name": "IsTrigger",
+                            "type": 3,
+                            "value": "True"
+                        }
+                    ]
+                },
+                {
+                    "name": "Sprite",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Shape",
+                            "type": 5,
+                            "value": "Box"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Width",
+                            "type": 1,
+                            "value": "310"
+                        },
+                        {
+                            "id": 2,
+                            "name": "Height",
+                            "type": 1,
+                            "value": "408"
+                        },
+                        {
+                            "id": 3,
+                            "name": "Radius",
+                            "type": 1,
+                            "value": "5"
+                        },
+                        {
+                            "id": 4,
+                            "name": "Color",
+                            "type": 4,
+                            "value": "White"
+                        },
+                        {
+                            "id": 5,
+                            "name": "DrawOrder",
+                            "type": 0,
+                            "value": "0"
+                        },
+                        {
+                            "id": 6,
+                            "name": "TexturePath",
+                            "type": 7,
+                            "value": "assets/BossStage4.png"
+                        }
+                    ]
+                },
+                {
+                    "name": "Animator",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Animation",
+                            "type": 7,
+                            "value": "assets/BossStage4.anim"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Speed",
+                            "type": 1,
+                            "value": "1"
+                        }
+                    ]
+                },
+                {
+                    "name": "Script",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Path",
+                            "type": 7,
+                            "value": "BossPartScript.hpp"
+                        }
+                    ]
+                },
+                {
+                    "name": "Networked",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Mode",
+                            "type": 5,
+                            "value": "Replicated"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Prefab",
+                            "type": 2,
+                            "value": "BossStage4"
+                        }
+                    ]
+                }
+            ],
+            "id": 23,
+            "name": "BossStage4"
+        },
+        {
+            "components": [
+                {
+                    "name": "Transform",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "PositionX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 1,
+                            "name": "PositionY",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 2,
+                            "name": "PositionZ",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 3,
+                            "name": "ScaleX",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 4,
+                            "name": "ScaleY",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 5,
+                            "name": "ScaleZ",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 6,
+                            "name": "RotationX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 7,
+                            "name": "RotationY",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 8,
+                            "name": "RotationZ",
+                            "type": 1,
+                            "value": "0"
+                        }
+                    ]
+                },
+                {
+                    "name": "Collider2D",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Shape",
+                            "type": 5,
+                            "value": "Box"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Width",
+                            "type": 1,
+                            "value": "220"
+                        },
+                        {
+                            "id": 2,
+                            "name": "Height",
+                            "type": 1,
+                            "value": "380"
+                        },
+                        {
+                            "id": 3,
+                            "name": "Radius",
+                            "type": 1,
+                            "value": "20"
+                        },
+                        {
+                            "id": 4,
+                            "name": "Layer",
+                            "type": 0,
+                            "value": "32"
+                        },
+                        {
+                            "id": 5,
+                            "name": "TypeCollisions",
+                            "type": 2,
+                            "value": "1"
+                        },
+                        {
+                            "id": 6,
+                            "name": "IsTrigger",
+                            "type": 3,
+                            "value": "True"
+                        }
+                    ]
+                },
+                {
+                    "name": "Sprite",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Shape",
+                            "type": 5,
+                            "value": "Box"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Width",
+                            "type": 1,
+                            "value": "310"
+                        },
+                        {
+                            "id": 2,
+                            "name": "Height",
+                            "type": 1,
+                            "value": "408"
+                        },
+                        {
+                            "id": 3,
+                            "name": "Radius",
+                            "type": 1,
+                            "value": "5"
+                        },
+                        {
+                            "id": 4,
+                            "name": "Color",
+                            "type": 4,
+                            "value": "White"
+                        },
+                        {
+                            "id": 5,
+                            "name": "DrawOrder",
+                            "type": 0,
+                            "value": "0"
+                        },
+                        {
+                            "id": 6,
+                            "name": "TexturePath",
+                            "type": 7,
+                            "value": "assets/BossStage5.png"
+                        }
+                    ]
+                },
+                {
+                    "name": "Animator",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Animation",
+                            "type": 7,
+                            "value": "assets/BossStage5.anim"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Speed",
+                            "type": 1,
+                            "value": "1"
+                        }
+                    ]
+                },
+                {
+                    "name": "Script",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Path",
+                            "type": 7,
+                            "value": "BossPartScript.hpp"
+                        }
+                    ]
+                },
+                {
+                    "name": "Networked",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Mode",
+                            "type": 5,
+                            "value": "Replicated"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Prefab",
+                            "type": 2,
+                            "value": "BossStage5"
+                        }
+                    ]
+                }
+            ],
+            "id": 24,
+            "name": "BossStage5"
+        },
+        {
+            "components": [
+                {
+                    "name": "Transform",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "PositionX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 1,
+                            "name": "PositionY",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 2,
+                            "name": "PositionZ",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 3,
+                            "name": "ScaleX",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 4,
+                            "name": "ScaleY",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 5,
+                            "name": "ScaleZ",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 6,
+                            "name": "RotationX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 7,
+                            "name": "RotationY",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 8,
+                            "name": "RotationZ",
+                            "type": 1,
+                            "value": "0"
+                        }
+                    ]
+                },
+                {
+                    "name": "Collider2D",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Shape",
+                            "type": 5,
+                            "value": "Box"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Width",
+                            "type": 1,
+                            "value": "220"
+                        },
+                        {
+                            "id": 2,
+                            "name": "Height",
+                            "type": 1,
+                            "value": "380"
+                        },
+                        {
+                            "id": 3,
+                            "name": "Radius",
+                            "type": 1,
+                            "value": "20"
+                        },
+                        {
+                            "id": 4,
+                            "name": "Layer",
+                            "type": 0,
+                            "value": "32"
+                        },
+                        {
+                            "id": 5,
+                            "name": "TypeCollisions",
+                            "type": 2,
+                            "value": "1"
+                        },
+                        {
+                            "id": 6,
+                            "name": "IsTrigger",
+                            "type": 3,
+                            "value": "True"
+                        }
+                    ]
+                },
+                {
+                    "name": "Sprite",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Shape",
+                            "type": 5,
+                            "value": "Box"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Width",
+                            "type": 1,
+                            "value": "310"
+                        },
+                        {
+                            "id": 2,
+                            "name": "Height",
+                            "type": 1,
+                            "value": "408"
+                        },
+                        {
+                            "id": 3,
+                            "name": "Radius",
+                            "type": 1,
+                            "value": "5"
+                        },
+                        {
+                            "id": 4,
+                            "name": "Color",
+                            "type": 4,
+                            "value": "White"
+                        },
+                        {
+                            "id": 5,
+                            "name": "DrawOrder",
+                            "type": 0,
+                            "value": "0"
+                        },
+                        {
+                            "id": 6,
+                            "name": "TexturePath",
+                            "type": 7,
+                            "value": "assets/BossStage6.png"
+                        }
+                    ]
+                },
+                {
+                    "name": "Animator",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Animation",
+                            "type": 7,
+                            "value": "assets/BossStage6.anim"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Speed",
+                            "type": 1,
+                            "value": "1"
+                        }
+                    ]
+                },
+                {
+                    "name": "Script",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Path",
+                            "type": 7,
+                            "value": "BossPartScript.hpp"
+                        }
+                    ]
+                },
+                {
+                    "name": "Networked",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Mode",
+                            "type": 5,
+                            "value": "Replicated"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Prefab",
+                            "type": 2,
+                            "value": "BossStage6"
+                        }
+                    ]
+                }
+            ],
+            "id": 25,
+            "name": "BossStage6"
+        },
+        {
+            "components": [
+                {
+                    "name": "Transform",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "PositionX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 1,
+                            "name": "PositionY",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 2,
+                            "name": "PositionZ",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 3,
+                            "name": "ScaleX",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 4,
+                            "name": "ScaleY",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 5,
+                            "name": "ScaleZ",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 6,
+                            "name": "RotationX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 7,
+                            "name": "RotationY",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 8,
+                            "name": "RotationZ",
+                            "type": 1,
+                            "value": "0"
+                        }
+                    ]
+                },
+                {
+                    "name": "Collider2D",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Shape",
+                            "type": 5,
+                            "value": "Box"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Width",
+                            "type": 1,
+                            "value": "220"
+                        },
+                        {
+                            "id": 2,
+                            "name": "Height",
+                            "type": 1,
+                            "value": "380"
+                        },
+                        {
+                            "id": 3,
+                            "name": "Radius",
+                            "type": 1,
+                            "value": "20"
+                        },
+                        {
+                            "id": 4,
+                            "name": "Layer",
+                            "type": 0,
+                            "value": "32"
+                        },
+                        {
+                            "id": 5,
+                            "name": "TypeCollisions",
+                            "type": 2,
+                            "value": "1"
+                        },
+                        {
+                            "id": 6,
+                            "name": "IsTrigger",
+                            "type": 3,
+                            "value": "True"
+                        }
+                    ]
+                },
+                {
+                    "name": "Sprite",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Shape",
+                            "type": 5,
+                            "value": "Box"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Width",
+                            "type": 1,
+                            "value": "310"
+                        },
+                        {
+                            "id": 2,
+                            "name": "Height",
+                            "type": 1,
+                            "value": "408"
+                        },
+                        {
+                            "id": 3,
+                            "name": "Radius",
+                            "type": 1,
+                            "value": "5"
+                        },
+                        {
+                            "id": 4,
+                            "name": "Color",
+                            "type": 4,
+                            "value": "White"
+                        },
+                        {
+                            "id": 5,
+                            "name": "DrawOrder",
+                            "type": 0,
+                            "value": "0"
+                        },
+                        {
+                            "id": 6,
+                            "name": "TexturePath",
+                            "type": 7,
+                            "value": "assets/BossStage7.png"
+                        }
+                    ]
+                },
+                {
+                    "name": "Animator",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Animation",
+                            "type": 7,
+                            "value": "assets/BossStage7.anim"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Speed",
+                            "type": 1,
+                            "value": "1"
+                        }
+                    ]
+                },
+                {
+                    "name": "Script",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Path",
+                            "type": 7,
+                            "value": "BossPartScript.hpp"
+                        }
+                    ]
+                },
+                {
+                    "name": "Networked",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Mode",
+                            "type": 5,
+                            "value": "Replicated"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Prefab",
+                            "type": 2,
+                            "value": "BossStage7"
+                        }
+                    ]
+                }
+            ],
+            "id": 26,
+            "name": "BossStage7"
+        },
+        {
+            "components": [
+                {
+                    "name": "Transform",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "PositionX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 1,
+                            "name": "PositionY",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 2,
+                            "name": "PositionZ",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 3,
+                            "name": "ScaleX",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 4,
+                            "name": "ScaleY",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 5,
+                            "name": "ScaleZ",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 6,
+                            "name": "RotationX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 7,
+                            "name": "RotationY",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 8,
+                            "name": "RotationZ",
+                            "type": 1,
+                            "value": "0"
+                        }
+                    ]
+                },
+                {
+                    "name": "Collider2D",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Shape",
+                            "type": 5,
+                            "value": "Box"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Width",
+                            "type": 1,
+                            "value": "220"
+                        },
+                        {
+                            "id": 2,
+                            "name": "Height",
+                            "type": 1,
+                            "value": "380"
+                        },
+                        {
+                            "id": 3,
+                            "name": "Radius",
+                            "type": 1,
+                            "value": "20"
+                        },
+                        {
+                            "id": 4,
+                            "name": "Layer",
+                            "type": 0,
+                            "value": "32"
+                        },
+                        {
+                            "id": 5,
+                            "name": "TypeCollisions",
+                            "type": 2,
+                            "value": "1"
+                        },
+                        {
+                            "id": 6,
+                            "name": "IsTrigger",
+                            "type": 3,
+                            "value": "True"
+                        }
+                    ]
+                },
+                {
+                    "name": "Sprite",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Shape",
+                            "type": 5,
+                            "value": "Box"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Width",
+                            "type": 1,
+                            "value": "310"
+                        },
+                        {
+                            "id": 2,
+                            "name": "Height",
+                            "type": 1,
+                            "value": "408"
+                        },
+                        {
+                            "id": 3,
+                            "name": "Radius",
+                            "type": 1,
+                            "value": "5"
+                        },
+                        {
+                            "id": 4,
+                            "name": "Color",
+                            "type": 4,
+                            "value": "White"
+                        },
+                        {
+                            "id": 5,
+                            "name": "DrawOrder",
+                            "type": 0,
+                            "value": "0"
+                        },
+                        {
+                            "id": 6,
+                            "name": "TexturePath",
+                            "type": 7,
+                            "value": "assets/BossStage8.png"
+                        }
+                    ]
+                },
+                {
+                    "name": "Animator",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Animation",
+                            "type": 7,
+                            "value": "assets/BossStage8.anim"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Speed",
+                            "type": 1,
+                            "value": "1"
+                        }
+                    ]
+                },
+                {
+                    "name": "Script",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Path",
+                            "type": 7,
+                            "value": "BossPartScript.hpp"
+                        }
+                    ]
+                },
+                {
+                    "name": "Networked",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Mode",
+                            "type": 5,
+                            "value": "Replicated"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Prefab",
+                            "type": 2,
+                            "value": "BossStage8"
+                        }
+                    ]
+                }
+            ],
+            "id": 27,
+            "name": "BossStage8"
+        },
+        {
+            "components": [
+                {
+                    "name": "Transform",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "PositionX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 1,
+                            "name": "PositionY",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 2,
+                            "name": "PositionZ",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 3,
+                            "name": "ScaleX",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 4,
+                            "name": "ScaleY",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 5,
+                            "name": "ScaleZ",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 6,
+                            "name": "RotationX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 7,
+                            "name": "RotationY",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 8,
+                            "name": "RotationZ",
+                            "type": 1,
+                            "value": "0"
+                        }
+                    ]
+                },
+                {
+                    "name": "Collider2D",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Shape",
+                            "type": 5,
+                            "value": "Box"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Width",
+                            "type": 1,
+                            "value": "220"
+                        },
+                        {
+                            "id": 2,
+                            "name": "Height",
+                            "type": 1,
+                            "value": "380"
+                        },
+                        {
+                            "id": 3,
+                            "name": "Radius",
+                            "type": 1,
+                            "value": "20"
+                        },
+                        {
+                            "id": 4,
+                            "name": "Layer",
+                            "type": 0,
+                            "value": "32"
+                        },
+                        {
+                            "id": 5,
+                            "name": "TypeCollisions",
+                            "type": 2,
+                            "value": "1"
+                        },
+                        {
+                            "id": 6,
+                            "name": "IsTrigger",
+                            "type": 3,
+                            "value": "True"
+                        }
+                    ]
+                },
+                {
+                    "name": "Sprite",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Shape",
+                            "type": 5,
+                            "value": "Box"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Width",
+                            "type": 1,
+                            "value": "310"
+                        },
+                        {
+                            "id": 2,
+                            "name": "Height",
+                            "type": 1,
+                            "value": "408"
+                        },
+                        {
+                            "id": 3,
+                            "name": "Radius",
+                            "type": 1,
+                            "value": "5"
+                        },
+                        {
+                            "id": 4,
+                            "name": "Color",
+                            "type": 4,
+                            "value": "White"
+                        },
+                        {
+                            "id": 5,
+                            "name": "DrawOrder",
+                            "type": 0,
+                            "value": "0"
+                        },
+                        {
+                            "id": 6,
+                            "name": "TexturePath",
+                            "type": 7,
+                            "value": "assets/BossStage9.png"
+                        }
+                    ]
+                },
+                {
+                    "name": "Animator",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Animation",
+                            "type": 7,
+                            "value": "assets/BossStage9.anim"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Speed",
+                            "type": 1,
+                            "value": "1"
+                        }
+                    ]
+                },
+                {
+                    "name": "Script",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Path",
+                            "type": 7,
+                            "value": "BossPartScript.hpp"
+                        }
+                    ]
+                },
+                {
+                    "name": "Networked",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Mode",
+                            "type": 5,
+                            "value": "Replicated"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Prefab",
+                            "type": 2,
+                            "value": "BossStage9"
+                        }
+                    ]
+                }
+            ],
+            "id": 28,
+            "name": "BossStage9"
+        },
+        {
+            "components": [
+                {
+                    "name": "Transform",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "PositionX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 1,
+                            "name": "PositionY",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 2,
+                            "name": "PositionZ",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 3,
+                            "name": "ScaleX",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 4,
+                            "name": "ScaleY",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 5,
+                            "name": "ScaleZ",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 6,
+                            "name": "RotationX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 7,
+                            "name": "RotationY",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 8,
+                            "name": "RotationZ",
+                            "type": 1,
+                            "value": "0"
+                        }
+                    ]
+                },
+                {
+                    "name": "Velocity",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Dx",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Dy",
+                            "type": 1,
+                            "value": "0"
+                        }
+                    ]
+                },
+                {
+                    "name": "Collider2D",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Shape",
+                            "type": 5,
+                            "value": "Box"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Width",
+                            "type": 1,
+                            "value": "36"
+                        },
+                        {
+                            "id": 2,
+                            "name": "Height",
+                            "type": 1,
+                            "value": "36"
+                        },
+                        {
+                            "id": 3,
+                            "name": "Radius",
+                            "type": 1,
+                            "value": "5"
+                        },
+                        {
+                            "id": 4,
+                            "name": "Layer",
+                            "type": 0,
+                            "value": "8"
+                        },
+                        {
+                            "id": 5,
+                            "name": "TypeCollisions",
+                            "type": 2,
+                            "value": "1"
+                        },
+                        {
+                            "id": 6,
+                            "name": "IsTrigger",
+                            "type": 3,
+                            "value": "True"
+                        }
+                    ]
+                },
+                {
+                    "name": "Sprite",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Shape",
+                            "type": 5,
+                            "value": "Box"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Width",
+                            "type": 1,
+                            "value": "66"
+                        },
+                        {
+                            "id": 2,
+                            "name": "Height",
+                            "type": 1,
+                            "value": "60"
+                        },
+                        {
+                            "id": 3,
+                            "name": "Radius",
+                            "type": 1,
+                            "value": "5"
+                        },
+                        {
+                            "id": 4,
+                            "name": "Color",
+                            "type": 4,
+                            "value": "White"
+                        },
+                        {
+                            "id": 5,
+                            "name": "DrawOrder",
+                            "type": 0,
+                            "value": "0"
+                        },
+                        {
+                            "id": 6,
+                            "name": "TexturePath",
+                            "type": 7,
+                            "value": "assets/BossBullet.png"
+                        }
+                    ]
+                },
+                {
+                    "name": "Animator",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Animation",
+                            "type": 7,
+                            "value": "assets/BossBullet.anim"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Speed",
+                            "type": 1,
+                            "value": "1"
+                        }
+                    ]
+                },
+                {
+                    "name": "Script",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Path",
+                            "type": 7,
+                            "value": "EnemyBulletScript.hpp"
+                        }
+                    ]
+                },
+                {
+                    "name": "Script",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Path",
+                            "type": 7,
+                            "value": "DestroyOffScreenScript.hpp"
+                        }
+                    ]
+                },
+                {
+                    "name": "Networked",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Mode",
+                            "type": 5,
+                            "value": "Replicated"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Prefab",
+                            "type": 2,
+                            "value": "BossBullet"
+                        }
+                    ]
+                }
+            ],
+            "id": 33,
+            "name": "BossBullet"
         }
     ],
     "projectName": "R-Type",
