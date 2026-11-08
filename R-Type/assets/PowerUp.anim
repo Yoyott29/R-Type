@@ -1,0 +1,8 @@
+{
+    "texture": "PowerUp.png",
+    "frameWidth": 20.0,
+    "frameHeight": 18,
+    "frames": 1,
+    "fps": 12,
+    "loop": true
+}
