@@ -161,9 +161,10 @@
 <h3 class="mt-6 font-semibold">Library: Asio standalone</h3>
 {@render table(network)}
 <p class="mt-3 max-w-[100ch] leading-7">
-	Asio gives one abstraction over BSD sockets and Winsock, without the rest of Boost. The server uses
-	a blocking {@render c('receive_from')} in its own thread; the client uses a non-blocking socket read
-	once per frame, so neither side needs an event loop.
+	Asio gives one abstraction over BSD sockets and Winsock, without the rest of Boost. Both sides use the
+	same {@render c('UdpSocket')}: an Asio {@render c('io_context')} on its own thread receives with
+	{@render c('async_receive_from')} into a queue, and {@render c('NetReceiveSystem')} drains it once
+	per frame, so the game loop never blocks on the network.
 </p>
 <h3 class="mt-6 font-semibold">Protocol: custom binary</h3>
 <p class="mt-2 max-w-[100ch] leading-7">
@@ -210,8 +211,13 @@
 		game speed never depends on the CPU speed.
 	</li>
 	<li>
-		<strong>Producer / consumer queue</strong> between the network thread and the game thread, with a
-		mutex.
+		<strong>Producer / consumer queue</strong> between the socket I/O thread and
+		{@render c('NetReceiveSystem')}, with a mutex, capped at 1024 datagrams.
+	</li>
+	<li>
+		<strong>Dependency graph scheduling</strong>: systems that declare disjoint accesses run
+		together on a thread pool, see
+		{@render a('/developer/ecs-systems#parallel-systems', 'Running systems in parallel')}.
 	</li>
 	<li>
 		<strong>Collision tests</strong>: box against box (AABB), circle against circle (squared

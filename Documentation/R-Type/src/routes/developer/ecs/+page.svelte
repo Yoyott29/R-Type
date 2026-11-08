@@ -184,7 +184,10 @@ Entity enemy = prefabs.InstantiatePrefab("Enemy", scene); // new entity with a c
 <p class="mt-3 max-w-[100ch] leading-7">
 	Each client frame runs {@render c('PrepUpdate')}, {@render c('StateTransition')}, then
 	{@render c('FixedUpdate')} zero or more times at a fixed rate, then {@render c('Update')} and
-	{@render c('PostUpdate')}. The server only runs {@render c('FixedUpdate')}, once per tick.
+	{@render c('PostUpdate')}. The server runs the same frame without rendering, then sleeps until the
+	next tick. See
+	<a href="/developer/ecs-systems#parallel-systems" class="text-[#ff8a3d] hover:underline">Running systems in parallel</a>
+	for what runs on other threads.
 </p>
 
 <h2 class="mt-9 text-lg font-semibold">Resources</h2>
