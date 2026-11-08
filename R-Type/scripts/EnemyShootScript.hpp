@@ -3,6 +3,7 @@
 
 #include "BuildVariantName.hpp"
 #include "Collider2D.hpp"
+#include "MatchState.hpp"
 #include "PrefabsManager.hpp"
 #include "Scene.hpp"
 #include "Script.hpp"
@@ -13,6 +14,7 @@
 #include <cmath>
 #include <cstdint>
 #include <optional>
+#include <random>
 
 class EnemyShootScript : public GringoEntityScript
 {
@@ -21,15 +23,18 @@ class EnemyShootScript : public GringoEntityScript
     void onUpdate(Scene &scene, Entity &entity) override;
 
   private:
-    static constexpr float SHOOT_COOLDOWN = 3.0f;
+    static constexpr float FIRST_COOLDOWN = 1.0f;
+    static constexpr float MIN_COOLDOWN = 2.0f;
+    static constexpr float MAX_COOLDOWN = 4.0f;
     static constexpr float BULLET_SPEED = 400.0f;
     static constexpr std::uint32_t PLAYER_LAYER = 1;
 
     static bool isClientSide(Scene &scene);
+    static float randomCooldown();
     static std::optional<Transform> nearestPlayer(Scene &scene, const Transform &from);
     static void shoot(Scene &scene, const Transform &from, const Transform &target);
 
-    float _cooldown = 2;
+    float _cooldown = 0.0f;
 };
 
 inline bool EnemyShootScript::isClientSide(Scene &scene)
@@ -38,16 +43,24 @@ inline bool EnemyShootScript::isClientSide(Scene &scene)
            scene.getResource<BuildVariantName>().name == "client";
 }
 
-inline void EnemyShootScript::onStart(Scene &, Entity &) {}
+inline float EnemyShootScript::randomCooldown()
+{
+    static std::mt19937 generator{std::random_device{}()};
+    std::uniform_real_distribution<float> distribution(MIN_COOLDOWN, MAX_COOLDOWN);
+
+    return distribution(generator);
+}
+
+inline void EnemyShootScript::onStart(Scene &, Entity &) { _cooldown = FIRST_COOLDOWN; }
 
 inline void EnemyShootScript::onUpdate(Scene &scene, Entity &entity)
 {
-    if (isClientSide(scene))
+    if (isClientSide(scene) || isWaitingForMatch(scene))
         return;
     _cooldown -= FIXED_DELTA_TIME;
     if (_cooldown > 0.0f)
         return;
-    _cooldown = SHOOT_COOLDOWN;
+    _cooldown = randomCooldown();
     const Transform from = scene.getComponent<Transform>(entity);
     const std::optional<Transform> target = nearestPlayer(scene, from);
     if (target)

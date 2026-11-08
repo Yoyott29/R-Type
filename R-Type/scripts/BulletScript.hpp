@@ -3,6 +3,7 @@
 
 #include "BuildVariantName.hpp"
 #include "Collider2D.hpp"
+#include "EnemyScript.hpp"
 #include "GameScore.hpp"
 #include "Scene.hpp"
 #include "Script.hpp"
@@ -32,7 +33,7 @@ inline void BulletScript::onStart(Scene &scene, Entity &entity)
             return;
         scene.getResource<GameScore>().value += 100;
         scene.queueDestroy(bullet);
-        scene.queueDestroy(other);
+        EnemyScript::kill(scene, other);
     };
 }
 

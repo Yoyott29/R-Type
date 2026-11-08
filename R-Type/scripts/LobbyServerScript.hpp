@@ -52,6 +52,7 @@ inline void LobbyServerScript::startMatch(Scene &scene)
     scene.getResource<MatchState>().started = true;
     scene.getResource<GameScore>().value = 0;
     scene.getResource<NetTransport>().setAcceptingPeers(false);
+    Lobby::clearMatchEntities(scene);
     scene.getResource<PrefabsManager>().InstantiatePrefab(Lobby::MUSIC_PREFAB, scene);
 }
 

@@ -14,6 +14,7 @@
 #include <algorithm>
 #include <cstddef>
 #include <cstdint>
+#include <memory>
 #include <string>
 #include <variant>
 #include <vector>
@@ -33,6 +34,7 @@ class PlayerScript : public GringoEntityScript
     static constexpr std::size_t ACTION_DOWN = 1;
     static constexpr std::size_t ACTION_LEFT = 2;
     static constexpr std::size_t ACTION_RIGHT = 3;
+    static constexpr std::size_t ACTION_CHARGE = 5;
     static constexpr std::uint32_t PLAYER_LAYER = 1;
     static constexpr std::uint32_t DEAD_LAYER = 0;
 
@@ -41,6 +43,8 @@ class PlayerScript : public GringoEntityScript
     void setParameter(const std::string &name, const std::string &value) override;
 
     static void kill(Scene &scene, Entity player);
+    static PlayerScript *from(Scene &scene, Entity player);
+    void enableDiagonalShot();
 
   private:
     static constexpr float SHOOT_COOLDOWN = 0.13f;
@@ -48,9 +52,12 @@ class PlayerScript : public GringoEntityScript
     static constexpr float SCREEN_WIDTH = 1920.0f;
     static constexpr float SCREEN_HEIGHT = 1080.0f;
     static constexpr float DEAD_POSITION = -1000.0f;
+    static constexpr float CHARGE_LEVEL_TIME = 0.3f;
+    static constexpr std::size_t MAX_CHARGE_LEVEL = 5;
+    static constexpr float CHARGE_HALF_WIDTH = 24.0f;
 
     static bool isDead(Scene &scene, Entity entity);
-    void revive(Scene &scene, Entity entity) const;
+    void revive(Scene &scene, Entity entity);
     static bool isClientSide(Scene &scene);
     static void bindKeys(Scene &scene);
     static ActionInput readInput(Scene &scene, Entity entity);
@@ -58,9 +65,13 @@ class PlayerScript : public GringoEntityScript
     static void clampToScreen(Scene &scene, Entity entity);
     void move(Scene &scene, Entity entity, const ActionInput &input) const;
     void shoot(Scene &scene, Entity entity);
+    void releaseCharge(Scene &scene, Entity entity);
+    static void spawnBullet(Scene &scene, Entity entity, const std::string &prefab, float offsetX);
 
     float _speed = 400.0f;
     float _shootCooldown = 0.0f;
+    float _chargeTime = 0.0f;
+    bool _diagonalShot = false;
     Transform _spawn{0.0f, 0.0f};
 };
 
@@ -90,6 +101,7 @@ inline void PlayerScript::bindKeys([[maybe_unused]] Scene &scene)
     bindings.bind(Key::Q, ACTION_LEFT);
     bindings.bind(Key::Right, ACTION_RIGHT);
     bindings.bind(Key::D, ACTION_RIGHT);
+    bindings.bind(Key::Space, ACTION_CHARGE);
 #endif
 }
 
@@ -112,10 +124,12 @@ inline bool PlayerScript::isDead(Scene &scene, Entity entity)
     return scene.getComponent<Collider2D>(entity).layer == DEAD_LAYER;
 }
 
-inline void PlayerScript::revive(Scene &scene, Entity entity) const
+inline void PlayerScript::revive(Scene &scene, Entity entity)
 {
     if (!isDead(scene, entity))
         return;
+    _chargeTime = 0.0f;
+    _diagonalShot = false;
     scene.getComponent<Collider2D>(entity).layer = PLAYER_LAYER;
     Transform &position = scene.getComponent<Transform>(entity);
     position.x = _spawn.x;
@@ -136,6 +150,11 @@ inline void PlayerScript::onUpdate(Scene &scene, Entity &entity)
     const ActionInput input = readInput(scene, entity);
     move(scene, entity, input);
     clampToScreen(scene, entity);
+    if (input.isActive(ACTION_CHARGE)) {
+        _chargeTime += FIXED_DELTA_TIME;
+        return;
+    }
+    releaseCharge(scene, entity);
     shoot(scene, entity);
 }
 
@@ -188,13 +207,48 @@ inline void PlayerScript::shoot(Scene &scene, Entity entity)
 {
     if (_shootCooldown > 0.0f)
         return;
+    spawnBullet(scene, entity, "PlayerBullet", BULLET_OFFSET_X);
+    if (_diagonalShot) {
+        spawnBullet(scene, entity, "PlayerBulletUp", BULLET_OFFSET_X);
+        spawnBullet(scene, entity, "PlayerBulletDown", BULLET_OFFSET_X);
+    }
+    _shootCooldown = SHOOT_COOLDOWN;
+}
+
+inline PlayerScript *PlayerScript::from(Scene &scene, Entity player)
+{
+    for (std::size_t i = 0; i < scene.getComponentCount<Script>(player); i++) {
+        const std::shared_ptr<PlayerScript> script = std::dynamic_pointer_cast<PlayerScript>(
+            scene.getComponent<Script>(player, i).gringoEntityScript);
+        if (script)
+            return script.get();
+    }
+    return nullptr;
+}
+
+inline void PlayerScript::enableDiagonalShot() { _diagonalShot = true; }
+
+inline void PlayerScript::releaseCharge(Scene &scene, Entity entity)
+{
+    const std::size_t level =
+        std::min(MAX_CHARGE_LEVEL, static_cast<std::size_t>(_chargeTime / CHARGE_LEVEL_TIME));
+    _chargeTime = 0.0f;
+    if (level == 0)
+        return;
+    const float offset = BULLET_OFFSET_X + CHARGE_HALF_WIDTH * static_cast<float>(level);
+    spawnBullet(scene, entity, "BulletCharge" + std::to_string(level), offset);
+    _shootCooldown = SHOOT_COOLDOWN;
+}
+
+inline void PlayerScript::spawnBullet(Scene &scene, Entity entity, const std::string &prefab,
+                                      float offsetX)
+{
     const Transform origin = scene.getComponent<Transform>(entity);
-    Entity bullet = scene.getResource<PrefabsManager>().InstantiatePrefab("PlayerBullet", scene);
+    Entity bullet = scene.getResource<PrefabsManager>().InstantiatePrefab(prefab, scene);
     Transform &position = scene.getComponent<Transform>(bullet);
 
-    position.x = origin.x + BULLET_OFFSET_X;
+    position.x = origin.x + offsetX;
     position.y = origin.y;
-    _shootCooldown = SHOOT_COOLDOWN;
 }
 
 #endif /* !PLAYERSCRIPT_HPP_ */
