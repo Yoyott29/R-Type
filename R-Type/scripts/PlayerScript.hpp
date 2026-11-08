@@ -5,14 +5,15 @@
 #include "BuildVariantName.hpp"
 #include "Collider2D.hpp"
 #include "MatchState.hpp"
-#include "Transform.hpp"
 #include "PrefabsManager.hpp"
 #include "Scene.hpp"
 #include "Script.hpp"
 #include "Shape.hpp"
 #include "Time.hpp"
+#include "Transform.hpp"
 #include <algorithm>
 #include <cstddef>
+#include <cstdint>
 #include <string>
 #include <variant>
 #include <vector>
@@ -32,17 +33,24 @@ class PlayerScript : public GringoEntityScript
     static constexpr std::size_t ACTION_DOWN = 1;
     static constexpr std::size_t ACTION_LEFT = 2;
     static constexpr std::size_t ACTION_RIGHT = 3;
+    static constexpr std::uint32_t PLAYER_LAYER = 1;
+    static constexpr std::uint32_t DEAD_LAYER = 0;
 
     void onStart(Scene &scene, Entity &entity) override;
     void onUpdate(Scene &scene, Entity &entity) override;
     void setParameter(const std::string &name, const std::string &value) override;
 
+    static void kill(Scene &scene, Entity player);
+
   private:
-    static constexpr float SHOOT_COOLDOWN = 0.2f;
-    static constexpr float BULLET_OFFSET_X = 60.0f;
+    static constexpr float SHOOT_COOLDOWN = 0.13f;
+    static constexpr float BULLET_OFFSET_X = 25.0f;
     static constexpr float SCREEN_WIDTH = 1920.0f;
     static constexpr float SCREEN_HEIGHT = 1080.0f;
+    static constexpr float DEAD_POSITION = -1000.0f;
 
+    static bool isDead(Scene &scene, Entity entity);
+    void revive(Scene &scene, Entity entity) const;
     static bool isClientSide(Scene &scene);
     static void bindKeys(Scene &scene);
     static ActionInput readInput(Scene &scene, Entity entity);
@@ -53,6 +61,7 @@ class PlayerScript : public GringoEntityScript
 
     float _speed = 400.0f;
     float _shootCooldown = 0.0f;
+    Transform _spawn{0.0f, 0.0f};
 };
 
 inline void PlayerScript::setParameter(const std::string &name, const std::string &value)
@@ -84,11 +93,44 @@ inline void PlayerScript::bindKeys([[maybe_unused]] Scene &scene)
 #endif
 }
 
-inline void PlayerScript::onStart(Scene &scene, Entity &) { bindKeys(scene); }
+inline void PlayerScript::onStart(Scene &scene, Entity &entity)
+{
+    bindKeys(scene);
+    _spawn = scene.getComponent<Transform>(entity);
+}
+
+inline void PlayerScript::kill(Scene &scene, Entity player)
+{
+    scene.getComponent<Collider2D>(player).layer = DEAD_LAYER;
+    Transform &position = scene.getComponent<Transform>(player);
+    position.x = DEAD_POSITION;
+    position.y = DEAD_POSITION;
+}
+
+inline bool PlayerScript::isDead(Scene &scene, Entity entity)
+{
+    return scene.getComponent<Collider2D>(entity).layer == DEAD_LAYER;
+}
+
+inline void PlayerScript::revive(Scene &scene, Entity entity) const
+{
+    if (!isDead(scene, entity))
+        return;
+    scene.getComponent<Collider2D>(entity).layer = PLAYER_LAYER;
+    Transform &position = scene.getComponent<Transform>(entity);
+    position.x = _spawn.x;
+    position.y = _spawn.y;
+}
 
 inline void PlayerScript::onUpdate(Scene &scene, Entity &entity)
 {
-    if (isClientSide(scene) || isWaitingForMatch(scene))
+    if (isClientSide(scene))
+        return;
+    if (isWaitingForMatch(scene)) {
+        revive(scene, entity);
+        return;
+    }
+    if (isDead(scene, entity))
         return;
     _shootCooldown = std::max(0.0f, _shootCooldown - FIXED_DELTA_TIME);
     const ActionInput input = readInput(scene, entity);
