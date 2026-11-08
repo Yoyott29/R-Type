@@ -71,6 +71,14 @@ jobs:
       - name: Run tests
         run: ./tests/tests.sh
 
+      # engine_tests and network_tests only exist with GRINGO_BUILD_TESTS=ON (OFF by default)
+      - name: Engine unit tests
+        run: |
+          cmake -S "Gringo Engine" -B build-unit -DGRINGO_BUILD_TESTS=ON -DENABLE_CLANG_TIDY=OFF \
+                -DCPM_SOURCE_CACHE="$CPM_SOURCE_CACHE"
+          cmake --build build-unit --target engine_tests network_tests --parallel
+          ctest --test-dir build-unit --output-on-failure
+
       - name: clang-tidy (build with analysis)
         run: |
           cmake -B build-tidy -DENABLE_CLANG_TIDY=ON
