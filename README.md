@@ -101,9 +101,52 @@ You need:
 - An internet connection for the first CMake configuration, so CPM can fetch
   dependencies.
 
-### WINDOWS
+How to install them is explained in the [WINDOWS](#windows) and
+[LINUX](#linux) sections below.
 
-#### 1. Install the C++ toolchain
+## How it works
+
+Run every command of the WINDOWS and LINUX sections from the repository root
+(the folder that holds this README), unless told otherwise.
+
+- **R-Type** is a server and a client. The first build downloads the
+  dependencies listed above.
+- **Starting a game**: start the server first, then one client per player,
+  each in its own terminal. A client tries to connect for about 5 seconds, then
+  quits if no server answers. The game finds its files from the location of the
+  executable, so you can start it from any folder.
+- **Address and port**: both programs use `127.0.0.1:4242` by default, so the
+  server only accepts clients from the same machine. Give a single argument to
+  change the port, or an IPv4 address and a port. The client and the server
+  must use the same port. To play over a network, start the server on `0.0.0.0`
+  (every network interface) and give the clients the IP address of the machine
+  running the server (`192.168.1.20` in the examples below).
+- **Tests**: the project test suite (`tests/tests.sh`) builds the project, then
+  starts the real server and client to check their arguments, logs, connection
+  and shutdown. The engine unit tests (scheduler, thread pool, network
+  protocol...) are built separately with CTest.
+- **Gringo editor** (`Gringo`): it lets you create or open a project (a
+  `.gringo` file), add entities and prefabs, set their components, choose the
+  project's plugins, and build the project. It is built with the engine library
+  and its plugins next to it, in `Gringo Engine/`. It can also build a project
+  from the command line (`Gringo --build <file.gringo>`): it generates the
+  project's `client_main.cpp` and `server_main.cpp`, then compiles them. Run it
+  after changing `R-Type/R-Type.gringo` or adding a script, then rebuild
+  R-Type.
+- **TrackNTrap** is a 3D race for up to four players, made with the same
+  engine to show that it is not tied to R-Type. Rats race around a kitchen
+  track full of knives, brooms, and spatulas, and drop mouse traps on the track
+  for the others. It lives in `Gringo Engine/TrackNTrap/`, is built with the
+  editor (build the editor first), and creates `trackntrap_server` and
+  `trackntrap_client` in `Gringo Engine/TrackNTrap/`. They take the same
+  `[ip] [port]` arguments as R-Type.
+
+How to play (lobby, controls, gameplay) is explained in the
+[user documentation](https://r-type-project-documentation.vercel.app/user/getting-started).
+
+## WINDOWS
+
+### 1. Install the C++ toolchain
 
 Download and start the
 [Visual Studio Build Tools installer](https://visualstudio.microsoft.com/downloads/).
@@ -122,7 +165,7 @@ selected:
 Click **Install** and restart Windows if the installer requests it. The full
 Visual Studio IDE is not required; the Build Tools package is enough.
 
-#### 2. Install Git and CMake
+### 2. Install Git and CMake
 
 Install [Git for Windows](https://git-scm.com/download/win) and
 [CMake](https://cmake.org/download/) if they were not installed with the
@@ -135,10 +178,10 @@ winget install Kitware.CMake
 winget install Git.Git
 ```
 
-#### 3. Use a developer terminal
+### 3. Use a developer terminal
 
 The MSVC compiler is not available in a regular PowerShell window. Open one of
-the following from the Start menu, and run every build command of this README
+the following from the Start menu, and run every build command of this section
 in it:
 
 - **Developer PowerShell for VS 2022**
@@ -171,44 +214,9 @@ cd "C:\path\to\the\repository"
 
 The `.sh` scripts of this repository (`build_rtype.sh`,
 `Gringo Engine/build_engine.sh`, `tests/*.sh`) are Bash scripts: they do not
-run in PowerShell. The WINDOWS sections below give the `cmake` commands to use
-instead.
+run in PowerShell. This section gives the `cmake` commands to use instead.
 
-### LINUX
-
-Install the compiler, build tools, Git, CMake, and the libraries required by
-raylib. On Ubuntu/Debian:
-
-```sh
-sudo apt update
-sudo apt install build-essential cmake git \
-  libgl1-mesa-dev libx11-dev libxrandr-dev libxi-dev \
-  libxcursor-dev libxinerama-dev
-```
-
-Check the CMake version:
-
-```sh
-cmake --version
-```
-
-It must report version 3.28 or newer. On distributions with an older CMake,
-install a current version from the
-[official CMake downloads](https://cmake.org/download/) or with Snap:
-
-```sh
-sudo snap install cmake --classic
-```
-
-## Launch
-
-Run the commands below from the repository root.
-
-### Build R-Type
-
-The first build downloads the dependencies listed above.
-
-#### WINDOWS
+### 4. Build R-Type
 
 From a **Developer PowerShell for VS 2022**:
 
@@ -222,35 +230,7 @@ root, with `gringo_engine.dll` next to them. The engine plugins and the
 renderer are `.dll` files in `Gringo Engine\plugins\` and
 `Gringo Engine\renderers\`.
 
-#### LINUX
-
-The project-provided script configures the root CMake project and builds both
-executables in parallel:
-
-```sh
-./build_rtype.sh
-```
-
-This creates `r-type_server` and `r-type_client` in the repository root. The
-engine library, `libgringo_engine.so`, and the plugins (`.so` files) are
-written in `Gringo Engine/`.
-
-### Start a game
-
-Start the server first, then one client per player, each in its own terminal.
-A client tries to connect for about 5 seconds, then quits if no server answers.
-
-The game finds its files from the location of the executable, so you can start
-it from any folder.
-
-Both programs use `127.0.0.1:4242` by default, so the server only accepts
-clients from the same machine. Give a single argument to change the port, or an
-IPv4 address and a port. The client and the server must use the same port. To
-play over a network, start the server on `0.0.0.0` (every network interface)
-and give the clients the IP address of the machine running the server
-(`192.168.1.20` below is an example).
-
-#### WINDOWS
+### 5. Start a game
 
 These run from any PowerShell window:
 
@@ -272,36 +252,7 @@ Change the port, or play over a network:
 When Windows Firewall asks the first time the server starts, allow it on
 private networks. `ipconfig` shows the host's address (**IPv4 Address**).
 
-#### LINUX
-
-```sh
-./r-type_server
-./r-type_client
-```
-
-Change the port, or play over a network:
-
-```sh
-./r-type_server 5000                 # listens on 127.0.0.1:5000
-./r-type_client 5000                 # joins 127.0.0.1:5000
-
-./r-type_server 0.0.0.0 4242         # on the host
-./r-type_client 192.168.1.20 4242    # on each player's machine
-```
-
-`hostname -I` shows the host's address.
-
-How to play (lobby, controls, gameplay) is explained in the
-[user documentation](https://r-type-project-documentation.vercel.app/user/getting-started).
-
-### Run tests
-
-The project test suite (`tests/tests.sh`) builds the project, then starts the
-real server and client to check their arguments, logs, connection and
-shutdown. The engine unit tests (scheduler, thread pool, network protocol...)
-are built separately with CTest.
-
-#### WINDOWS
+### 6. Run tests
 
 `tests/tests.sh` is Linux only. Run the engine unit tests from a
 **Developer PowerShell for VS 2022**, at the repository root:
@@ -318,33 +269,7 @@ and some plugins in `Gringo Engine\`, next to the editor. Without
 soon as it starts (see [Windows troubleshooting](#windows-troubleshooting)).
 Close the editor before running this build.
 
-#### LINUX
-
-```sh
-./tests/tests.sh
-```
-
-Engine unit tests:
-
-```sh
-cmake -S "Gringo Engine" -B build-unit -DGRINGO_BUILD_TESTS=ON
-cmake --build build-unit --target engine_tests network_tests -j
-ctest --test-dir build-unit --output-on-failure
-```
-
-## Gringo Engine and editor
-
-The editor (`Gringo`) lets you create or open a project (a `.gringo` file), add
-entities and prefabs, set their components, choose the project's plugins, and
-build the project. It is built with the engine library and its plugins next to
-it, in `Gringo Engine/`.
-
-The editor can also build a project from the command line
-(`Gringo --build <file.gringo>`). It generates the project's `client_main.cpp`
-and `server_main.cpp`, then compiles them. Run it after changing
-`R-Type/R-Type.gringo` or adding a script, then rebuild R-Type.
-
-### WINDOWS
+### 7. Gringo Engine and editor
 
 `build_engine.sh` does not run in PowerShell. From a
 **Developer PowerShell for VS 2022**, at the repository root (not inside
@@ -381,7 +306,112 @@ Building R-Type (`cmake --build build ...`) or the engine unit tests writes in
 `Gringo Engine\plugins\`: close the editor first, since Windows cannot replace
 a `.dll` that a running program uses.
 
-### LINUX
+### 8. TrackNTrap
+
+From a **Developer PowerShell for VS 2022**, at the repository root, build the
+game:
+
+```powershell
+& ".\Gringo Engine\Gringo.exe" --build "Gringo Engine\TrackNTrap\TrackNTrap.gringo"
+```
+
+Then start the server, and one client per player, each in its own PowerShell
+window (a regular one is enough):
+
+```powershell
+& ".\Gringo Engine\TrackNTrap\trackntrap_server.exe"
+& ".\Gringo Engine\TrackNTrap\trackntrap_client.exe"
+```
+
+### Windows troubleshooting
+
+| Message or symptom | Cause and fix |
+|---|---|
+| `cl : Le terme «cl» n'est pas reconnu` / `'cl' is not recognized` | Regular PowerShell window. Open **Developer PowerShell for VS 2022**. |
+| `CMake Error: The source directory ".../Gringo Engine/Gringo Engine" does not exist` | The command was run inside `Gringo Engine\`. Go back to the repository root (`cd ..`). |
+| `Set-Location : ... positional parameter` on `cd` | The path holds a space: put it in quotes, and do not copy the `>` of the prompt. |
+| `LINK : fatal error LNK1104: ... .dll` | A program using that `.dll` is open (usually the editor or a game). Close it, then build again. |
+| `Gringo.exe` closes right away, with no message | Debug and Release files are mixed in `Gringo Engine\` (often after a build without `--config Release`). Delete `Gringo Engine\*.dll`, `Gringo Engine\plugins\*.dll` and `Gringo Engine\renderers\*.dll`, then build the editor again. |
+| `bind: Une seule utilisation de chaque adresse de socket...` / `Only one usage of each socket address...` | Another server already uses the port. Close it, or start the server and the clients on another port (`5000`). |
+| The antivirus blocks or deletes a new `.exe` | Freshly built programs are not signed. Add an exception for the repository folder in the antivirus instead of disabling it. |
+
+## LINUX
+
+### 1. Install the prerequisites
+
+Install the compiler, build tools, Git, CMake, and the libraries required by
+raylib. On Ubuntu/Debian:
+
+```sh
+sudo apt update
+sudo apt install build-essential cmake git \
+  libgl1-mesa-dev libx11-dev libxrandr-dev libxi-dev \
+  libxcursor-dev libxinerama-dev
+```
+
+Check the CMake version:
+
+```sh
+cmake --version
+```
+
+It must report version 3.28 or newer. On distributions with an older CMake,
+install a current version from the
+[official CMake downloads](https://cmake.org/download/) or with Snap:
+
+```sh
+sudo snap install cmake --classic
+```
+
+### 2. Build R-Type
+
+The project-provided script configures the root CMake project and builds both
+executables in parallel:
+
+```sh
+./build_rtype.sh
+```
+
+This creates `r-type_server` and `r-type_client` in the repository root. The
+engine library, `libgringo_engine.so`, and the plugins (`.so` files) are
+written in `Gringo Engine/`.
+
+### 3. Start a game
+
+```sh
+./r-type_server
+./r-type_client
+```
+
+Change the port, or play over a network:
+
+```sh
+./r-type_server 5000                 # listens on 127.0.0.1:5000
+./r-type_client 5000                 # joins 127.0.0.1:5000
+
+./r-type_server 0.0.0.0 4242         # on the host
+./r-type_client 192.168.1.20 4242    # on each player's machine
+```
+
+`hostname -I` shows the host's address.
+
+### 4. Run tests
+
+Project test suite:
+
+```sh
+./tests/tests.sh
+```
+
+Engine unit tests:
+
+```sh
+cmake -S "Gringo Engine" -B build-unit -DGRINGO_BUILD_TESTS=ON
+cmake --build build-unit --target engine_tests network_tests -j
+ctest --test-dir build-unit --output-on-failure
+```
+
+### 5. Gringo Engine and editor
 
 Build the editor:
 
@@ -402,53 +432,13 @@ Build a project from the command line, from the repository root:
 ./Gringo\ Engine/Gringo --build R-Type/R-Type.gringo
 ```
 
-## TrackNTrap, the second game
-
-TrackNTrap is a 3D race for up to four players, made with the same engine to
-show that it is not tied to R-Type. Rats race around a kitchen track full of
-knives, brooms, and spatulas, and drop mouse traps on the track for the others.
-It lives in `Gringo Engine/TrackNTrap/`.
-
-It is built with the editor (build the editor first, see above), and creates
-`trackntrap_server` and `trackntrap_client` in `Gringo Engine/TrackNTrap/`.
-They take the same `[ip] [port]` arguments as R-Type.
-
-### WINDOWS
-
-From a **Developer PowerShell for VS 2022**, at the repository root, build the
-game:
-
-```powershell
-& ".\Gringo Engine\Gringo.exe" --build "Gringo Engine\TrackNTrap\TrackNTrap.gringo"
-```
-
-Then start the server, and one client per player, each in its own PowerShell
-window (a regular one is enough):
-
-```powershell
-& ".\Gringo Engine\TrackNTrap\trackntrap_server.exe"
-& ".\Gringo Engine\TrackNTrap\trackntrap_client.exe"
-```
-
-### LINUX
+### 6. TrackNTrap
 
 ```sh
 ./Gringo\ Engine/Gringo --build "Gringo Engine/TrackNTrap/TrackNTrap.gringo"
 ./Gringo\ Engine/TrackNTrap/trackntrap_server
 ./Gringo\ Engine/TrackNTrap/trackntrap_client
 ```
-
-## Windows troubleshooting
-
-| Message or symptom | Cause and fix |
-|---|---|
-| `cl : Le terme «cl» n'est pas reconnu` / `'cl' is not recognized` | Regular PowerShell window. Open **Developer PowerShell for VS 2022**. |
-| `CMake Error: The source directory ".../Gringo Engine/Gringo Engine" does not exist` | The command was run inside `Gringo Engine\`. Go back to the repository root (`cd ..`). |
-| `Set-Location : ... positional parameter` on `cd` | The path holds a space: put it in quotes, and do not copy the `>` of the prompt. |
-| `LINK : fatal error LNK1104: ... .dll` | A program using that `.dll` is open (usually the editor or a game). Close it, then build again. |
-| `Gringo.exe` closes right away, with no message | Debug and Release files are mixed in `Gringo Engine\` (often after a build without `--config Release`). Delete `Gringo Engine\*.dll`, `Gringo Engine\plugins\*.dll` and `Gringo Engine\renderers\*.dll`, then build the editor again. |
-| `bind: Une seule utilisation de chaque adresse de socket...` / `Only one usage of each socket address...` | Another server already uses the port. Close it, or start the server and the clients on another port (`5000`). |
-| The antivirus blocks or deletes a new `.exe` | Freshly built programs are not signed. Add an exception for the repository folder in the antivirus instead of disabling it. |
 
 ## Repository layout
 
