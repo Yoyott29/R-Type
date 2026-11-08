@@ -1472,7 +1472,7 @@
                             "id": 1,
                             "name": "PositionY",
                             "type": 1,
-                            "value": "900"
+                            "value": "800"
                         },
                         {
                             "id": 2,
@@ -1584,7 +1584,7 @@
                             "id": 0,
                             "name": "Parent",
                             "type": 0,
-                            "value": "10"
+                            "value": "25"
                         }
                     ]
                 },
@@ -1724,6 +1724,1315 @@
             ],
             "id": 24,
             "name": "ScoreBoard"
+        },
+        {
+            "components": [
+                {
+                    "name": "Transform",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "PositionX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 1,
+                            "name": "PositionY",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 2,
+                            "name": "PositionZ",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 3,
+                            "name": "ScaleX",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 4,
+                            "name": "ScaleY",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 5,
+                            "name": "ScaleZ",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 6,
+                            "name": "RotationX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 7,
+                            "name": "RotationY",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 8,
+                            "name": "RotationZ",
+                            "type": 1,
+                            "value": "0"
+                        }
+                    ]
+                },
+                {
+                    "name": "Script",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Path",
+                            "type": 7,
+                            "value": "SettingsMenuScript.hpp"
+                        }
+                    ]
+                },
+                {
+                    "name": "Networked",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Mode",
+                            "type": 5,
+                            "value": "Client"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Prefab",
+                            "type": 2,
+                            "value": ""
+                        }
+                    ]
+                }
+            ],
+            "id": 25,
+            "name": "SettingsMenu"
+        },
+        {
+            "components": [
+                {
+                    "name": "Transform",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "PositionX",
+                            "type": 1,
+                            "value": "960"
+                        },
+                        {
+                            "id": 1,
+                            "name": "PositionY",
+                            "type": 1,
+                            "value": "170"
+                        },
+                        {
+                            "id": 2,
+                            "name": "PositionZ",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 3,
+                            "name": "ScaleX",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 4,
+                            "name": "ScaleY",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 5,
+                            "name": "ScaleZ",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 6,
+                            "name": "RotationX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 7,
+                            "name": "RotationY",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 8,
+                            "name": "RotationZ",
+                            "type": 1,
+                            "value": "0"
+                        }
+                    ]
+                },
+                {
+                    "name": "Text",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Content",
+                            "type": 2,
+                            "value": "SETTINGS"
+                        },
+                        {
+                            "id": 1,
+                            "name": "FontSize",
+                            "type": 0,
+                            "value": "130"
+                        },
+                        {
+                            "id": 2,
+                            "name": "Color",
+                            "type": 4,
+                            "value": "Cyan"
+                        },
+                        {
+                            "id": 3,
+                            "name": "Font",
+                            "type": 7,
+                            "value": "Font.ttf"
+                        }
+                    ]
+                },
+                {
+                    "name": "ChildOf",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Parent",
+                            "type": 0,
+                            "value": "25"
+                        }
+                    ]
+                },
+                {
+                    "name": "Networked",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Mode",
+                            "type": 5,
+                            "value": "Client"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Prefab",
+                            "type": 2,
+                            "value": ""
+                        }
+                    ]
+                }
+            ],
+            "id": 26,
+            "name": "SettingsTitle"
+        },
+        {
+            "components": [
+                {
+                    "name": "Transform",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "PositionX",
+                            "type": 1,
+                            "value": "960"
+                        },
+                        {
+                            "id": 1,
+                            "name": "PositionY",
+                            "type": 1,
+                            "value": "330"
+                        },
+                        {
+                            "id": 2,
+                            "name": "PositionZ",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 3,
+                            "name": "ScaleX",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 4,
+                            "name": "ScaleY",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 5,
+                            "name": "ScaleZ",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 6,
+                            "name": "RotationX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 7,
+                            "name": "RotationY",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 8,
+                            "name": "RotationZ",
+                            "type": 1,
+                            "value": "0"
+                        }
+                    ]
+                },
+                {
+                    "name": "Button",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Content",
+                            "type": 2,
+                            "value": "UP"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Width",
+                            "type": 0,
+                            "value": "460"
+                        },
+                        {
+                            "id": 2,
+                            "name": "Height",
+                            "type": 0,
+                            "value": "60"
+                        },
+                        {
+                            "id": 3,
+                            "name": "FontSize",
+                            "type": 0,
+                            "value": "28"
+                        },
+                        {
+                            "id": 4,
+                            "name": "Color",
+                            "type": 4,
+                            "value": "White"
+                        },
+                        {
+                            "id": 5,
+                            "name": "TextColor",
+                            "type": 4,
+                            "value": "Black"
+                        },
+                        {
+                            "id": 6,
+                            "name": "Font",
+                            "type": 7,
+                            "value": "Font.ttf"
+                        },
+                        {
+                            "id": 7,
+                            "name": "ImagePath",
+                            "type": 7,
+                            "value": "NONE"
+                        },
+                        {
+                            "id": 8,
+                            "name": "Script",
+                            "type": 7,
+                            "value": "KeybindButtonScript.hpp"
+                        },
+                        {
+                            "id": 9,
+                            "name": "Action",
+                            "type": 2,
+                            "value": "UP"
+                        }
+                    ]
+                },
+                {
+                    "name": "ChildOf",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Parent",
+                            "type": 0,
+                            "value": "25"
+                        }
+                    ]
+                },
+                {
+                    "name": "Networked",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Mode",
+                            "type": 5,
+                            "value": "Client"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Prefab",
+                            "type": 2,
+                            "value": ""
+                        }
+                    ]
+                }
+            ],
+            "id": 27,
+            "name": "KeybindUpButton"
+        },
+        {
+            "components": [
+                {
+                    "name": "Transform",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "PositionX",
+                            "type": 1,
+                            "value": "960"
+                        },
+                        {
+                            "id": 1,
+                            "name": "PositionY",
+                            "type": 1,
+                            "value": "420"
+                        },
+                        {
+                            "id": 2,
+                            "name": "PositionZ",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 3,
+                            "name": "ScaleX",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 4,
+                            "name": "ScaleY",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 5,
+                            "name": "ScaleZ",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 6,
+                            "name": "RotationX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 7,
+                            "name": "RotationY",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 8,
+                            "name": "RotationZ",
+                            "type": 1,
+                            "value": "0"
+                        }
+                    ]
+                },
+                {
+                    "name": "Button",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Content",
+                            "type": 2,
+                            "value": "DOWN"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Width",
+                            "type": 0,
+                            "value": "460"
+                        },
+                        {
+                            "id": 2,
+                            "name": "Height",
+                            "type": 0,
+                            "value": "60"
+                        },
+                        {
+                            "id": 3,
+                            "name": "FontSize",
+                            "type": 0,
+                            "value": "28"
+                        },
+                        {
+                            "id": 4,
+                            "name": "Color",
+                            "type": 4,
+                            "value": "White"
+                        },
+                        {
+                            "id": 5,
+                            "name": "TextColor",
+                            "type": 4,
+                            "value": "Black"
+                        },
+                        {
+                            "id": 6,
+                            "name": "Font",
+                            "type": 7,
+                            "value": "Font.ttf"
+                        },
+                        {
+                            "id": 7,
+                            "name": "ImagePath",
+                            "type": 7,
+                            "value": "NONE"
+                        },
+                        {
+                            "id": 8,
+                            "name": "Script",
+                            "type": 7,
+                            "value": "KeybindButtonScript.hpp"
+                        },
+                        {
+                            "id": 9,
+                            "name": "Action",
+                            "type": 2,
+                            "value": "DOWN"
+                        }
+                    ]
+                },
+                {
+                    "name": "ChildOf",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Parent",
+                            "type": 0,
+                            "value": "25"
+                        }
+                    ]
+                },
+                {
+                    "name": "Networked",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Mode",
+                            "type": 5,
+                            "value": "Client"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Prefab",
+                            "type": 2,
+                            "value": ""
+                        }
+                    ]
+                }
+            ],
+            "id": 28,
+            "name": "KeybindDownButton"
+        },
+        {
+            "components": [
+                {
+                    "name": "Transform",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "PositionX",
+                            "type": 1,
+                            "value": "960"
+                        },
+                        {
+                            "id": 1,
+                            "name": "PositionY",
+                            "type": 1,
+                            "value": "510"
+                        },
+                        {
+                            "id": 2,
+                            "name": "PositionZ",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 3,
+                            "name": "ScaleX",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 4,
+                            "name": "ScaleY",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 5,
+                            "name": "ScaleZ",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 6,
+                            "name": "RotationX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 7,
+                            "name": "RotationY",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 8,
+                            "name": "RotationZ",
+                            "type": 1,
+                            "value": "0"
+                        }
+                    ]
+                },
+                {
+                    "name": "Button",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Content",
+                            "type": 2,
+                            "value": "LEFT"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Width",
+                            "type": 0,
+                            "value": "460"
+                        },
+                        {
+                            "id": 2,
+                            "name": "Height",
+                            "type": 0,
+                            "value": "60"
+                        },
+                        {
+                            "id": 3,
+                            "name": "FontSize",
+                            "type": 0,
+                            "value": "28"
+                        },
+                        {
+                            "id": 4,
+                            "name": "Color",
+                            "type": 4,
+                            "value": "White"
+                        },
+                        {
+                            "id": 5,
+                            "name": "TextColor",
+                            "type": 4,
+                            "value": "Black"
+                        },
+                        {
+                            "id": 6,
+                            "name": "Font",
+                            "type": 7,
+                            "value": "Font.ttf"
+                        },
+                        {
+                            "id": 7,
+                            "name": "ImagePath",
+                            "type": 7,
+                            "value": "NONE"
+                        },
+                        {
+                            "id": 8,
+                            "name": "Script",
+                            "type": 7,
+                            "value": "KeybindButtonScript.hpp"
+                        },
+                        {
+                            "id": 9,
+                            "name": "Action",
+                            "type": 2,
+                            "value": "LEFT"
+                        }
+                    ]
+                },
+                {
+                    "name": "ChildOf",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Parent",
+                            "type": 0,
+                            "value": "25"
+                        }
+                    ]
+                },
+                {
+                    "name": "Networked",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Mode",
+                            "type": 5,
+                            "value": "Client"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Prefab",
+                            "type": 2,
+                            "value": ""
+                        }
+                    ]
+                }
+            ],
+            "id": 29,
+            "name": "KeybindLeftButton"
+        },
+        {
+            "components": [
+                {
+                    "name": "Transform",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "PositionX",
+                            "type": 1,
+                            "value": "960"
+                        },
+                        {
+                            "id": 1,
+                            "name": "PositionY",
+                            "type": 1,
+                            "value": "600"
+                        },
+                        {
+                            "id": 2,
+                            "name": "PositionZ",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 3,
+                            "name": "ScaleX",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 4,
+                            "name": "ScaleY",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 5,
+                            "name": "ScaleZ",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 6,
+                            "name": "RotationX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 7,
+                            "name": "RotationY",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 8,
+                            "name": "RotationZ",
+                            "type": 1,
+                            "value": "0"
+                        }
+                    ]
+                },
+                {
+                    "name": "Button",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Content",
+                            "type": 2,
+                            "value": "RIGHT"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Width",
+                            "type": 0,
+                            "value": "460"
+                        },
+                        {
+                            "id": 2,
+                            "name": "Height",
+                            "type": 0,
+                            "value": "60"
+                        },
+                        {
+                            "id": 3,
+                            "name": "FontSize",
+                            "type": 0,
+                            "value": "28"
+                        },
+                        {
+                            "id": 4,
+                            "name": "Color",
+                            "type": 4,
+                            "value": "White"
+                        },
+                        {
+                            "id": 5,
+                            "name": "TextColor",
+                            "type": 4,
+                            "value": "Black"
+                        },
+                        {
+                            "id": 6,
+                            "name": "Font",
+                            "type": 7,
+                            "value": "Font.ttf"
+                        },
+                        {
+                            "id": 7,
+                            "name": "ImagePath",
+                            "type": 7,
+                            "value": "NONE"
+                        },
+                        {
+                            "id": 8,
+                            "name": "Script",
+                            "type": 7,
+                            "value": "KeybindButtonScript.hpp"
+                        },
+                        {
+                            "id": 9,
+                            "name": "Action",
+                            "type": 2,
+                            "value": "RIGHT"
+                        }
+                    ]
+                },
+                {
+                    "name": "ChildOf",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Parent",
+                            "type": 0,
+                            "value": "25"
+                        }
+                    ]
+                },
+                {
+                    "name": "Networked",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Mode",
+                            "type": 5,
+                            "value": "Client"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Prefab",
+                            "type": 2,
+                            "value": ""
+                        }
+                    ]
+                }
+            ],
+            "id": 30,
+            "name": "KeybindRightButton"
+        },
+        {
+            "components": [
+                {
+                    "name": "Transform",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "PositionX",
+                            "type": 1,
+                            "value": "960"
+                        },
+                        {
+                            "id": 1,
+                            "name": "PositionY",
+                            "type": 1,
+                            "value": "690"
+                        },
+                        {
+                            "id": 2,
+                            "name": "PositionZ",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 3,
+                            "name": "ScaleX",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 4,
+                            "name": "ScaleY",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 5,
+                            "name": "ScaleZ",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 6,
+                            "name": "RotationX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 7,
+                            "name": "RotationY",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 8,
+                            "name": "RotationZ",
+                            "type": 1,
+                            "value": "0"
+                        }
+                    ]
+                },
+                {
+                    "name": "Button",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Content",
+                            "type": 2,
+                            "value": "SHOOT"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Width",
+                            "type": 0,
+                            "value": "460"
+                        },
+                        {
+                            "id": 2,
+                            "name": "Height",
+                            "type": 0,
+                            "value": "60"
+                        },
+                        {
+                            "id": 3,
+                            "name": "FontSize",
+                            "type": 0,
+                            "value": "28"
+                        },
+                        {
+                            "id": 4,
+                            "name": "Color",
+                            "type": 4,
+                            "value": "White"
+                        },
+                        {
+                            "id": 5,
+                            "name": "TextColor",
+                            "type": 4,
+                            "value": "Black"
+                        },
+                        {
+                            "id": 6,
+                            "name": "Font",
+                            "type": 7,
+                            "value": "Font.ttf"
+                        },
+                        {
+                            "id": 7,
+                            "name": "ImagePath",
+                            "type": 7,
+                            "value": "NONE"
+                        },
+                        {
+                            "id": 8,
+                            "name": "Script",
+                            "type": 7,
+                            "value": "KeybindButtonScript.hpp"
+                        },
+                        {
+                            "id": 9,
+                            "name": "Action",
+                            "type": 2,
+                            "value": "SHOOT"
+                        }
+                    ]
+                },
+                {
+                    "name": "ChildOf",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Parent",
+                            "type": 0,
+                            "value": "25"
+                        }
+                    ]
+                },
+                {
+                    "name": "Networked",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Mode",
+                            "type": 5,
+                            "value": "Client"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Prefab",
+                            "type": 2,
+                            "value": ""
+                        }
+                    ]
+                }
+            ],
+            "id": 31,
+            "name": "KeybindShootButton"
+        },
+        {
+            "components": [
+                {
+                    "name": "Transform",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "PositionX",
+                            "type": 1,
+                            "value": "960"
+                        },
+                        {
+                            "id": 1,
+                            "name": "PositionY",
+                            "type": 1,
+                            "value": "920"
+                        },
+                        {
+                            "id": 2,
+                            "name": "PositionZ",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 3,
+                            "name": "ScaleX",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 4,
+                            "name": "ScaleY",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 5,
+                            "name": "ScaleZ",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 6,
+                            "name": "RotationX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 7,
+                            "name": "RotationY",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 8,
+                            "name": "RotationZ",
+                            "type": 1,
+                            "value": "0"
+                        }
+                    ]
+                },
+                {
+                    "name": "Button",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Content",
+                            "type": 2,
+                            "value": "BACK"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Width",
+                            "type": 0,
+                            "value": "460"
+                        },
+                        {
+                            "id": 2,
+                            "name": "Height",
+                            "type": 0,
+                            "value": "60"
+                        },
+                        {
+                            "id": 3,
+                            "name": "FontSize",
+                            "type": 0,
+                            "value": "28"
+                        },
+                        {
+                            "id": 4,
+                            "name": "Color",
+                            "type": 4,
+                            "value": "White"
+                        },
+                        {
+                            "id": 5,
+                            "name": "TextColor",
+                            "type": 4,
+                            "value": "Black"
+                        },
+                        {
+                            "id": 6,
+                            "name": "Font",
+                            "type": 7,
+                            "value": "Font.ttf"
+                        },
+                        {
+                            "id": 7,
+                            "name": "ImagePath",
+                            "type": 7,
+                            "value": "NONE"
+                        },
+                        {
+                            "id": 8,
+                            "name": "Script",
+                            "type": 7,
+                            "value": "SettingsBackButtonScript.hpp"
+                        }
+                    ]
+                },
+                {
+                    "name": "ChildOf",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Parent",
+                            "type": 0,
+                            "value": "25"
+                        }
+                    ]
+                },
+                {
+                    "name": "Networked",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Mode",
+                            "type": 5,
+                            "value": "Client"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Prefab",
+                            "type": 2,
+                            "value": ""
+                        }
+                    ]
+                }
+            ],
+            "id": 32,
+            "name": "SettingsBackButton"
+        },
+        {
+            "components": [
+                {
+                    "name": "Transform",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "PositionX",
+                            "type": 1,
+                            "value": "960"
+                        },
+                        {
+                            "id": 1,
+                            "name": "PositionY",
+                            "type": 1,
+                            "value": "900"
+                        },
+                        {
+                            "id": 2,
+                            "name": "PositionZ",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 3,
+                            "name": "ScaleX",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 4,
+                            "name": "ScaleY",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 5,
+                            "name": "ScaleZ",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 6,
+                            "name": "RotationX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 7,
+                            "name": "RotationY",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 8,
+                            "name": "RotationZ",
+                            "type": 1,
+                            "value": "0"
+                        }
+                    ]
+                },
+                {
+                    "name": "Button",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Content",
+                            "type": 2,
+                            "value": "SETTINGS"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Width",
+                            "type": 0,
+                            "value": "460"
+                        },
+                        {
+                            "id": 2,
+                            "name": "Height",
+                            "type": 0,
+                            "value": "60"
+                        },
+                        {
+                            "id": 3,
+                            "name": "FontSize",
+                            "type": 0,
+                            "value": "28"
+                        },
+                        {
+                            "id": 4,
+                            "name": "Color",
+                            "type": 4,
+                            "value": "White"
+                        },
+                        {
+                            "id": 5,
+                            "name": "TextColor",
+                            "type": 4,
+                            "value": "Black"
+                        },
+                        {
+                            "id": 6,
+                            "name": "Font",
+                            "type": 7,
+                            "value": "Font.ttf"
+                        },
+                        {
+                            "id": 7,
+                            "name": "ImagePath",
+                            "type": 7,
+                            "value": "NONE"
+                        },
+                        {
+                            "id": 8,
+                            "name": "Script",
+                            "type": 7,
+                            "value": "SettingsButtonScript.hpp"
+                        }
+                    ]
+                },
+                {
+                    "name": "ChildOf",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Parent",
+                            "type": 0,
+                            "value": "10"
+                        }
+                    ]
+                },
+                {
+                    "name": "Networked",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Mode",
+                            "type": 5,
+                            "value": "Client"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Prefab",
+                            "type": 2,
+                            "value": ""
+                        }
+                    ]
+                }
+            ],
+            "id": 33,
+            "name": "LobbySettingsButton"
         }
     ],
     "pluginSettings": {
