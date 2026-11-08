@@ -1,0 +1,8 @@
+{
+    "texture": "BulletCharge5.png",
+    "frameWidth": 80.0,
+    "frameHeight": 16,
+    "frames": 2,
+    "fps": 15,
+    "loop": true
+}
