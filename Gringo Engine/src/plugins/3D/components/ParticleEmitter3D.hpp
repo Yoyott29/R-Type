@@ -33,7 +33,8 @@ struct SphereShape {
 
 // Spawns `density` particles per second anywhere within `spawnRadius` of the entity's Transform,
 // once started: each one leaves in a random direction at up to `speed`, drawn as the shape,
-// fading out over its lifetime.
+// fading out over its lifetime. `verticalSpread` scales the up/down part of where they start and
+// where they go (1: a ball, 0: flat on the emitter's height); `upOnly` never sends them downward.
 // From a script: scene.getComponent<ParticleEmitter3D>(entity).start() / .stop()
 struct ParticleEmitter3D {
     float density = 10.0f;
@@ -41,6 +42,8 @@ struct ParticleEmitter3D {
     float lifetime = 1.0f;
     float speed = 1.0f;
     float spawnRadius = 0.0f;
+    float verticalSpread = 1.0f;
+    bool upOnly = false;
     ColorRGBA color{255, 255, 255, 255};
 
     std::vector<Particle3D> particles;
@@ -72,6 +75,8 @@ template <> struct ComponentDescription<ParticleEmitter3D> {
                     {"Lifetime", valueType::Float, "1"},
                     {"Speed", valueType::Float, "1"},
                     {"SpawnRadius", valueType::Float, "0"},
+                    {"VerticalSpread", valueType::Float, "1"},
+                    {"UpOnly", valueType::Bool, "False"},
                     {"Color", valueType::Color, "White"},
                 },
                 {70, 56, 51, 255},

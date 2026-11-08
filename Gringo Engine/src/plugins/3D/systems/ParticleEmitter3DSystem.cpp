@@ -60,6 +60,10 @@ void ParticleEmitter3DSystem::update(Scene &scene)
             float dy = 0.0f;
             float dz = 0.0f;
             randomDirection(dx, dy, dz);
+            startY *= emitter.verticalSpread;
+            dy *= emitter.verticalSpread;
+            if (emitter.upOnly)
+                dy = std::abs(dy);
             const float speed = emitter.speed * random(MIN_SPEED_PART, 1.0f);
             emitter.particles.push_back({position.x + startX * distance,
                                          position.y + startY * distance,

@@ -57,6 +57,7 @@ void Plugin3D::registerComponents(Scene &scene)
         model.scale = ComponentJson::floatValue(data, "Scale", 1.0f);
         model.animation = ComponentJson::intValue(data, "Animation", -1);
         model.animationSpeed = ComponentJson::floatValue(data, "AnimationSpeed", 1.0f);
+        model.animationFrame = ComponentJson::floatValue(data, "AnimationFrame", -1.0f);
         target.addComponent(entity, std::move(model));
     });
     // register the ParticleEmitter3D component. It starts stopped: a script calls start()
@@ -73,6 +74,8 @@ void Plugin3D::registerComponents(Scene &scene)
             emitter.lifetime = ComponentJson::floatValue(data, "Lifetime", 1.0f);
             emitter.speed = ComponentJson::floatValue(data, "Speed", 1.0f);
             emitter.spawnRadius = ComponentJson::floatValue(data, "SpawnRadius", 0.0f);
+            emitter.verticalSpread = ComponentJson::floatValue(data, "VerticalSpread", 1.0f);
+            emitter.upOnly = ComponentJson::boolValue(data, "UpOnly", false);
             emitter.color = ComponentJson::colorValue(data, "Color", {255, 255, 255, 255});
             target.addComponent(entity, emitter);
         });

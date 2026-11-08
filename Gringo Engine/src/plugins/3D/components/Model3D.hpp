@@ -40,7 +40,8 @@ template <> struct ComponentDescription<Model3D> {
                  {"Depth", valueType::Float, "1"},
                  {"Scale", valueType::Float, "1"},
                  {"Animation", valueType::Int, "-1"},
-                 {"AnimationSpeed", valueType::Float, "1"}},
+                 {"AnimationSpeed", valueType::Float, "1"},
+                 {"AnimationFrame", valueType::Float, "-1"}},
                 {75, 95, 65, 255}, "3D"};
     }
 };
