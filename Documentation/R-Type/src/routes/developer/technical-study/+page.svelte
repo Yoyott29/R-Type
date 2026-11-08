@@ -294,9 +294,10 @@
 		be rejected without effect.
 	</li>
 	<li>
-		{@render c('tests/tests.sh')} checks that every bad command line argument is refused with exit
-		code 84, that a used port fails cleanly, and that a client killed without warning is dropped by
-		the server. See {@render a('/developer/tests-sh', 'How tests.sh works')}.
+		{@render c('tests/tests.sh')} checks that every kind of bad command line argument is refused
+		with exit code 84, that a used port fails cleanly, that the server stops cleanly on a signal, and
+		that a client killed without warning is dropped by the server. See
+		{@render a('/developer/tests-sh', 'How tests.sh works')}.
 	</li>
 	<li>clang-tidy runs on every build and in the CI to catch bugs such as unchecked conversions, and clang-format checks every file.</li>
 	<li>Dependencies are pinned to a version, and the CPM bootstrap is checked against a SHA256 hash.</li>

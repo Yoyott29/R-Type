@@ -143,6 +143,30 @@ run_binary() {
     return "$code"
 }
 
+# Checks that a binary given wrong arguments exits with 84 and, when it can print it, the message
+expect_refused() {
+    local message="$1"; shift
+    run_binary "$@"; local code=$?
+    [ "$code" -eq 84 ] || fail "exit code is $code, not 84"
+    [ -z "$message" ] || grep -q -- "$message" <<< "$RUN_LOG" || fail "no '$message' message: $RUN_LOG"
+}
+
+# The client opens its window before reading its address: without a screen, the window error
+# comes first, so the message is only checked when there is a screen
+expect_client_refused() {
+    local message="$1"; shift
+    if [ -n "${DISPLAY:-}${WAYLAND_DISPLAY:-}" ]; then
+        expect_refused "$message" "$CLIENT_BIN" "$@"
+    else
+        expect_refused "" "$CLIENT_BIN" "$@"
+    fi
+}
+
+EDITOR_BIN="Gringo Engine/Gringo"
+TNT_DIR="Gringo Engine/TrackNTrap"
+need_editor() { [ -x "$EDITOR_BIN" ] || skip "the editor is not built (Gringo Engine/build_engine.sh)"; }
+need_trackntrap() { [ -x "$TNT_DIR/trackntrap_server" ] || skip "TrackNTrap is not built"; }
+
 # ============================================================
 # Binaries
 # ============================================================
@@ -309,6 +333,114 @@ test_client_killed_is_dropped() {
 }
 
 # ============================================================
+# More arguments
+# ============================================================
+
+test_server_args_port_six_digits() { expect_refused "Invalid port" "$SERVER_BIN" 012345; }
+test_server_args_port_leading_space() { expect_refused "Invalid port" "$SERVER_BIN" " 4242"; }
+test_server_args_port_plus_sign() { expect_refused "Invalid port" "$SERVER_BIN" +4242; }
+test_server_args_port_decimal() { expect_refused "Invalid port" "$SERVER_BIN" 4242.5; }
+test_server_args_port_hex() { expect_refused "Invalid port" "$SERVER_BIN" 0x1092; }
+test_server_args_ip_three_parts() { expect_refused "Invalid ip" "$SERVER_BIN" 1.2.3 "$PORT"; }
+test_server_args_ip_five_parts() { expect_refused "Invalid ip" "$SERVER_BIN" 1.2.3.4.5 "$PORT"; }
+test_server_args_ip_v6() { expect_refused "Invalid ip" "$SERVER_BIN" ::1 "$PORT"; }
+test_server_args_ip_hostname() { expect_refused "Invalid ip" "$SERVER_BIN" localhost "$PORT"; }
+test_server_args_ip_empty() { expect_refused "Invalid ip" "$SERVER_BIN" "" "$PORT"; }
+test_server_args_ip_trailing_dot() { expect_refused "Invalid ip" "$SERVER_BIN" 127.0.0.1. "$PORT"; }
+test_server_args_ip_negative() { expect_refused "Invalid ip" "$SERVER_BIN" 127.0.0.-1 "$PORT"; }
+test_server_args_bad_ip_and_port() { expect_refused "Invalid port" "$SERVER_BIN" nope nope; }
+
+# The highest port is accepted
+test_server_args_port_max() {
+    ss -lun 2>/dev/null | grep -q ':65535 ' && skip "port 65535 already used on this machine"
+    stdbuf -oL "$SERVER_BIN" "$LOCAL" 65535 < /dev/null > "$SERVER_LOG" 2>&1 &
+    SERVER_PID=$!
+    wait_bound "$LOCAL:65535" || fail "not bound on port 65535: $(cat "$SERVER_LOG")"
+}
+
+# 0.0.0.0 listens on every interface
+test_server_args_any_address() {
+    stdbuf -oL "$SERVER_BIN" 0.0.0.0 "$PORT" < /dev/null > "$SERVER_LOG" 2>&1 &
+    SERVER_PID=$!
+    wait_bound "0.0.0.0:$PORT" || fail "not bound on 0.0.0.0:$PORT: $(cat "$SERVER_LOG")"
+}
+
+# A bad argument is refused at once: the server does not open its socket first
+test_server_args_refused_quickly() {
+    local start end
+    start=$(date +%s%N)
+    run_binary "$SERVER_BIN" abc
+    end=$(date +%s%N)
+    (( (end - start) / 1000000 < 2000 )) || fail "took $(( (end - start) / 1000000 )) ms"
+}
+
+test_client_args_port_not_a_number() { expect_client_refused "Invalid port" abc; }
+test_client_args_port_negative() { expect_client_refused "Invalid port" -1; }
+test_client_args_port_empty() { expect_client_refused "Invalid port" ""; }
+test_client_args_port_letters() { expect_client_refused "Invalid port" 42a; }
+test_client_args_invalid_ip() { expect_client_refused "Invalid ip" 999.1.1.1 "$PORT"; }
+test_client_args_ip_letters() { expect_client_refused "Invalid ip" abc "$PORT"; }
+test_client_args_too_many() { expect_client_refused "Usage" "$LOCAL" "$PORT" extra; }
+
+# ============================================================
+# More real client tests (need a screen, skipped otherwise)
+# ============================================================
+
+# Without a server, the real client stays open on its lobby instead of crashing
+test_client_without_server() {
+    need_display
+    start_client
+    sleep 7
+    is_running "$CLIENT_PID" || fail "the client stopped: $(cat "$CLIENT_LOG")"
+}
+
+# Two real clients join the same server
+test_client_two_players() {
+    need_display
+    start_server
+    start_client
+    stdbuf -oL "$CLIENT_BIN" "$LOCAL" "$PORT" < /dev/null > /dev/null 2>&1 &
+    wait_log "$SERVER_LOG" "Player 2 connected" 5 || fail "the second client did not connect"
+}
+
+# A real client closed with SIGINT tells the server it leaves
+test_client_sigint_leaves() {
+    need_display
+    start_server
+    start_client
+    wait_log "$SERVER_LOG" "Player 1 connected" 5 || fail "the client did not connect"
+    kill -INT "$CLIENT_PID"
+    wait_log "$SERVER_LOG" "Player 1 left" 3 || fail "the server did not see the client leave"
+}
+
+# ============================================================
+# Editor command line
+# ============================================================
+
+# --build without a project prints the usage and exits with 84
+test_editor_usage() { need_editor; expect_refused "Usage" "$EDITOR_BIN" --build; }
+
+# --build on a missing project exits with 84
+test_editor_missing_project() { need_editor; expect_refused "" "$EDITOR_BIN" --build /nonexistent/Nope.gringo; }
+
+# --build on a file that is not a project exits with 84 instead of crashing
+test_editor_broken_project() {
+    need_editor
+    local file
+    file=$(mktemp --suffix=.gringo)
+    echo "{ this is not json" > "$file"
+    run_binary "$EDITOR_BIN" --build "$file"; local code=$?
+    rm -f "$file"
+    [ "$code" -eq 84 ] || fail "exit code is $code, not 84"
+}
+
+# ============================================================
+# TrackNTrap (the second game, if it is built)
+# ============================================================
+
+test_tnt_server_bad_port() { need_trackntrap; expect_refused "Invalid port" "$TNT_DIR/trackntrap_server" abc; }
+
+# ============================================================
 # Run
 # ============================================================
 
@@ -333,11 +465,34 @@ run_test "server: unknown ip" test_server_bind_unknown_ip
 run_test "server: port already used" test_server_port_already_used
 run_test "server: default address" test_server_default_address
 run_test "server: default port" test_server_default_port
+run_test "server: port of six digits" test_server_args_port_six_digits
+run_test "server: port with a space" test_server_args_port_leading_space
+run_test "server: port with a plus sign" test_server_args_port_plus_sign
+run_test "server: decimal port" test_server_args_port_decimal
+run_test "server: hexadecimal port" test_server_args_port_hex
+run_test "server: ip of three parts" test_server_args_ip_three_parts
+run_test "server: ip of five parts" test_server_args_ip_five_parts
+run_test "server: IPv6 address" test_server_args_ip_v6
+run_test "server: host name" test_server_args_ip_hostname
+run_test "server: empty ip" test_server_args_ip_empty
+run_test "server: ip with a trailing dot" test_server_args_ip_trailing_dot
+run_test "server: negative ip part" test_server_args_ip_negative
+run_test "server: bad ip and bad port" test_server_args_bad_ip_and_port
+run_test "server: port 65535 accepted" test_server_args_port_max
+run_test "server: 0.0.0.0 accepted" test_server_args_any_address
+run_test "server: refused at once" test_server_args_refused_quickly
 
 section "Client arguments"
 run_test "client: port 0" test_client_args_port_zero
 run_test "client: port too big" test_client_args_port_too_big
 run_test "client: no display" test_client_without_display
+run_test "client: port not a number" test_client_args_port_not_a_number
+run_test "client: negative port" test_client_args_port_negative
+run_test "client: empty port" test_client_args_port_empty
+run_test "client: port with letters" test_client_args_port_letters
+run_test "client: invalid ip" test_client_args_invalid_ip
+run_test "client: ip with letters" test_client_args_ip_letters
+run_test "client: too many arguments" test_client_args_too_many
 
 section "Server start and shutdown"
 run_test "runs with closed stdin" test_server_runs_with_closed_stdin
@@ -350,6 +505,17 @@ section "Real client"
 run_test "client connects" test_client_connects
 run_test "client stays alive" test_client_stays_alive
 run_test "killed client dropped" test_client_killed_is_dropped
+run_test "client without a server" test_client_without_server
+run_test "two real clients" test_client_two_players
+run_test "client leaves on SIGINT" test_client_sigint_leaves
+
+section "Editor"
+run_test "--build without project" test_editor_usage
+run_test "--build on a missing project" test_editor_missing_project
+run_test "--build on a broken project" test_editor_broken_project
+
+section "TrackNTrap"
+run_test "server: bad port" test_tnt_server_bad_port
 
 echo
 echo "${BOLD}================================${RESET}"

@@ -17,7 +17,7 @@ run_test "server: port not a number" test_server_args_port_not_a_number`;
 <p class="mt-1 mb-8 text-[15px] text-[#7f9189]">The end-to-end tests: real server, real client, checked from the outside</p>
 
 <p class="mt-3 max-w-[100ch] leading-7">
-	<code>tests/tests.sh</code> builds the project, runs every test, prints a summary and exits with 1 if a test failed. It only uses the compiled programs: it starts <code>r-type_server</code> and <code>r-type_client</code> and checks their exit codes, logs and sockets. Linux only.
+	<code>tests/tests.sh</code> builds the project, runs every test, prints a summary and exits with 1 if a test failed. It only uses the compiled programs: it starts <code>r-type_server</code> and <code>r-type_client</code> and checks their exit codes, logs and sockets. 56 tests, about 40 seconds. Linux only.
 </p>
 
 <pre
@@ -64,10 +64,12 @@ run_test "server: port not a number" test_server_args_port_not_a_number`;
 		<tbody>
 			<tr class="border-t border-[#1e2b26]"><td class="px-4 py-3 align-top">Build</td><td class="px-4 py-3 align-top">1</td><td class="px-4 py-3 align-top"><code>cmake -B build &amp;&amp; cmake --build build</code> succeeds</td></tr>
 			<tr class="border-t border-[#1e2b26]"><td class="px-4 py-3 align-top">Binaries</td><td class="px-4 py-3 align-top">2</td><td class="px-4 py-3 align-top">Both programs exist and can be executed</td></tr>
-			<tr class="border-t border-[#1e2b26]"><td class="px-4 py-3 align-top">Server arguments</td><td class="px-4 py-3 align-top">13</td><td class="px-4 py-3 align-top">Bad ports, bad addresses and too many arguments exit with code 84; an unknown address or a used port fail; the default address and port</td></tr>
-			<tr class="border-t border-[#1e2b26]"><td class="px-4 py-3 align-top">Client arguments</td><td class="px-4 py-3 align-top">3</td><td class="px-4 py-3 align-top">Bad ports exit with 84; without a display, the client exits with 84 and <code>Could not open the window</code></td></tr>
+			<tr class="border-t border-[#1e2b26]"><td class="px-4 py-3 align-top">Server arguments</td><td class="px-4 py-3 align-top">29</td><td class="px-4 py-3 align-top">Every kind of bad port (letters, sign, decimal, hexadecimal, six digits, 0, over 65535...) and bad address (three or five parts, IPv6, host name, empty...) exits with 84 and its message; an unknown address and a used port fail; the defaults, port 65535 and <code>0.0.0.0</code> work; a bad argument is refused at once</td></tr>
+			<tr class="border-t border-[#1e2b26]"><td class="px-4 py-3 align-top">Client arguments</td><td class="px-4 py-3 align-top">10</td><td class="px-4 py-3 align-top">The same bad ports and addresses exit with 84 (with the message when there is a screen); without a screen the client exits with 84 and <code>Could not open the window</code></td></tr>
 			<tr class="border-t border-[#1e2b26]"><td class="px-4 py-3 align-top">Server start and shutdown</td><td class="px-4 py-3 align-top">5</td><td class="px-4 py-3 align-top">Runs with a closed stdin, exits with 0 on SIGINT and SIGTERM in less than a second, frees its port</td></tr>
-			<tr class="border-t border-[#1e2b26]"><td class="px-4 py-3 align-top">Real client</td><td class="px-4 py-3 align-top">3</td><td class="px-4 py-3 align-top">The client connects (<code>Player 1 connected</code>), stays alive, and a killed client is dropped by the server</td></tr>
+			<tr class="border-t border-[#1e2b26]"><td class="px-4 py-3 align-top">Real client</td><td class="px-4 py-3 align-top">6</td><td class="px-4 py-3 align-top">The real client connects, stays alive, is dropped when killed, stays open without a server, two clients play together, and SIGINT makes it leave cleanly</td></tr>
+			<tr class="border-t border-[#1e2b26]"><td class="px-4 py-3 align-top">Editor</td><td class="px-4 py-3 align-top">3</td><td class="px-4 py-3 align-top"><code>Gringo --build</code> without a project, with a missing one and with a broken one exits with 84</td></tr>
+			<tr class="border-t border-[#1e2b26]"><td class="px-4 py-3 align-top">TrackNTrap</td><td class="px-4 py-3 align-top">1</td><td class="px-4 py-3 align-top">The second game's server refuses a bad port</td></tr>
 		</tbody>
 	</table>
 </div>
