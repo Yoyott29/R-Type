@@ -44,6 +44,8 @@ class PlayerScript : public GringoEntityScript
 
     static void kill(Scene &scene, Entity player);
     static PlayerScript *from(Scene &scene, Entity player);
+    // Adds the default InputBindings if there are none yet
+    static void bindKeys(Scene &scene);
     void enableDiagonalShot();
 
   private:
@@ -59,7 +61,6 @@ class PlayerScript : public GringoEntityScript
     static bool isDead(Scene &scene, Entity entity);
     void revive(Scene &scene, Entity entity);
     static bool isClientSide(Scene &scene);
-    static void bindKeys(Scene &scene);
     static ActionInput readInput(Scene &scene, Entity entity);
     static Transform halfSize(const Collider2D &collider);
     static void clampToScreen(Scene &scene, Entity entity);
