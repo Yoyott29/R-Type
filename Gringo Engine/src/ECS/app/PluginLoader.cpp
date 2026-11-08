@@ -96,11 +96,11 @@ std::filesystem::path PluginLoader::executableDirectory() { return executablePat
 PluginLoader::PluginLoader(std::string const &folder, std::filesystem::path directory)
     : _directory(directory.empty() ? [&] {
           const std::filesystem::path executableDirectory = executablePath().parent_path();
-          const std::filesystem::path localPlugins = executableDirectory / folder;
-          const std::filesystem::path parentPlugins = executableDirectory.parent_path() / folder;
-          const std::filesystem::path siblingEnginePlugins =
+          std::filesystem::path localPlugins = executableDirectory / folder;
+          std::filesystem::path parentPlugins = executableDirectory.parent_path() / folder;
+          std::filesystem::path siblingEnginePlugins =
               executableDirectory / "Gringo Engine" / folder;
-          const std::filesystem::path enginePlugins =
+          std::filesystem::path enginePlugins =
               executableDirectory.parent_path() / "Gringo Engine" / folder;
           if (std::filesystem::is_directory(localPlugins))
               return localPlugins;
