@@ -144,11 +144,14 @@ target_compile_definitions(gringo_engine PUBLIC
     "$<$<PLATFORM_ID:Windows>:NOGDI;NOUSER;WIN32_LEAN_AND_MEAN>"
 )
 
-# MSVC exports nothing from a DLL by default: export every engine function for the plugins
+# MSVC exports nothing from a DLL by default: export every engine function for the plugins.
+# Linux: the .so (a LIBRARY output) goes in Gringo Engine/, found through the rpath. Windows has no
+# rpath: the .dll (a RUNTIME output) must sit next to r-type_client.exe and r-type_server.exe.
+# $<0:> keeps MSVC from adding a Release/ or Debug/ subfolder
 set_target_properties(gringo_engine PROPERTIES
     WINDOWS_EXPORT_ALL_SYMBOLS ON
-    LIBRARY_OUTPUT_DIRECTORY "${GRINGO_ENGINE_DIR}"
-    RUNTIME_OUTPUT_DIRECTORY "${GRINGO_ENGINE_DIR}"
+    LIBRARY_OUTPUT_DIRECTORY "${GRINGO_ENGINE_DIR}$<0:>"
+    RUNTIME_OUTPUT_DIRECTORY "${GRINGO_REPOSITORY_DIR}$<0:>"
 )
 
 # ============================================================
@@ -266,7 +269,6 @@ function(rtype_add_game target source renderer)
     )
     target_include_directories(${target} PRIVATE
         ${GRINGO_ENGINE_DIR}/src/runtime
-        ${GRINGO_REPOSITORY_DIR}/R-Type/components
         ${GRINGO_REPOSITORY_DIR}/R-Type/scripts
     )
     target_link_libraries(${target} PRIVATE gringo_engine nlohmann_json::nlohmann_json)

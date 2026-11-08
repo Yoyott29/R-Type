@@ -10,23 +10,16 @@
 #include "GameScore.hpp"
 #include "Scene.hpp"
 #include "Script.hpp"
-#include "Transform.hpp"
 #include "UIText.hpp"
-#include "Velocity.hpp"
-#include <cmath>
 
 class IncreaseScore : public GringoEntityScript
 {
   public:
     void onStart(Scene &scene, Entity &entity) override;
     void onUpdate(Scene &scene, Entity &entity) override;
-    int score = 0;
-
-  protected:
-  private:
 };
 
-inline void IncreaseScore::onStart(Scene &, Entity &) { score = 0; }
+inline void IncreaseScore::onStart(Scene &, Entity &) {}
 
 inline void IncreaseScore::onUpdate(Scene &scene, Entity &entity)
 {

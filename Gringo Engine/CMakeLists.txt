@@ -16,8 +16,9 @@ set(CMAKE_INSTALL_RPATH "\$ORIGIN")
 set(GRINGO_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}")
 set(GRINGO_PLUGIN_DIRECTORY "${GRINGO_OUTPUT_DIRECTORY}/plugins")
 set(GRINGO_RENDERER_DIRECTORY "${GRINGO_OUTPUT_DIRECTORY}/renderers")
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${GRINGO_OUTPUT_DIRECTORY}")
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${GRINGO_OUTPUT_DIRECTORY}")
+# $<0:> keeps MSVC from adding a Release/ or Debug/ subfolder to every output directory
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${GRINGO_OUTPUT_DIRECTORY}$<0:>")
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${GRINGO_OUTPUT_DIRECTORY}$<0:>")
 
 set(CPM_SOURCE_CACHE
     "${CMAKE_CURRENT_SOURCE_DIR}/.cpm-cache"
@@ -152,8 +153,8 @@ function(gringo_add_plugins plugins_directory engine output_directory prefix)
         set_target_properties(${target} PROPERTIES
             OUTPUT_NAME "${name}"
             PREFIX ""
-            LIBRARY_OUTPUT_DIRECTORY "${output_directory}"
-            RUNTIME_OUTPUT_DIRECTORY "${output_directory}"
+            LIBRARY_OUTPUT_DIRECTORY "${output_directory}$<0:>"
+            RUNTIME_OUTPUT_DIRECTORY "${output_directory}$<0:>"
             INSTALL_RPATH "\$ORIGIN;\$ORIGIN/.."
             # Lets another plugin link this one and call its functions (e.g. Network)
             WINDOWS_EXPORT_ALL_SYMBOLS ON
@@ -226,7 +227,7 @@ if(DEFINED GRINGO_GAME_TARGET AND NOT "${GRINGO_GAME_TARGET}" STREQUAL "" AND
     )
     if(DEFINED GRINGO_GAME_OUTPUT_DIR AND NOT "${GRINGO_GAME_OUTPUT_DIR}" STREQUAL "")
         set_target_properties(${GRINGO_GAME_TARGET} PROPERTIES
-            RUNTIME_OUTPUT_DIRECTORY "${GRINGO_GAME_OUTPUT_DIR}"
+            RUNTIME_OUTPUT_DIRECTORY "${GRINGO_GAME_OUTPUT_DIR}$<0:>"
             INSTALL_RPATH "\$ORIGIN/..;\$ORIGIN/../Gringo Engine"
         )
     endif()
@@ -279,7 +280,7 @@ if(GRINGO_BUILD_TESTS)
     target_include_directories(network_tests PRIVATE tests/network src/runtime)
     target_link_libraries(network_tests PRIVATE plugin_Network plugin_InputHandler)
     set_target_properties(network_tests PROPERTIES
-        RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
+        RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}$<0:>"
         INSTALL_RPATH "${GRINGO_OUTPUT_DIRECTORY};${GRINGO_PLUGIN_DIRECTORY}")
     add_test(NAME network_tests COMMAND network_tests)
 
@@ -288,7 +289,17 @@ if(GRINGO_BUILD_TESTS)
     target_include_directories(engine_tests PRIVATE tests/network)
     target_link_libraries(engine_tests PRIVATE gringo_engine plugin_Physics2D)
     set_target_properties(engine_tests PROPERTIES
-        RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
+        RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}$<0:>"
         INSTALL_RPATH "${GRINGO_OUTPUT_DIRECTORY};${GRINGO_PLUGIN_DIRECTORY}")
     add_test(NAME engine_tests COMMAND engine_tests)
+
+    # Windows has no rpath: copy the DLLs the tests link (engine, plugins) next to them
+    if(WIN32)
+        foreach(test_target network_tests engine_tests)
+            add_custom_command(TARGET ${test_target} POST_BUILD
+                COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                    $<TARGET_RUNTIME_DLLS:${test_target}> $<TARGET_FILE_DIR:${test_target}>
+                COMMAND_EXPAND_LISTS)
+        endforeach()
+    endif()
 endif()

@@ -10,7 +10,6 @@
 #include "ChildOf.hpp"
 #include "CommandLine.hpp"
 #include "EngineError.hpp"
-#include "EventBus.hpp"
 #include "GameClock.hpp"
 #include "HierarchySystem.hpp"
 #include "PrefabInstance.hpp"
@@ -49,7 +48,6 @@ Application::Application()
     _scene.addResource<CommandLine>();
     _scene.addResource<ProjectSettings>();
     _scene.addResource<GameClock>();
-    _scene.addResource<EventBus>();
 }
 
 Application::Application(std::vector<std::string> arguments) : Application()

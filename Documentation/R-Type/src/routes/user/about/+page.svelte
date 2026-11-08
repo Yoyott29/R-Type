@@ -24,6 +24,6 @@
 	Source code and issue tracker:
 	<a
 		href="https://github.com/EpitechPGE3-2026/G-ING-500-LIL-5-1-rtype-4"
-		class="text-[#ff8a3d] underline-offset-2 hover:underline">GitHub repository</a
+		class="text-accent underline-offset-2 hover:underline">GitHub repository</a
 	>.
 </p>

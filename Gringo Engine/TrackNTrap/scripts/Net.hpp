@@ -108,12 +108,6 @@ class Net
                scene.getResource<BuildVariantName>().name == "client";
     }
 
-    static bool isServer(Scene &scene)
-    {
-        return scene.hasResource<BuildVariantName>() &&
-               scene.getResource<BuildVariantName>().name == "server";
-    }
-
     static bool isRat(Scene &scene, Entity entity)
     {
         if (!scene.hasComponent<Networked>(entity))

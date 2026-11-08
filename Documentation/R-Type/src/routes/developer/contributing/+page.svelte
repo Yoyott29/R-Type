@@ -17,14 +17,13 @@ name    first letter of the first name, dot, first two letters of the last name,
 branch  the current branch, checked by the hook
 Type    Feat, Fix, Refactor, Docs, Style, Chore or Merge`;
 
-	const namingExample = `classes, structs, enums     PascalCase            Scene, ComponentPool, EntType
-functions, methods          camelCase             createEntity, sendSnapshot
-private members             _camelCase            _entityManager, _playersMutex
-constants and macros        UPPER_SNAKE_CASE      MAX_ENTITIES, PROTOCOL_VERSION
-engine and plugin files     PascalCase.hpp/.cpp   Scene.hpp, RayLibRenderer.cpp
-server files                snake_case.hpp/.cpp   game_loop.cpp, input_queue.hpp
-headers                     #pragma once
-namespaces                  rtype_server, rtype_protocol`;
+	const namingExample = `classes, structs, enums     PascalCase            Scene, ComponentPool, PlayerScript
+functions, methods          camelCase             createEntity, queueDestroy
+private members             _camelCase            _entityManager, _shootCooldown
+constants and macros        UPPER_SNAKE_CASE      MAX_ENTITIES, SHOOT_COOLDOWN
+files                       PascalCase.hpp/.cpp   Scene.hpp, RaylibRenderer.cpp
+scripts                     <ClassName>.hpp       PlayerScript.hpp holds class PlayerScript
+headers                     #pragma once or include guards`;
 
 	const checklistExample = `[ ] the branch starts from an up to date dev
 [ ] ./tests/tests.sh passes
@@ -51,7 +50,7 @@ namespaces                  rtype_server, rtype_protocol`;
 		>{text}</code
 	>{/snippet}
 
-{#snippet a(href, text)}<a {href} class="text-[#ff8a3d] hover:underline">{text}</a>{/snippet}
+{#snippet a(href, text)}<a {href} class="text-accent hover:underline">{text}</a>{/snippet}
 
 <h1 class="text-3xl font-semibold">Contributing</h1>
 <p class="mt-1 mb-8 text-[15px] text-[#7f9189]">
@@ -108,7 +107,7 @@ namespaces                  rtype_server, rtype_protocol`;
 	<li>Write code, comments and documentation in English.</li>
 	<li>Every file starts with the Epitech header.</li>
 	<li>
-		Report misuse with the exceptions of {@render c('src/engine/errors/EngineError.hpp')}, and catch
+		Report misuse with the exceptions of {@render c('Gringo Engine/src/ECS/errors/EngineError.hpp')}, and catch
 		them where the program can go on (a packet, a frame), never with an empty {@render c('catch')}.
 	</li>
 	<li>

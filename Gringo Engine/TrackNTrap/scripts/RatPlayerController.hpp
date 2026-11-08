@@ -9,6 +9,7 @@
 
 #include "AudioSource.hpp"
 #include "Cheeses.hpp"
+#include "ChildOf.hpp"
 #include "Collider3D.hpp"
 #include "GameState.hpp"
 #include "Hazards.hpp"
@@ -46,6 +47,15 @@
 #define DUST_FEET_HEIGHT 0.3f
 
 #define RAT_PLAYER_CONTROLLER_DEGREES_TO_RADIANS (3.14159265f / 180.0f)
+
+// A small box above each rat, of its player's color, so the rats can be told apart. Sizes are
+// multiplied by the rat's scale. The colors stay distinct for color-blind players
+#define BOX_SIZE 0.6f
+#define BOX_GAP 0.3f
+#define BOX_COLOR_1 ColorRGBA{0, 114, 178, 255}
+#define BOX_COLOR_2 ColorRGBA{230, 159, 0, 255}
+#define BOX_COLOR_3 ColorRGBA{204, 121, 167, 255}
+#define BOX_COLOR_4 ColorRGBA{0, 158, 115, 255}
 
 std::vector<std::string> RatPlayerController_params = {
     "speed", "jump_force", "hit_sound", "running_sound", "boost_speed", "boost_time"};
@@ -259,7 +269,45 @@ class RatPlayerController : public GringoEntityScript
         }
         createShadow(scene, entity);
         createDust(scene, entity);
+        createBox(scene, entity);
         setIdle(scene.getComponent<Model3D>(entity), true);
+    }
+
+    // The colored box, a child of the rat: it follows the rat and is destroyed with it. Its
+    // Transform is relative to the rat: straight above the middle of the body
+    static void createBox(Scene &scene, Entity rat)
+    {
+        Transform &ratTransform = scene.getComponent<Transform>(rat);
+        Collider3D &collider = scene.getComponent<Collider3D>(rat);
+        float size = BOX_SIZE * ratTransform.scaleX;
+        Entity box = scene.createEntity();
+        Transform position;
+        Model3D model;
+        ChildOf link;
+
+        position.y =
+            collider.offsetY + collider.height / 2.0f + BOX_GAP * ratTransform.scaleX + size / 2.0f;
+        model.primitive = "Cube";
+        model.color = boxColor(Net::slot(scene, rat));
+        model.width = size;
+        model.height = size;
+        model.depth = size;
+        link.parent = rat;
+        scene.addComponent(box, position);
+        scene.addComponent(box, model);
+        scene.addComponent(box, link);
+    }
+
+    // Rat1 blue, Rat2 orange, Rat3 pink, Rat4 teal
+    static ColorRGBA boxColor(int slot)
+    {
+        if (slot == 1)
+            return BOX_COLOR_1;
+        if (slot == 2)
+            return BOX_COLOR_2;
+        if (slot == 3)
+            return BOX_COLOR_3;
+        return BOX_COLOR_4;
     }
 
     void updateClient(Scene &scene, Entity entity)

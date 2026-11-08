@@ -103,7 +103,7 @@
 <ul class="mt-3 max-w-[68ch] list-disc space-y-1.5 pl-5 leading-7">
 	<li>
 		It only deploys from main, and always to production:
-		<a href="https://r-type-project-documentation.vercel.app" class="text-[#ff8a3d] hover:underline">r-type-project-documentation.vercel.app</a>.
+		<a href="https://r-type-project-documentation.vercel.app" class="text-accent hover:underline">r-type-project-documentation.vercel.app</a>.
 		There are no preview deployments, so changes on dev are not online until they are merged.
 	</li>
 	<li>If a secret is missing, the {@render c('vercel pull')} step fails and nothing is deployed.</li>

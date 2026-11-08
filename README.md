@@ -1,265 +1,424 @@
+<p align="center">
+  <img src="Documentation/R-Type/src/lib/assets/Favicon.png" alt="R-Type logo" width="180">
+  &nbsp;&nbsp;&nbsp;
+  <img src="Documentation/R-Type/src/lib/assets/Gringo.png" alt="Gringo Engine logo" width="180">
+</p>
 
-<table align="center">
-  <tr>
-    <td><img src="Documentation/R-Type/src/lib/assets/Favicon.png" alt="R-Type logo" width="200" height="200"></td>
-    <td><h1>X</h1></td>
-    <td><img src="Documentation/R-Type/src/lib/assets/Gringo.png" alt="Gringo logo" width="200" height="200"></td>
-  </tr>
-</table>
+<h1 align="center">R-Type</h1>
 
-## Rtype
+<p align="center">
+  A networked multiplayer shoot 'em up built with the Gringo ECS engine.
+</p>
 
+<p align="center">
+  <a href="https://github.com/Yoyott29/R-Type/actions/workflows/tests.yml">
+    <img src="https://github.com/Yoyott29/R-Type/actions/workflows/tests.yml/badge.svg" alt="Tests">
+  </a>
+  <a href="LICENSE">
+    <img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="MIT License">
+  </a>
+  <a href="https://r-type-project-documentation.vercel.app/">
+    <img src="https://img.shields.io/badge/docs-online-4c8bf5.svg" alt="Documentation">
+  </a>
+</p>
 
+## Presentation
 
-R-Type is an Epitech project that reimplements the classic side-scrolling shoot 'em up with a custom ECS engine called Gringo, an authoritative server, and networked multiplayer clients. The game is written in C++17 with raylib.
+### What is R-Type?
 
+R-Type is a free and open-source reimplementation of the classic
+side-scrolling shoot 'em up, developed as an Epitech project. The repository
+contains three projects:
 
-## Supported platforms
+- **R-Type**: the multiplayer game. An authoritative server runs the game and
+  up to four clients display it and send their inputs.
+- **Gringo Engine**: a modular C++ ECS engine with an editor, runtime plugins,
+  renderers, networking, physics, audio, and C++ gameplay scripts. R-Type is
+  built on it, and the engine knows nothing about R-Type.
+- **TrackNTrap**: a second game made with the same engine, to show that it is
+  reusable: a 3D multiplayer race between rats.
+
+The server owns the game state and communicates with up to four clients over
+UDP. The client renders the game through the engine's raylib renderer plugin.
+
+### Features
+
+- Authoritative multiplayer gameplay for up to four players, with a lobby.
+- UDP networking with configurable host and port.
+- Entity Component System architecture.
+- Runtime-loadable engine plugins and renderers.
+- Gringo editor for creating engine projects and building their executables.
+- 2D and 3D engine components, physics, audio, input, UI, and C++ gameplay
+  scripts.
+- Color-blind filters (protanopia, deuteranopia, tritanopia).
+- Automated tests and continuous integration.
+
+### Design goals
+
+- **Modular**: use independent plugins for engine capabilities.
+- **Data-oriented**: keep gameplay organised around ECS components and systems.
+- **Extensible**: support new games, components, renderers, and network
+  protocols without changing the engine core.
+- **Playable**: provide a complete multiplayer R-Type experience, not only an
+  engine prototype.
+
+### Project status
+
+This project is actively developed. Linux is the primary development
+environment. Continuous integration builds and tests the project on both Linux
+and Windows (MSVC), with the commands described below.
+
+Supported platforms:
 
 | Platform | Server | Client |
-|---|---|---|
-| Linux | yes | yes |
-| Windows | yes | yes |
-| MacOS | no | no |
+| --- | :---: | :---: |
+| Linux | Yes | Yes |
+| Windows | Yes | Yes |
+| macOS | No | No |
 
 ## Dependencies
 
-Third-party libraries are downloaded and built by CMake through [CPM](https://github.com/cpm-cmake/CPM.cmake), nothing is copied into the repository:
+The project downloads its C++ dependencies with
+[CPM.cmake](https://github.com/cpm-cmake/CPM.cmake) during configuration:
 
-- [raylib](https://github.com/raysan5/raylib) 6.0: window, keyboard and drawing (client)
-- [Asio](https://github.com/chriskohlhoff/asio) 1.30.2 (standalone): UDP sockets (client and server)
+- [raylib](https://github.com/raysan5/raylib) 6.0 — client rendering.
+- [Asio](https://github.com/chriskohlhoff/asio) 1.30.2 — standalone UDP
+  networking.
+- [miniaudio](https://github.com/mackron/miniaudio) 0.11.22 — audio.
+- [nlohmann/json](https://github.com/nlohmann/json) 3.11.3 — JSON
+  serialisation.
+
+The engine also uses the platform thread and dynamic-loading libraries
+provided by the operating system.
 
 ## Prerequisites
 
-You need build tools: a C++17 compiler, **CMake 3.28 or newer**, and Git (used by CMake to fetch dependencies). On Linux, you also need the OpenGL and X11 development packages (step 4 below).
+You need:
 
-### Linux (Ubuntu / Debian)
+- A C++20 compiler.
+- CMake 3.28 or newer.
+- Git.
+- An internet connection for the first CMake configuration, so CPM can fetch
+  dependencies.
 
-1. Install the compiler and Git:
+### Linux (Ubuntu/Debian)
+
+Install the compiler, build tools, Git, CMake, and the libraries required by
+raylib:
 
 ```sh
 sudo apt update
-sudo apt install build-essential git
+sudo apt install build-essential cmake git \
+  libgl1-mesa-dev libx11-dev libxrandr-dev libxi-dev \
+  libxcursor-dev libxinerama-dev
 ```
 
-2. Install CMake:
-
-```sh
-sudo apt install cmake
-```
-
-3. Check the version:
+Check the CMake version:
 
 ```sh
 cmake --version
 ```
 
-The output must say 3.28 or higher. Ubuntu 24.04 ships CMake 3.28 in its default repositories. On older releases (such as Ubuntu 22.04) the version is too old, so install a recent one with snap instead:
+It must report version 3.28 or newer. On distributions with an older CMake,
+install a current version from the
+[official CMake downloads](https://cmake.org/download/) or with Snap:
 
 ```sh
 sudo snap install cmake --classic
 ```
 
-4. Install the low-level platform libraries (OpenGL and X11 headers), which are required to open a window and are not handled by the package manager:
-
-```sh
-sudo apt install libgl1-mesa-dev libx11-dev libxrandr-dev libxi-dev libxcursor-dev libxinerama-dev
-```
-
 ### Windows
 
-Windows needs no extra libraries, because OpenGL is already part of the system.
+#### 1. Install the C++ toolchain
 
-1. Install a C++ compiler: download the [Visual Studio Build Tools](https://visualstudio.microsoft.com/downloads/) and run the installer.
+Download and start the
+[Visual Studio Build Tools installer](https://visualstudio.microsoft.com/downloads/).
+In the **Workloads** tab, select:
 
-2. Install Git from [git-scm.com](https://git-scm.com/download/win), keeping the default options.
+- **Desktop development with C++**
 
-3. Install CMake from [cmake.org/download](https://cmake.org/download/) using the Windows `.msi` installer. During installation, choose **Add CMake to the system PATH**, otherwise the `cmake` command will not be found.
+In the installation details on the right, make sure these components are
+selected:
 
-   If you have `winget`, you can install Git and CMake from PowerShell instead:
+- **MSVC C++ build tools** (the latest available version, such as MSVC v143).
+- **Windows 10 or Windows 11 SDK**.
+- **C++ CMake tools for Windows**.
+- **Git for Windows** (optional if Git is installed separately).
+
+Click **Install** and restart Windows if the installer requests it. The full
+Visual Studio IDE is not required; the Build Tools package is enough.
+
+#### 2. Install Git and CMake
+
+Install [Git for Windows](https://git-scm.com/download/win) and
+[CMake](https://cmake.org/download/) if they were not installed with the
+Build Tools. When installing CMake, enable **Add CMake to the system PATH**.
+
+With `winget`, Git and CMake can be installed from PowerShell:
 
 ```powershell
 winget install Kitware.CMake
 winget install Git.Git
 ```
 
-4. Close and reopen PowerShell, then check the versions:
+#### 3. Use a developer terminal
+
+The MSVC compiler is not always available in a regular PowerShell window.
+Open one of the following from the Start menu:
+
+- **Developer PowerShell for VS 2022**
+- **x64 Native Tools Command Prompt for VS 2022**
+
+These terminals configure `cl.exe`, the Windows SDK, and the linker
+automatically. If you installed a different Visual Studio version, use the
+matching terminal name.
+
+Verify the installation:
 
 ```powershell
+cl
 cmake --version
 git --version
 ```
 
-CMake must report 3.28 or higher.
+The `cl` command should print the Microsoft C/C++ compiler version, and CMake
+must report version 3.28 or newer. If `cl` is not recognised, close the
+terminal and reopen the Visual Studio developer terminal rather than using a
+regular PowerShell window.
+
+#### 4. Configure and build
+
+From the repository root, run:
+
+```powershell
+cmake -S . -B build -A x64
+cmake --build build --config Release --target r-type_client r-type_server
+```
+
+`r-type_server.exe` and `r-type_client.exe` are placed in the repository root,
+like on Linux. The game finds its files from the location of the executable,
+so you can start it from any folder:
+
+```powershell
+.\r-type_server.exe
+.\r-type_client.exe
+```
+
+The `.sh` scripts can also be run from Git Bash.
 
 ## Launch
 
-Run all commands from the repository root. The first command configures CMake and downloads raylib and Asio (an internet connection is required the first time). The second compiles the project.
+Run the commands below from the repository root.
 
-On Linux, build the standalone Gringo Engine/editor with:
+### Build R-Type
+
+The project-provided script configures the root CMake project and builds both
+mandatory executables:
 
 ```sh
-cmake -S "Gringo Engine" -B "Gringo Engine/build"
-cmake --build "Gringo Engine/build" --target Gringo
-```
-
-The root build scripts provide separate commands for the engine/editor and the
-mandatory R-Type executables:
-
-```bash
-./Gringo\ Engine/build_engine.sh
 ./build_rtype.sh
 ```
 
-`Gringo Engine/build_engine.sh` builds the standalone `Gringo` editor in `Gringo Engine/build/` without the mandatory
-R-Type targets. `build_rtype.sh` configures the root CMake project and builds
-both `r-type_client` and `r-type_server`.
+The first run downloads the dependencies listed above. The resulting
+executables, `r-type_server` and `r-type_client`, are placed in the repository
+root.
 
-The repository layout is:
+### Start a game
 
-```text
-Gringo Engine/   standalone engine and editor, with its own CMake/CPM setup
-├── src/
-│   ├── ECS/
-│   ├── editor/
-│   ├── runtime/
-│   └── plugins/
-R-Type/          mandatory R-Type game
-Gringo Engine/plugins/  runtime plugin libraries
-```
-
-Projects created with the Gringo editor are saved directly in the repository
-root. A project named `MyGame` uses this structure:
-
-```text
-MyGame/
-├── MyGame.gringo
-├── main.cpp
-├── assets/
-└── scripts/
-```
-
-### Custom plugin components
-
-A plugin should register its component and its `.gringo` deserializer together.
-The deserializer receives the target scene, entity, and component JSON:
-
-```cpp
-scene.registerComponent<MyComponent>(
-    [](Scene &scene, Entity entity, const nlohmann::json &data) {
-        scene.addComponent(entity, MyComponent{/* read data.properties */});
-    });
-```
-
-Only components from active plugins are available in the editor component picker.
-
-### 3D plugins
-
-The `3D` plugin provides `Camera` and `3DModel` components and renders models through the selected
-renderer. `3DModel` can currently render a built-in cube or sphere, or a project model file.
-Use its `Color` property to tint primitives or imported models, and select an asset in
-`TexturePath` to apply a texture through the model material.
-Add `CameraFollow3D` and `ChildOf` to a camera entity to keep it above and behind its parent; the
-parent's `Transform.RotationY` controls the orbit around it. `Transform` also exposes independent
-`RotationX`, `RotationY`, and `RotationZ` values and `ScaleX`, `ScaleY`, and `ScaleZ` values.
-For an animated GLB/GLTF, set `3DModel.Animation` to its zero-based animation index and adjust
-`AnimationSpeed`; use `-1` to keep the model fixed.
-Add `Physics3D` as well for `Velocity3D`, `RigidBody3D`, and `Collider3D`; its `GravityX`,
-`GravityY`, and `GravityZ` settings control the gravity resource. All entities use the shared
-`Transform` component for 2D and 3D positions.
-
-Start the server in one terminal, then one client per player (up to 4) in separate terminals:
+Start the server in one terminal:
 
 ```sh
 ./r-type_server
+```
+
+Start one client per player in separate terminals:
+
+```sh
 ./r-type_client
 ```
 
-Both executables take an optional IPv4 address and port, `127.0.0.1:4242` by default. With a single argument, it is the port. The client and the server must use the same port:
+Start the server first: a client tries to connect for about 5 seconds, then
+quits if no server answers.
+
+Both programs use `127.0.0.1:4242` by default, so the server only accepts
+clients from the same machine. Give a single argument to change the port, or an
+IPv4 address and a port. The client and the server must use the same port:
 
 ```sh
-./r-type_server [ip] [port]
-./r-type_client [ip] [port]
-
-./r-type_server 5000              # listens on 127.0.0.1:5000
-./r-type_client 5000              # joins 127.0.0.1:5000
+./r-type_server 5000                 # listens on 127.0.0.1:5000
+./r-type_client 5000                 # joins 127.0.0.1:5000
 ```
 
-By default the server only accepts clients from the same machine. To play over a network, start it on `0.0.0.0` and give the clients the address of the host:
+To play over a network, start the server on `0.0.0.0` (every network
+interface) and give the clients the IP address of the machine running the
+server (`192.168.1.20` below is an example):
 
 ```sh
 ./r-type_server 0.0.0.0 4242
 ./r-type_client 192.168.1.20 4242
 ```
 
-Move with the arrow keys; the ship fires on its own. See the [controls](https://r-type-project-documentation.vercel.app/user/controls).
+On Windows, run `r-type_server.exe` and `r-type_client.exe` from PowerShell,
+or run the commands above from Git Bash.
 
-On Windows, the CMake files handle the platform but the build has not been tested yet. The commands are:
+How to play (lobby, controls, gameplay) is explained in the
+[user documentation](https://r-type-project-documentation.vercel.app/user/getting-started).
 
-```powershell
-cmake -B build
-cmake --build build
+### Run tests
+
+On Linux, run the project test suite with:
+
+```sh
+./tests/tests.sh
 ```
 
-Start the server in one PowerShell window:
+It builds the project, then starts the real server and client to check their
+arguments, logs, connection and shutdown.
 
-```powershell
-.\r-type_server.exe
+The engine unit tests (scheduler, thread pool, network protocol...) are built
+separately:
+
+```sh
+cmake -S "Gringo Engine" -B build-unit -DGRINGO_BUILD_TESTS=ON
+cmake --build build-unit --target engine_tests network_tests
+ctest --test-dir build-unit --output-on-failure
 ```
 
-Then start one client per player in separate PowerShell windows:
+### Simulate a bad network
 
-```powershell
-.\r-type_client.exe
+`tests/netlag.sh` and `tests/netloss.sh` are not tests: they add latency or
+packet loss to the game port on localhost while you play, until you press
+Ctrl+C. They are Linux only, need `sudo`, and use `tc` (package `iproute2`):
+
+```sh
+./tests/netlag.sh 100 20 4242        # 100 ms delay, 20 ms jitter, port 4242
+./tests/netloss.sh 20 4242           # 20% packet loss on port 4242
 ```
 
-The executables are generated at the repository root. Run them from there, so that the textures in `Assets/` are found. Linux and Windows builds use the same protocol, so they are meant to play together once the Windows build is tested.
+## Gringo Engine and editor
 
-To run the tests (Linux): `./tests/tests.sh`.
+Build the standalone engine and its editor with:
 
-## Network plugins for Gringo projects
-
-A generated Gringo game can enable the generic UDP transport and select its own
-game-specific network plugin in its `.gringo` project file:
-
-```json
-{
-    "network": {
-        "enabled": true,
-        "plugin": "MyGameNetwork"
-    }
-}
+```sh
+./Gringo\ Engine/build_engine.sh
 ```
 
-`Network` provides the transport, socket, connection, and network event systems.
-The plugin named by `network.plugin` is loaded afterwards and can register the
-game-specific messages and systems. For example, R-Type uses
-`"plugin": "RTypeClient"`. The plugin shared library must be available in the
-`plugins/` directory next to the executable.
+This creates the editor, `Gringo Engine/Gringo`, with the engine library and
+its plugins next to it. Start it to create or open a project (a `.gringo`
+file), add entities and prefabs, set their components, choose the project's
+plugins, and build the project:
+
+```sh
+./Gringo\ Engine/Gringo
+```
+
+The editor can also build a project from the command line. It generates the
+project's `client_main.cpp` and `server_main.cpp`, then compiles them:
+
+```sh
+./Gringo\ Engine/Gringo --build R-Type/R-Type.gringo
+```
+
+Run this after changing `R-Type/R-Type.gringo` or adding a script, then
+rebuild R-Type with `./build_rtype.sh`.
+
+## TrackNTrap, the second game
+
+TrackNTrap is a 3D race for up to four players, made with the same engine to
+show that it is not tied to R-Type. Rats race around a kitchen track full of
+knives, brooms, and spatulas, and drop mouse traps on the track for the others.
+It lives in `Gringo Engine/TrackNTrap/`.
+
+Build it with the editor (build the editor first, see above):
+
+```sh
+./Gringo\ Engine/Gringo --build "Gringo Engine/TrackNTrap/TrackNTrap.gringo"
+```
+
+This creates `trackntrap_server` and `trackntrap_client` in
+`Gringo Engine/TrackNTrap/`. They take the same `[ip] [port]` arguments as
+R-Type:
+
+```sh
+./Gringo\ Engine/TrackNTrap/trackntrap_server
+./Gringo\ Engine/TrackNTrap/trackntrap_client
+```
+
+## Repository layout
+
+```text
+R-Type/                     R-Type game: .gringo scene, scripts, assets
+Gringo Engine/              Standalone engine, with its own CMake project
+├── src/                    ECS core, editor, plugins, renderers
+├── tests/                  Engine unit tests
+├── TrackNTrap/             Second game made with the engine
+└── build_engine.sh         Builds the engine and the editor
+Documentation/R-Type/       SvelteKit documentation website
+tests/                      Test suite and network simulation scripts
+Norms/                      clang-format and clang-tidy configuration
+Developer Setup/            Script to set up a development machine
+.github/                    CI workflows, templates, contribution guides
+build_rtype.sh              Builds the R-Type client and server
+```
 
 ## Documentation
 
-Read the full project documentation on the [R-Type documentation website](https://r-type-project-documentation.vercel.app/).
+The complete user and developer documentation is available on the
+[R-Type documentation website](https://r-type-project-documentation.vercel.app/).
 
-### Contributing and community
+Useful sections:
 
-- [Code of Conduct](.github/CODE_OF_CONDUCT.md)
-- [Contributing Guide](.github/CONTRIBUTING.md)
-- [Security Policy](.github/SECURITY.md)
-- [Bug Report Template](.github/ISSUE_TEMPLATE/bug_report.md)
-- [Pull Request Template](.github/PULL_REQUEST_TEMPLATE.md)
+- [Getting started](https://r-type-project-documentation.vercel.app/user/getting-started)
+- [Controls](https://r-type-project-documentation.vercel.app/user/controls)
+- [Multiplayer](https://r-type-project-documentation.vercel.app/user/multiplayer)
+- [Architecture](https://r-type-project-documentation.vercel.app/developer/architecture)
+- [Developer setup](https://r-type-project-documentation.vercel.app/developer/developer-setup)
+- [Network protocol](https://r-type-project-documentation.vercel.app/developer/protocol)
+- [Running tests](https://r-type-project-documentation.vercel.app/developer/running-tests)
 
-## License
+The documentation website source is in
+[Documentation/R-Type](Documentation/R-Type/). To run it locally, use
+Node.js 20.19 or newer (or 22.12 or newer):
 
-This project is licensed under the MIT License, see [LICENSE](LICENSE).
+```sh
+cd Documentation/R-Type
+npm install
+npm run dev
+```
+
+## License, contributors, and community
+
+This project is distributed under the [MIT License](LICENSE).
+
+### Contributing
+
+Contributions, bug reports, documentation improvements, and gameplay ideas are
+welcome. Before contributing:
+
+1. Read the [contribution guide](.github/CONTRIBUTING.md).
+2. Read the [Code of Conduct](.github/CODE_OF_CONDUCT.md).
+3. Run the relevant build and tests locally.
+4. Open an issue or pull request using the repository templates.
+
+Security issues must be reported according to the
+[Security Policy](.github/SECURITY.md), not through a public issue.
+
+### Community resources
+
+- [Issues](https://github.com/Yoyott29/R-Type/issues) — bug reports and
+  feature requests.
+- [Pull requests](https://github.com/Yoyott29/R-Type/pulls) — proposed changes.
+- [Contributing guide](.github/CONTRIBUTING.md) — development workflow.
+- [Security policy](.github/SECURITY.md) — private vulnerability reporting.
 
 ## Authors
 
 | Name | Role | Contact |
-|---|---|---|
-| Eliott Duchene | Engine, Game | eliott1.duchene@epitech.eu |
-| Arthur Vignes | Engine, Game | arthur.vignes@epitech.eu |
+| --- | --- | --- |
+| Eliott Duchene | Engine and game | eliott1.duchene@epitech.eu |
+| Arthur Vignes | Engine and game | arthur.vignes@epitech.eu |
 | Clovis Nedelec | Network | clovis.nedelec@epitech.eu |
 | Arthur Piron | Network | arthur.piron@epitech.eu |
 
-Issues and source code: [GitHub repository](https://github.com/EpitechPGE3-2026/G-ING-500-LIL-5-1-rtype-4).
+Source code and issue tracking are hosted on
+[GitHub](https://github.com/Yoyott29/R-Type).

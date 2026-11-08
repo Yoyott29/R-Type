@@ -17,6 +17,8 @@
 #include "PrefabsManager.hpp"
 #include "Script.hpp"
 #include "UIButton.hpp"
+#include "BossDirectorScript.hpp"
+#include "BossPartScript.hpp"
 #include "BulletChargeScript.hpp"
 #include "BulletScript.hpp"
 #include "ColorFilterButtonScript.hpp"
@@ -95,7 +97,17 @@ int main(int argc, char **argv)
                             path = property.value("value", "");
                     if (path == "NONE")
                         continue;
-                    if (path == "BulletChargeScript.hpp") {
+                    if (path == "BossDirectorScript.hpp") {
+                        auto instance = std::make_shared<BossDirectorScript>();
+                        applyParameters(instance, component);
+                        scene.addComponent(entity, Script{instance, false});
+                    }
+                    else if (path == "BossPartScript.hpp") {
+                        auto instance = std::make_shared<BossPartScript>();
+                        applyParameters(instance, component);
+                        scene.addComponent(entity, Script{instance, false});
+                    }
+                    else if (path == "BulletChargeScript.hpp") {
                         auto instance = std::make_shared<BulletChargeScript>();
                         applyParameters(instance, component);
                         scene.addComponent(entity, Script{instance, false});
@@ -211,7 +223,23 @@ int main(int argc, char **argv)
                     for (const auto &property : component.value("properties", nlohmann::json::array()))
                         if (property.value("name", "") == "Path")
                             path = property.value("value", "");
-                    if (path == "BulletChargeScript.hpp") {
+                    if (path == "BossDirectorScript.hpp") {
+                        // Each copy of the prefab gets its own script
+                        prefab.addComponent(std::function<void(Scene &, Entity)>([component, applyParameters](Scene &target, Entity copy) {
+                            auto instance = std::make_shared<BossDirectorScript>();
+                            applyParameters(instance, component);
+                            target.addComponent(copy, Script{instance, false});
+                        }));
+                    }
+                    else if (path == "BossPartScript.hpp") {
+                        // Each copy of the prefab gets its own script
+                        prefab.addComponent(std::function<void(Scene &, Entity)>([component, applyParameters](Scene &target, Entity copy) {
+                            auto instance = std::make_shared<BossPartScript>();
+                            applyParameters(instance, component);
+                            target.addComponent(copy, Script{instance, false});
+                        }));
+                    }
+                    else if (path == "BulletChargeScript.hpp") {
                         // Each copy of the prefab gets its own script
                         prefab.addComponent(std::function<void(Scene &, Entity)>([component, applyParameters](Scene &target, Entity copy) {
                             auto instance = std::make_shared<BulletChargeScript>();

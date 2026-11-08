@@ -1,52 +1,38 @@
-<svelte:head><title>Accessibility - R-Type docs</title></svelte:head>
-<h1 class="text-3xl font-semibold">Accessibility</h1>
-<p class="mt-1 mb-8 text-[15px] text-[#7f9189]">What the game and this documentation offer to players with disabilities, and what is still missing</p>
+<svelte:head>
+	<title>Accessibility - R-Type docs</title>
+</svelte:head>
 
-<p class="max-w-[100ch] leading-7">
-	This page follows the three usual categories: physical and motor, audio and visual, mental and cognitive. For each one it lists
-	what the prototype does today and what we plan to add, inspired by settings found in other games.
+<h1 class="text-3xl font-semibold">Accessibility</h1>
+<p class="mt-1 mb-8 text-[15px] text-[#7f9189]">What the game and this documentation offer to players with disabilities</p>
+
+<p class="mt-3 max-w-[100ch] leading-7">
+	This page follows the three usual categories: physical and motor, audio and visual, mental and cognitive. For each one it lists what the game offers.
 </p>
 
 <h2 class="mt-9 text-lg font-semibold">Physical and motor</h2>
-<h3 class="mt-4 font-semibold">Today</h3>
-<ul class="mt-2 max-w-[100ch] list-disc space-y-1.5 pl-6 leading-7">
-	<li>Firing is automatic: there is no button to hammer or hold, only the four directions.</li>
-	<li>Two sets of keys move the ship: the arrow keys, and a letter cluster for the other hand (see <a href="/user/controls" class="text-[#ff8a3d] hover:underline">Controls</a>).</li>
-	<li>No combination of keys and no precise timing is needed.</li>
-</ul>
-<h3 class="mt-4 font-semibold">Missing</h3>
-<ul class="mt-2 max-w-[100ch] list-disc space-y-1.5 pl-6 leading-7">
-	<li>Key remapping, and gamepad or one-switch support.</li>
-	<li>A slower game speed or an option to make the ship invincible.</li>
-	<li>A pause: the game keeps running on the server.</li>
+
+<ul class="mt-3 max-w-[100ch] list-disc space-y-1.5 pl-6 leading-7">
+	<li>Firing is automatic: there is no button to hammer, only the four directions.</li>
+	<li>Two sets of keys move the ship: the arrow keys, and a letter cluster for the other hand (see <a href="/user/controls" class="text-accent hover:underline">Controls</a>).</li>
+	<li>The charged shot is optional: the game can be played without ever holding Space.</li>
+	<li>No combination of keys is needed. The lobby buttons are large and need a single click.</li>
 </ul>
 
 <h2 class="mt-9 text-lg font-semibold">Audio and visual</h2>
-<h3 class="mt-4 font-semibold">Today</h3>
-<ul class="mt-2 max-w-[100ch] list-disc space-y-1.5 pl-6 leading-7">
-	<li>The game has no sound, so no information is given only by sound: deaf and hard of hearing players miss nothing.</li>
-	<li>Ships, enemies and bullets are bright sprites on a black background, with high contrast.</li>
-	<li>Each player also starts on its own row (player 0 at the top, player 3 at the bottom), and the client prints its player number in the terminal.</li>
-</ul>
-<h3 class="mt-4 font-semibold">Missing</h3>
-<ul class="mt-2 max-w-[100ch] list-disc space-y-1.5 pl-6 leading-7">
-	<li>The four ships have the same shape and differ only by color (green, blue, magenta, red). Green and red are hard to tell apart for color-blind players: a number or a shape per player is planned.</li>
-	<li>The window size is chosen at startup to fit the monitor, up to 1920 by 1080, and cannot be resized or zoomed while playing.</li>
-	<li>No sound cues for blind or low-vision players, and no volume or subtitle settings once sound is added.</li>
-	<li>The stars always scroll in the background; there is no option to turn them off.</li>
+
+<ul class="mt-3 max-w-[100ch] list-disc space-y-1.5 pl-6 leading-7">
+	<li><strong>Color-blind filters</strong>: the <code>COLORS</code> button of the lobby switches between normal colors and protanopia, deuteranopia and tritanopia filters.</li>
+	<li>No information is given only by sound: the only audio is the music, so deaf and hard of hearing players miss nothing.</li>
+	<li>Ships, enemies and shots are bright sprites on a black background, with high contrast; destroyed enemies show an explosion.</li>
+	<li>The lobby lists the players by number (P1 to P4), not only by color.</li>
 </ul>
 
 <h2 class="mt-9 text-lg font-semibold">Mental and cognitive</h2>
-<h3 class="mt-4 font-semibold">Today</h3>
-<ul class="mt-2 max-w-[100ch] list-disc space-y-1.5 pl-6 leading-7">
-	<li>One simple rule: avoid the enemies, your ship shoots them for you.</li>
-	<li>No menu, no text to read during the game, no time limit.</li>
-	<li>The client prints a plain sentence when it stops (for example "Player eliminated by the server"), explained in <a href="/user/troubleshooting" class="text-[#ff8a3d] hover:underline">Troubleshooting</a>.</li>
-</ul>
-<h3 class="mt-4 font-semibold">Missing</h3>
-<ul class="mt-2 max-w-[100ch] list-disc space-y-1.5 pl-6 leading-7">
-	<li>Difficulty levels, and a short in-game tutorial.</li>
-	<li>A pause and a way to rejoin without restarting the client.</li>
+
+<ul class="mt-3 max-w-[100ch] list-disc space-y-1.5 pl-6 leading-7">
+	<li>One simple rule: avoid the enemies and their shots, your ship shoots for you.</li>
+	<li>The lobby says who is the host and which slots are free; the score is always on screen.</li>
+	<li>No time limit and no text to read during the match.</li>
 </ul>
 
 <h2 class="mt-9 text-lg font-semibold">This documentation</h2>

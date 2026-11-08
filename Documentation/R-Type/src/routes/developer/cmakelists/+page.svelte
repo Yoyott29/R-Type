@@ -1,195 +1,76 @@
 <script>
-	const headerExample = `cmake_minimum_required(VERSION 3.28)
+	const code0 = `./build_rtype.sh
 
-if(NOT CMAKE_BUILD_TYPE)
-  set(CMAKE_BUILD_TYPE Release)
-endif()
-
-project(r-type_client LANGUAGES CXX)
-
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY \${CMAKE_SOURCE_DIR})`;
-
-	const depsExample = `set(CPM_SOURCE_CACHE
-    \${CMAKE_SOURCE_DIR}/.cpm-cache
-    CACHE PATH "CPM download cache"
-)
-
-include(CPM.cmake)
-
-CPMAddPackage(
-    NAME raylib
-    GITHUB_REPOSITORY raysan5/raylib
-    GIT_TAG 6.0
-    OPTIONS
-        "BUILD_EXAMPLES OFF"
-        "BUILD_SHARED_LIBS OFF"
-)
-
-find_package(Threads REQUIRED)
-
-# Standalone Asio is header-only and has no CMakeLists, so we wrap it in an
-# interface target
-CPMAddPackage(
-    NAME asio
-    VERSION 1.30.2
-    GITHUB_REPOSITORY chriskohlhoff/asio
-    GIT_TAG asio-1-30-2
-    DOWNLOAD_ONLY YES
-)
-# then: add_library(asio INTERFACE) with its include folder, ASIO_STANDALONE,
-# Threads, and ws2_32 / wsock32 on Windows`;
-
-	const targetExample = `add_executable(\${PROJECT_NAME}
-    src/main.cpp
-    src/game-rtype/Application.cpp
-    src/game-rtype/Game.cpp
-    src/engine/core/Scene.cpp
-    ...
-    src/plugins/Renderer/RayLibRenderer.cpp
-    ...
-)`;
-
-	const includeExample = `target_include_directories(\${PROJECT_NAME} PRIVATE
-    src/game-rtype
-    src/engine/core
-    ...
-)
-
-target_include_directories(\${PROJECT_NAME} SYSTEM PRIVATE
-    "\${raylib_SOURCE_DIR}/src"
-)
-
-target_link_libraries(\${PROJECT_NAME} PRIVATE raylib asio)`;
-
-	const warnExample = `if(MSVC)
-    target_compile_options(\${PROJECT_NAME} PRIVATE /W4)
-else()
-    target_compile_options(\${PROJECT_NAME} PRIVATE -Wall -Wextra)
-endif()`;
-
-	const addFileExample = `add_executable(\${PROJECT_NAME}
-    ...
-    src/plugins/Physics2D/systems/MovementSystem.cpp
-    src/plugins/Physics2D/systems/GravitySystem.cpp   # new file
-)`;
-
-	const buildExample = `cmake -B build
-cmake --build build`;
+# the same, by hand
+cmake -S . -B build
+cmake --build build --target r-type_client r-type_server`;
+	const code1 = `rtype_add_game(r-type_client \${GRINGO_REPOSITORY_DIR}/R-Type/client_main.cpp RaylibRenderer
+               Physics2D 2D Scripts InputHandler Network Audio UI)
+rtype_add_game(r-type_server \${GRINGO_REPOSITORY_DIR}/R-Type/server_main.cpp ""
+               Physics2D Scripts Network UI)`;
 </script>
 
 <svelte:head>
 	<title>How the CMakeLists works - R-Type docs</title>
 </svelte:head>
 
-{#snippet code(text)}
-	<pre
-		class="mt-3 overflow-x-auto rounded-md border border-[#1e2b26] bg-[#121a17] p-4 font-mono text-[13.5px] leading-6"><code
-			>{text}</code
-		></pre>
-{/snippet}
-
-{#snippet c(text)}<code
-		class="rounded border border-[#1e2b26] bg-[#121a17] px-1.5 py-0.5 font-mono text-[13.5px]"
-		>{text}</code
-	>{/snippet}
-
 <h1 class="text-3xl font-semibold">How the CMakeLists works</h1>
-<p class="mt-1 mb-8 text-[15px] text-[#7f9189]">
-	A walk through the root CMakeLists.txt, from configuration to executable
+<p class="mt-1 mb-8 text-[15px] text-[#7f9189]">A walk through the root CMakeLists.txt, which builds r-type_client and r-type_server</p>
+
+<p class="mt-3 max-w-[100ch] leading-7">
+	The root <code>CMakeLists.txt</code> builds the two R-Type programs and everything they load. The engine has its own standalone CMake project in <code>Gringo Engine/</code> (see <a href="/gringo/developer/building" class="text-accent hover:underline">Building the Engine</a>); the root one repeats its engine and plugin rules so R-Type builds in one step.
 </p>
 
-<p class="max-w-[100ch] leading-7">
-	{@render c('CMakeLists.txt')} at the root of the repository describes how to build the game. CMake
-	reads it to generate the build files, then the compiler produces the executable. Building takes two
-	commands:
-</p>
-{@render code(buildExample)}
-<p class="mt-3 max-w-[100ch] leading-7">
-	The first command <strong class="font-semibold">configures</strong> the project: it reads the file
-	and downloads dependencies. The second one <strong class="font-semibold">compiles</strong> it into
-	the {@render c('build')} folder.
-</p>
+<pre
+	class="mt-3 overflow-x-auto rounded-md border border-[#1e2b26] bg-[#121a17] p-4 font-mono text-[13.5px] leading-6"><code>{code0}</code></pre>
 
 <h2 class="mt-9 text-lg font-semibold">1. Project settings</h2>
-{@render code(headerExample)}
-<ul class="mt-3 max-w-[100ch] list-disc space-y-1.5 pl-5 leading-7">
-	<li>CMake 3.28 or newer is required.</li>
-	<li>
-		Without {@render c('-DCMAKE_BUILD_TYPE=...')}, the project is built in {@render c('Release')}
-		mode. Use {@render c('cmake -B build -DCMAKE_BUILD_TYPE=Debug')} to debug.
-	</li>
-	<li>The project and its executable are named {@render c('r-type_client')}, and the language is C++.</li>
-	<li>The code is compiled as C++17, and the compiler must support it.</li>
-	<li>
-		{@render c('CMAKE_RUNTIME_OUTPUT_DIRECTORY')} puts the executable at the
-		<strong class="font-semibold">root of the repository</strong> instead of inside
-		{@render c('build')}. It is ignored by git.
-	</li>
+
+<ul class="mt-3 max-w-[100ch] list-disc space-y-1.5 pl-6 leading-7">
+	<li>CMake 3.28 or newer, C++20, a Release build by default.</li>
+	<li>The executables are written in the root of the repository; the engine library, plugins and renderers in <code>Gringo Engine/</code>. Every output path ends with <code>$&lt;0:&gt;</code>, an empty generator expression that stops Visual Studio from adding a <code>Release/</code> folder.</li>
+	<li>On Windows, the engine DLL goes next to the executables, since Windows has no rpath.</li>
 </ul>
 
 <h2 class="mt-9 text-lg font-semibold">2. Dependencies</h2>
-<p class="mt-3 max-w-[100ch] leading-7">
-	Dependencies are downloaded by CPM when CMake configures the project, so nothing has to be
-	installed by hand. Two packages are fetched from GitHub: raylib 6.0, built as a static library
-	without its examples, and Asio 1.30.2. Asio is header-only and has no CMakeLists, so it is only
-	downloaded and wrapped in an {@render c('asio')} interface target that brings its headers, its
-	defines and the thread library. See
-	<a href="/developer/cpm" class="text-[#ff8a3d] hover:underline">How CPM works</a>.
-</p>
-{@render code(depsExample)}
 
-<h2 class="mt-9 text-lg font-semibold">3. The client target</h2>
 <p class="mt-3 max-w-[100ch] leading-7">
-	{@render c('add_executable')} lists every source file that makes up the client. The list is written
-	by hand, there is no automatic search of the {@render c('src')} folder.
+	Downloaded by <a href="/developer/cpm" class="text-accent hover:underline">CPM</a> into <code>.cpm-cache</code>: raylib 6.0, Asio 1.30.2 (header only, wrapped in an <code>asio</code> interface target), miniaudio 0.11.22 (compiled from its <code>miniaudio.c</code>) and nlohmann/json 3.11.3.
 </p>
-{@render code(targetExample)}
-<p class="mt-3 max-w-[100ch] leading-7">
-	<strong class="font-semibold">When you create a new .cpp file, add it to this list</strong>, or it
-	will not be compiled and the linker will report missing symbols.
-</p>
-{@render code(addFileExample)}
 
-<h2 class="mt-9 text-lg font-semibold">4. Includes and linking</h2>
-<p class="mt-3 max-w-[100ch] leading-7">
-	The include directories let you write {@render c('#include "Scene.hpp"')} without the full path. The
-	raylib headers are added as {@render c('SYSTEM')} includes, so warnings from raylib are not shown.
-	{@render c('target_link_libraries')} links raylib and Asio into the client. On Windows, the client
-	also defines {@render c('NOGDI NOUSER WIN32_LEAN_AND_MEAN')}, because the Windows headers pulled in
-	by Asio declare names that clash with raylib.
-</p>
-{@render code(includeExample)}
+<h2 class="mt-9 text-lg font-semibold">3. The engine and its plugins</h2>
 
-<h2 class="mt-9 text-lg font-semibold">5. Compiler warnings</h2>
-<p class="mt-3 max-w-[100ch] leading-7">
-	Warnings are enabled for the client and the server, with the right flags for each compiler. They do
-	not apply to raylib, whose warnings are disabled with {@render c('-w')}.
-</p>
-{@render code(warnExample)}
+<ul class="mt-3 max-w-[100ch] list-disc space-y-1.5 pl-6 leading-7">
+	<li><code>gringo_engine</code>: a shared library made of the files of <code>Gringo Engine/src/ECS</code>, listed one by one. A new engine <code>.cpp</code> must be added here <strong>and</strong> in <code>Gringo Engine/CMakeLists.txt</code>.</li>
+	<li><code>gringo_add_plugins</code>: one shared library per folder of <code>Gringo Engine/src/plugins</code> and of <code>src/renderers</code>, with all its <code>.cpp</code> files. Nothing to add for a new plugin.</li>
+</ul>
 
-<h2 class="mt-9 text-lg font-semibold">6. clang-tidy</h2>
+<h2 class="mt-9 text-lg font-semibold">4. The two programs</h2>
+
+<pre
+	class="mt-3 overflow-x-auto rounded-md border border-[#1e2b26] bg-[#121a17] p-4 font-mono text-[13.5px] leading-6"><code>{code1}</code></pre>
+
+<ul class="mt-3 max-w-[100ch] list-disc space-y-1.5 pl-6 leading-7">
+	<li><code>rtype_add_game</code> compiles the generated main and the engine's <code>ProjectComponentManager</code>, with <code>R-Type/scripts</code> as include directory.</li>
+	<li>The plugin list gives the program the plugins' headers and a <code>GRINGO_USE_&lt;NAME&gt;</code> define (<code>PlayerScript</code> uses <code>#ifdef GRINGO_USE_NETWORK</code>). The plugins are still loaded at runtime; the list must match the plugins of <code>R-Type.gringo</code>.</li>
+	<li>If a generated main is missing, configuration stops and says how to generate it.</li>
+</ul>
+
 <p class="mt-3 max-w-[100ch] leading-7">
-	The end of the file attaches clang-tidy to the client and server targets. See the
-	<a href="/developer/clang-tidy" class="text-[#ff8a3d] hover:underline">clang-tidy</a> page.
+	Scripts are header-only and included by the generated mains: adding a script needs no CMake change, only a new <code>--build</code> of the project.
 </p>
+
+<h2 class="mt-9 text-lg font-semibold">5. Warnings and clang-tidy</h2>
+
+<ul class="mt-3 max-w-[100ch] list-disc space-y-1.5 pl-6 leading-7">
+	<li><code>-Wall -Wextra</code> (or <code>/W4</code> with MSVC) on every target of the project.</li>
+	<li><code>ENABLE_CLANG_TIDY</code> (on by default) runs <a href="/developer/clang-tidy" class="text-accent hover:underline">clang-tidy</a> on every file while compiling, if it is installed.</li>
+</ul>
 
 <h2 class="mt-9 text-lg font-semibold">Good to know</h2>
-<ul class="mt-3 max-w-[100ch] list-disc space-y-1.5 pl-5 leading-7">
-	<li>
-		The server has its own target, {@render c('r-type_server')}, at the end of the file. It links
-		only Asio, not raylib, and reuses the engine sources. Its include directories also list the
-		Physics2D and Renderer plugin folders and the raylib headers, so the server can use
-		{@render c('MovementSystem')}, {@render c('Velocity')} and {@render c('Sprite')}. Because of
-		this, building the server alone still downloads raylib.
-	</li>
-	<li>
-		If you change {@render c('CMakeLists.txt')}, running {@render c('cmake --build build')} again is
-		enough: CMake reconfigures by itself.
-	</li>
-	<li>
-		If the build behaves strangely, delete the {@render c('build')} folder and configure again.
-	</li>
+
+<ul class="mt-3 max-w-[100ch] list-disc space-y-1.5 pl-6 leading-7">
+	<li>The first configuration downloads the dependencies; later ones use the cache.</li>
+	<li>After pulling changes that add or move files, configure again (<code>cmake -S . -B build</code>).</li>
+	<li>The engine unit tests are built by the engine's own CMake project, see <a href="/developer/running-tests" class="text-accent hover:underline">Running Tests</a>.</li>
 </ul>

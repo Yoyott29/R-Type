@@ -19,7 +19,6 @@ class BulletChargeScript : public GringoEntityScript
     void onStart(Scene &scene, Entity &entity) override;
     void onUpdate(Scene &scene, Entity &entity) override;
     void setParameter(const std::string &name, const std::string &value) override;
-    int damage() const;
 
   private:
     static bool isClientSide(Scene &scene);
@@ -32,8 +31,6 @@ inline void BulletChargeScript::setParameter(const std::string &name, const std:
     if (name == "Damage")
         _damage = std::stoi(value);
 }
-
-inline int BulletChargeScript::damage() const { return _damage; }
 
 inline bool BulletChargeScript::isClientSide(Scene &scene)
 {

@@ -52,7 +52,7 @@ chmod +x .githooks/pre-commit`;
 <h2 class="mt-9 text-lg font-semibold">How hooks are enabled</h2>
 <p class="mt-3 max-w-[100ch] leading-7">
 	By default git reads hooks from {@render c('.git/hooks')}, which is not versioned. The
-	<a href="/developer/developer-setup" class="text-[#ff8a3d] hover:underline">Developer Setup</a>
+	<a href="/developer/developer-setup" class="text-accent hover:underline">Developer Setup</a>
 	script changes this setting for your clone:
 </p>
 {@render code(activateExample)}

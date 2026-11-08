@@ -11,13 +11,10 @@
 #include <chrono>
 #include <cstdlib>
 
-inline const std::vector<std::string> EnemySpawnerScript_params = {"Prefab", "Wave"};
-
 class EnemySpawnerScript : public GringoEntityScript
 {
   public:
     EnemySpawnerScript();
-    explicit EnemySpawnerScript(PrefabsManager &) : EnemySpawnerScript() {}
     void onStart(Scene &scene, Entity &entity) override;
     void onUpdate(Scene &scene, Entity &entity) override;
 

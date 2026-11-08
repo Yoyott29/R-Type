@@ -11,16 +11,12 @@
 class SpaceSpawnerScript : public GringoEntityScript
 {
   public:
-    SpaceSpawnerScript();
-    explicit SpaceSpawnerScript(PrefabsManager &) : SpaceSpawnerScript() {}
     void onStart(Scene &scene, Entity &entity) override;
     void onUpdate(Scene &scene, Entity &entity) override;
 
   private:
     float _spawnTimer = 0.0f;
 };
-
-inline SpaceSpawnerScript::SpaceSpawnerScript() {}
 
 inline void SpaceSpawnerScript::onStart(Scene &scene, Entity &)
 {
