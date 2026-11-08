@@ -14,6 +14,15 @@ void RaylibRenderer::initWindow(int width, int height, const std::string &title)
     SetExitKey(KEY_NULL);
     SetTraceLogLevel(LOG_NONE);
     InitWindow(width, height, title.c_str());
+    // The layout uses fixed pixels, so the size is kept: a window the window system placed
+    // outside the screen (it can when the window is larger than the screen) is moved to its corner
+    const int monitor = GetCurrentMonitor();
+    const Vector2 origin = GetMonitorPosition(monitor);
+    const Vector2 position = GetWindowPosition();
+    if (position.x < origin.x - 100 || position.y < origin.y - 100 ||
+        position.x > origin.x + static_cast<float>(GetMonitorWidth(monitor)) ||
+        position.y > origin.y + static_cast<float>(GetMonitorHeight(monitor)))
+        SetWindowPosition(static_cast<int>(origin.x), static_cast<int>(origin.y) + 40); // below the title bar
     SetTargetFPS(60);
     _font = LoadFontEx(assetPath("Font.ttf").c_str(), 60, nullptr, 0);
 }

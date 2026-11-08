@@ -46,14 +46,34 @@ void main()
 // Not closeWindow(): a virtual call in a destructor does not reach a derived class
 RaylibRenderer::~RaylibRenderer() { releaseWindow(); }
 
+// The world is scaled to the window, so a window larger than the screen is shrunk to fit it
+// (otherwise the window system can place it off-screen) and centered
+static void fitWindowToMonitor(int width, int height)
+{
+    const int monitor = GetCurrentMonitor();
+    const int monitorWidth = GetMonitorWidth(monitor);
+    const int monitorHeight = GetMonitorHeight(monitor);
+    const float scale = std::min(1.0f, std::min(monitorWidth * 0.9f / static_cast<float>(width),
+                                                monitorHeight * 0.9f / static_cast<float>(height)));
+    const int fittedWidth = static_cast<int>(static_cast<float>(width) * scale);
+    const int fittedHeight = static_cast<int>(static_cast<float>(height) * scale);
+    const Vector2 origin = GetMonitorPosition(monitor);
+
+    SetWindowSize(fittedWidth, fittedHeight);
+    SetWindowPosition(static_cast<int>(origin.x) + (monitorWidth - fittedWidth) / 2,
+                      static_cast<int>(origin.y) + (monitorHeight - fittedHeight) / 2);
+}
+
 void RaylibRenderer::openWindow(int width, int height, std::string const &title)
 {
     _worldWidth = static_cast<float>(width);
     _worldHeight = static_cast<float>(height);
     SetTraceLogLevel(LOG_NONE);
+    SetConfigFlags(FLAG_WINDOW_RESIZABLE);
     InitWindow(width, height, title.c_str());
     if (!IsWindowReady())
         throw EngineError("Could not open the window");
+    fitWindowToMonitor(width, height);
     SetTargetFPS(60);
 }
 
