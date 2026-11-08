@@ -248,8 +248,9 @@ std::vector<std::string> ProjectBuilder::prefabErrors(const SceneObjects &sceneO
             for (const Property &property : component.properties)
                 if (property.type == valueType::Prefab && property.value != NO_FILE &&
                     !exists(property.value))
-                    errors.push_back("Impossible to build " + sceneObjects.projectName + ": entity " +
-                                     entity.name + " uses unknown prefab " + property.value);
+                    errors.push_back("Impossible to build " + sceneObjects.projectName +
+                                     ": entity " + entity.name + " uses unknown prefab " +
+                                     property.value);
     return errors;
 }
 
@@ -343,6 +344,8 @@ void ProjectBuilder::writeGeneratedMain(const std::filesystem::path &sourcePath,
            << "#include \"ProjectComponentManager.hpp\"\n"
            << "#include \"ProjectSettings.hpp\"\n"
            << "#include \"nlohmann/json.hpp\"\n"
+           << "#include <cstdlib>\n"
+           << "#include <ctime>\n"
            << "#include <filesystem>\n"
            << "#include <fstream>\n"
            << "#include <functional>\n"
@@ -381,7 +384,9 @@ void ProjectBuilder::writeGeneratedMain(const std::filesystem::path &sourcePath,
     // Nothing plugin-specific here: plugins read their settings (ProjectSettings) and the
     // arguments they understand (CommandLine), e.g. Network's "[host] port"
     // The .gringo is found next to the executable, so the project folder can be moved
+    // Seeded once with the time: std::rand gives other numbers every game
     source << "\nint main(int argc, char **argv)\n{\n"
+           << "    std::srand(static_cast<unsigned int>(std::time(nullptr)));\n"
            << "    try {\n"
            << "        const std::filesystem::path projectPath =\n"
            << "            ProjectComponentManager::findProjectFile("

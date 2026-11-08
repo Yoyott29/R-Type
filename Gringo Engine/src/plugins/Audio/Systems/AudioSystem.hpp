@@ -7,27 +7,27 @@
 
 #pragma once
 #include "AudioSource.hpp"
+#include "IAudio.hpp"
 #include "Scene.hpp"
 #include "System.hpp"
-#include "miniaudio.h"
+#include <memory>
 #include <unordered_map>
 #include <unordered_set>
 
+// Loads the sound of each AudioSource and plays / stops it as the component asks, through IAudio
 class AudioSystem : public System
 {
   public:
-    ~AudioSystem() override;
     void Start(Scene &scene) override;
     void update(Scene &scene) override;
 
   private:
-    void updateSound(Entity entity, const AudioSource &source);
-    void createSound(Entity entity, const AudioSource &source);
-    static void applySettings(ma_sound &sound, const AudioSource &source);
+    void updateSound(Entity entity, AudioSource &source);
+    void syncPlayback(std::size_t sound, AudioSource &source);
     void releaseRemovedSounds();
 
-    ma_engine _engine;
-    bool _engineReady = false;
-    std::unordered_map<Entity, ma_sound> _sounds;
+    // Frees every loaded sound when the system goes
+    std::unique_ptr<IAudio> _audio;
+    std::unordered_map<Entity, std::size_t> _sounds;
     std::unordered_set<Entity> _failed;
 };

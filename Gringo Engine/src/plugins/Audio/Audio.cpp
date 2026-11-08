@@ -21,6 +21,8 @@ void Audio::registerComponents(Scene &scene)
             source.path = ProjectAssets::resolve(target, path);
         source.volume = ComponentJson::intValue(data, "Volume", 100);
         source.loop = ComponentJson::boolValue(data, "Loop", false);
+        if (ComponentJson::boolValue(data, "PlayOnStart", true))
+            source.play();
         target.addComponent(entity, source);
     });
 }

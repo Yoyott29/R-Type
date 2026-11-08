@@ -7,7 +7,7 @@
 /plugins/
 /renderers/
 /Square/
-*trackntrap
+*trackntrap*
 
 # CPM dependency cache
 */build/

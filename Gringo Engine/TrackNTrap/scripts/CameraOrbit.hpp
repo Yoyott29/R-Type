@@ -3,6 +3,7 @@
 
 #include "Camera.hpp"
 #include "GameState.hpp"
+#include "Net.hpp"
 #include "Scene.hpp"
 #include "Script.hpp"
 #include "Time.hpp"
@@ -37,6 +38,9 @@ class CameraOrbit : public GringoEntityScript
 
     void onStart(Scene &scene, Entity &entity) override
     {
+        // Client only: the server has no camera
+        if (!Net::isClient(scene))
+            return;
         if (!scene.hasResource<GameState>())
             scene.addResource<GameState>();
         place(scene, entity);
@@ -44,6 +48,9 @@ class CameraOrbit : public GringoEntityScript
 
     void onUpdate(Scene &scene, Entity &entity) override
     {
+        // Client only: the server has no camera
+        if (!Net::isClient(scene))
+            return;
         if (scene.getResource<GameState>().playing)
             return;
         _angle = std::fmod(_angle + _speed * FIXED_DELTA_TIME, 360.0f);

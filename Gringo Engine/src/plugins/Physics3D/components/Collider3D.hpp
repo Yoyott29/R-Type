@@ -23,6 +23,10 @@ struct Collider3D {
     std::uint32_t layer = 1;
     std::uint32_t mask = 0xFFFFFFFF;
     bool isTrigger = false;
+    // Turns with the entity's Transform the way a 3D model drawn with it turns, offset included.
+    // Off: the box stays lined up with the world axes. A turned box that isn't a trigger pushes
+    // as the world-aligned box around it
+    bool rotates = false;
 };
 
 template <> struct ComponentDescription<Collider3D> {
@@ -35,7 +39,8 @@ template <> struct ComponentDescription<Collider3D> {
                  {"OffsetY", valueType::Float, "0"}, {"OffsetZ", valueType::Float, "0"},
                  {"Layer", valueType::Int, "1"},
                  {"TypeCollisions", valueType::String, "All layers"},
-                 {"IsTrigger", valueType::Bool, "False"}},
+                 {"IsTrigger", valueType::Bool, "False"},
+                 {"Rotates", valueType::Bool, "False"}},
                 {58, 57, 61, 255}, "Physics3D"};
     }
 };

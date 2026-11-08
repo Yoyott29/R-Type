@@ -70,7 +70,7 @@ void ArcWall3DSystem::push(Scene &scene, Entity body, const Transform &centre,
         const float nearZ = std::clamp(0.0f, dz - halfDepth, dz + halfDepth);
         depth = wall.radius - std::hypot(nearX, nearZ);
     }
-    if (depth <= 0.0f)
+    if (depth <= 0.0f || (wall.reach > 0.0f && depth > wall.reach))
         return;
 
     // Out of the wall along the radius: toward the centre for keepInside, away from it otherwise

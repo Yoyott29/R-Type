@@ -6,58 +6,57 @@
 */
 
 #include "AudioSystem.hpp"
-
-AudioSystem::~AudioSystem()
-{
-    for (auto &[entity, sound] : _sounds)
-        ma_sound_uninit(&sound);
-    if (_engineReady)
-        ma_engine_uninit(&_engine);
-}
+#include "MiniaudioAudio.hpp"
 
 void AudioSystem::Start(Scene &scene)
 {
     (void)scene;
-    _engineReady = ma_engine_init(nullptr, &_engine) == MA_SUCCESS;
+    _audio = std::make_unique<MiniaudioAudio>();
 }
 
 void AudioSystem::update(Scene &scene)
 {
-    if (!_engineReady)
+    if (!_audio)
         return;
     releaseRemovedSounds();
     for (Entity entity : _entities)
         updateSound(entity, scene.getComponent<AudioSource>(entity));
 }
 
-void AudioSystem::updateSound(Entity entity, const AudioSource &source)
+void AudioSystem::updateSound(Entity entity, AudioSource &source)
 {
     if (_failed.contains(entity))
         return;
     if (!_sounds.contains(entity)) {
-        createSound(entity, source);
-        return;
+        const std::optional<std::size_t> sound = _audio->load(source.path);
+        if (!sound) {
+            _failed.insert(entity);
+            return;
+        }
+        _sounds[entity] = *sound;
     }
-    applySettings(_sounds.at(entity), source);
+    const std::size_t sound = _sounds.at(entity);
+    _audio->setVolume(sound, static_cast<float>(source.volume) / 100.0f);
+    _audio->setLooping(sound, source.loop);
+    syncPlayback(sound, source);
 }
 
-void AudioSystem::createSound(Entity entity, const AudioSource &source)
+void AudioSystem::syncPlayback(std::size_t sound, AudioSource &source)
 {
-    ma_sound &sound = _sounds[entity];
-    if (ma_sound_init_from_file(&_engine, source.path.c_str(), 0, nullptr, nullptr, &sound) !=
-        MA_SUCCESS) {
-        _sounds.erase(entity);
-        _failed.insert(entity);
+    // play(): from the start, even if it is already playing
+    if (source.restart) {
+        _audio->play(sound);
+        source.restart = false;
         return;
     }
-    applySettings(sound, source);
-    ma_sound_start(&sound);
-}
-
-void AudioSystem::applySettings(ma_sound &sound, const AudioSource &source)
-{
-    ma_sound_set_volume(&sound, static_cast<float>(source.volume) / 100.0f);
-    ma_sound_set_looping(&sound, static_cast<ma_bool32>(source.loop));
+    if (!source.playing) {
+        if (_audio->isPlaying(sound))
+            _audio->stop(sound);
+        return;
+    }
+    // A sound that does not loop is done once it reaches its end
+    if (!_audio->isPlaying(sound) && _audio->isAtEnd(sound))
+        source.playing = false;
 }
 
 void AudioSystem::releaseRemovedSounds()
@@ -66,7 +65,7 @@ void AudioSystem::releaseRemovedSounds()
         if (_entities.contains(it->first)) {
             ++it;
         } else {
-            ma_sound_uninit(&it->second);
+            _audio->unload(it->second);
             it = _sounds.erase(it);
         }
     }
