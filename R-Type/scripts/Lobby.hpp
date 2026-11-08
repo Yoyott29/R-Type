@@ -52,6 +52,15 @@ inline std::optional<Entity> findByPrefab(Scene &scene, const std::string &prefa
             return entity;
     return std::nullopt;
 }
+
+inline void clearMatchEntities(Scene &scene)
+{
+    for (Entity entity : scene.view<Networked>()) {
+        const Networked &networked = scene.getComponent<Networked>(entity);
+        if (networked.mode == NetMode::Replicated && !isPlayer(scene, networked))
+            scene.queueDestroy(entity);
+    }
+}
 } // namespace Lobby
 
 #endif /* !LOBBY_HPP_ */

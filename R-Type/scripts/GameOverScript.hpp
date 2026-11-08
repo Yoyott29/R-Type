@@ -25,7 +25,6 @@ class GameOverScript : public GringoEntityScript
 
     static bool isClientSide(Scene &scene);
     static bool hasAlivePlayer(Scene &scene);
-    static void clearMatchEntities(Scene &scene);
     static void backToLobby(Scene &scene);
 };
 
@@ -43,15 +42,6 @@ inline bool GameOverScript::hasAlivePlayer(Scene &scene)
     return false;
 }
 
-inline void GameOverScript::clearMatchEntities(Scene &scene)
-{
-    for (Entity entity : scene.view<Networked>()) {
-        const Networked &networked = scene.getComponent<Networked>(entity);
-        if (networked.mode == NetMode::Replicated && !Lobby::isPlayer(scene, networked))
-            scene.queueDestroy(entity);
-    }
-}
-
 inline void GameOverScript::backToLobby(Scene &scene)
 {
     for (Entity entity : scene.view<Transform, Collider2D>())
@@ -60,7 +50,7 @@ inline void GameOverScript::backToLobby(Scene &scene)
     scene.getResource<MatchState>().started = false;
     scene.getResource<GameScore>().value = 0;
     scene.getResource<NetTransport>().setAcceptingPeers(true);
-    clearMatchEntities(scene);
+    Lobby::clearMatchEntities(scene);
 }
 
 inline void GameOverScript::onStart(Scene &, Entity &) {}
