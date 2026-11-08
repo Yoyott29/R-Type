@@ -30,6 +30,7 @@
 #include "ExplosionScript.hpp"
 #include "GameOverScript.hpp"
 #include "IncreaseScore.hpp"
+#include "KeybindButtonScript.hpp"
 #include "LobbyMenuScript.hpp"
 #include "LobbyServerScript.hpp"
 #include "LobbySlotScript.hpp"
@@ -37,6 +38,9 @@
 #include "PowArmorSpawnerScript.hpp"
 #include "PowerUpScript.hpp"
 #include "ScoreboardScript.hpp"
+#include "SettingsBackButtonScript.hpp"
+#include "SettingsButtonScript.hpp"
+#include "SettingsMenuScript.hpp"
 #include "SpaceSpawnerScript.hpp"
 #include "StartButtonScript.hpp"
 
@@ -192,6 +196,11 @@ int main(int argc, char **argv)
                         applyParameters(instance, component);
                         scene.addComponent(entity, Script{instance, false});
                     }
+                    else if (path == "SettingsMenuScript.hpp") {
+                        auto instance = std::make_shared<SettingsMenuScript>();
+                        applyParameters(instance, component);
+                        scene.addComponent(entity, Script{instance, false});
+                    }
                     else if (path == "SpaceSpawnerScript.hpp") {
                         auto instance = std::make_shared<SpaceSpawnerScript>();
                         applyParameters(instance, component);
@@ -208,6 +217,12 @@ int main(int argc, char **argv)
                                 path = property.value("value", "");
                         if (path == "ColorFilterButtonScript.hpp")
                             scene.getComponent<UIButton>(entity).script = makeButtonScript<ColorFilterButtonScript>(component);
+                        if (path == "KeybindButtonScript.hpp")
+                            scene.getComponent<UIButton>(entity).script = makeButtonScript<KeybindButtonScript>(component);
+                        if (path == "SettingsBackButtonScript.hpp")
+                            scene.getComponent<UIButton>(entity).script = makeButtonScript<SettingsBackButtonScript>(component);
+                        if (path == "SettingsButtonScript.hpp")
+                            scene.getComponent<UIButton>(entity).script = makeButtonScript<SettingsButtonScript>(component);
                         if (path == "StartButtonScript.hpp")
                             scene.getComponent<UIButton>(entity).script = makeButtonScript<StartButtonScript>(component);
                     }
@@ -375,6 +390,14 @@ int main(int argc, char **argv)
                             target.addComponent(copy, Script{instance, false});
                         }));
                     }
+                    else if (path == "SettingsMenuScript.hpp") {
+                        // Each copy of the prefab gets its own script
+                        prefab.addComponent(std::function<void(Scene &, Entity)>([component, applyParameters](Scene &target, Entity copy) {
+                            auto instance = std::make_shared<SettingsMenuScript>();
+                            applyParameters(instance, component);
+                            target.addComponent(copy, Script{instance, false});
+                        }));
+                    }
                     else if (path == "SpaceSpawnerScript.hpp") {
                         // Each copy of the prefab gets its own script
                         prefab.addComponent(std::function<void(Scene &, Entity)>([component, applyParameters](Scene &target, Entity copy) {
@@ -394,6 +417,12 @@ int main(int argc, char **argv)
                                 path = property.value("value", "");
                         if (path == "ColorFilterButtonScript.hpp")
                             prefab.addComponent(std::function<void(Scene &, Entity)>([component](Scene &target, Entity instance) { target.getComponent<UIButton>(instance).script = makeButtonScript<ColorFilterButtonScript>(component); }));
+                        if (path == "KeybindButtonScript.hpp")
+                            prefab.addComponent(std::function<void(Scene &, Entity)>([component](Scene &target, Entity instance) { target.getComponent<UIButton>(instance).script = makeButtonScript<KeybindButtonScript>(component); }));
+                        if (path == "SettingsBackButtonScript.hpp")
+                            prefab.addComponent(std::function<void(Scene &, Entity)>([component](Scene &target, Entity instance) { target.getComponent<UIButton>(instance).script = makeButtonScript<SettingsBackButtonScript>(component); }));
+                        if (path == "SettingsButtonScript.hpp")
+                            prefab.addComponent(std::function<void(Scene &, Entity)>([component](Scene &target, Entity instance) { target.getComponent<UIButton>(instance).script = makeButtonScript<SettingsButtonScript>(component); }));
                         if (path == "StartButtonScript.hpp")
                             prefab.addComponent(std::function<void(Scene &, Entity)>([component](Scene &target, Entity instance) { target.getComponent<UIButton>(instance).script = makeButtonScript<StartButtonScript>(component); }));
                     }

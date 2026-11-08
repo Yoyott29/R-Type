@@ -35,6 +35,7 @@
 #include "PowArmorSpawnerScript.hpp"
 #include "PowerUpScript.hpp"
 #include "ScoreboardScript.hpp"
+#include "SettingsMenuScript.hpp"
 #include "SpaceSpawnerScript.hpp"
 
 int main(int argc, char **argv)
@@ -170,6 +171,11 @@ int main(int argc, char **argv)
                     }
                     else if (path == "ScoreboardScript.hpp") {
                         auto instance = std::make_shared<ScoreboardScript>();
+                        applyParameters(instance, component);
+                        scene.addComponent(entity, Script{instance, false});
+                    }
+                    else if (path == "SettingsMenuScript.hpp") {
+                        auto instance = std::make_shared<SettingsMenuScript>();
                         applyParameters(instance, component);
                         scene.addComponent(entity, Script{instance, false});
                     }
@@ -342,6 +348,14 @@ int main(int argc, char **argv)
                         // Each copy of the prefab gets its own script
                         prefab.addComponent(std::function<void(Scene &, Entity)>([component, applyParameters](Scene &target, Entity copy) {
                             auto instance = std::make_shared<ScoreboardScript>();
+                            applyParameters(instance, component);
+                            target.addComponent(copy, Script{instance, false});
+                        }));
+                    }
+                    else if (path == "SettingsMenuScript.hpp") {
+                        // Each copy of the prefab gets its own script
+                        prefab.addComponent(std::function<void(Scene &, Entity)>([component, applyParameters](Scene &target, Entity copy) {
+                            auto instance = std::make_shared<SettingsMenuScript>();
                             applyParameters(instance, component);
                             target.addComponent(copy, Script{instance, false});
                         }));
