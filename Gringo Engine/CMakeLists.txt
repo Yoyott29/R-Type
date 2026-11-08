@@ -286,7 +286,7 @@ if(GRINGO_BUILD_TESTS)
     file(GLOB GRINGO_ENGINE_TEST_SOURCES CONFIGURE_DEPENDS tests/engine/*.cpp)
     add_executable(engine_tests ${GRINGO_ENGINE_TEST_SOURCES})
     target_include_directories(engine_tests PRIVATE tests/network)
-    target_link_libraries(engine_tests PRIVATE gringo_engine)
+    target_link_libraries(engine_tests PRIVATE gringo_engine plugin_Physics2D)
     set_target_properties(engine_tests PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
         INSTALL_RPATH "${GRINGO_OUTPUT_DIRECTORY};${GRINGO_PLUGIN_DIRECTORY}")
