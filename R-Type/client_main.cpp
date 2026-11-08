@@ -23,6 +23,7 @@
 #include "BulletScript.hpp"
 #include "ColorFilterButtonScript.hpp"
 #include "DestroyOffScreenScript.hpp"
+#include "DifficultyButtonScript.hpp"
 #include "EnemyBulletScript.hpp"
 #include "EnemyScript.hpp"
 #include "EnemyShootScript.hpp"
@@ -217,6 +218,8 @@ int main(int argc, char **argv)
                                 path = property.value("value", "");
                         if (path == "ColorFilterButtonScript.hpp")
                             scene.getComponent<UIButton>(entity).script = makeButtonScript<ColorFilterButtonScript>(component);
+                        if (path == "DifficultyButtonScript.hpp")
+                            scene.getComponent<UIButton>(entity).script = makeButtonScript<DifficultyButtonScript>(component);
                         if (path == "KeybindButtonScript.hpp")
                             scene.getComponent<UIButton>(entity).script = makeButtonScript<KeybindButtonScript>(component);
                         if (path == "SettingsBackButtonScript.hpp")
@@ -417,6 +420,8 @@ int main(int argc, char **argv)
                                 path = property.value("value", "");
                         if (path == "ColorFilterButtonScript.hpp")
                             prefab.addComponent(std::function<void(Scene &, Entity)>([component](Scene &target, Entity instance) { target.getComponent<UIButton>(instance).script = makeButtonScript<ColorFilterButtonScript>(component); }));
+                        if (path == "DifficultyButtonScript.hpp")
+                            prefab.addComponent(std::function<void(Scene &, Entity)>([component](Scene &target, Entity instance) { target.getComponent<UIButton>(instance).script = makeButtonScript<DifficultyButtonScript>(component); }));
                         if (path == "KeybindButtonScript.hpp")
                             prefab.addComponent(std::function<void(Scene &, Entity)>([component](Scene &target, Entity instance) { target.getComponent<UIButton>(instance).script = makeButtonScript<KeybindButtonScript>(component); }));
                         if (path == "SettingsBackButtonScript.hpp")

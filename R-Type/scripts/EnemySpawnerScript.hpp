@@ -2,13 +2,16 @@
 #define ENEMYSPAWNERSCRIPT_HPP_
 
 #include "BossState.hpp"
+#include "Difficulty.hpp"
 #include "MatchState.hpp"
 #include "PrefabsManager.hpp"
 #include "Scene.hpp"
 #include "Script.hpp"
 #include "Time.hpp"
 #include "Transform.hpp"
+#include <algorithm>
 #include <chrono>
+#include <cmath>
 #include <cstdlib>
 
 class EnemySpawnerScript : public GringoEntityScript
@@ -19,6 +22,10 @@ class EnemySpawnerScript : public GringoEntityScript
     void onUpdate(Scene &scene, Entity &entity) override;
 
   private:
+    static constexpr int MIN_WAVE_SIZE = 1;
+    static constexpr int BASE_WAVE_SIZE = 5;
+    static constexpr int WAVE_SIZE_SPREAD = 6;
+
     float _spawnTimer = 0.0f;
     float _waveTimer = 0.0f;
     int _enemyCount = 0;
@@ -41,10 +48,14 @@ inline void EnemySpawnerScript::onUpdate(Scene &scene, Entity &)
     if (isWaitingForMatch(scene) || isBossActive(scene))
         return;
     if (_enemyCount == 0) {
+        const DifficultySettings &difficulty = Difficulties::current(scene);
         _waveTimer += FIXED_DELTA_TIME;
-        if (_waveTimer < _waveDelay)
+        if (_waveTimer < _waveDelay * difficulty.waveDelayScale)
             return;
-        _enemyCount = 5 + std::rand() % 6;
+        const float scaledCount =
+            static_cast<float>(BASE_WAVE_SIZE + std::rand() % WAVE_SIZE_SPREAD) *
+            difficulty.waveSizeScale;
+        _enemyCount = std::max(MIN_WAVE_SIZE, static_cast<int>(std::lround(scaledCount)));
         _waveType = 1 + std::rand() % 2;
         _waveY = static_cast<float>(std::rand() % 1080);
         _waveTimer = 0.0f;

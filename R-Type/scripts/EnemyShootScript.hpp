@@ -3,6 +3,7 @@
 
 #include "BuildVariantName.hpp"
 #include "Collider2D.hpp"
+#include "Difficulty.hpp"
 #include "MatchState.hpp"
 #include "PrefabsManager.hpp"
 #include "Scene.hpp"
@@ -33,7 +34,8 @@ class EnemyShootScript : public GringoEntityScript
     static constexpr std::uint32_t PLAYER_LAYER = 1;
 
     static bool isClientSide(Scene &scene);
-    static float randomCooldown(float min, float max);
+    // Random cooldown in [min, max], scaled by the difficulty
+    static float randomCooldown(Scene &scene, float min, float max);
     static void shoot(Scene &scene, const Transform &from, const Transform &target);
 
     float _cooldown = 0.0f;
@@ -45,17 +47,17 @@ inline bool EnemyShootScript::isClientSide(Scene &scene)
            scene.getResource<BuildVariantName>().name == "client";
 }
 
-inline float EnemyShootScript::randomCooldown(float min, float max)
+inline float EnemyShootScript::randomCooldown(Scene &scene, float min, float max)
 {
     static std::mt19937 generator{std::random_device{}()};
     std::uniform_real_distribution<float> distribution(min, max);
 
-    return distribution(generator);
+    return distribution(generator) * Difficulties::current(scene).fireCooldownScale;
 }
 
-inline void EnemyShootScript::onStart(Scene &, Entity &)
+inline void EnemyShootScript::onStart(Scene &scene, Entity &)
 {
-    _cooldown = randomCooldown(FIRST_MIN_COOLDOWN, FIRST_MAX_COOLDOWN);
+    _cooldown = randomCooldown(scene, FIRST_MIN_COOLDOWN, FIRST_MAX_COOLDOWN);
 }
 
 inline void EnemyShootScript::onUpdate(Scene &scene, Entity &entity)
@@ -65,7 +67,7 @@ inline void EnemyShootScript::onUpdate(Scene &scene, Entity &entity)
     _cooldown -= FIXED_DELTA_TIME;
     if (_cooldown > 0.0f)
         return;
-    _cooldown = randomCooldown(MIN_COOLDOWN, MAX_COOLDOWN);
+    _cooldown = randomCooldown(scene, MIN_COOLDOWN, MAX_COOLDOWN);
     const Transform from = scene.getComponent<Transform>(entity);
     const std::optional<Transform> target = nearestPlayer(scene, from);
     if (target)
@@ -95,12 +97,12 @@ inline void EnemyShootScript::shoot(Scene &scene, const Transform &from, const T
     const float dx = target.x - from.x;
     const float dy = target.y - from.y;
     const float length = std::max(1.0f, std::hypot(dx, dy));
+    const float speed = BULLET_SPEED * Difficulties::current(scene).bulletSpeedScale;
     Entity bullet = scene.getResource<PrefabsManager>().InstantiatePrefab("EnemyBullet", scene);
 
     scene.getComponent<Transform>(bullet).x = from.x;
     scene.getComponent<Transform>(bullet).y = from.y;
-    scene.getComponent<Velocity>(bullet) =
-        Velocity{dx / length * BULLET_SPEED, dy / length * BULLET_SPEED};
+    scene.getComponent<Velocity>(bullet) = Velocity{dx / length * speed, dy / length * speed};
 }
 
 #endif /* !ENEMYSHOOTSCRIPT_HPP_ */
