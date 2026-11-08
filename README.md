@@ -1,7 +1,7 @@
 <p align="center">
   <img src="Documentation/R-Type/src/lib/assets/Favicon.png" alt="R-Type logo" width="180">
   &nbsp;&nbsp;&nbsp;
-  <img src="Documentation/R-Type/src/lib/assets/Gringo.png" alt="Gringo Engine logo" width="180">
+  <img src="Gringo%20Engine/src/editor/Assets/gringo_logo.png" alt="Gringo Engine logo" width="180">
 </p>
 
 <h1 align="center">R-Type</h1>

@@ -21,6 +21,7 @@
 		shortcuts do not count.
 	</li>
 	<li>Rats are solid: you bump into the other players instead of running through them.</li>
+	<li>Each rat has a <strong>colored box</strong> above it, to tell the players apart: P1 blue, P2 orange, P3 pink, P4 teal.</li>
 	<li>
 		When you are sent back to the start, the lap you were running starts again; the laps you already
 		finished are kept.

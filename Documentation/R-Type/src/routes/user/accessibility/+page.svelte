@@ -15,13 +15,14 @@
 	<li>Firing is automatic: there is no button to hammer, only the four directions.</li>
 	<li>Two sets of keys move the ship: the arrow keys, and a letter cluster for the other hand (see <a href="/user/controls" class="text-accent hover:underline">Controls</a>).</li>
 	<li>The charged shot is optional: the game can be played without ever holding Space.</li>
+	<li><strong>Key remapping</strong>: every movement key and the charged shot key can be changed in the Settings panel of the lobby, to fit one hand or another keyboard (see <a href="/user/controls" class="text-accent hover:underline">Controls</a>).</li>
 	<li>No combination of keys is needed. The lobby buttons are large and need a single click.</li>
 </ul>
 
 <h2 class="mt-9 text-lg font-semibold">Audio and visual</h2>
 
 <ul class="mt-3 max-w-[100ch] list-disc space-y-1.5 pl-6 leading-7">
-	<li><strong>Color-blind filters</strong>: the <code>COLORS</code> button of the lobby switches between normal colors and protanopia, deuteranopia and tritanopia filters.</li>
+	<li><strong>Color-blind filters</strong>: the <code>COLORS</code> button of the Settings panel switches between normal colors and protanopia, deuteranopia and tritanopia filters.</li>
 	<li>No information is given only by sound: the only audio is the music, so deaf and hard of hearing players miss nothing.</li>
 	<li>Ships, enemies and shots are bright sprites on a black background, with high contrast; destroyed enemies show an explosion.</li>
 	<li>The lobby lists the players by number (P1 to P4), not only by color.</li>

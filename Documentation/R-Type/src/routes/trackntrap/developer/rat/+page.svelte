@@ -85,6 +85,7 @@
 	<li><strong>Animation</strong>: running plays the model's animation; standing still holds frame 0.58, a pose with the feet on the ground (<code>STANDING_FRAME</code>).</li>
 	<li><strong>Shadow</strong>: a flattened dark sphere created under the rat, kept on the floor while it jumps, so players see where it lands.</li>
 	<li><strong>Dust</strong>: the prefab's ParticleEmitter3D is moved to two new entities, one under each back foot. They emit while the rat runs on the floor, twice as dense and blue while boosted.</li>
+	<li><strong>Colored box</strong>: <code>createBox</code> adds a cube entity with <code>ChildOf</code> the rat and a <code>Transform</code> relative to it (above the middle of the body). The hierarchy moves the box with the rat and destroys it with it. Its color comes from the rat's slot (<code>BOX_COLOR_1</code> to <code>4</code>), its size from <code>BOX_SIZE</code> and <code>BOX_GAP</code>.</li>
 	<li><strong>Sounds</strong>, for this player's rat only: the running loop while running, the hit sound each time <code>RatStatus.hits</code> grows.</li>
 </ul>
 

@@ -33,10 +33,27 @@
 		<thead class="bg-[#121a17]"><tr><th class="px-4 py-3">Input</th><th class="px-4 py-3">Action</th></tr></thead>
 		<tbody>
 			<tr class="border-t border-[#1e2b26]"><td class="px-4 py-3 align-top">Left click on <code>START</code></td><td class="px-4 py-3 align-top">Start the match (only the host's click counts)</td></tr>
-			<tr class="border-t border-[#1e2b26]"><td class="px-4 py-3 align-top">Left click on <code>COLORS</code></td><td class="px-4 py-3 align-top">Switch the color filter: normal, protanopia, deuteranopia, tritanopia</td></tr>
+			<tr class="border-t border-[#1e2b26]"><td class="px-4 py-3 align-top">Left click on <code>SETTINGS</code></td><td class="px-4 py-3 align-top">Open the settings panel</td></tr>
 		</tbody>
 	</table>
 </div>
+
+<h2 class="mt-9 text-lg font-semibold">Settings</h2>
+<p class="mt-3 max-w-[100ch] leading-7">The settings panel opens from the lobby. Everything is done with a left click:</p>
+<div class="mt-3 max-w-[100ch] overflow-x-auto rounded-md border border-[#1e2b26]">
+	<table class="w-full text-left text-[15px]">
+		<thead class="bg-[#121a17]"><tr><th class="px-4 py-3">Button</th><th class="px-4 py-3">Action</th></tr></thead>
+		<tbody>
+			<tr class="border-t border-[#1e2b26]"><td class="px-4 py-3 align-top"><code>UP</code>, <code>DOWN</code>, <code>LEFT</code>, <code>RIGHT</code>, <code>SHOOT</code></td><td class="px-4 py-3 align-top">Change the key of that action: click, then press the new key (<code>SHOOT</code> is the charged shot). <code>Esc</code> cancels</td></tr>
+			<tr class="border-t border-[#1e2b26]"><td class="px-4 py-3 align-top"><code>COLORS</code></td><td class="px-4 py-3 align-top">Switch the color filter: normal, protanopia, deuteranopia, tritanopia</td></tr>
+			<tr class="border-t border-[#1e2b26]"><td class="px-4 py-3 align-top"><code>BACK</code></td><td class="px-4 py-3 align-top">Close the panel and go back to the lobby</td></tr>
+		</tbody>
+	</table>
+</div>
+<ul class="mt-3 max-w-[100ch] list-disc space-y-1.5 pl-6 leading-7">
+	<li>Each button shows the keys of its action. A new key replaces them all: after changing <code>UP</code>, neither the up arrow nor the default letter moves the ship up anymore.</li>
+	<li>The keys you choose are kept until the client is closed.</li>
+</ul>
 
 <h2 class="mt-9 text-lg font-semibold">Keyboard layout</h2>
 
