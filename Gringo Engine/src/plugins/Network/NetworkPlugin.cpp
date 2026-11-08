@@ -6,11 +6,13 @@
 */
 
 #include "NetworkPlugin.hpp"
+#include "ActionInput.hpp"
 #include "BuildVariantName.hpp"
 #include "CommandLine.hpp"
 #include "ComponentJson.hpp"
 #include "EngineError.hpp"
 #include "Events.hpp"
+#include "GameClock.hpp"
 #include "GameScore.hpp"
 #include "InputSendSystem.hpp"
 #include "LocalPeer.hpp"
@@ -56,6 +58,13 @@ static std::vector<std::string> parsePrefabList(std::string const &text)
         start = end + 1;
     }
     return names;
+}
+
+// Each event buffer is only touched by its own update, so the four run side by side
+template <typename Event> static void registerEventUpdate(Scene &scene)
+{
+    scene.registerSystem<EventUpdateSystem<Event>>(PrepUpdate);
+    scene.setSystemAccess<EventUpdateSystem<Event>>(scene.access().writeResource<Events<Event>>());
 }
 
 void NetworkPlugin::registerComponents(Scene &scene)
@@ -159,21 +168,37 @@ void NetworkPlugin::build(Scene &scene)
     if (config.role == NetRole::Client)
         scene.addResource<LocalPeer>();
 
-    scene.registerSystem<EventUpdateSystem<PeerConnected>>(PrepUpdate);
-    scene.registerSystem<EventUpdateSystem<PeerDisconnected>>(PrepUpdate);
-    scene.registerSystem<EventUpdateSystem<NetMessage>>(PrepUpdate);
-    scene.registerSystem<EventUpdateSystem<PeerLeft>>(PrepUpdate);
+    registerEventUpdate<PeerConnected>(scene);
+    registerEventUpdate<PeerDisconnected>(scene);
+    registerEventUpdate<NetMessage>(scene);
+    registerEventUpdate<PeerLeft>(scene);
     scene.registerSystem<NetReceiveSystem>(PrepUpdate);
+    // LocalPeer only exists on a client: declaring it on the server changes nothing
+    scene.setSystemAccess<NetReceiveSystem>(scene.access()
+                                                .writeResource<UdpSocket>()
+                                                .writeResource<NetTransport>()
+                                                .writeResource<Events<PeerConnected>>()
+                                                .writeResource<Events<PeerDisconnected>>()
+                                                .writeResource<Events<NetMessage>>()
+                                                .writeResource<ReservedInbox>()
+                                                .writeResource<LocalPeer>()
+                                                .readResource<NetworkConfig>());
     scene.registerSystem<SideFilterSystem>(PrepUpdate);
     if (config.role == NetRole::Client) {
         scene.registerSystem<MirrorSystem>(PrepUpdate);
         scene.registerSystem<InputSendSystem>(PostUpdate);
+        scene.setSystemAccess<InputSendSystem>(scene.access()
+                                                   .writeResource<NetTransport>()
+                                                   .readResource<GameClock>()
+                                                   .readResource<ActionInput>());
     } else {
         scene.registerSystem<PlayerSystem>(PrepUpdate);
         scene.registerSystem<RemoteInputSystem>(PrepUpdate);
         scene.registerSystem<ReplicationSystem>(PostUpdate);
     }
     scene.registerSystem<NetSendSystem>(PostUpdate);
+    scene.setSystemAccess<NetSendSystem>(
+        scene.access().writeResource<NetTransport>().writeResource<UdpSocket>());
 }
 
 void NetworkPlugin::cleanup(Scene &scene)

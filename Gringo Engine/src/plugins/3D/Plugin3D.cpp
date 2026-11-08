@@ -94,6 +94,12 @@ void Plugin3D::build(Application &app)
     followRequirements.set(app._scene.getComponentType<ChildOf>());
     followRequirements.set(app._scene.getComponentType<Transform>());
     app._scene.setSystemComponentSet<CameraFollowSystem>(followRequirements);
+    // Reads the parent's Transform and writes the camera's
+    app._scene.setSystemAccess<CameraFollowSystem>(app._scene.access()
+                                                       .read<ChildOf>()
+                                                       .read<CameraFollow3D>()
+                                                       .write<Camera>()
+                                                       .write<Transform>());
 
     app._scene.registerSystem<Model3DSystem>(Render);
     ComponentSet modelRequirements;
@@ -107,6 +113,8 @@ void Plugin3D::build(Application &app)
     particleRequirements.set(app._scene.getComponentType<ParticleEmitter3D>());
     app._scene.registerSystem<ParticleEmitter3DSystem>(FixedUpdate);
     app._scene.setSystemComponentSet<ParticleEmitter3DSystem>(particleRequirements);
+    app._scene.setSystemAccess<ParticleEmitter3DSystem>(
+        app._scene.access().read<Transform>().write<ParticleEmitter3D>());
     app._scene.registerSystem<ParticleRender3DSystem>(Render);
     app._scene.setSystemComponentSet<ParticleRender3DSystem>(particleRequirements);
 }

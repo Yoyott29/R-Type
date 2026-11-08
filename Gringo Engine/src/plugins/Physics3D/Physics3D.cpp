@@ -116,12 +116,18 @@ void Physics3D::build(Application &app)
     gravity.set(app._scene.getComponentType<RigidBody3D>());
     gravity.set(app._scene.getComponentType<Velocity3D>());
     app._scene.setSystemComponentSet<Gravity3DSystem>(gravity);
+    app._scene.setSystemAccess<Gravity3DSystem>(app._scene.access()
+                                                    .read<RigidBody3D>()
+                                                    .write<Velocity3D>()
+                                                    .readResource<Gravity3D>());
 
     app._scene.registerSystem<Movement3DSystem>(FixedUpdate);
     ComponentSet movement;
     movement.set(app._scene.getComponentType<Transform>());
     movement.set(app._scene.getComponentType<Velocity3D>());
     app._scene.setSystemComponentSet<Movement3DSystem>(movement);
+    app._scene.setSystemAccess<Movement3DSystem>(
+        app._scene.access().read<Velocity3D>().write<Transform>());
 
     app._scene.registerSystem<Collider3DSystem>(FixedUpdate);
     ComponentSet collider;

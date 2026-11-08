@@ -78,6 +78,12 @@ void Plugin2D::build(Application &app)
     animationRequirements.set(app._scene.getComponentType<Animator>());
     animationRequirements.set(app._scene.getComponentType<Sprite>());
     app._scene.setSystemComponentSet<AnimationSystem>(animationRequirements);
+    // The library caches every clip it loads, so it is written
+    app._scene.setSystemAccess<AnimationSystem>(app._scene.access()
+                                                    .write<Animator>()
+                                                    .write<Sprite>()
+                                                    .writeResource<AnimationLibrary>()
+                                                    .readResource<ProjectAssets>());
 
     // setup the 2D particles: spawned and moved in FixedUpdate, drawn with the world
     ComponentSet particleRequirements;
@@ -85,6 +91,8 @@ void Plugin2D::build(Application &app)
     particleRequirements.set(app._scene.getComponentType<ParticleEmitter2D>());
     app._scene.registerSystem<ParticleEmitter2DSystem>(FixedUpdate);
     app._scene.setSystemComponentSet<ParticleEmitter2DSystem>(particleRequirements);
+    app._scene.setSystemAccess<ParticleEmitter2DSystem>(
+        app._scene.access().read<Transform>().write<ParticleEmitter2D>());
     app._scene.registerSystem<ParticleRender2DSystem>(Render);
     app._scene.setSystemComponentSet<ParticleRender2DSystem>(particleRequirements);
 }

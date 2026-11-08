@@ -24,7 +24,38 @@ movementRequirements.set(app._scene.getComponentType<Transform>());
 movementRequirements.set(app._scene.getComponentType<Velocity>());
 app._scene.setSystemComponentSet<MovementSystem>(movementRequirements);`;
 
-	const labelExample = `enum ScheduleLabel { PrepUpdate, StateTransition, FixedUpdate, Update, PostUpdate };`;
+	const labelExample = `enum ScheduleLabel { PrepUpdate, StateTransition, FixedUpdate, Update, PostUpdate, Render, Overlay };`;
+
+	const accessExample = `// Physics2D::build(Application &app)
+app._scene.setSystemAccess<GravitySystem>(app._scene.access()
+                                              .read<RigidBody2D>()
+                                              .write<Velocity>()
+                                              .readResource<Gravity2D>());
+app._scene.setSystemAccess<MovementSystem>(
+    app._scene.access().read<Velocity>().write<Transform>());`;
+
+	const conflictExample = `A               B               run together?
+read<T>         read<T>         yes
+read<T>         write<T>        no, the one registered first runs first
+write<T>        write<T>        no, the one registered first runs first
+write<T>        write<U>        yes
+(no access)     anything        no, A runs alone on the main thread`;
+
+	const parallelForExample = `void MovementSystem::update(Scene &scene)
+{
+    const std::vector<Entity> entities(_entities.begin(), _entities.end());
+
+    scene.parallelFor(entities, [&scene](Entity entity) {
+        Transform &position = scene.getComponent<Transform>(entity);
+        Velocity const &velocity = scene.getComponent<Velocity>(entity);
+
+        position.x += velocity.dx * FIXED_DELTA_TIME;
+        position.y += velocity.dy * FIXED_DELTA_TIME;
+    });
+}
+
+// Or over a range, split in chunks of at least minChunk items (64 by default)
+scene.parallelFor(count, [](std::size_t begin, std::size_t end) { ... });`;
 
 	const runExample = `// Application::run()
 while (_scene.getResource<AppAlive>().alive) {
@@ -192,8 +223,11 @@ _scene.setSystemComponentSet<OffScreenSystem>(offScreenRequirements);`;
 {@render code(labelExample)}
 <p class="mt-3 max-w-[100ch] leading-7">
 	{@render c('scene.runSchedule(label)')} calls {@render c('update(scene)')} on every system of that
-	label, in registration order. It loops over a copy of the list, so a system can remove itself (or
-	another one) during its {@render c('update')}. On the client, {@render c('Application::run()')}
+	label. By default they run one after the other, in registration order; systems that declare their
+	accesses can run at the same time (see
+	<a href="#parallel-systems" class="text-[#ff8a3d] hover:underline">Running systems in parallel</a>).
+	A run works on a snapshot of the schedule, so a system can register or remove a system (itself
+	included) during its {@render c('update')}: the change takes effect on the next run. On the client, {@render c('Application::run()')}
 	runs the labels in this order, with {@render c('FixedUpdate')} run zero or more times per frame by
 	an accumulator, each step followed by {@render c('flushDestroyQueue()')}:
 </p>
@@ -204,6 +238,69 @@ _scene.setSystemComponentSet<OffScreenSystem>(offScreenRequirements);`;
 	{@render c('_entities')} and reads its components from the {@render c('Scene')}:
 </p>
 {@render code(movementExample)}
+
+<h2 id="parallel-systems" class="mt-9 text-lg font-semibold">Running systems in parallel</h2>
+<p class="mt-3 max-w-[100ch] leading-7">
+	A system can declare the components and resources it reads and writes with
+	{@render c('scene.setSystemAccess<T>(scene.access()...)')}, right after registering it.
+	{@render c('read<C>()')} / {@render c('write<C>()')} declare a component,
+	{@render c('readResource<R>()')} / {@render c('writeResource<R>()')} a resource; a write also
+	counts as a read:
+</p>
+{@render code(accessExample)}
+<p class="mt-3 max-w-[100ch] leading-7">
+	From these declarations, {@render c('runSchedule')} builds a dependency graph for each label
+	({@render c('src/ECS/systems/ScheduleGraph.cpp')}), rebuilt only when a system or an access
+	changes. Two systems conflict when one writes something the other reads or writes. Systems that
+	do not conflict run at the same time on a thread pool; systems that conflict keep their
+	registration order:
+</p>
+{@render code(conflictExample)}
+<ul class="mt-3 max-w-[100ch] list-disc space-y-1.5 pl-5 leading-7">
+	<li>
+		A system that declares nothing is <strong class="font-semibold">exclusive</strong>: it waits
+		for every system registered before it, runs alone on the main thread, and every system after it
+		waits for it. Without any declaration a schedule runs exactly as before, sequentially.
+	</li>
+	<li>
+		The thread pool ({@render c('src/ECS/core/ThreadPool.hpp')},
+		{@render c('hardware_concurrency() - 1')} workers, at least 1) is only created the first time
+		something can run in parallel, so a sequential app starts no thread. The main thread works too
+		while it waits.
+	</li>
+	<li>
+		If a system throws, the systems that had not started yet are skipped, the running ones finish,
+		then the first exception is rethrown by {@render c('runSchedule')} on the main thread.
+	</li>
+	<li>
+		A declaration is a promise: the system must only touch what it declared. Creating or destroying
+		entities, adding or removing components, and registering systems are not thread-safe; a system
+		that does one of these must stay exclusive. {@render c('queueDestroy')} is the exception: it
+		is thread-safe and can be called from any system.
+	</li>
+	<li>
+		Calls that are not thread-safe themselves (raylib drawing, the window, input) belong in an
+		exclusive system.
+	</li>
+</ul>
+<p class="mt-3 max-w-[100ch] leading-7">
+	Inside one system, {@render c('scene.parallelFor')} ({@render c('src/ECS/core/ParallelFor.hpp')})
+	splits a loop over the pool. The work is cut into contiguous chunks of at least
+	{@render c('PARALLEL_FOR_MIN_CHUNK')} (64) items, the calling thread runs the first one, and the
+	call returns once every chunk is done. Below the minimum chunk size it simply runs the loop on the
+	calling thread. The body must be safe to run on disjoint items at the same time; the first
+	exception thrown by a chunk is rethrown once every chunk has ended:
+</p>
+{@render code(parallelForExample)}
+<p class="mt-3 max-w-[100ch] leading-7">
+	The engine plugins declare their accesses for the systems that can safely run in parallel:
+	{@render c('GravitySystem')} and {@render c('MovementSystem')} (Physics2D),
+	{@render c('Gravity3DSystem')} and {@render c('Movement3DSystem')} (Physics3D),
+	{@render c('AnimationSystem')} (2D), {@render c('CameraFollowSystem')} (3D),
+	{@render c('AudioSystem')}, {@render c('ParticleEmitterSystem')} and the network send, receive
+	and event systems. The colliders, the renderers and the systems registered by R-Type itself
+	declare nothing and stay exclusive.
+</p>
 
 <h2 class="mt-9 text-lg font-semibold">Plugins</h2>
 <p class="mt-3 max-w-[100ch] leading-7">
@@ -333,7 +430,7 @@ _scene.setSystemComponentSet<OffScreenSystem>(offScreenRequirements);`;
 		increasing id order.
 	</li>
 	<li>
-		Systems of the same label run in registration order: on the client the
+		Systems of the same label that conflict (or declare no access) run in registration order: on the client the
 		{@render c('FixedUpdate')} order is {@render c('MovementSystem')},
 		{@render c('Collider2DSystem')}, {@render c('ScriptSystem')}; on the server it is
 		{@render c('MovementSystem')}, {@render c('ScriptSystem')}, {@render c('Collider2DSystem')}.
