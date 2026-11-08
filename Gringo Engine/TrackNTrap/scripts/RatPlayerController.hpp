@@ -50,7 +50,7 @@
 
 // A small box above each rat, of its player's color, so the rats can be told apart. Sizes are
 // multiplied by the rat's scale. The colors stay distinct for color-blind players
-#define BOX_SIZE 0.6f
+#define BOX_SIZE 0.2f
 #define BOX_GAP 0.3f
 #define BOX_COLOR_1 ColorRGBA{0, 114, 178, 255}
 #define BOX_COLOR_2 ColorRGBA{230, 159, 0, 255}
