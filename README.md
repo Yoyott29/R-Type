@@ -294,6 +294,7 @@ window (a regular one is enough):
 | `Gringo.exe` closes right away, with no message | Debug and Release files are mixed in `Gringo Engine\` (often after a build without `--config Release`). Delete `Gringo Engine\*.dll`, `Gringo Engine\plugins\*.dll` and `Gringo Engine\renderers\*.dll`, then build the editor again. |
 | `bind: Une seule utilisation de chaque adresse de socket...` / `Only one usage of each socket address...` | Another server already uses the port. Close it, or start the server and the clients on another port (`5000`). |
 | The antivirus blocks or deletes a new `.exe` | Freshly built programs are not signed. Add an exception for the repository folder in the antivirus instead of disabling it. |
+| The client starts but its window shows nothing | Open the **Task Manager** (`Ctrl` + `Shift` + `Esc`), find the client process (`r-type_client.exe` or `trackntrap_client.exe`), expand it, right-click its window and choose **Maximize** (**Agrandir** on a French Windows). |
 
 ## LINUX
 
