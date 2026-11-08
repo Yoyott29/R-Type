@@ -206,7 +206,7 @@ From a **Developer PowerShell for VS 2022**:
 
 ```powershell
 cmake -S . -B build -A x64
-cmake --build build --config Release --target r-type_client r-type_server --parallel
+cmake --build build --config Release --target r-type_client r-type_server -j
 ```
 
 This creates `r-type_server.exe` and `r-type_client.exe` in the repository
@@ -300,7 +300,7 @@ are built separately with CTest.
 
 ```powershell
 cmake -S "Gringo Engine" -B build-unit -A x64 -DGRINGO_BUILD_TESTS=ON
-cmake --build build-unit --config Release --target engine_tests network_tests --parallel
+cmake --build build-unit --config Release --target engine_tests network_tests -j
 ctest --test-dir build-unit -C Release --output-on-failure
 ```
 
@@ -337,7 +337,7 @@ and `server_main.cpp`, then compiles them. Run it after changing
 
 ```powershell
 cmake -S "Gringo Engine" -B "Gringo Engine\build" -A x64
-cmake --build "Gringo Engine\build" --config Release --target Gringo --parallel
+cmake --build "Gringo Engine\build" --config Release --target Gringo -j
 ```
 
 This creates `Gringo Engine\Gringo.exe`, with `gringo_engine.dll` and the
