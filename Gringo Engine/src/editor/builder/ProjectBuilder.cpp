@@ -248,8 +248,9 @@ std::vector<std::string> ProjectBuilder::prefabErrors(const SceneObjects &sceneO
             for (const Property &property : component.properties)
                 if (property.type == valueType::Prefab && property.value != NO_FILE &&
                     !exists(property.value))
-                    errors.push_back("Impossible to build " + sceneObjects.projectName + ": entity " +
-                                     entity.name + " uses unknown prefab " + property.value);
+                    errors.push_back("Impossible to build " + sceneObjects.projectName +
+                                     ": entity " + entity.name + " uses unknown prefab " +
+                                     property.value);
     return errors;
 }
 

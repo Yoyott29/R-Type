@@ -1,6 +1,7 @@
 #ifndef KNIFESPIN_HPP_
 #define KNIFESPIN_HPP_
 
+#include "Net.hpp"
 #include "Scene.hpp"
 #include "Script.hpp"
 #include "Time.hpp"
@@ -35,6 +36,9 @@ class KnifeSpin : public GringoEntityScript
 
     void onStart(Scene &scene, Entity &entity) override
     {
+        // The server moves it, the clients show what it sends
+        if (Net::isClient(scene))
+            return;
         Transform &knife = scene.getComponent<Transform>(entity);
         const Transform middle = turned(MIDDLE_X, MIDDLE_Y, knife);
 
@@ -49,6 +53,9 @@ class KnifeSpin : public GringoEntityScript
 
     void onUpdate(Scene &scene, Entity &entity) override
     {
+        // The server moves it, the clients show what it sends
+        if (Net::isClient(scene))
+            return;
         _timer -= FIXED_DELTA_TIME;
         if (_timer <= 0.0f) {
             _spinX = randomBetween(-_rotationSpeed, _rotationSpeed);

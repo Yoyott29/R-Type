@@ -2,6 +2,7 @@
 #define OBSTACLESPAWNER_HPP_
 
 #include "PrefabsManager.hpp"
+#include "Net.hpp"
 #include "Scene.hpp"
 #include "Script.hpp"
 #include "Transform.hpp"
@@ -35,6 +36,9 @@ class ObstacleSpawner : public GringoEntityScript
 
     void onStart(Scene &scene, Entity &) override
     {
+        // Server only: the clients get the obstacles it puts
+        if (Net::isClient(scene))
+            return;
         float total = _knifeWeight + _spatulaWeight + _broomWeight;
 
         for (Spot spot : SPOTS) {

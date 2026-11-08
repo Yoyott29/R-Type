@@ -3,6 +3,7 @@
 
 #include "Cheeses.hpp"
 #include "PrefabsManager.hpp"
+#include "Net.hpp"
 #include "Scene.hpp"
 #include "Script.hpp"
 #include "Time.hpp"
@@ -42,6 +43,9 @@ class CheeseSpawner : public GringoEntityScript
 
     void onStart(Scene &scene, Entity &) override
     {
+        // Server only: the clients get the cheeses it puts
+        if (Net::isClient(scene))
+            return;
         if (!scene.hasResource<Cheeses>())
             scene.addResource<Cheeses>();
         for (int i = 0; i < _count; ++i)
@@ -50,6 +54,9 @@ class CheeseSpawner : public GringoEntityScript
 
     void onUpdate(Scene &scene, Entity &) override
     {
+        // Server only: the clients get the cheeses it puts
+        if (Net::isClient(scene))
+            return;
         Cheeses &cheeses = scene.getResource<Cheeses>();
 
         for (Entity eaten : cheeses.takeEaten()) {

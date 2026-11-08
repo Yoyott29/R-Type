@@ -2,6 +2,7 @@
 #define BROOMSPIN_HPP_
 
 #include "Hazards.hpp"
+#include "Net.hpp"
 #include "Scene.hpp"
 #include "Script.hpp"
 #include "Time.hpp"
@@ -38,6 +39,9 @@ class BroomSpin : public GringoEntityScript
 
     void onStart(Scene &scene, Entity &entity) override
     {
+        // The server moves it, the clients show what it sends
+        if (Net::isClient(scene))
+            return;
         Transform &broom = scene.getComponent<Transform>(entity);
 
         _pivotX = broom.x;
@@ -59,6 +63,9 @@ class BroomSpin : public GringoEntityScript
 
     void onUpdate(Scene &scene, Entity &entity) override
     {
+        // The server moves it, the clients show what it sends
+        if (Net::isClient(scene))
+            return;
         _angle = std::fmod(_angle + _speed * FIXED_DELTA_TIME, 360.0f);
         apply(scene, entity);
     }

@@ -3,6 +3,7 @@
 
 #include "AudioSource.hpp"
 #include "GameState.hpp"
+#include "Net.hpp"
 #include "ProjectComponentManager.hpp"
 #include "Scene.hpp"
 #include "Script.hpp"
@@ -34,6 +35,8 @@ class CountdownScript : public GringoEntityScript
 
     void onStart(Scene &scene, Entity &entity) override
     {
+        if (!Net::isClient(scene))
+            return;
         if (!scene.hasResource<GameState>())
             scene.addResource<GameState>();
         _endSize = static_cast<float>(scene.getComponent<UIText>(entity).fontSize);
@@ -41,9 +44,12 @@ class CountdownScript : public GringoEntityScript
 
     void onUpdate(Scene &scene, Entity &entity) override
     {
+        if (!Net::isClient(scene))
+            return;
         GameState &state = scene.getResource<GameState>();
+        RaceStatus race;
 
-        if (!state.playing || _finished)
+        if (!state.playing || _finished || !Net::findRace(scene, race))
             return;
         UIText &text = scene.getComponent<UIText>(entity);
 
@@ -52,7 +58,10 @@ class CountdownScript : public GringoEntityScript
             if (const std::optional<Entity> music = findMusic(scene))
                 scene.getComponent<AudioSource>(music.value()).stop();
         }
-        _remaining -= FIXED_DELTA_TIME;
+        // The server counts: seconds left before GO, then below 0 the seconds since GO
+        _remaining = race.countdown;
+        if (race.phase != RACE_COUNTDOWN)
+            _remaining = -race.time;
         if (_remaining > 0.0f) {
             float number = std::ceil(_remaining);
 
@@ -65,8 +74,8 @@ class CountdownScript : public GringoEntityScript
             zoomOut(text, number - _remaining);
             return;
         }
-        if (!state.canMove) {
-            state.canMove = true;
+        if (!_musicStarted) {
+            _musicStarted = true;
             if (const std::optional<Entity> music = findMusic(scene))
                 scene.getComponent<AudioSource>(music.value()).play();
         }
@@ -103,6 +112,7 @@ class CountdownScript : public GringoEntityScript
     float _endSize = 160.0f;
     bool _finished = false;
     bool _started = false;
+    bool _musicStarted = false;
     float _lastNumber = 0.0f;
     int _musicId = -1;
 };

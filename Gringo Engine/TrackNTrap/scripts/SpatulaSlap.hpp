@@ -2,6 +2,7 @@
 #define SPATULASLAP_HPP_
 
 #include "Hazards.hpp"
+#include "Net.hpp"
 #include "ParticleEmitter3D.hpp"
 #include "Scene.hpp"
 #include "Script.hpp"
@@ -19,6 +20,8 @@
 
 #define SPATULA_DEGREES_TO_RADIANS (3.14159265f / 180.0f)
 #define SPATULA_UPRIGHT_ANGLE 90.0f
+// Below this RotationX the spatula is on the floor: it stands at 0 and lies at -90
+#define SPATULA_FLAT_ROTATION -85.0f
 
 #define SPATULA_ASSET_YAW -90.0f
 
@@ -48,11 +51,15 @@ class SpatulaSlap : public GringoEntityScript
 
     void onStart(Scene &scene, Entity &entity) override
     {
+        // The clients only show the dust: the server slaps
+        if (Net::isClient(scene)) {
+            createImpact(scene, entity);
+            return;
+        }
         _baseRotationX = scene.getComponent<Transform>(entity).rotationX;
         _state = State::Waiting;
         _timer = randomDelay();
         apply(scene, entity, SPATULA_UPRIGHT_ANGLE);
-        createImpact(scene, entity);
         if (!scene.hasResource<Hazards>())
             scene.addResource<Hazards>();
         scene.getResource<Hazards>().add(entity, {Hazard::Effect::Stun, _stunTime});
@@ -60,6 +67,10 @@ class SpatulaSlap : public GringoEntityScript
 
     void onUpdate(Scene &scene, Entity &entity) override
     {
+        if (Net::isClient(scene)) {
+            updateClient(scene, entity);
+            return;
+        }
         _timer -= FIXED_DELTA_TIME;
         switch (_state) {
         case State::Waiting:
@@ -67,10 +78,8 @@ class SpatulaSlap : public GringoEntityScript
                 next(State::Slapping, _slapTime);
             break;
         case State::Slapping:
-            if (_timer <= 0.0f) {
+            if (_timer <= 0.0f)
                 next(State::Holding, _holdTime);
-                _burst = _burstTime;
-            }
             break;
         case State::Holding:
             if (_timer <= 0.0f)
@@ -82,11 +91,21 @@ class SpatulaSlap : public GringoEntityScript
             break;
         }
         apply(scene, entity, angle());
-        updateImpact(scene, entity);
     }
 
   private:
     enum class State { Waiting, Slapping, Holding, Raising };
+
+    // Client: the server sends the spatula's angle; the dust bursts when it gets flat
+    void updateClient(Scene &scene, Entity entity)
+    {
+        bool flat = scene.getComponent<Transform>(entity).rotationX <= SPATULA_FLAT_ROTATION;
+
+        if (flat && !_wasFlat)
+            _burst = _burstTime;
+        _wasFlat = flat;
+        updateImpact(scene, entity);
+    }
 
     void createImpact(Scene &scene, Entity spatula)
     {
@@ -197,6 +216,7 @@ class SpatulaSlap : public GringoEntityScript
     float _burst = 0.0f;
     Entity _impact{};
     bool _hasImpact = false;
+    bool _wasFlat = false;
     float _baseRotationX = 0.0f;
     float _timer = 0.0f;
     float _duration = 1.0f;
