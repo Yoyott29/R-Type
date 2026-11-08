@@ -85,6 +85,17 @@
                     ]
                 },
                 {
+                    "name": "Script",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Path",
+                            "type": 7,
+                            "value": "PowArmorSpawnerScript.hpp"
+                        }
+                    ]
+                },
+                {
                     "name": "Networked",
                     "properties": [
                         {
@@ -1951,6 +1962,18 @@
                             "name": "Path",
                             "type": 7,
                             "value": "EnemyScript.hpp"
+                        },
+                        {
+                            "id": 1,
+                            "name": "PowerUpChance",
+                            "type": 2,
+                            "value": "1000"
+                        },
+                        {
+                            "id": 2,
+                            "name": "Amplitude",
+                            "type": 2,
+                            "value": "3"
                         }
                     ]
                 },
@@ -2194,6 +2217,18 @@
                             "name": "Path",
                             "type": 7,
                             "value": "EnemyScript.hpp"
+                        },
+                        {
+                            "id": 1,
+                            "name": "PowerUpChance",
+                            "type": 2,
+                            "value": "1000"
+                        },
+                        {
+                            "id": 2,
+                            "name": "Amplitude",
+                            "type": 2,
+                            "value": "3"
                         }
                     ]
                 },
@@ -3450,6 +3485,12 @@
                             "name": "Loop",
                             "type": 3,
                             "value": "True"
+                        },
+                        {
+                            "id": 3,
+                            "name": "PlayOnStart",
+                            "type": 3,
+                            "value": "True"
                         }
                     ]
                 },
@@ -3705,6 +3746,2293 @@
             ],
             "id": 9,
             "name": "EnemyBullet"
+        },
+        {
+            "components": [
+                {
+                    "name": "Transform",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "PositionX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 1,
+                            "name": "PositionY",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 2,
+                            "name": "PositionZ",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 3,
+                            "name": "ScaleX",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 4,
+                            "name": "ScaleY",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 5,
+                            "name": "ScaleZ",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 6,
+                            "name": "RotationX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 7,
+                            "name": "RotationY",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 8,
+                            "name": "RotationZ",
+                            "type": 1,
+                            "value": "0"
+                        }
+                    ]
+                },
+                {
+                    "name": "Velocity",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Dx",
+                            "type": 1,
+                            "value": "1400"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Dy",
+                            "type": 1,
+                            "value": "0"
+                        }
+                    ]
+                },
+                {
+                    "name": "Collider2D",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Shape",
+                            "type": 5,
+                            "value": "Box"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Width",
+                            "type": 1,
+                            "value": "40"
+                        },
+                        {
+                            "id": 2,
+                            "name": "Height",
+                            "type": 1,
+                            "value": "24"
+                        },
+                        {
+                            "id": 3,
+                            "name": "Radius",
+                            "type": 1,
+                            "value": "5"
+                        },
+                        {
+                            "id": 4,
+                            "name": "Layer",
+                            "type": 0,
+                            "value": "4"
+                        },
+                        {
+                            "id": 5,
+                            "name": "TypeCollisions",
+                            "type": 2,
+                            "value": "2"
+                        },
+                        {
+                            "id": 6,
+                            "name": "IsTrigger",
+                            "type": 3,
+                            "value": "True"
+                        }
+                    ]
+                },
+                {
+                    "name": "Sprite",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Shape",
+                            "type": 5,
+                            "value": "Box"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Width",
+                            "type": 1,
+                            "value": "48"
+                        },
+                        {
+                            "id": 2,
+                            "name": "Height",
+                            "type": 1,
+                            "value": "36"
+                        },
+                        {
+                            "id": 3,
+                            "name": "Radius",
+                            "type": 1,
+                            "value": "5"
+                        },
+                        {
+                            "id": 4,
+                            "name": "Color",
+                            "type": 4,
+                            "value": "White"
+                        },
+                        {
+                            "id": 5,
+                            "name": "DrawOrder",
+                            "type": 0,
+                            "value": "0"
+                        },
+                        {
+                            "id": 6,
+                            "name": "TexturePath",
+                            "type": 7,
+                            "value": "assets/BulletCharge1.png"
+                        }
+                    ]
+                },
+                {
+                    "name": "Animator",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Animation",
+                            "type": 7,
+                            "value": "assets/BulletCharge1.anim"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Speed",
+                            "type": 1,
+                            "value": "1"
+                        }
+                    ]
+                },
+                {
+                    "name": "Script",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Path",
+                            "type": 7,
+                            "value": "BulletChargeScript.hpp"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Damage",
+                            "type": 2,
+                            "value": "1"
+                        }
+                    ]
+                },
+                {
+                    "name": "Script",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Path",
+                            "type": 7,
+                            "value": "DestroyOffScreenScript.hpp"
+                        }
+                    ]
+                },
+                {
+                    "name": "Networked",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Mode",
+                            "type": 5,
+                            "value": "Replicated"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Prefab",
+                            "type": 2,
+                            "value": "BulletCharge1"
+                        }
+                    ]
+                }
+            ],
+            "id": 10,
+            "name": "BulletCharge1"
+        },
+        {
+            "components": [
+                {
+                    "name": "Transform",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "PositionX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 1,
+                            "name": "PositionY",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 2,
+                            "name": "PositionZ",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 3,
+                            "name": "ScaleX",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 4,
+                            "name": "ScaleY",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 5,
+                            "name": "ScaleZ",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 6,
+                            "name": "RotationX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 7,
+                            "name": "RotationY",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 8,
+                            "name": "RotationZ",
+                            "type": 1,
+                            "value": "0"
+                        }
+                    ]
+                },
+                {
+                    "name": "Velocity",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Dx",
+                            "type": 1,
+                            "value": "1400"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Dy",
+                            "type": 1,
+                            "value": "0"
+                        }
+                    ]
+                },
+                {
+                    "name": "Collider2D",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Shape",
+                            "type": 5,
+                            "value": "Box"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Width",
+                            "type": 1,
+                            "value": "88"
+                        },
+                        {
+                            "id": 2,
+                            "name": "Height",
+                            "type": 1,
+                            "value": "24"
+                        },
+                        {
+                            "id": 3,
+                            "name": "Radius",
+                            "type": 1,
+                            "value": "5"
+                        },
+                        {
+                            "id": 4,
+                            "name": "Layer",
+                            "type": 0,
+                            "value": "4"
+                        },
+                        {
+                            "id": 5,
+                            "name": "TypeCollisions",
+                            "type": 2,
+                            "value": "2"
+                        },
+                        {
+                            "id": 6,
+                            "name": "IsTrigger",
+                            "type": 3,
+                            "value": "True"
+                        }
+                    ]
+                },
+                {
+                    "name": "Sprite",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Shape",
+                            "type": 5,
+                            "value": "Box"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Width",
+                            "type": 1,
+                            "value": "96"
+                        },
+                        {
+                            "id": 2,
+                            "name": "Height",
+                            "type": 1,
+                            "value": "36"
+                        },
+                        {
+                            "id": 3,
+                            "name": "Radius",
+                            "type": 1,
+                            "value": "5"
+                        },
+                        {
+                            "id": 4,
+                            "name": "Color",
+                            "type": 4,
+                            "value": "White"
+                        },
+                        {
+                            "id": 5,
+                            "name": "DrawOrder",
+                            "type": 0,
+                            "value": "0"
+                        },
+                        {
+                            "id": 6,
+                            "name": "TexturePath",
+                            "type": 7,
+                            "value": "assets/BulletCharge2.png"
+                        }
+                    ]
+                },
+                {
+                    "name": "Animator",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Animation",
+                            "type": 7,
+                            "value": "assets/BulletCharge2.anim"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Speed",
+                            "type": 1,
+                            "value": "1"
+                        }
+                    ]
+                },
+                {
+                    "name": "Script",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Path",
+                            "type": 7,
+                            "value": "BulletChargeScript.hpp"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Damage",
+                            "type": 2,
+                            "value": "2"
+                        }
+                    ]
+                },
+                {
+                    "name": "Script",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Path",
+                            "type": 7,
+                            "value": "DestroyOffScreenScript.hpp"
+                        }
+                    ]
+                },
+                {
+                    "name": "Networked",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Mode",
+                            "type": 5,
+                            "value": "Replicated"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Prefab",
+                            "type": 2,
+                            "value": "BulletCharge2"
+                        }
+                    ]
+                }
+            ],
+            "id": 11,
+            "name": "BulletCharge2"
+        },
+        {
+            "components": [
+                {
+                    "name": "Transform",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "PositionX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 1,
+                            "name": "PositionY",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 2,
+                            "name": "PositionZ",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 3,
+                            "name": "ScaleX",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 4,
+                            "name": "ScaleY",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 5,
+                            "name": "ScaleZ",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 6,
+                            "name": "RotationX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 7,
+                            "name": "RotationY",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 8,
+                            "name": "RotationZ",
+                            "type": 1,
+                            "value": "0"
+                        }
+                    ]
+                },
+                {
+                    "name": "Velocity",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Dx",
+                            "type": 1,
+                            "value": "1400"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Dy",
+                            "type": 1,
+                            "value": "0"
+                        }
+                    ]
+                },
+                {
+                    "name": "Collider2D",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Shape",
+                            "type": 5,
+                            "value": "Box"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Width",
+                            "type": 1,
+                            "value": "136"
+                        },
+                        {
+                            "id": 2,
+                            "name": "Height",
+                            "type": 1,
+                            "value": "30"
+                        },
+                        {
+                            "id": 3,
+                            "name": "Radius",
+                            "type": 1,
+                            "value": "5"
+                        },
+                        {
+                            "id": 4,
+                            "name": "Layer",
+                            "type": 0,
+                            "value": "4"
+                        },
+                        {
+                            "id": 5,
+                            "name": "TypeCollisions",
+                            "type": 2,
+                            "value": "2"
+                        },
+                        {
+                            "id": 6,
+                            "name": "IsTrigger",
+                            "type": 3,
+                            "value": "True"
+                        }
+                    ]
+                },
+                {
+                    "name": "Sprite",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Shape",
+                            "type": 5,
+                            "value": "Box"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Width",
+                            "type": 1,
+                            "value": "144"
+                        },
+                        {
+                            "id": 2,
+                            "name": "Height",
+                            "type": 1,
+                            "value": "42"
+                        },
+                        {
+                            "id": 3,
+                            "name": "Radius",
+                            "type": 1,
+                            "value": "5"
+                        },
+                        {
+                            "id": 4,
+                            "name": "Color",
+                            "type": 4,
+                            "value": "White"
+                        },
+                        {
+                            "id": 5,
+                            "name": "DrawOrder",
+                            "type": 0,
+                            "value": "0"
+                        },
+                        {
+                            "id": 6,
+                            "name": "TexturePath",
+                            "type": 7,
+                            "value": "assets/BulletCharge3.png"
+                        }
+                    ]
+                },
+                {
+                    "name": "Animator",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Animation",
+                            "type": 7,
+                            "value": "assets/BulletCharge3.anim"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Speed",
+                            "type": 1,
+                            "value": "1"
+                        }
+                    ]
+                },
+                {
+                    "name": "Script",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Path",
+                            "type": 7,
+                            "value": "BulletChargeScript.hpp"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Damage",
+                            "type": 2,
+                            "value": "3"
+                        }
+                    ]
+                },
+                {
+                    "name": "Script",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Path",
+                            "type": 7,
+                            "value": "DestroyOffScreenScript.hpp"
+                        }
+                    ]
+                },
+                {
+                    "name": "Networked",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Mode",
+                            "type": 5,
+                            "value": "Replicated"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Prefab",
+                            "type": 2,
+                            "value": "BulletCharge3"
+                        }
+                    ]
+                }
+            ],
+            "id": 12,
+            "name": "BulletCharge3"
+        },
+        {
+            "components": [
+                {
+                    "name": "Transform",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "PositionX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 1,
+                            "name": "PositionY",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 2,
+                            "name": "PositionZ",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 3,
+                            "name": "ScaleX",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 4,
+                            "name": "ScaleY",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 5,
+                            "name": "ScaleZ",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 6,
+                            "name": "RotationX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 7,
+                            "name": "RotationY",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 8,
+                            "name": "RotationZ",
+                            "type": 1,
+                            "value": "0"
+                        }
+                    ]
+                },
+                {
+                    "name": "Velocity",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Dx",
+                            "type": 1,
+                            "value": "1400"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Dy",
+                            "type": 1,
+                            "value": "0"
+                        }
+                    ]
+                },
+                {
+                    "name": "Collider2D",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Shape",
+                            "type": 5,
+                            "value": "Box"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Width",
+                            "type": 1,
+                            "value": "184"
+                        },
+                        {
+                            "id": 2,
+                            "name": "Height",
+                            "type": 1,
+                            "value": "30"
+                        },
+                        {
+                            "id": 3,
+                            "name": "Radius",
+                            "type": 1,
+                            "value": "5"
+                        },
+                        {
+                            "id": 4,
+                            "name": "Layer",
+                            "type": 0,
+                            "value": "4"
+                        },
+                        {
+                            "id": 5,
+                            "name": "TypeCollisions",
+                            "type": 2,
+                            "value": "2"
+                        },
+                        {
+                            "id": 6,
+                            "name": "IsTrigger",
+                            "type": 3,
+                            "value": "True"
+                        }
+                    ]
+                },
+                {
+                    "name": "Sprite",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Shape",
+                            "type": 5,
+                            "value": "Box"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Width",
+                            "type": 1,
+                            "value": "192"
+                        },
+                        {
+                            "id": 2,
+                            "name": "Height",
+                            "type": 1,
+                            "value": "42"
+                        },
+                        {
+                            "id": 3,
+                            "name": "Radius",
+                            "type": 1,
+                            "value": "5"
+                        },
+                        {
+                            "id": 4,
+                            "name": "Color",
+                            "type": 4,
+                            "value": "White"
+                        },
+                        {
+                            "id": 5,
+                            "name": "DrawOrder",
+                            "type": 0,
+                            "value": "0"
+                        },
+                        {
+                            "id": 6,
+                            "name": "TexturePath",
+                            "type": 7,
+                            "value": "assets/BulletCharge4.png"
+                        }
+                    ]
+                },
+                {
+                    "name": "Animator",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Animation",
+                            "type": 7,
+                            "value": "assets/BulletCharge4.anim"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Speed",
+                            "type": 1,
+                            "value": "1"
+                        }
+                    ]
+                },
+                {
+                    "name": "Script",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Path",
+                            "type": 7,
+                            "value": "BulletChargeScript.hpp"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Damage",
+                            "type": 2,
+                            "value": "4"
+                        }
+                    ]
+                },
+                {
+                    "name": "Script",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Path",
+                            "type": 7,
+                            "value": "DestroyOffScreenScript.hpp"
+                        }
+                    ]
+                },
+                {
+                    "name": "Networked",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Mode",
+                            "type": 5,
+                            "value": "Replicated"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Prefab",
+                            "type": 2,
+                            "value": "BulletCharge4"
+                        }
+                    ]
+                }
+            ],
+            "id": 13,
+            "name": "BulletCharge4"
+        },
+        {
+            "components": [
+                {
+                    "name": "Transform",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "PositionX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 1,
+                            "name": "PositionY",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 2,
+                            "name": "PositionZ",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 3,
+                            "name": "ScaleX",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 4,
+                            "name": "ScaleY",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 5,
+                            "name": "ScaleZ",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 6,
+                            "name": "RotationX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 7,
+                            "name": "RotationY",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 8,
+                            "name": "RotationZ",
+                            "type": 1,
+                            "value": "0"
+                        }
+                    ]
+                },
+                {
+                    "name": "Velocity",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Dx",
+                            "type": 1,
+                            "value": "1400"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Dy",
+                            "type": 1,
+                            "value": "0"
+                        }
+                    ]
+                },
+                {
+                    "name": "Collider2D",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Shape",
+                            "type": 5,
+                            "value": "Box"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Width",
+                            "type": 1,
+                            "value": "232"
+                        },
+                        {
+                            "id": 2,
+                            "name": "Height",
+                            "type": 1,
+                            "value": "36"
+                        },
+                        {
+                            "id": 3,
+                            "name": "Radius",
+                            "type": 1,
+                            "value": "5"
+                        },
+                        {
+                            "id": 4,
+                            "name": "Layer",
+                            "type": 0,
+                            "value": "4"
+                        },
+                        {
+                            "id": 5,
+                            "name": "TypeCollisions",
+                            "type": 2,
+                            "value": "2"
+                        },
+                        {
+                            "id": 6,
+                            "name": "IsTrigger",
+                            "type": 3,
+                            "value": "True"
+                        }
+                    ]
+                },
+                {
+                    "name": "Sprite",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Shape",
+                            "type": 5,
+                            "value": "Box"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Width",
+                            "type": 1,
+                            "value": "240"
+                        },
+                        {
+                            "id": 2,
+                            "name": "Height",
+                            "type": 1,
+                            "value": "48"
+                        },
+                        {
+                            "id": 3,
+                            "name": "Radius",
+                            "type": 1,
+                            "value": "5"
+                        },
+                        {
+                            "id": 4,
+                            "name": "Color",
+                            "type": 4,
+                            "value": "White"
+                        },
+                        {
+                            "id": 5,
+                            "name": "DrawOrder",
+                            "type": 0,
+                            "value": "0"
+                        },
+                        {
+                            "id": 6,
+                            "name": "TexturePath",
+                            "type": 7,
+                            "value": "assets/BulletCharge5.png"
+                        }
+                    ]
+                },
+                {
+                    "name": "Animator",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Animation",
+                            "type": 7,
+                            "value": "assets/BulletCharge5.anim"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Speed",
+                            "type": 1,
+                            "value": "1"
+                        }
+                    ]
+                },
+                {
+                    "name": "Script",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Path",
+                            "type": 7,
+                            "value": "BulletChargeScript.hpp"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Damage",
+                            "type": 2,
+                            "value": "5"
+                        }
+                    ]
+                },
+                {
+                    "name": "Script",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Path",
+                            "type": 7,
+                            "value": "DestroyOffScreenScript.hpp"
+                        }
+                    ]
+                },
+                {
+                    "name": "Networked",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Mode",
+                            "type": 5,
+                            "value": "Replicated"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Prefab",
+                            "type": 2,
+                            "value": "BulletCharge5"
+                        }
+                    ]
+                }
+            ],
+            "id": 14,
+            "name": "BulletCharge5"
+        },
+        {
+            "components": [
+                {
+                    "name": "Transform",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "PositionX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 1,
+                            "name": "PositionY",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 2,
+                            "name": "PositionZ",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 3,
+                            "name": "ScaleX",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 4,
+                            "name": "ScaleY",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 5,
+                            "name": "ScaleZ",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 6,
+                            "name": "RotationX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 7,
+                            "name": "RotationY",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 8,
+                            "name": "RotationZ",
+                            "type": 1,
+                            "value": "0"
+                        }
+                    ]
+                },
+                {
+                    "name": "Sprite",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Shape",
+                            "type": 5,
+                            "value": "Box"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Width",
+                            "type": 1,
+                            "value": "114"
+                        },
+                        {
+                            "id": 2,
+                            "name": "Height",
+                            "type": 1,
+                            "value": "90"
+                        },
+                        {
+                            "id": 3,
+                            "name": "Radius",
+                            "type": 1,
+                            "value": "5"
+                        },
+                        {
+                            "id": 4,
+                            "name": "Color",
+                            "type": 4,
+                            "value": "White"
+                        },
+                        {
+                            "id": 5,
+                            "name": "DrawOrder",
+                            "type": 0,
+                            "value": "0"
+                        },
+                        {
+                            "id": 6,
+                            "name": "TexturePath",
+                            "type": 7,
+                            "value": "assets/Explosion.png"
+                        }
+                    ]
+                },
+                {
+                    "name": "Animator",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Animation",
+                            "type": 7,
+                            "value": "assets/Explosion.anim"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Speed",
+                            "type": 1,
+                            "value": "1"
+                        }
+                    ]
+                },
+                {
+                    "name": "Script",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Path",
+                            "type": 7,
+                            "value": "ExplosionScript.hpp"
+                        }
+                    ]
+                },
+                {
+                    "name": "Networked",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Mode",
+                            "type": 5,
+                            "value": "Replicated"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Prefab",
+                            "type": 2,
+                            "value": "Explosion"
+                        }
+                    ]
+                }
+            ],
+            "id": 15,
+            "name": "Explosion"
+        },
+        {
+            "components": [
+                {
+                    "name": "Transform",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "PositionX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 1,
+                            "name": "PositionY",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 2,
+                            "name": "PositionZ",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 3,
+                            "name": "ScaleX",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 4,
+                            "name": "ScaleY",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 5,
+                            "name": "ScaleZ",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 6,
+                            "name": "RotationX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 7,
+                            "name": "RotationY",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 8,
+                            "name": "RotationZ",
+                            "type": 1,
+                            "value": "0"
+                        }
+                    ]
+                },
+                {
+                    "name": "Velocity",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Dx",
+                            "type": 1,
+                            "value": "990"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Dy",
+                            "type": 1,
+                            "value": "-990"
+                        }
+                    ]
+                },
+                {
+                    "name": "Collider2D",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Shape",
+                            "type": 5,
+                            "value": "Box"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Width",
+                            "type": 1,
+                            "value": "24"
+                        },
+                        {
+                            "id": 2,
+                            "name": "Height",
+                            "type": 1,
+                            "value": "24"
+                        },
+                        {
+                            "id": 3,
+                            "name": "Radius",
+                            "type": 1,
+                            "value": "5"
+                        },
+                        {
+                            "id": 4,
+                            "name": "Layer",
+                            "type": 0,
+                            "value": "4"
+                        },
+                        {
+                            "id": 5,
+                            "name": "TypeCollisions",
+                            "type": 2,
+                            "value": "2"
+                        },
+                        {
+                            "id": 6,
+                            "name": "IsTrigger",
+                            "type": 3,
+                            "value": "True"
+                        }
+                    ]
+                },
+                {
+                    "name": "Sprite",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Shape",
+                            "type": 5,
+                            "value": "Box"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Width",
+                            "type": 1,
+                            "value": "60"
+                        },
+                        {
+                            "id": 2,
+                            "name": "Height",
+                            "type": 1,
+                            "value": "60"
+                        },
+                        {
+                            "id": 3,
+                            "name": "Radius",
+                            "type": 1,
+                            "value": "5"
+                        },
+                        {
+                            "id": 4,
+                            "name": "Color",
+                            "type": 4,
+                            "value": "White"
+                        },
+                        {
+                            "id": 5,
+                            "name": "DrawOrder",
+                            "type": 0,
+                            "value": "0"
+                        },
+                        {
+                            "id": 6,
+                            "name": "TexturePath",
+                            "type": 7,
+                            "value": "assets/PlayerShotUp.png"
+                        }
+                    ]
+                },
+                {
+                    "name": "Animator",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Animation",
+                            "type": 7,
+                            "value": "assets/PlayerShotUp.anim"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Speed",
+                            "type": 1,
+                            "value": "1"
+                        }
+                    ]
+                },
+                {
+                    "name": "Script",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Path",
+                            "type": 7,
+                            "value": "BulletScript.hpp"
+                        }
+                    ]
+                },
+                {
+                    "name": "Script",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Path",
+                            "type": 7,
+                            "value": "DestroyOffScreenScript.hpp"
+                        }
+                    ]
+                },
+                {
+                    "name": "Networked",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Mode",
+                            "type": 5,
+                            "value": "Replicated"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Prefab",
+                            "type": 2,
+                            "value": "PlayerBulletUp"
+                        }
+                    ]
+                }
+            ],
+            "id": 16,
+            "name": "PlayerBulletUp"
+        },
+        {
+            "components": [
+                {
+                    "name": "Transform",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "PositionX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 1,
+                            "name": "PositionY",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 2,
+                            "name": "PositionZ",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 3,
+                            "name": "ScaleX",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 4,
+                            "name": "ScaleY",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 5,
+                            "name": "ScaleZ",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 6,
+                            "name": "RotationX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 7,
+                            "name": "RotationY",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 8,
+                            "name": "RotationZ",
+                            "type": 1,
+                            "value": "0"
+                        }
+                    ]
+                },
+                {
+                    "name": "Velocity",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Dx",
+                            "type": 1,
+                            "value": "990"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Dy",
+                            "type": 1,
+                            "value": "990"
+                        }
+                    ]
+                },
+                {
+                    "name": "Collider2D",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Shape",
+                            "type": 5,
+                            "value": "Box"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Width",
+                            "type": 1,
+                            "value": "24"
+                        },
+                        {
+                            "id": 2,
+                            "name": "Height",
+                            "type": 1,
+                            "value": "24"
+                        },
+                        {
+                            "id": 3,
+                            "name": "Radius",
+                            "type": 1,
+                            "value": "5"
+                        },
+                        {
+                            "id": 4,
+                            "name": "Layer",
+                            "type": 0,
+                            "value": "4"
+                        },
+                        {
+                            "id": 5,
+                            "name": "TypeCollisions",
+                            "type": 2,
+                            "value": "2"
+                        },
+                        {
+                            "id": 6,
+                            "name": "IsTrigger",
+                            "type": 3,
+                            "value": "True"
+                        }
+                    ]
+                },
+                {
+                    "name": "Sprite",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Shape",
+                            "type": 5,
+                            "value": "Box"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Width",
+                            "type": 1,
+                            "value": "60"
+                        },
+                        {
+                            "id": 2,
+                            "name": "Height",
+                            "type": 1,
+                            "value": "60"
+                        },
+                        {
+                            "id": 3,
+                            "name": "Radius",
+                            "type": 1,
+                            "value": "5"
+                        },
+                        {
+                            "id": 4,
+                            "name": "Color",
+                            "type": 4,
+                            "value": "White"
+                        },
+                        {
+                            "id": 5,
+                            "name": "DrawOrder",
+                            "type": 0,
+                            "value": "0"
+                        },
+                        {
+                            "id": 6,
+                            "name": "TexturePath",
+                            "type": 7,
+                            "value": "assets/PlayerShotDown.png"
+                        }
+                    ]
+                },
+                {
+                    "name": "Animator",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Animation",
+                            "type": 7,
+                            "value": "assets/PlayerShotDown.anim"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Speed",
+                            "type": 1,
+                            "value": "1"
+                        }
+                    ]
+                },
+                {
+                    "name": "Script",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Path",
+                            "type": 7,
+                            "value": "BulletScript.hpp"
+                        }
+                    ]
+                },
+                {
+                    "name": "Script",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Path",
+                            "type": 7,
+                            "value": "DestroyOffScreenScript.hpp"
+                        }
+                    ]
+                },
+                {
+                    "name": "Networked",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Mode",
+                            "type": 5,
+                            "value": "Replicated"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Prefab",
+                            "type": 2,
+                            "value": "PlayerBulletDown"
+                        }
+                    ]
+                }
+            ],
+            "id": 17,
+            "name": "PlayerBulletDown"
+        },
+        {
+            "components": [
+                {
+                    "name": "Transform",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "PositionX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 1,
+                            "name": "PositionY",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 2,
+                            "name": "PositionZ",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 3,
+                            "name": "ScaleX",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 4,
+                            "name": "ScaleY",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 5,
+                            "name": "ScaleZ",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 6,
+                            "name": "RotationX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 7,
+                            "name": "RotationY",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 8,
+                            "name": "RotationZ",
+                            "type": 1,
+                            "value": "0"
+                        }
+                    ]
+                },
+                {
+                    "name": "Velocity",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Dx",
+                            "type": 1,
+                            "value": "-150"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Dy",
+                            "type": 1,
+                            "value": "0"
+                        }
+                    ]
+                },
+                {
+                    "name": "Collider2D",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Shape",
+                            "type": 5,
+                            "value": "Box"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Width",
+                            "type": 1,
+                            "value": "50"
+                        },
+                        {
+                            "id": 2,
+                            "name": "Height",
+                            "type": 1,
+                            "value": "44"
+                        },
+                        {
+                            "id": 3,
+                            "name": "Radius",
+                            "type": 1,
+                            "value": "5"
+                        },
+                        {
+                            "id": 4,
+                            "name": "Layer",
+                            "type": 0,
+                            "value": "16"
+                        },
+                        {
+                            "id": 5,
+                            "name": "TypeCollisions",
+                            "type": 2,
+                            "value": "1"
+                        },
+                        {
+                            "id": 6,
+                            "name": "IsTrigger",
+                            "type": 3,
+                            "value": "True"
+                        }
+                    ]
+                },
+                {
+                    "name": "Sprite",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Shape",
+                            "type": 5,
+                            "value": "Box"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Width",
+                            "type": 1,
+                            "value": "60"
+                        },
+                        {
+                            "id": 2,
+                            "name": "Height",
+                            "type": 1,
+                            "value": "54"
+                        },
+                        {
+                            "id": 3,
+                            "name": "Radius",
+                            "type": 1,
+                            "value": "5"
+                        },
+                        {
+                            "id": 4,
+                            "name": "Color",
+                            "type": 4,
+                            "value": "White"
+                        },
+                        {
+                            "id": 5,
+                            "name": "DrawOrder",
+                            "type": 0,
+                            "value": "0"
+                        },
+                        {
+                            "id": 6,
+                            "name": "TexturePath",
+                            "type": 7,
+                            "value": "assets/PowerUp.png"
+                        }
+                    ]
+                },
+                {
+                    "name": "Animator",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Animation",
+                            "type": 7,
+                            "value": "assets/PowerUp.anim"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Speed",
+                            "type": 1,
+                            "value": "1"
+                        }
+                    ]
+                },
+                {
+                    "name": "Script",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Path",
+                            "type": 7,
+                            "value": "PowerUpScript.hpp"
+                        }
+                    ]
+                },
+                {
+                    "name": "Script",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Path",
+                            "type": 7,
+                            "value": "DestroyOffScreenScript.hpp"
+                        }
+                    ]
+                },
+                {
+                    "name": "Networked",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Mode",
+                            "type": 5,
+                            "value": "Replicated"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Prefab",
+                            "type": 2,
+                            "value": "PowerUp"
+                        }
+                    ]
+                }
+            ],
+            "id": 18,
+            "name": "PowerUp"
+        },
+        {
+            "components": [
+                {
+                    "name": "Transform",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "PositionX",
+                            "type": 1,
+                            "value": "2000"
+                        },
+                        {
+                            "id": 1,
+                            "name": "PositionY",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 2,
+                            "name": "PositionZ",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 3,
+                            "name": "ScaleX",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 4,
+                            "name": "ScaleY",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 5,
+                            "name": "ScaleZ",
+                            "type": 1,
+                            "value": "1"
+                        },
+                        {
+                            "id": 6,
+                            "name": "RotationX",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 7,
+                            "name": "RotationY",
+                            "type": 1,
+                            "value": "0"
+                        },
+                        {
+                            "id": 8,
+                            "name": "RotationZ",
+                            "type": 1,
+                            "value": "0"
+                        }
+                    ]
+                },
+                {
+                    "name": "Velocity",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Dx",
+                            "type": 1,
+                            "value": "-500"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Dy",
+                            "type": 1,
+                            "value": "0"
+                        }
+                    ]
+                },
+                {
+                    "name": "Collider2D",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Shape",
+                            "type": 5,
+                            "value": "Box"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Width",
+                            "type": 1,
+                            "value": "60"
+                        },
+                        {
+                            "id": 2,
+                            "name": "Height",
+                            "type": 1,
+                            "value": "80"
+                        },
+                        {
+                            "id": 3,
+                            "name": "Radius",
+                            "type": 1,
+                            "value": "20"
+                        },
+                        {
+                            "id": 4,
+                            "name": "Layer",
+                            "type": 0,
+                            "value": "2"
+                        },
+                        {
+                            "id": 5,
+                            "name": "TypeCollisions",
+                            "type": 2,
+                            "value": "All layers"
+                        },
+                        {
+                            "id": 6,
+                            "name": "IsTrigger",
+                            "type": 3,
+                            "value": "True"
+                        }
+                    ]
+                },
+                {
+                    "name": "Sprite",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Shape",
+                            "type": 5,
+                            "value": "Box"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Width",
+                            "type": 1,
+                            "value": "81"
+                        },
+                        {
+                            "id": 2,
+                            "name": "Height",
+                            "type": 1,
+                            "value": "96"
+                        },
+                        {
+                            "id": 3,
+                            "name": "Radius",
+                            "type": 1,
+                            "value": "35"
+                        },
+                        {
+                            "id": 4,
+                            "name": "Color",
+                            "type": 4,
+                            "value": "Red"
+                        },
+                        {
+                            "id": 5,
+                            "name": "DrawOrder",
+                            "type": 0,
+                            "value": "0"
+                        },
+                        {
+                            "id": 6,
+                            "name": "TexturePath",
+                            "type": 7,
+                            "value": "assets/PowArmor.png"
+                        }
+                    ]
+                },
+                {
+                    "name": "Animator",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Animation",
+                            "type": 7,
+                            "value": "assets/PowArmor.anim"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Speed",
+                            "type": 1,
+                            "value": "1"
+                        }
+                    ]
+                },
+                {
+                    "name": "Script",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Path",
+                            "type": 7,
+                            "value": "DestroyOffScreenScript.hpp"
+                        }
+                    ]
+                },
+                {
+                    "name": "Networked",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Mode",
+                            "type": 5,
+                            "value": "Replicated"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Prefab",
+                            "type": 2,
+                            "value": "PowArmor"
+                        }
+                    ]
+                },
+                {
+                    "name": "Script",
+                    "properties": [
+                        {
+                            "id": 0,
+                            "name": "Path",
+                            "type": 7,
+                            "value": "EnemyScript.hpp"
+                        },
+                        {
+                            "id": 1,
+                            "name": "PowerUpChance",
+                            "type": 2,
+                            "value": "1"
+                        },
+                        {
+                            "id": 2,
+                            "name": "Amplitude",
+                            "type": 2,
+                            "value": "7.5"
+                        }
+                    ]
+                }
+            ],
+            "id": 19,
+            "name": "PowArmor"
         }
     ],
     "projectName": "R-Type",
