@@ -47,10 +47,7 @@ inline void GameOverScript::backToLobby(Scene &scene)
     for (Entity entity : scene.view<Transform, Collider2D>())
         if (scene.getComponent<Collider2D>(entity).layer == ENEMY_LAYER)
             scene.queueDestroy(entity);
-    scene.getResource<MatchState>().started = false;
-    scene.getResource<GameScore>().value = 0;
-    scene.getResource<NetTransport>().setAcceptingPeers(true);
-    Lobby::clearMatchEntities(scene);
+    Lobby::endMatch(scene);
 }
 
 inline void GameOverScript::onStart(Scene &, Entity &) {}

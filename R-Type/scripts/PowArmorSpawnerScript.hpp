@@ -1,6 +1,7 @@
 #ifndef POWARMORSPAWNERSCRIPT_HPP_
 #define POWARMORSPAWNERSCRIPT_HPP_
 
+#include "BossState.hpp"
 #include "BuildVariantName.hpp"
 #include "GameScore.hpp"
 #include "MatchState.hpp"
@@ -60,7 +61,7 @@ inline void PowArmorSpawnerScript::onUpdate(Scene &scene, Entity &)
         _nextScore = SCORE_STEP;
         return;
     }
-    if (scene.getResource<GameScore>().value < _nextScore)
+    if (isBossActive(scene) || scene.getResource<GameScore>().value < _nextScore)
         return;
     _nextScore += SCORE_STEP;
     spawn(scene);
