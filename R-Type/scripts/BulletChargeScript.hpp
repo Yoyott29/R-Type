@@ -1,6 +1,7 @@
 #ifndef BULLETCHARGESCRIPT_HPP_
 #define BULLETCHARGESCRIPT_HPP_
 
+#include "BossState.hpp"
 #include "BuildVariantName.hpp"
 #include "Collider2D.hpp"
 #include "EnemyScript.hpp"
@@ -44,9 +45,16 @@ inline void BulletChargeScript::onStart(Scene &scene, Entity &entity)
 {
     if (isClientSide(scene))
         return;
-    scene.getComponent<Collider2D>(entity).onCollision = [&scene](Entity, Entity other) {
+    const int damage = _damage;
+    scene.getComponent<Collider2D>(entity).onCollision = [&scene, damage](Entity bullet,
+                                                                          Entity other) {
         if (!scene.isEntityAlive(other))
             return;
+        if (scene.getComponent<Collider2D>(other).layer == BOSS_LAYER) {
+            hitBoss(scene, damage);
+            scene.queueDestroy(bullet);
+            return;
+        }
         scene.getResource<GameScore>().value += 100;
         EnemyScript::kill(scene, other);
     };

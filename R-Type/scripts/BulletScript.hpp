@@ -1,6 +1,7 @@
 #ifndef BULLETSCRIPT_HPP_
 #define BULLETSCRIPT_HPP_
 
+#include "BossState.hpp"
 #include "BuildVariantName.hpp"
 #include "Collider2D.hpp"
 #include "EnemyScript.hpp"
@@ -31,8 +32,12 @@ inline void BulletScript::onStart(Scene &scene, Entity &entity)
     scene.getComponent<Collider2D>(entity).onCollision = [&scene](Entity bullet, Entity other) {
         if (!scene.isEntityAlive(other))
             return;
-        scene.getResource<GameScore>().value += 100;
         scene.queueDestroy(bullet);
+        if (scene.getComponent<Collider2D>(other).layer == BOSS_LAYER) {
+            hitBoss(scene, 1);
+            return;
+        }
+        scene.getResource<GameScore>().value += 100;
         EnemyScript::kill(scene, other);
     };
 }

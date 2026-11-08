@@ -1,6 +1,7 @@
 #ifndef ENEMYSPAWNERSCRIPT_HPP_
 #define ENEMYSPAWNERSCRIPT_HPP_
 
+#include "BossState.hpp"
 #include "MatchState.hpp"
 #include "Transform.hpp"
 #include "PrefabsManager.hpp"
@@ -40,7 +41,7 @@ inline void EnemySpawnerScript::onStart(Scene &, Entity &) {}
 
 inline void EnemySpawnerScript::onUpdate(Scene &scene, Entity &)
 {
-    if (isWaitingForMatch(scene))
+    if (isWaitingForMatch(scene) || isBossActive(scene))
         return;
     if (_enemyCount == 0) {
         _waveTimer += FIXED_DELTA_TIME;

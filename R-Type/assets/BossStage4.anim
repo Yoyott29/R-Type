@@ -1,0 +1,8 @@
+{
+    "texture": "BossStage4.png",
+    "frameWidth": 155.0,
+    "frameHeight": 204,
+    "frames": 4,
+    "fps": 6,
+    "loop": true
+}

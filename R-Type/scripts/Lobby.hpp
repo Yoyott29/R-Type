@@ -2,9 +2,11 @@
 #define LOBBY_HPP_
 
 #include "BuildVariantName.hpp"
+#include "GameScore.hpp"
 #include "MatchState.hpp"
 #include "NetComponents.hpp"
 #include "NetEvents.hpp"
+#include "NetTransport.hpp"
 #include "NetworkConfig.hpp"
 #include "Networked.hpp"
 #include "Scene.hpp"
@@ -60,6 +62,14 @@ inline void clearMatchEntities(Scene &scene)
         if (networked.mode == NetMode::Replicated && !isPlayer(scene, networked))
             scene.queueDestroy(entity);
     }
+}
+
+inline void endMatch(Scene &scene)
+{
+    scene.getResource<MatchState>().started = false;
+    scene.getResource<GameScore>().value = 0;
+    scene.getResource<NetTransport>().setAcceptingPeers(true);
+    clearMatchEntities(scene);
 }
 } // namespace Lobby
 
