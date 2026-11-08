@@ -4,4 +4,4 @@ set -euo pipefail
 ROOT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 
 cmake -S "$ROOT_DIR" -B "$ROOT_DIR/build"
-cmake --build "$ROOT_DIR/build" --target r-type_client r-type_server
+cmake --build "$ROOT_DIR/build" --parallel "$(nproc 2>/dev/null || echo 4)" --target r-type_client r-type_server

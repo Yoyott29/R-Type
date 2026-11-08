@@ -67,8 +67,8 @@ void ProjectComponentManager::linkChildren(Scene &scene) const
 std::filesystem::path ProjectComponentManager::findProjectFile(const std::string &fileName)
 {
     const std::filesystem::path folder = PluginLoader::executableDirectory();
-    const std::filesystem::path besideExecutable = folder / fileName;
-    const std::filesystem::path inProjectFolder =
+    std::filesystem::path besideExecutable = folder / fileName;
+    std::filesystem::path inProjectFolder =
         folder / std::filesystem::path(fileName).stem() / fileName;
 
     if (std::filesystem::is_regular_file(besideExecutable))
