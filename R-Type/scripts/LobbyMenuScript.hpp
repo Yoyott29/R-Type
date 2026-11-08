@@ -5,7 +5,7 @@
 #include "Lobby.hpp"
 #include "Scene.hpp"
 #include "Script.hpp"
-#include "Transform.hpp"
+#include "Settings.hpp"
 
 class LobbyMenuScript : public GringoEntityScript
 {
@@ -14,10 +14,6 @@ class LobbyMenuScript : public GringoEntityScript
     void onUpdate(Scene &scene, Entity &entity) override;
 
   private:
-    static constexpr float HIDDEN_OFFSET_Y = 5000.0f;
-
-    void setHidden(Scene &scene, Entity entity, bool hidden);
-
     bool _hidden = false;
 };
 
@@ -28,26 +24,13 @@ inline void LobbyMenuScript::onUpdate(Scene &scene, Entity &entity)
     if (!Lobby::isClient(scene))
         return;
     const bool inMatch = Lobby::findByPrefab(scene, Lobby::MUSIC_PREFAB).has_value();
-    setHidden(scene, entity, inMatch);
-    if (inMatch)
+    const bool hidden = inMatch || scene.hasResource<SettingsOpen>();
+    if (Lobby::setHidden(scene, entity, _hidden, hidden) && hidden)
+        scene.removeResource<StartRequest>();
+    if (hidden)
         return;
     if (scene.hasResource<StartRequest>() && scene.hasResource<ActionInput>())
         scene.getResource<ActionInput>().active.set(Lobby::ACTION_START);
-}
-
-inline void LobbyMenuScript::setHidden(Scene &scene, Entity entity, bool hidden)
-{
-    if (hidden == _hidden)
-        return;
-    _hidden = hidden;
-    Transform &position = scene.getComponent<Transform>(entity);
-    if (!hidden) {
-        position.y -= HIDDEN_OFFSET_Y;
-        return;
-    }
-    position.y += HIDDEN_OFFSET_Y;
-    if (scene.hasResource<StartRequest>())
-        scene.removeResource<StartRequest>();
 }
 
 #endif /* !LOBBYMENUSCRIPT_HPP_ */
